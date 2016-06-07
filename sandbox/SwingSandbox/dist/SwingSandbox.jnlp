@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+<jnlp spec="1.0+" codebase="http://jtexy.googlecode.com/files/" href="launch3.jnlp">
+<jnlp spec="1.0+" codebase="http://code.google.com/p/jtexy/" href="SwingSandbox.jnlp">
+-->
+<jnlp spec="1.0+" codebase="http://jtexy.googlecode.com/svn/sandbox/SwingSandbox/dist" href="SwingSandbox.jnlp">
+    <information>
+        <title>JTexy SwingSandbox</title>
+        <vendor>Dynawest.cz</vendor>
+        <homepage href="http://code.google.com/p/jtexy/"/>
+        <description>A simple desktop app to try JTexy.</description>
+    </information>
+    <resources>
+        <j2se version="1.6+"/>
+        <jar href="SwingSandbox-1.1.jar" main="true"/>
+        <jar href="lib/JTexyCore-1.0-SNAPSHOT.jar"/>
+        <jar href="lib/jsoup-1.7.1.jar"/>
+        <jar href="lib/dom4j-1.6.1.jar"/>
+        <jar href="lib/xml-apis-1.0.b2.jar"/>
+        <jar href="lib/appframework-1.03.jar"/>
+        <jar href="lib/swing-worker-1.1.jar"/>
+        <jar href="lib/swing-layout-1.0.3.jar"/>
+        <jar href="lib/commons-lang-2.4.jar"/>
+
+    </resources>
+    <application-desc main-class="cz.dynawest.jtexy.sandbox.swing.SwingSandboxApp"/>
+</jnlp>
