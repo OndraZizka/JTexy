@@ -1,0 +1,172 @@
+Hibernate super-quick start in NetBeans
+***************************************
+
+Here's my how-to for starting a Hibernate project.
+It is meant as a reminder for me :-)
+
+We'll use Java Persistence API.
+
+
+What is Hibernate?
+==================
+
+Mainly, Hibernate is a tool to move the SQL out of the application code.
+The philosophy of Hibernate is that you should not write SQL to manipulate data,
+instead, you should work with the objects and call methods like `save()` and `load()`.
+
+This is done using quite simple "XML mappings":http://madhurichopurala.wordpress.com/2008/01/29/hibernate/hibernate-xml-mapping-document-example/,
+or more recently, using "@annotations":http://www.hibernate.org/hib_docs/annotations/reference/en/html_single/#entity-mapping-entity.
+
+For batch selections of multiple objects or batch operations with them,
+special language similar to SQL is used.
+For Hibernate it's `HQL`((Hibernate Query Language),
+for standardized JPA((Java Persistence API) it's `EQL`((Entity Query Language).
+
+
+
+Download
+========
+
+<ol><li>
+
+From "**Hibernate download** page":http://www.hibernate.org/6.html, download:
+<ul><li> **Hibernate Core** - the main Hibernate stuff; responsible for the actual O/R mapping work.
+
+</li><li> **Hibernate Annotations** - with this, you can use @Entity and @Table etc. instead of XML;
+less powerful configuration, but you can combine both.
+
+</li><li> **Hibernate EntityManager** - this is an "adapter" of Hibernate to standardized Java Persistence API (JPA). 
+Again, less powerful than Hibernate, but you can give up JPA compatibility and fall back to using Hibernate proprietary features.
+
+</li></ul>
+Everything must be the **actual GA version**, otherwise you can run into problems.
+
+Unpack everything somewhere (I store custom Java libraries in `c:\sw\JavaLibs\{projectName-version}`).
+</li></ol>
+
+Setup Hibernate in your NetBeans project
+========================================
+
+Create the **Persistence Unit** - that is a piece of XML configuration, sipmly said.
+In NetBeans, there is some Hibernate support, but I rather created my own library with creating persistence unit in one step.
+* Check whether you have installed the "Hibernate support" plugin in NetBeans.
+* Right-click on the project, `New -> Other... -> Persistence -> Persistence Unit -> Next.
+* Persistence Unit Name: Something meaningfull, I have "HibernateTestPU" here.
+* Persistence Library: I had only TopLink ( competing O/R by Oracle). So I did:
+  * Select "New Persistence Library...". A library management dialog will appear.
+  * The name can be e.g. "Hibernate_Persistence".
+  * Add all `.jar`s from the Hibernate folders you extracted above, **including** the `lib` sub-directories, one directory by one.
+  * Not all of the libraries are needed; I am too lazy to check which are. You can do so - check the docs.
+  * As you will add the `.jar`s, the red notes about missing classes should change and finally disappear.
+  * Click at the JavaDoc tab and add the `doc` dirs from all three folders. You will have on-line documentation available - very convenient.
+  * Click `OK`. Now you have a new Library in NetBeans.
+* Now select or create the JDBC connection. That's very easy and you will manage it yourself. Be sure to provide existing MySQL user with valid password and existing schema.
+* Then at **Table Selection Strategy**, select **None**. You could set "Create" to let Hibernate create missing table, which would make your life easier for now, but first, that's no fun, and second, you would not learn much.
+* Click **Finish**. You have a new XML file in your project - have a look at `Source Packages / META-INF / persistence.xml`. That is __the__ persistence unit.
+Now let's test whether you have done your job well.
+
+
+
+
+Testing Hibernate Setup
+=======================
+
+* Go to your directory with Hibernate EntityManager and open the `doc\reference\en\pdf\hibernate_entitymanager.pdf`.
+* Have a look at chapter 1 - definitions. Read it, it will help you much with basic understanding.
+* See also //Chapter 2.2.1. - Packaging//. There is exlained the `persistence.xml` file elements.
+* Remember we are creating a desktop application, not the web application, so skip the bootstraping, you shouldn't need it yet.
+* See the //2.4. - Obtaining an EntityManager in a Java SE environment// and the code snippet there.
+* In NetBeans, create a new "main class" - `right-click project -> New... -> Other -> Java -> Java Main class...`
+* Into it's main, copy the code snippet from the PDF (of course, cut-off the ellipsis "...").
+* Run the file in NetBeans (`Shift+F6`). Did you see some exceptins? You shouldn't... Sorry, use Google and your deduction to fix it.
+
+So now you saw your application using Hibernate, although it did nothing yet - at least nothing useful.
+Actually, it connected to the MySQL server and checked few things - let's see at the MySQL's general query log file (if enabled):
+
+/--code log
+14 Connect     domov@localhost on domov
+14 Query       SHOW VARIABLES WHERE Variable_name ='language' OR ... OR Variable_name = 'init_connect'
+14 Query       SHOW COLLATION
+14 Query       SET character_set_results = NULL
+14 Query       SET autocommit=1
+14 Query       SET sql_mode='STRICT_TRANS_TABLES'
+\--
+
+This is what Hibernate does upon connetion to MySQL in default configuration.
+
+Let's make Hibernate do something.
+
+
+First query and first transaction
+=================================
+
+Because we haven't mapped any entities yet, we can't load or save anything with Hibernate.
+ Although, we can do a native query: That is a query in plain SQL, not in HQL (Hibernate Query Language) or EQL (EJB Query Language).
+
+We will modify the Main class we've run a while above.
+NetBeans helps very much Here, I strongly recommend you not to copy the code from here, but rather edit the code - 
+with NetBeans it takes about a minute.
+
+First we will try to do something with the EntityManager, what is the main object of interest for you.
+* Put the cursor after the `em` creation line and type `em.`. NetBeans will tell you all you can do with it.
+* Traverse trough the methods and read the brief info in the online documentation window that appears (see how useful it is, indeed?)
+* See the `createNativeQuery()`. Docs says:
+> `public Query createNativeQuery(String arg0)`
+> Create an instance of Query for executing a native SQL statement, e.g., for update or delete.
+* That is what we need. Press Enter. Then type `"SET @a = 1` and press enter. Then dot, select `executeUpdate()` and press Enter. Nice, isn't it? :-)
+
+/--code java .[brush:]
+
+    // Use persistence.xml configuration
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("ISIR_PU");
+    EntityManager em = emf.createEntityManager(); // Retrieve an application managed entity manager
+    
+    em.createNativeQuery( "SET @a = 1;" ).executeUpdate();
+
+    em.close();    
+    emf.close(); //close at application end
+
+\--
+
+Now run the file (`Shift+F6`).
+
+Hibernate will complain that it needs to enclose the query in a transaction:
+
+/--
+Exception in thread "main" javax.persistence.TransactionRequiredException: Executing an update/delete query
+        at org.hibernate.ejb.QueryImpl.executeUpdate(QueryImpl.java:46)
+\--
+
+So let's look for something, that will provide the transaction.
+Again, type `em.` and press `Ctrl+Space`. Look through the methods for something about transaction.
+Type `get` and press the up arrow - it will select the `getTransaction()` method. Press ";".
+Now, NetBeans will help you gathering the session into a variable.
+Move back to the `getTransaction()` method name and wait a second.
+A bulb will appear, indicating that NetBeans has a suggestion for that piece of code.
+Press `Alt+Enter`, which shows NetBeans' tips for that line.
+It will suggest `Assign Return Value to New Variable`. Press Enter.
+Then begin the transaction: `transaction.begin();`
+Move under the `createNativeQuery()` call and `commit()` the transaction.
+The final code will look like this:
+
+/--code java .[brush:]
+
+    // Use persistence.xml configuration
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("ISIR_PU");
+    EntityManager em = emf.createEntityManager(); // Retrieve an application managed entity manager
+    
+    
+    EntityTransaction transaction = em.getTransaction();
+    transaction.begin();
+    
+    em.createNativeQuery( "SET @a = 1;" ).executeUpdate();
+
+    transaction.commit();
+    
+    em.close();    
+    emf.close(); //close at application end
+
+\--
+
+Now run the file (`Shift+F6`). No complains? Congratulations! The you have done first steps!
+Later, I'll write something about object-relational mapping.

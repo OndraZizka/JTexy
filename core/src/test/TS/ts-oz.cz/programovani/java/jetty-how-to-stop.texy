@@ -1,0 +1,19 @@
+
+
+How to stop Jetty
+*****************
+
+Starting:
+---------
+
+/--code
+java -jar start.jar -DSTOP.PORT=8085 -DSTOP.KEY=mypasswd
+\--
+
+
+Stopping:
+---------
+
+/--code
+java -jar start.jar -DSTOP.PORT=8085 -DSTOP.KEY=mypasswd --stop
+\--

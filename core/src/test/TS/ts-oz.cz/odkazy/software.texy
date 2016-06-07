@@ -1,0 +1,23 @@
+Zajímavý software
+*****************
+
+Po nějaké době se každý ustálí na nějakých oblíbených programech.
+Já používám a doporučuji tyto:
+
+|* Účel            |*   programy na Windows XP |* programy na Ubuntu 8
+|* Komunikace |||
+|On-line komunikace - ICQ, Jabber, IRC  | "Miranda - základní balíček":www.miranda-im.org" | Miranda přes Wine - super; Pidgin - trochu padá, jinak ujde; Kopete je napytel.
+|RSS čtečka | Miranda - RSS plugin ||
+|Budíčky | "Miranda - plugin Alarms":http://www.scottellis.com.au/miranda_plugins/ ||
+|Spam filtr | "POPfile":http://getpopfile.org/docs/index.php ||
+|Prohlížeč | "Firefox":www.firefox.com ||
+|* Programování |||
+|XML & XSLT editor | Visual Studio (legální :-) |  NetBeans IDE
+|Java & JSP editor | "NetBeans IDE":www.netbeans.org ||
+|PHP & HTML & CSS editor | HomeSite - stará šunka, ale pořád nejlepší | Na linuxu nic moc, takže taky HomeSite přes Wine
+|SQL editor pro MySQL | "MySQL Query Browser":http://dev.mysql.com/downloads/gui-tools/5.0.html | Linuxová verze Query Browseru je napytel, takže opět Win verze přes Wine
+|* Ostatní |||
+|Správa souborů | "Total Commander":http://www.ghisler.com/ |  Krusader - za poslední dva roky se hodně moc zlepšil
+|FTP klient     |                ^|  - nic -
+|Síťová jednotka z FTP účtu       | "FTPDrive":http://www.killprog.com/fdrve.html (stránka působí nedůvěryhodně, ale program funguje skvěle) |  nějaký FTP filesystem, nevzpomenu si na jméno
+|Zjišťování, kam mizí místo na disku | "JGoodies JDiskReport":http://www.jgoodies.com/freeware/jdiskreport/ ||

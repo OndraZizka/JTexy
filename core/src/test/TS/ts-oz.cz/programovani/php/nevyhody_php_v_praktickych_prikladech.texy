@@ -1,0 +1,440 @@
+Nevýhody PHP v praktických ukázkách __aneb__<br/>  Yet Another "Why PHP Sucks" Page
+***********************************************************************************
+
+Když jsem sestavil docela dlouhý, ale přesto neúplný "seznam nevýhod PHP":vyhody_a_nevyhody_php.texy,
+ozvalo se celkem dost lidí s nechápavými dotazy, proč, co a jaktože.
+
+"Proč pomlouváš PHP!?"
+=====================
+
+Nevím, jestli má smysl brát PHPčkářům jejich modlu.
+Někdo by se skoro mohl divit, proč se vlastně do PHPka tak pouštím.
+Inu, není to proto, že bych ho z duše nenáviděl, či tak něco...
+Prostě a jednoduše jsem čuchnul k lepšímu a od té doby 
+--mě PHP čim dál více-- vidím na PHP čím dál více chyb.
+A proč tedy píšu tyhle "remcy", "hemzy" a "ranty"?
+Nejspíš abych si ujasnil, zda je na tom PHP opravdu tak špatně.
+
+
+--------------------------
+
+Učit se novou technologii dá docela práci a chce to svůj čas.
+Jedním z mých oblíbených citátů z oblasti IT je:
+
+> Entrance to the world of Java is a cultural conversion,
+> not a choice of one simple programming language over another.
+
+Vlastně se mi ten citát líbí tak moc, že jej musím uvést v širším kontextu
+(byť není pro mou oblíbenou Javu nikterak příznivý):
+
+
+
+<blockquote>
+
+Java Server Pages (link to Jakarta project) is reminiscent in nature of the Microsoft ASP framework,
+but intended from the ground up for enthusiasts of Java, 
+Enterprise Beans and the whole industry that has grown up around them. 
+A detractor of the juggernaut might describe it as being for people 
+with more money than sense but we try to remain agnostic.
+
+Choosing to use the panoply of tools and techniques engrossed by this world 
+is not a tactical or pragmatic choice of how to get something built 
+but is likely to based more on a strategic perception 
+of how you believe the industry will develop. 
+If all you want is an active website with a database backend, 
+this is going to be overkill unless you already have the range of skills in-house. 
+Entrance to this world is a cultural conversion, not a choice of one simple programming language over another. 
+
+<em>-- "Active Web Sites and Comparison of Scripting Languages":http://training.gbdirect.co.uk/courses/php/comparison_php_versus_perl_vs_asp_jsp_vs_vbscript_web_scripting.html (autor neznámý)</em> .>
+
+</blockquote>
+
+
+
+
+Já mám teď poslední prázdniny, a tak jsem se rozhodl využít poslední příležitost
+k této kulturní konverzi a dělám první vlastní komerční projekt v Javě a Java EE -
+a musím říci, že zatím ke vší spokojenosti a rozhodně nelituji. V PHP bych to už vzdal.
+
+No a tím se dostáváme k praktickým symptomům nevýhod PHP, uvedených v onom článku.
+Mám velikou chuť rozebrat je opravdu všechny a dokázat, že k většině tvrzení mám pádný důvod
+a že se skutečně jedná o nevýhody; za to ale od nikoho na chleba nedostanu,
+leda by mě zaměstnal marketing Sunu, popřípadě RedHatu, IBM, BEA a dalších velkých hráčů na poli Javy :-)
+
+
+
+
+
+
+Praktické projevy nevýhod v PHP
+===============================
+
+Pokud chcete rovnou na konec, tedy k hotovému zmrvenému produktu, čtěte
+"Výsledek nasazení PHP v praxi aneb navrch huj, uvnitř fuj":vysledek_nasazeni_php_aneb_navrch_huj_uvnitr_fuj.texy.
+
+Ale vezměme to podle seznamu...
+
+
+> PHP: The work-around language
+
+
+* PHP nemá danou politiku vývoje, místo toho nadále jen kopíruje prvky jiných jazyků.
+-------------------------------------------------------------------------------------
+
+
+Tohle byl asi hlavní důvod mého postupného rozčarování z PHP.
+
+Když jsem se jako mladý učil PHP z čerstvě vydané knihy Jiřího Koska,
+PHP mě samozřejmě ohromilo: Psát dynamické webové stránky bylo najednou tak jednoduché.
+Prostě jste zkopírovali kód z ukázky, poupravili, a jelo to!
+
+<blockquote>
+
+<h4>Rasmus Lerdorf o historii PHP</h4>
+
+PHP se vyvinulo tak, že Rasmus Lerdorf ke své sadě nástrojů //Personal Home Page Tools// 
+přidával stále další funkce, které uživatelé vyžadovali. Vypráví o tom takto:
+
+"Nevím jak to zastavit, nikdy jsem nezamýšlel vytvořit programovací jazyk [...]
+Nemám ani ponětí o tom, jak se píší programovací jazyky.
+Prostě jsem vždy jen přidával další logický krok v pořadí."
+
+<em>Celý rozhovor s Rasmusem Lerdorfem najdete na server ITConversations: http://itc.conversationsnetwork.org/shows/detail58.html.</em>
+
+A přesně ve stejném duchu vývoj PHP pokračuje dodnes - That's the PHP way.
+
+</blockquote>
+
+
+
+Jak se postupem času vyvíjíte, začnou vám některé věci dost vadit.
+Při psaní prvního "svého frameworku" objevíte nepříjemné chyby v návrhu OOP
+a při použítí referencí se objevují záhadné chyby.
+Zejména pokud paralelně programujete v nějakém vyspělém jazyce s dobrým návrhem (Java, C#, JavaScript),
+časem se vám ztratí úsměv z tváře, čím dál častěji kroutíte hlavou
+a nakonec vzteky bušíte do stolu a kontrolujete blogy vývojářů PHP,
+jestli už se náhodou nechystají tu kterou pitomost z jazyka odstranit - 
+a "zase vás zklamou":[http://www.php.net/~derick/meeting-notes.html]:
+
+<ul><li>
+* Pojmenování funkcí zůstane stejně nekonzistentní
+* "Logika pořadí parametrů zůstane stejně nekonzistentní":http://www.php.net/~derick/meeting-notes.html#make-parameter-order-consistent-over-all-functions
+* Array nikdy nebude objekt (ale kdo ví?)
+* Reference z jazyka nezmizí
+* Objektový model bude pořád někde napůl cesty mezi PHP 4 a Javou
+* "Funkce nadále nebudou vyhazovat výjimky, ale vracet `FALSE`":http://www.php.net/~derick/meeting-notes.html#name-spaces (vypadá to na zásadní nepochopení ze strany autorů, k čemu jsou výjimky)
+* `integer` se bude chovat stále stejně pitomě
+* "Jmenné prostory budou nejspíš jednoúrovňové, //pokud vůbec budou//":http://www.php.net/~derick/meeting-notes.html#name-spaces
+* atd. atd.
+</li></ul>
+
+Naštěstí si ještě zachovali dost rozumu na to, aby neimplementovali
+"úplné hovadiny":http://www.php.net/~derick/meeting-notes.html#ifsetor-as-replacement-for-foo-isset-foo-foo-something-else,
+pravděpodobně proto, že se chystají i nadále jít cestou Javy a zavést deklarace.
+
+
+<blockquote>
+
+If something isn't done soon, then more and more coders using PHP 
+will move on to Ruby and Python and PHP will become the new Perl.
+I can hear it now, "What ever happen to PHP?" or 
+"Pfft, no one programs in PHP anymore!" or 
+"Man, I had to maintain legacy PHP application!"
+
+-- Jacob Santos, "PHP is turning into the Classic ASP":http://www.santosj.name/programming/php-related/php-is-turning-into-the-classic-asp/ .>
+
+</blockquote>
+
+
+
+
+* Některé rysy jazyka svádějí ke špatným stylům programování
+------------------------------------------------------------------------------------------------------
+
+> "That's the PHP way."
+
+
+A co některé, rovnou si je vyjmenujme:
+
+
+<h4>Array() - rezignace na OOP.</h4>
+
+
+
+Spoustu PHP skriptařů si nemůže vynachválit, jak moc je `Array()` univerzální -
+můžete jej použít jako pole, jako hash, jako frontu, jako zásobník,
+můžete s ním vybudovat vícerozměrné pole, ale i strom nebo obecný graf.
+
+//Jenže k čemu to je?// Kdo potřebuje datový typ, který je zároveň fronta a zároveň strom?
+Kdo potřebuje indexovat v jedné struktuře jak podle pole, tak podle čísel?
+Jenom programátorská prasata. (But that's the PHP way).
+
+Slušný programátor, který má ohled na ty, co budou kód po něm číst (včetně jeho samotného),
+po provedení analýzy a vytvoření návrhu pro každou třídu "entit reálného světa" vyskytující se v návrhu
+vytvoří v programovém modelu odpovídající třídu a zachytí jejich vzájemné vztahy.
+
+Ne tak programátoři v PHP. Zde je slušností co nejvíce poctít svátost boha `Array`e
+a pokud je to byť jen trochu možné, pak jej použít, nejlépe hned v několika významech.
+Co na tom, že chceme reprezentovat strom obsahující objekty, které mají identifikátor a kolekci čísel?
+Jednoduše uděláme schizofrenní "Array()", který má pod indexem `["id"]` identifikátor,
+pod indexem `["numbers"]` další `Array` s čísly a pod číselnými indexy ukryjeme potomky uzlu. 
+Nebo obráceně? To je jedno...  //That's the PHP way!//
+
+
+
+<h4>`FALSE` - taktní, diskrétní a nevtíravé (ne)oznámení chyby.</h4>
+
+
+Pokud existuje sebemenší šance, že dojde k chybě, slušný programátor vyhodí výjimku, 
+kterou při pozdějším volání metody prostě nelze opomenout a musíte ji ošetřit -
+jinak se vám kód nepřeloží.
+
+PHP skriptař však po vzoru nativních PHP funkcí vrací
+* buď  "`NULL`":http://cz2.php.net/set_error_handler,
+* nebo "jednu z hodnot `1, 2, 3, 4` nebo opačnou hodnotu některého parametru":http://cz2.php.net/manual/en/function.stats-cdf-beta.php,
+* nebo "`FALSE`":http://cz2.php.net/manual/en/function.trigger-error.php,
+* nebo "`TRUE`":http://cz2.php.net/manual/en/function.feof.php.
+Z těchto možností vybere náhodně. //That's the PHP way!//
+
+Snad nikdo nepoužívá `trigger_error(...)` - jednak je to víc písmenek než `return FALSE;`
+a jednak by se pak někde musel mořit se `set_error_handler()`, a to je kopice psaní... radši vrátíme ten `fóls`.
+O tom, že později se na kontrolu chybové návratové hodnoty vykašle, nemusíte ani chvilku pochybovat;
+a pokud přeci jen, tak nejspíše vyplodí nějaký bug kvůli typové konverzi.
+
+
+<h4>Reference</h4>
+
+
+Ti opravdoví PHP experti (řekněme "PHP-developer senior":http://cz2.php.net/fsockopen)
+však využijí pokročilou funkci jazyka, a to jsou reference!
+Jednoduše narvou návratové hodnoty do parametrů, a programátore, hledej:
+
+> If the value returned in errno is 0 and the function returned FALSE, 
+> it is an indication that the error occurred before the connect() call.
+> This is most likely due to a problem initializing the socket. 
+
+Kde já jsem tohle viděl? Á, už vím! Einstein kdysi vymyslel takovou "logickou hru":/stranky/osobni/einsteinova_logicka_hra.texy:
+
+> Je pět pět parametrů, každý nese hodnotu nějakého typu.
+> Když návratová hodnota boolean a v prostřední hodnotě je nula, 
+> potom včelař nebydlí v modrém domě. Nastal chybový stav?
+
+Skutečně by nebylo lepší toto?
+
+/--code
+try{
+  fsockopen(...);
+}
+catch( IOException ex ){
+  ...
+}
+\--
+
+
+
+<h4>Array() - univerzální návratová hodnota.</h4>
+
+
+Programátor v objektově orientovaném jazyce, pokud potřebuje z funkce více informací,
+než stačí pokrýt skalární hodnota jednoho typu, 
+vytvoří si pro přenos informace třídu a vrací si objekt daného typu.
+Konec konců, když už se mu takový objekt odněkud vrací, 
+pravděpodobně se jedná o třídu entit z reálného světa
+a tedy ji využije i jinde v modelu aplikace.
+
+Lepič PHP kódu však má k dispozici mnoho úžasných vlastností jazyka PHP,
+jako třeba dynamickou typovost, a tak třeba jednou vrací string a jindy integer.
+
+A pokud by nestačily ani všechny typy, co jich PHP má,
+tedy skalární hodnoty různých typů v kombinaci s `FALSE` a `null`,
+použije se prostě `Array` jako hash
+a do něj se pod nějaké indexy
+("někdy stringy":http://cz2.php.net/manual/en/function.posix-getgrgid.php,
+"někdy divoké stringy":http://cz2.php.net/manual/en/function.gd-info.php,
+"někdy čísla":http://cz2.php.net/manual/en/function.getimagesize.php - to je fuk) narveme, co chceme.
+
+That's the PHP way.
+
+
+
+
+* Oficiálně není zaručena zpětná kompatibilita
+----------------------------------------------
+
+V jednom nejmenovaném velkém českém portálu jedou doteď na PHP 4.
+"Ježiši!", říkáte si. A máte pravdu! Jsou tam snad masochisti? Proč??
+
+Odpověď je snadná:
+
+Protože kdysi jakýsi manažer učinil rozhodnutí, že pojedou na PHP. Rok po 
+tomhle rozhodnutí ho vyhodili a dodnes jeho volby litují, když při pohovoru 
+musí uchazeče zkoušet z PHP 4 a jeho chyb v návrhu (vlastností, chcete-li)
+a místo přepisu do PHP 5, který zoušeli, ale stálo by je to několik měsíců
+přepisování (s výhledem dalšího přepisu do PHP 6, 7, 8... se již raději 
+poohlížejí po technologii, kde zpětná kompatibilita není jen prázdná fráze.
+
+Takových příkladů by se jistě dalo najít víc, ale asi to nemá smysl vypočítávat, 
+protože zase můžete kontrovat Wikipedií a dalšími úspěšnými weby, které zůstávají u PHP
+(aspoň u prezenční vrstvy).
+
+Obvyklá odpověď PHPčkářů je, že pokud by člověk nepsal jako prase,
+tak kód bez problémů běží i na nové verzi.
+To je samozřejmě naprostý nesmysl, který může pronést jen někdo,
+kdo se v používání PHP nedostal dál než k lepení ukázek zkopírovaných z manuálu PHP.
+Už jen změny v objektovém modelu a práci s referencemi činí ze starého kódu odpad,
+který je natolik nekompatibilní, že spíš než refaktorizace se vyplatí redesign a nová implementace.
+
+
+
+* Programátor nemá zaručené cílové prostředí, mnoho věcí přímo ovlivňujících chování PHP lze změnit pouze mimo soubory projektu (v konfiguračním souboru php.ini)
+------------------------------------------------------------------------------------------------------------------------
+
+
+Zde je to celkem jasné, každý lepší skriptař PHP už se potýkal s otázkou zapnuté / vypnuté direktivy `magic_quotes_gpc`.
+Vstup se zpracovává ještě před spuštěním skriptu, tudíž direktivu lze ovlivnit pouze mimo kód PHP, a ne vždy tu možnost máte.
+
+U lepších technologií je dán standardní způsob distribuce projektu,
+který definuje prostředí, do kterého aplikaci vkládáte, a jeho součástí
+je i možnost nastavit prakticky cokoliv v rámci zdrojových souborů projektu.
+
+
+
+* Projekty se musí šířit výhradně formou zdrojových kódů
+------------------------------------------------------------------------------------------------------------------------
+
+Ano, existuje sice jakási extenze "BPEL", a přiznávám, že jsem ji nezkoušel.
+Ale po mých zkušenostech s takovýmito hračkami bych jako vždy došel zklamání,
+protože by to jednak nepodporovaly hostingy, a jednak bych to nerozjel na své vývojové platformě.
+
+
+
+* Nativně nepodporuje UNICODE (připravuje se pro verzi 6 – už skoro tři roky)
+------------------------------------------------------------------------------------------------------------------------
+
+Tohle je opravdu obrovská ostuda PHP a jeden z bodů, který dokazuje, že PHP je několik let vývoje za ostatními technologiemi.
+
+
+
+* Nepodporuje jmenné prostory
+------------------------------------------------------------------------------------------------------------------------
+
+Další obrovská ostuda a důkaz zaostalosti PHP; fakt nechápu, že to nezabudovali již do verze PHP 3.
+
+
+
+* Nekonzistentní pojmenování nativních funkcí a nejednotnost v logice pořadí parametrů
+------------------------------------------------------------------------------------------------------------------------
+
+Velice často zmiňovaná vada, vadí i těm nejzamilovanějším PHPčkárům (a snad i Jakubovi Vránovi :-)
+
+
+
+
+* Nedostatečná sebereflexe – datové typy „Třída“/„Funce“
+------------------------------------------------------------------------------------------------------------------------
+
+Zkrátka chybí objekty pro reprezentaci tříd, pokud vím. Nemůžu tedy udělat 
+např.:
+
+/--code
+public createObjectOfClass( Class cls, HashMap params ){
+  cls.construct( params );
+}
+\--
+
+Odkazování se na třídu pomocí stringů je jen work-around ("That's the PHP way") a při práci v IDE je dost napřekážku.
+
+
+* Nemožnost odkazovat se na metody objektů jinak než konstrukcí s Array()
+------------------------------------------------------------------------------------------------------------------------
+
+Pokud chci předat nějaký objekt a jeho metodu (ve smyslu delegáta z C#),
+v PHP se to dělá takto:
+
+/--code
+   ...MyFunc( Array( $myObject, "thatObjectMethod" ) );
+\--
+
+Tahat do mechanismu volání metod `Array` je opravdu škaredý work-around ("That's the PHP way"&trade;)
+a ukazuje na nedospělost OOP syntaxe PHP.
+
+
+
+* Podivné fungování referencí – asi nejzrádnější askept PHP
+* Je značně zatížené svým vlastním historickým vývojem
+------------------------------------------------------------------------------------------------------------------------
+
+
+Je pravda, že oproti katastrofálnímu stavu z PHP 4 je v PHP 5 situace mnohem lepší;
+stále však zůstávají nečekané a o to zákeřnější seky.
+Asi před půl rokem jsem jeden řešil s kamarádem na IM, když to najdu, přidám.
+
+Týkalo se to předávání pole. Jak jistě víte, pole není objekt, proto pokud jej chcete
+ve funkci měnit nebo chcete zamezit (mělkému) kopírování, je třeba jej předat referencí.
+Stejně tak jej musíte referencí propagovat do dalších kroků zpracování.
+Jenže reference stále fungují stejně jako v PHP 4, tedy tak, 
+že v tabulce proměnných vzniká nový alias pro stejnou proměnnou.
+Tento alias zůstává v tabulce i po opuštění funkce, a po jejím opětovném volání
+a přiřazení reference proměnné se pole zpracovávané v předchozím volání
+přepíše tím, které zpracováváte nyní.
+
+To je tak nechutná chyba, že tohle byl jeden z posledních hřebíčků do rakve PHP.
+Není to jediná chyba, a pokud jste někdy v PHP zkoušeli vyvinout něco složitějšího,
+jistě jste narazili na podobnou.
+
+Vzhledem k tomu, že ani v PHP 6 nebude `Array` normální objekt a opět budou přítomny reference,
+vede mě to k závěru, že stejné chyby budou i v této verzi ("Because that's the PHP way.")
+
+
+
+
+* Verze 5 již podporuje OOP lépe, ale nativní knihovna funkcí nadále používá procedurální paradigma.
+------------------------------------------------------------------------------------------------------------------------
+
+Výsledkem je mimojiné toto:
+
+/--code php .[brush:]
+strtoupper(str_replace("!!",".",str_replace("ahoj","nazdar",strtolower(trim(" Ahoj lidi!! "))));
+\--
+
+oproti:
+
+/--code php .[brush:]
+" Ahoj lidi!! ".trim().toLowerCase().replaceAll("ahoj","nazdar").replaceAll("!!",".").toUpperCase();
+\--
+
+Je to asi jako v přirozeném jazyce říkat:
+> Chci zvětšit písmena v tom, co vznikne, když nahradím dva vykřičníky za 
+> tečku v tom, co vznikne, když nahradím "ahoj" za "nazdar" v tom, co vznikne, 
+> když převedu na malá písmena to, co vznikne, když odeberu netisknutelné 
+> znaky z okrajů "  Ahoj lidi!!  " '
+
+  místo
+
+> Vezmu "  Ahoj lidi!!  ", z okrajů odeberu netisknutelné znaky, převedu to 
+> na malá písmena, "ahoj" nahradím "nazdar", dva vykřičníky nahradím tečkou a 
+> převedu to na malá písmena, a to je výsledek.
+
+
+U abstraktních datových typů Javy (zahrnující seznam, množinu, mapu, atd...) 
+spatřuji hlavní výhodu v minimalizaci rozhraní daného abstraktního typu
+a v tom, že jsou definované jako rozhraní, nikoliv jako jediná implementace, 
+protože to značně ulehčuje práci programátorovi různých knihoven.
+
+Nedávno jsem si například během asi půl hodiny naprogramoval Mapu, která má jako 
+backend tabulku v transakční databázi, a můžu jí používat všude, kde někdo 
+očekává jako parametr Mapu.
+
+To by v PHP s `Array` udělat nešlo - jedině na úrovni C implementace PHP. 
+Šlo by to také naprogramovat jako třídu - ale potom to zas nebude 
+kompatibilní s `Array` a nepůjde na to použít např. `ksort()`.
+
+
+Závěr
+================
+
+Má vůbec cenu, abych pokračoval?
+
+Možná stačí už jen "předat slovo":http://www.google.cz/search?hl=cs&client=firefox-a&rls=org.mozilla%3Acs%3Aofficial&q=%22why+php+sucks%22&btnG=Hledat&lr=...
+
+

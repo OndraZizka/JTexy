@@ -1,0 +1,106 @@
+FreeMarker templates via Spring in non-web application
+######################################################
+
+
+Spring bean configuration
+*************************
+
+/--code xml .[brush:]
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN 2.0//EN' 'http://www.springframework.org/dtd/spring-beans-2.0.dtd'>
+<beans>
+  
+  <!-- freemarker config -->
+  <bean id="freemarkerConfiguration" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+    <property name="templateLoaderPath" value="classpath:/templates/"/>
+    <property name="defaultEncoding" value="utf-8"/>
+    <property name="freemarkerSettings">
+      <value>
+      locale=cs_CZ
+      </value>
+    </property>
+  </bean>
+  
+</beans>
+\--
+
+
+Note that the templates are inside the `.jar`, thus on the classpath, so we used the `classpath:` pseudo-protocol.
+I have my templates placed in the `templates` "package", that is, in `src/templates`, so my value is `classpath:/templates/`.
+
+Also note the way to specify `java.util.Properties` for `freemarkerSettings` property.
+Spring can take text representation and tries to convert it to a `Properties` object,
+as described in the "official Spring 2.5 manual, section 3.3.2.1. Straight values":http://static.springframework.org/spring/docs/2.5.x/reference/beans.html#beans-value-element.
+
+To see the list of supported FreeMarker settings, please read the following parts of the FreeMarker Java API doc:
+* "freemarker.core.Configurable.setSetting(String, String)":[http://freemarker.sourceforge.net/docs/api/freemarker/core/Configurable.html#setSetting(java.lang.String,%20java.lang.String)]: Settings that live in all layers.
+* "freemarker.template.Configuration.setSetting(String, String)":[http://freemarker.sourceforge.net/docs/api/freemarker/template/Configuration.html#setSetting(java.lang.String,%20java.lang.String)]: Coniguration layer settings.
+
+I have tried `output_encoding=utf-8`, but it did not work well, so I used `defaultEncoding`.
+
+
+
+
+
+Template file
+*************
+
+This is the example from the NetBeans FreeMarker support project.
+It works with three variables, `package`, `class` and `user`; all supposed to be `String`s.
+
+
+/--code freemarker
+<#if package?? && package != "">
+package ${package};
+</#if>
+/**
+ * ${class}
+ *
+ * @author ${user}
+ */
+\--
+
+
+
+Using the template
+******************
+
+Assuming that `beanFactory` is Spring Bean Factory object:
+
+/--code java .[brush:]
+Configuration cfg = (Configuration)beanFactory.getBean( "freemarkerConfiguration" );
+try {
+  Template temp = cfg.getTemplate( "test.template" );
+  Map root = new HashMap();
+  root.put( "user", "Andrea Peniaková" );
+  root.put( "class", "TopClass" );
+  StringWriter str = new StringWriter();
+  temp.process(root, str);
+  String resultString = str.toString();
+}
+catch( IOException ex ) {
+  log.log( Level.SEVERE, null, ex );
+}
+catch( TemplateException ex ) {
+  log.log( Level.SEVERE, null, ex );
+}
+\--
+
+
+The Result
+**********
+
+As you expect, the result looks like this:
+
+/--code freemarker
+/**
+ * TopClass
+ *
+ * @author Andrea Peniaková
+ */
+\--
+
+
+
+
+

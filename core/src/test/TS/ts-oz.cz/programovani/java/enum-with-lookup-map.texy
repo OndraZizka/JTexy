@@ -1,0 +1,38 @@
+
+
+
+Enum with look-up map
+**********************
+
+
+
+/--code java .[brush]
+  private enum Handlers {
+
+    // Handlers
+    PATTERN_PHRASE( "patternPhrase", patternPhrase ),
+    PATTERN_SUB_SUP( "patternSubSup", patternSubSup ),
+    PATTERN_NO_TEXY( "patternNoTexy", patternNoTexy );
+
+    // Map names -> handlers.
+    // Will this throw a NPE?
+    // http://www.coderanch.com/t/449575/Programmer-Certification-SCJP/certification/enum-initialization-circularity
+    static class Names {
+      final static Map<String, PatternHandler> map = new HashMap();
+    }
+    
+    // Members
+    public final String name;
+    public final PatternHandler handler;
+
+    Handlers( String name, PatternHandler handler ) {
+      this.name = name;
+      this.handler = handler;
+      Names.map.put( name, handler );
+    }
+
+    public static PatternHandler forName( String name ) {
+      return Names.map.get( name );
+    }
+  }
+\--

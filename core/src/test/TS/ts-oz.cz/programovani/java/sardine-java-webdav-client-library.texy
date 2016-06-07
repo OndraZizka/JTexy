@@ -1,0 +1,17 @@
+
+
+
+Sardine - WebDAV client library for Java
+****************************************
+
+Today I found "Sardine":http://code.google.com/p/sardine - a nice library 
+which aims to be an easy-to-use Java tool to send WebDAV requests and process the replies.
+I especially like the ellegant use of JAXB.
+
+It's still under developement, so don't expect it to be production-ready
+(e.g. "I found a deadlock":http://code.google.com/p/sardine/issues/detail?id=26 in a simple use case).
+But "it's alive":http://code.google.com/p/sardine/source/list and hopefully some community will gather around it.
+
+It's "not mavenized":http://code.google.com/p/sardine/issues/detail?id=1,
+but I am going to create a maven artifacts time by time and publish them in the project's SVN.
+

@@ -1,0 +1,29 @@
+
+JAXB - a List with inherited classes
+************************************
+
+
+/--code xml .[brush:]
+  <cells>
+    <cell ownerType="NOBODY" owner="0" height="1" />
+    <cell ownerType="NOBODY" owner="0" height="1" />
+    <cell ownerType="NOBODY" owner="0" height="1" /> 
+    <buildingCell buildingType="6"  ownerType="NOBODY" owner="1" height="1" />
+    <roadCell dirs="WE"  ownerType="TOWN" owner="1" height="1" />
+    <buildingCell buildingType="24"  ownerType="NOBODY" owner="1" height="1" /> 
+  </cells>
+\--code
+
+
+/--code java .[brush:]
+  @XmlElements({
+    @XmlElement(name="cell", type=CellBean.class),
+    @XmlElement(name="buildingCell", type=BuildingCellBean.class),
+    @XmlElement(name="roadCell", type=RoadCellBean.class)
+  })
+  public List<CellBean> cells;
+\--code
+
+
+/--code xml .[brush:]
+\--code

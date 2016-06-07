@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="Nette Framework Apigen" />
+	<title>Class TexyObject</title>
+
+	<script type="text/javascript" src="media/jquery.min.js"></script>
+	<script type="text/javascript" src="media/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="media/jquery.sortElements.js"></script>
+	<script type="text/javascript" src="allclasses.js"></script>
+	<script type="text/javascript" src="media/main.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="media/style.css?v=2010100721" />
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+</head>
+
+<body>
+<div id="left">
+	<a href="allclasses.html">All Classes</a>
+
+	<h3>Namespaces</h3>
+	<ul>
+		<li><a href="namespace-internal.html">internal</a></li>
+		<li>Texy</li>
+	</ul>
+
+	<h3>Classes</h3>
+
+	<ul>
+		<li><a href="Texy.html">Texy</a></li>
+		<li><a href="TexyBlockParser.html">TexyBlockParser</a></li>
+		<li><a href="TexyConfigurator.html">TexyConfigurator</a></li>
+		<li><a href="TexyHandlerInvocation.html">TexyHandlerInvocation</a></li>
+		<li><a href="TexyHtml.html">TexyHtml</a></li>
+		<li><a href="TexyLineParser.html">TexyLineParser</a></li>
+		<li><a href="TexyModifier.html">TexyModifier</a></li>
+		<li><a href="TexyModule.html">TexyModule</a></li>
+		<li>TexyObject</li>
+		<li><a href="TexyParser.html">TexyParser</a></li>
+		<li><a href="TexyUtf.html">TexyUtf</a></li>
+	</ul>
+
+	<h3>Interfaces</h3>
+
+	<ul>
+	</ul>
+</div>
+
+<div id="right">
+	<form action="http://www.google.com/cse" id="search" onsubmit="if(this.q.value.indexOf('more:')==-1)this.q.value+=' more:api'">
+		<input type="hidden" name="cx" value="011549293477758430224:vxofa9ufnhc" /><input type="hidden" name="ie" value="UTF-8" /><input type="text" name="q" class="text" /><input type="submit" value="Search" />
+	</form>
+
+<div id="navigation">
+	<ul>
+		<li><a href="overview.html" title="Summary of all namespaces">Overview</a></li>		<li class="active">Class</li>
+		<li><a href="elements.html">Elements</a></li>
+	</ul>
+</div>
+
+<div id="content">
+	<div id="classSummary">
+		<h1>Class TexyObject</h1>
+		<div class="classDescription">
+
+		
+<p>TexyObject is the ultimate ancestor of all instantiable classes.</p>
+
+<p>TexyObject is copy of Nette\Object from Nette Framework (<a
+href="http://nettephp.com">http://nettephp.com</a>).</p>
+
+<p>It defines some handful methods and enhances object core of PHP:<br>
+- access to undeclared members throws exceptions<br>
+- support for conventional properties with getters and setters<br>
+- support for event raising functionality<br>
+- ability to add new methods to class (extension methods)</p>
+
+<p>Properties is a syntactic sugar which allows access public getter and setter
+methods as normal object variables. A property is defined by a getter method
+and optional setter method (no setter method means read-only property).</p>
+
+<pre><code><span class="php-var">$val</span> = <span
+class="php-var">$obj</span>-&gt;label;     <span
+class="php-comment">// equivalent to $val = $obj-&gt;getLabel();
+</span><span
+class="php-var">$obj</span>-&gt;label = <span
+class="php-quote">'Nette'</span>;  <span
+class="php-comment">// equivalent to $obj-&gt;setLabel('Nette');</span></code></pre>
+
+<p>Property names are case-sensitive, and they are written in the camelCaps or
+PascalCaps.</p>
+
+<p>Event functionality is provided by declaration of property named
+‚on{Something}‘ Multiple handlers are allowed.</p>
+
+<pre><code><span class="php-keyword1">public</span> <span
+class="php-var">$onClick</span>;                <span
+class="php-comment">// declaration in class
+</span><span
+class="php-var">$this</span>-&gt;onClick[] = <span
+class="php-quote">'callback'</span>;  <span
+class="php-comment">// attaching event handler
+</span><span
+class="php-keyword1">if</span> (!<span class="php-keyword1">empty</span>(<span
+class="php-var">$this</span>-&gt;onClick)) ... <span
+class="php-comment">// are there any handlers?
+</span><span
+class="php-var">$this</span>-&gt;onClick(<span
+class="php-var">$sender</span>, <span class="php-var">$arg</span>);  <span
+class="php-comment">// raises the event with arguments</span></code></pre>
+
+<p>Adding method to class (i.e. to all instances) works similar to JavaScript
+prototype property. The syntax for adding a new method is:</p>
+
+<pre><code>MyClass::extensionMethod(<span
+class="php-quote">'newMethod'</span>, <span
+class="php-keyword1">function</span>(MyClass <span
+class="php-var">$obj</span>, <span
+class="php-var">$arg</span>, ...) { ... });
+<span
+class="php-var">$obj</span> = <span
+class="php-keyword1">new</span> MyClass;
+<span
+class="php-var">$obj</span>-&gt;newMethod(<span
+class="php-var">$x</span>);</code></pre>
+
+		</div>
+		<div>
+
+			<h4>Direct Known Subclasses</h4>
+			<a href="Texy.html">Texy</a>, <a href="TexyHandlerInvocation.html">TexyHandlerInvocation</a>, <a href="TexyHtml.html">TexyHtml</a>, <a href="TexyModifier.html">TexyModifier</a>, <a href="TexyModule.html">TexyModule</a>, <a href="TexyParser.html">TexyParser</a>
+		</div>
+
+		<div class="classInfo">
+			<b>Abstract Class</b><br />
+				<b>Copyright:</b> Copyright (c) 2004, 2010 David Grudl<br />
+				<b>Package:</b> Texy<br />
+			<b>Located at</b> <a href="source-libs.TexyObject.php.html#L14">/libs/TexyObject.php</a><br />
+		</div>
+	</div>
+
+	<div id="methodSummary">
+
+		<table class="summary">
+		<caption>Method Summary</caption>
+		<tr data-order="1 getClass" id="getClass()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getClass()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyObject.php.html#L62" title="go to source code"><b>getClass</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Returns the name of the class of this object.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Returns the name of the class of this object.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getReflection" id="getReflection()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				ReflectionObject
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getReflection()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyObject.php.html#L74" title="go to source code"><b>getReflection</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Access to reflection.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Access to reflection.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 __call" id="__call()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				mixed
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__call()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyObject.php.html#L86" title="go to source code"><b>__call</b></a>(
+					string
+					<var>$name</var>, 
+					array
+					<var>$args</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Call to undefined method.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Call to undefined method.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string  method name<br />
+						<code>$args</code> array   arguments<br />
+					</div>
+
+
+					<h4>Throws</h4>
+					<div class="smallList">
+MemberAccessException<br />
+					</div>
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 __callStatic" id="__callStatic()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public static
+				mixed
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__callStatic()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyObject.php.html#L132" title="go to source code"><b>__callStatic</b></a>(
+					string
+					<var>$name</var>, 
+					array
+					<var>$args</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Call to undefined static method.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Call to undefined static method.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string  method name (in lower case!)<br />
+						<code>$args</code> array   arguments<br />
+					</div>
+
+
+					<h4>Throws</h4>
+					<div class="smallList">
+MemberAccessException<br />
+					</div>
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 extensionMethod" id="extensionMethod()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public static
+				mixed
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#extensionMethod()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyObject.php.html#L148" title="go to source code"><b>extensionMethod</b></a>(
+					string
+					<var>$name</var>, 
+					mixed
+					<var>$callback</var> = <span class="php-keyword1">NULL</span>
+			)</code>
+
+			<div class="short">
+				
+<p>Adding method to class.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Adding method to class.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string  method name<br />
+						<code>$callback</code> mixed   callback or closure<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 __get" id="__get()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				mixed
+				&amp;
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__get()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyObject.php.html#L211" title="go to source code"><b>__get</b></a>(
+					string
+					<var>$name</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Returns property value. Do not call directly.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Returns property value. Do not call directly.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string  property name<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">mixed   property value</div>
+
+					<h4>Throws</h4>
+					<div class="smallList">
+MemberAccessException if the property is not defined.<br />
+					</div>
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 __set" id="__set()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__set()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyObject.php.html#L249" title="go to source code"><b>__set</b></a>(
+					string
+					<var>$name</var>, 
+					mixed
+					<var>$value</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Sets value of a property. Do not call directly.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Sets value of a property. Do not call directly.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string  property name<br />
+						<code>$value</code> mixed   property value<br />
+					</div>
+
+
+					<h4>Throws</h4>
+					<div class="smallList">
+MemberAccessException if the property is not defined or is read-only<br />
+					</div>
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 __isset" id="__isset()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				bool
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__isset()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyObject.php.html#L285" title="go to source code"><b>__isset</b></a>(
+					string
+					<var>$name</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Is property defined?</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Is property defined?</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string  property name<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 __unset" id="__unset()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__unset()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyObject.php.html#L299" title="go to source code"><b>__unset</b></a>(
+					string
+					<var>$name</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Access to undeclared property.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Access to undeclared property.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string  property name<br />
+					</div>
+
+
+					<h4>Throws</h4>
+					<div class="smallList">
+MemberAccessException<br />
+					</div>
+
+			</div>
+			</td>
+		</tr>
+		</table>
+	</div>
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		Texy2 API documentation generated by <a href="http://github.com/nette/apigen">Apigen</a>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+Stored Procedure call stack in INFORMATION_SCHEMA
+******************
+
+**This is a MySQL feature request submitted as "bug report #36106":http://bugs.mysql.com/bug.php?id=36106.**
+
+
+Having a call stack available in stored procedures would make debugging much much easier.
+It could be a table like this:
+
+/--code
+----------------------------------------------
+depth INT  routine_name VARCHAR   routine_type ENUM  started TIMESTAMP ...
+1          nn_TeachXOR            PROCEDURE          128458937
+2          nn_ComputeNet          PROCEDURE          128458938
+3          nn_ComputeLevel        PROCEDURE          128458938
+...
+\--
+
+
+With such table, one could do profiling,
+
+/--code
+SELECT UNIX_TIMESTAMP() - started AS duration
+  FROM INFORMATION_SCHEMA.CALLSTACK
+  ORDER BY depth DESC LIMIT 1; 
+\--
+
+structured logging, e.g.:
+
+/--code
+INSERT INTO log
+  SELECT CONCAT( REPEAT('  ', ), '+--  ', routine_name) AS str
+  ORDER BY depth ASC;
+\--
+
+and more...

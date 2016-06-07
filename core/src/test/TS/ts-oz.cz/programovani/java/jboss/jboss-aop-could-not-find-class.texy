@@ -1,0 +1,204 @@
+
+Could not find class 
+*********************************************************
+
+
+
+/--code
+[warn] Could not find class org.jboss.kernel.spi.dependency.KernelController (or one of its implemented interfaces) 
+       that ... references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.kernel.spi.dependency.KernelController
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+...
+\--
+
+Use `<includeProjectDependency>true</includeProjectDependency>` for the Maven JBoss AOP plugin:
+
+/--code
+      <plugin>
+        <groupId>org.jboss.maven.plugins</groupId>
+        <artifactId>maven-jbossaop-plugin</artifactId>
+        <version>2.1.3.GA</version>
+        <executions>
+          <execution>
+            <id>compile</id>  <goals> <goal>compile</goal> </goals>
+            <configuration>
+              <includeProjectDependency>true</includeProjectDependency>
+              <aoppaths>
+                <aoppath>src/main/resources/jboss-aop.xml</aoppath>
+              </aoppaths>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+\--
+
+
+
+
+
+The stacktrace...
+==================
+
+
+
+/--code mavenlog
+[jbossaop:compile]
+[ERROR][warn] Could not find class org.jboss.kernel.spi.dependency.KernelController (or one of its implemented interfaces) that cz.dynawest.webttd.backend.JBossAopSampleApp references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.kernel.spi.dependency.KernelController
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.transform(Instrumentor.java:763)
+[ERROR]        at org.jboss.aop.instrument.GeneratedAdvisorInstrumentor.transform(GeneratedAdvisorInstrumentor.java:117)
+[ERROR]        at org.jboss.aop.ClassicWeavingStrategy.translate(ClassicWeavingStrategy.java:110)
+[ERROR]        at org.jboss.aop.AspectManager.translate(AspectManager.java:1071)
+[ERROR]        at org.jboss.aop.AspectManager.transform(AspectManager.java:1015)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compileFile(Compiler.java:391)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compile(Compiler.java:243)
+[ERROR]        at org.jboss.aop.standalone.Compiler.main(Compiler.java:88)
+[ERROR][warn] Could not find class org.jboss.kernel.plugins.bootstrap.basic.BasicBootstrap (or one of its implemented interfaces) that cz.dynawest.webttd.backend.JBossAopSampleApp references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.kernel.plugins.bootstrap.basic.BasicBootstrap
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.transform(Instrumentor.java:763)
+[ERROR]        at org.jboss.aop.instrument.GeneratedAdvisorInstrumentor.transform(GeneratedAdvisorInstrumentor.java:117)
+[ERROR]        at org.jboss.aop.ClassicWeavingStrategy.translate(ClassicWeavingStrategy.java:110)
+[ERROR]        at org.jboss.aop.AspectManager.translate(AspectManager.java:1071)
+[ERROR]        at org.jboss.aop.AspectManager.transform(AspectManager.java:1015)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compileFile(Compiler.java:391)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compile(Compiler.java:243)
+[ERROR]        at org.jboss.aop.standalone.Compiler.main(Compiler.java:88)
+[ERROR][warn] Could not find class org.jboss.dependency.spi.Controller (or one of its implemented interfaces) that cz.dynawest.webttd.backend.JBossAopSampleApp references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.dependency.spi.Controller
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.transform(Instrumentor.java:763)
+[ERROR]        at org.jboss.aop.instrument.GeneratedAdvisorInstrumentor.transform(GeneratedAdvisorInstrumentor.java:117)
+[ERROR]        at org.jboss.aop.ClassicWeavingStrategy.translate(ClassicWeavingStrategy.java:110)
+[ERROR]        at org.jboss.aop.AspectManager.translate(AspectManager.java:1071)
+[ERROR]        at org.jboss.aop.AspectManager.transform(AspectManager.java:1015)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compileFile(Compiler.java:391)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compile(Compiler.java:243)
+[ERROR]        at org.jboss.aop.standalone.Compiler.main(Compiler.java:88)
+[ERROR][warn] Could not find class org.jboss.kernel.plugins.bootstrap.AbstractBootstrap (or one of its implemented interfaces) that cz.dynawest.webttd.backend.JBossAopSampleApp references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.kernel.plugins.bootstrap.AbstractBootstrap
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.transform(Instrumentor.java:763)
+[ERROR]        at org.jboss.aop.instrument.GeneratedAdvisorInstrumentor.transform(GeneratedAdvisorInstrumentor.java:117)
+[ERROR]        at org.jboss.aop.ClassicWeavingStrategy.translate(ClassicWeavingStrategy.java:110)
+[ERROR]        at org.jboss.aop.AspectManager.translate(AspectManager.java:1071)
+[ERROR]        at org.jboss.aop.AspectManager.transform(AspectManager.java:1015)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compileFile(Compiler.java:391)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compile(Compiler.java:243)
+[ERROR]        at org.jboss.aop.standalone.Compiler.main(Compiler.java:88)
+[ERROR][warn] Could not find class org.jboss.kernel.spi.deployment.KernelDeployment (or one of its implemented interfaces) that cz.dynawest.webttd.backend.JBossAopSampleApp references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.kernel.spi.deployment.KernelDeployment
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.transform(Instrumentor.java:763)
+[ERROR]        at org.jboss.aop.instrument.GeneratedAdvisorInstrumentor.transform(GeneratedAdvisorInstrumentor.java:117)
+[ERROR]        at org.jboss.aop.ClassicWeavingStrategy.translate(ClassicWeavingStrategy.java:110)
+[ERROR]        at org.jboss.aop.AspectManager.translate(AspectManager.java:1071)
+[ERROR]        at org.jboss.aop.AspectManager.transform(AspectManager.java:1015)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compileFile(Compiler.java:391)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compile(Compiler.java:243)
+[ERROR]        at org.jboss.aop.standalone.Compiler.main(Compiler.java:88)
+[ERROR][warn] Could not find class org.jboss.kernel.plugins.deployment.xml.BasicXMLDeployer (or one of its implemented interfaces) that cz.dynawest.webttd.backend.JBossAopSampleApp references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.kernel.plugins.deployment.xml.BasicXMLDeployer
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.transform(Instrumentor.java:763)
+[ERROR]        at org.jboss.aop.instrument.GeneratedAdvisorInstrumentor.transform(GeneratedAdvisorInstrumentor.java:117)
+[ERROR]        at org.jboss.aop.ClassicWeavingStrategy.translate(ClassicWeavingStrategy.java:110)
+[ERROR]        at org.jboss.aop.AspectManager.translate(AspectManager.java:1071)
+[ERROR]        at org.jboss.aop.AspectManager.transform(AspectManager.java:1015)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compileFile(Compiler.java:391)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compile(Compiler.java:243)
+[ERROR]        at org.jboss.aop.standalone.Compiler.main(Compiler.java:88)
+[ERROR][warn] Could not find class org.jboss.kernel.Kernel (or one of its implemented interfaces) that cz.dynawest.webttd.backend.JBossAopSampleApp references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.kernel.Kernel
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.transform(Instrumentor.java:763)
+[ERROR]        at org.jboss.aop.instrument.GeneratedAdvisorInstrumentor.transform(GeneratedAdvisorInstrumentor.java:117)
+[ERROR]        at org.jboss.aop.ClassicWeavingStrategy.translate(ClassicWeavingStrategy.java:110)
+[ERROR]        at org.jboss.aop.AspectManager.translate(AspectManager.java:1071)
+[ERROR]        at org.jboss.aop.AspectManager.transform(AspectManager.java:1015)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compileFile(Compiler.java:391)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compile(Compiler.java:243)
+[ERROR]        at org.jboss.aop.standalone.Compiler.main(Compiler.java:88)
+[ERROR][warn] Could not find class org.jboss.kernel.plugins.deployment.BasicKernelDeployer (or one of its implemented interfaces) that cz.dynawest.webttd.backend.JBossAopSampleApp references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.kernel.plugins.deployment.BasicKernelDeployer
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.transform(Instrumentor.java:763)
+[ERROR]        at org.jboss.aop.instrument.GeneratedAdvisorInstrumentor.transform(GeneratedAdvisorInstrumentor.java:117)
+[ERROR]        at org.jboss.aop.ClassicWeavingStrategy.translate(ClassicWeavingStrategy.java:110)
+[ERROR]        at org.jboss.aop.AspectManager.translate(AspectManager.java:1071)
+[ERROR]        at org.jboss.aop.AspectManager.transform(AspectManager.java:1015)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compileFile(Compiler.java:391)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compile(Compiler.java:243)
+[ERROR]        at org.jboss.aop.standalone.Compiler.main(Compiler.java:88)
+[ERROR][warn] Could not find class org.jboss.dependency.spi.ControllerContext (or one of its implemented interfaces) that cz.dynawest.webttd.backend.JBossAopSampleApp references.  It may not be in your classpath and you may not be getting field and constructor weaving for this class.
+[ERROR]javassist.NotFoundException: org.jboss.dependency.spi.ControllerContext
+[ERROR]        at javassist.ClassPool.get(ClassPool.java:436)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.convertReferences(Instrumentor.java:648)
+[ERROR]        at org.jboss.aop.instrument.Instrumentor.transform(Instrumentor.java:763)
+[ERROR]        at org.jboss.aop.instrument.GeneratedAdvisorInstrumentor.transform(GeneratedAdvisorInstrumentor.java:117)
+[ERROR]        at org.jboss.aop.ClassicWeavingStrategy.translate(ClassicWeavingStrategy.java:110)
+[ERROR]        at org.jboss.aop.AspectManager.translate(AspectManager.java:1071)
+[ERROR]        at org.jboss.aop.AspectManager.transform(AspectManager.java:1015)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compileFile(Compiler.java:391)
+[ERROR]        at org.jboss.aop.standalone.Compiler.compile(Compiler.java:243)
+[ERROR]        at org.jboss.aop.standalone.Compiler.main(Compiler.java:88)
+[aop-debug] org.jboss.aop.instrument.InstrumentorFactory Passed in instrumentor: null
+[aop-debug] org.jboss.aop.instrument.InstrumentorFactory Defaulting instrumentor to: org.jboss.aop.instrument.GeneratedAdvisorInstrumentor
+[aop-debug] org.jboss.aop.AdvisorFactory Passed in advisor: null
+[aop-debug] org.jboss.aop.AdvisorFactory [debug] Defaulting advisor to: org.jboss.aop.ClassAdvisor
+[aop-debug] org.jboss.aop.Deployment jboss.aop.class.path is NULL
+[aop-debug] org.jboss.aop.Deployment jboss.aop.search.classpath: 'null' true
+[aop-debug] org.jboss.aop.Deployment jboss.aop.path: D:\web\x-com\java\server\WebTTD-backend\src\main\resources\jboss-aop.xml
+[aop-debug] org.jboss.aop.Deployment jboss.aop.path[0]: D:\web\x-com\java\server\WebTTD-backend\src\main\resources\jboss-aop.xml
+[aop-debug] org.jboss.aop.Deployment deploying file:/D:/web/x-com/java/server/WebTTD-backend/src/main/resources/jboss-aop.xml
+[aop-debug] org.jboss.aop.AspectXmlLoader AspectXMLLoader using managerorg.jboss.aop.AspectManager@1a2961b
+[aop-debug] org.jboss.aop.instrument.Instrumentor trying to transform cz.zizka.ondra.jbmctest.Car
+[aop-debug] org.jboss.aop.instrument.CallerTransformer There are no caller pointcuts!
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@26562bc2[public getName ()Ljava/lang/String;] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@ab2416c4[public setName (Ljava/lang/String;)V] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@724080ad[public getLitresOfFuel ()I] matches pointcut: execution(* *->*Fuel(..))
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@ca63270[public setLitresOfFuel (I)V] matches pointcut: execution(* *->*Fuel(..))
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@69cb6c6d[public toString ()Ljava/lang/String;] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtConstructor@b988a6[public Car ()V] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier cz.zizka.ondra.jbmctest.Car.litresOfFuel:I matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier cz.zizka.ondra.jbmctest.Car.litresOfFuel:I matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier cz.zizka.ondra.jbmctest.Car.name:Ljava/lang/String; matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier cz.zizka.ondra.jbmctest.Car.name:Ljava/lang/String; matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.Instrumentor was cz.zizka.ondra.jbmctest.Car converted: true
+[compiled] D:\web\x-com\java\server\WebTTD-backend\target\classes\cz\zizka\ondra\jbmctest\Car.class
+[aop-debug] org.jboss.aop.instrument.Instrumentor trying to transform cz.zizka.ondra.jbmctest.FuelInterceptor
+[aop-debug] org.jboss.aop.instrument.CallerTransformer There are no caller pointcuts!
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@2ff3c113[public invoke (Lorg/jboss/aop/joinpoint/Invocation;)Ljava/lang/Object;] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@26562bc2[public getName ()Ljava/lang/String;] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtConstructor@126804e[public FuelInterceptor ()V] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.Instrumentor was cz.zizka.ondra.jbmctest.FuelInterceptor converted: false
+[no comp needed] D:\web\x-com\java\server\WebTTD-backend\target\classes\cz\zizka\ondra\jbmctest\FuelInterceptor.class
+[aop-debug] org.jboss.aop.instrument.Instrumentor trying to transform cz.zizka.ondra.jbmctest.Garage
+[aop-debug] org.jboss.aop.instrument.CallerTransformer There are no caller pointcuts!
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@743e861f[public getCar ()Lcz/zizka/ondra/jbmctest/Car;] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@282f78de[public setCar (Lcz/zizka/ondra/jbmctest/Car;)V] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@69cb6c6d[public toString ()Ljava/lang/String;] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtConstructor@d2906a[public Garage ()V] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier cz.zizka.ondra.jbmctest.Garage.car:Lcz/zizka/ondra/jbmctest/Car; matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier cz.zizka.ondra.jbmctest.Garage.car:Lcz/zizka/ondra/jbmctest/Car; matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.Instrumentor was cz.zizka.ondra.jbmctest.Garage converted: false
+[no comp needed] D:\web\x-com\java\server\WebTTD-backend\target\classes\cz\zizka\ondra\jbmctest\Garage.class
+[aop-debug] org.jboss.aop.instrument.Instrumentor trying to transform cz.dynawest.webttd.backend.JBossAopSampleApp
+[aop-debug] org.jboss.aop.instrument.CallerTransformer There are no caller pointcuts!
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtMethod@44a4fe33[public static main ([Ljava/lang/String;)V] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.JoinpointSimpleClassifier javassist.CtConstructor@16a786[public JBossAopSampleApp ()V] matches no pointcuts
+[aop-debug] org.jboss.aop.instrument.Instrumentor was cz.dynawest.webttd.backend.JBossAopSampleApp converted: false
+[no comp needed] D:\web\x-com\java\server\WebTTD-backend\target\classes\cz\dynawest\webttd\backend\JBossAopSampleApp.class
+Build Successful: 375 ms
+\--

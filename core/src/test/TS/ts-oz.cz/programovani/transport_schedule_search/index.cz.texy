@@ -1,0 +1,139 @@
+Vyhledávání spojů v jízdních řádech
+***********************************
+
+Persistent tables
+=================
+
+/--code sql .[brush:]
+CREATE TABLE `mhd_jizdy` (
+  `id` smallint(5) unsigned NOT NULL default '0',
+  `nazev` varchar(140) NOT NULL,
+  `id_trasa` smallint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `id_trasa` (`id_trasa`),
+  CONSTRAINT `fk_jizdy_id_trasa` FOREIGN KEY (`id_trasa`) REFERENCES `mhd_trasy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB ROW_FORMAT=FIXED COMMENT='Jizdy - seskupení jednotlivých zastávek na dané trase pr';
+\--
+
+/--code sql .[brush:]
+CREATE TABLE `mhd_jizdy_stani` (
+  `id_jizda` smallint(5) unsigned NOT NULL,
+  `poradi` smallint(5) NOT NULL,
+  `cas1` time default NULL,
+  `cas2` time default NULL,
+  `id_trasa_uzel` int(10) unsigned default NULL,
+  PRIMARY KEY  USING BTREE (`id_jizda`,`poradi`),
+  KEY `id_trasa_uzel` (`id_trasa_uzel`),
+  CONSTRAINT `fk_jizdy_stani_id_jizda` FOREIGN KEY (`id_jizda`) REFERENCES `mhd_jizdy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_jizdy_stani_id_uzel` FOREIGN KEY (`id_trasa_uzel`) REFERENCES `mhd_trasy_uzly` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=cp1250 ROW_FORMAT=FIXED COMMENT='Jednotlivé zastávky jízd';
+\--
+
+/--code sql .[brush:]
+CREATE TABLE `mhd_linky` (
+  `id` smallint(5) unsigned NOT NULL auto_increment,
+  `nazev` varchar(60) NOT NULL,
+  `cislo` tinyint(3) unsigned default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `cislo` (`cislo`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=cp1250;
+\--
+
+/--code sql .[brush:]
+CREATE TABLE `mhd_trasy` (
+  `id` smallint(5) unsigned NOT NULL auto_increment,
+  `id_linka` smallint(5) unsigned default NULL,
+  `popis` char(96) NOT NULL default '',
+  `id_zast_prvni` int(10) unsigned NOT NULL,
+  `id_zast_posledni` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `id_linka` (`id_linka`),
+  CONSTRAINT `fk_trasy_id_linka` FOREIGN KEY (`id_linka`) REFERENCES `mhd_linky` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=158 DEFAULT CHARSET=cp1250 COMMENT='Jednotlive verze linek';
+\--
+
+/--code sql .[brush:]
+CREATE TABLE `mhd_trasy_uzly` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_trasa` smallint(5) unsigned NOT NULL default '0',
+  `poradi` smallint(5) NOT NULL default '0',
+  `id_zast` smallint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `id_trasa_poradi` USING BTREE (`id_trasa`,`poradi`),
+  KEY `id_zast` (`id_zast`),
+  CONSTRAINT `fk_trasy_uzly_id_trasa` FOREIGN KEY (`id_trasa`) REFERENCES `mhd_trasy` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_trasy_uzly_id_zast` FOREIGN KEY (`id_zast`) REFERENCES `mhd_zast` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12555 DEFAULT CHARSET=cp1250 ROW_FORMAT=FIXED COMMENT='Trasy linek (pro kazdou verzi linky a pro kazdy smer)';
+\--
+
+/--code sql .[brush:]
+CREATE TABLE `mhd_zast` (
+  `id` smallint(5) unsigned NOT NULL auto_increment,
+  `nazev` varchar(60) NOT NULL default '',
+  `nazev_plny` varchar(60) NOT NULL,
+  `lat` double default NULL,
+  `lon` double default NULL,
+  `lat_norm` double default NULL,
+  `lon_norm` double default NULL,
+  `gps_loc` varchar(60) NOT NULL,
+  `prezdivka` varchar(60) NOT NULL default '',
+  `id_skup` smallint(5) unsigned default NULL,
+  `obec` varchar(45) NOT NULL,
+  `obec_cast` varchar(45) NOT NULL,
+  `pozn` varchar(45) NOT NULL,
+  `id_nn` int(10) unsigned default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `id_skup` (`id_skup`),
+  CONSTRAINT `fk_id_skup` FOREIGN KEY (`id_skup`) REFERENCES `mhd_zast_skup` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=540 DEFAULT CHARSET=cp1250 ROW_FORMAT=DYNAMIC COMMENT='Zastavky';
+\--
+
+
+
+Procedures
+==========
+
+
+
+`mhd_VyhledejSpoje` - searching the connection
+----------------------------------------------
+
+
+Usage:
+------
+
+/--code sql .[brush:]
+CALL mhd_VyhledejSpoje(115, 465, NOW(), 3);
+\--
+
+
+Result:
+-------
+
+
+
+
+
+
+/--code sql .[brush:]
+CREATE DEFINER=`root`@`localhost` PROCEDURE `mhd_VyhledejSpoje`(
+  idZastFrom INT UNSIGNED,
+  idZastTo INT UNSIGNED,
+  whn DATETIME,
+  iMaxRounds TINYINT UNSIGNED
+)
+BEGIN
+
+  /**
+    Usage:
+    CALL mhd_VyhledejSpoje(115, 465, NOW(), 3);
+  */
+
+-- snipped --
+
+
+END $$
+\--
+
+
+

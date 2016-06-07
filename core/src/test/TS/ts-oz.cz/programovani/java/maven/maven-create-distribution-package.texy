@@ -1,0 +1,147 @@
+
+How to create an application distribution package with Maven
+************************************************************
+
+There are several ways to prepare a whole application bundle with all it's dependencies,
+properly written MANIFEST.MF and all other necessary things.
+
+
+Appassembler plugin
+===================
+
+The best way I have found is the "Appassembler plugin":http://mojo.codehaus.org/appassembler/appassembler-maven-plugin/.
+
+/--code xml .[brush:]
+<project>
+  ...
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <id>appassemble</id>
+            <goals><goal>assemble</goal></goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <programs>
+            <program>
+              <mainClass>com.mycompany.app.App</mainClass>
+              <name>app</name>
+            </program>
+          </programs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus</id>
+      <name>Codehaus Release Repo</name>
+      <url>http://repository.codehaus.org</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>codehaus-snapshot</id>
+      <name>Codehaus Snapshot Repo</name>
+      <url>http://snapshots.repository.codehaus.org</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>
+\--
+
+This creates an application ready for zipping in `target/appassembler/`.
+More advanced example at "plugin's usage page":http://mojo.codehaus.org/appassembler/appassembler-maven-plugin/usage-program.html.
+
+
+
+
+Preparing the bits for manual packaging
+=======================================
+
+This `pom.xml` copies the dependencies to the `target/lib/` dir
+and creates the `MANIFEST.MF` file.
+
+/--code xml .[brush:]
+<project>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <mainClass>cz.dynawest.jtexy.sandbox.swing.SwingSandboxApp</mainClass>
+  </properties>
+
+  <build>
+    <plugins>
+
+      <!-- Jar - MANIFEST.MF options. -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>${mainClass}</mainClass>
+              <classpathPrefix>lib/</classpathPrefix>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <!-- Dependencies to lib/ . -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <configuration>
+          <outputDirectory>${project.build.directory}/lib</outputDirectory>
+          <includeScope>runtime</includeScope>
+        </configuration>
+      </plugin>
+
+    
+    </plugins>
+  </build>
+
+  <profiles>
+    <!-- "Create distribution zip" profile. -->
+    <profile>
+      <id>dist</id>
+      <build>
+        <plugins>
+
+          <!-- dependency:copy-dependencies -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>dep-copy</id>
+                <phase>package</phase>
+                <goals> <goal>copy-dependencies</goal> </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- It's also a good idea to create SOURCES and JAVADOC .jar's. -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-source-plugin</artifactId> <version>2.1.1</version>
+            <executions> <execution> <id>attach-sources</id> <phase>verify</phase>  <goals>  <goal>jar-no-fork</goal> </goals> </execution> </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId>  <version>2.6.1</version>
+            <executions> <execution> <id>attach-javadoc</id> <phase>verify</phase>  <goals>  <goal>jar</goal> </goals> </execution> </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
+</project>
+\--

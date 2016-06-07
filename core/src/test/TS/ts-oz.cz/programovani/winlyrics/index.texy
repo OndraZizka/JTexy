@@ -1,0 +1,62 @@
+WinLyrics - WinAmp lyrics plugin
+********************************
+
+
+Nový hosting?
+=============
+
+Máme nabídku nového hostingu... na Gigawebu to občas vypadne (mysql i web), a už není nijak moc pružný...
+
+"přístup zde":vpn.texy.
+
+
+TODO list
+=========
+
+Hodnocení lyrics
+----------------
+
+"Dokumentace zde":doc/rating.texy.
+
+- Do interface přidat možnost ohodnotit lyrics.
+- Stupnice:
+  - Bez chyby, perfektní
+  - Dobré
+  - Použitelné
+  - Nesmysly, hodně chyb
+  - Totální odpad
+- Vliv na funkci:
+  - Vyhledané lyrics se budou řadit také podle hodnocení daných lyrics. Jinak žádný.
+- Na server se pošle: ID lyrics, ID hodnotícího uživatele (případně session ID), a hodnocení.
+
+
+Přihlašování
+------------
+
+"Dokumentace zde":doc/login.texy.
+
+- Lyrics se budou stahovat přes login a heslo.
+- Zamezí to crackům
+- Provedení: Dvě možnosti. Jednodušší a složitější.
+  - S každým požadavkem posílat i jméno a heslo.
+    - Heslo může být md5
+    - Jenže jakmile někdo uvidí cizí request, může se za něj vydávat -> šíření user name a hesla, a jsme kde jsme byli.
+  - Druhá možnost: Autentizace a session numbers. Jak?
+    - Klient se bude chtít přihlásit
+    - Server pošle náhodný řetězec (challenge)
+    - Klient jej spojí se svým heslem a pošle md5( challenge + md5(heslo)  )
+    - Na serveru bude uchované md5() hesla, provede se to samé
+    - Pokud budou stejné, klientovi se pošle session ID v cookie. Od té doby s ním může po nějakou dobu pracovat.
+    - Tímhle způsobem se nebude nikdo moci vymlouvat, že se přes jeho ID připojuje někdo jiný.
+    - Pokud se tedy ID začne šířit, má problém :-)
+    - Resp. povolíme použití jednoho ID jen z jedné IP adresy v rámci jedné session.
+
+
+
+Autorství lyrics (credits)
+--------------------------
+
+- Lidi mají tendenci do Lyrics dávat svůj podpis.
+- Tomu předejdeme tak, že jim umožníme tento údaj oddělit.
+- Při přidávání se také odešle jejich username, případně se použije session ID.
+- Na serveru se k lyrics přidá záznam o tom, kdo jej poslal.

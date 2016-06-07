@@ -1,0 +1,60 @@
+Nabídka: Levný Java/JSP/J2EE hosting
+####################################
+
+S pozvolným přechodem od PHP k Javě a J2EE jsem narazil na problém - kam s ním?
+
+Řeč je o nedostečné nabídce Java EE hostingů, a tedy nízká konkurence a z toho plynoucí vysoké ceny.
+Nejsem si zcela jist, zda java hosting je na správu náročnější než např. LAMP((Linux, Apache, MySQL, PHP)) -
+podle zkušeností kamaráda, který si hostuje sám, je to jednodušší - prostě nainstalujete Apache Tomcat a hotovo.
+
+Pro upřesnění - kamarádovi příliš nesedly aplikační servery (JBoss, IBM WebSphere, BEA WebLogic a další mamuti - 
+zjistil, že pro něj je lepší řešení Tomcat a všechny featury z aplikačních serverů instaluje do Tomcatu
+jako jednotlivé moduly, případně je vkládá přímo do webové aplikace.
+
+Mě samotnému se ovšem o server starat nechce - znamenalo by to najít server housing, koupit server,
+naučit se dobře administrovat Linux, ... a jak říká Honza Svoboda - není možné dobře umět a dobře dělat všechno.
+
+
+
+Jak jsem k Java hostingu přišel
+*******************************
+
+S jedním kamarádem, zavilým Céčkařem a PHPčkářem, jsme (také :-) vedli debatu o
+"výhodách a nevýhodách PHP":http://ondra.zizka.cz/stranky/programovani/php/vyhody_a_nevyhody_php.texy.
+Tak jsme se dostali k tomu, že já vyvíjím nějaké projektíky v Javě, ale nemám je kam dát.
+
+Kamarád měl tehdy zakoupený docela silný stroj (nějaké čtyřjádro s 8 GB paměti a čtyřmi SAS disky @ 10k RMP),
+který ovšem neměl jak využít, tak jsem na něm aspoň učil nějaké ty neuronové sítě z mojí diplomky :-)
+
+Později jsem se dozvěděl od několika známých, že s Javou a J2EE mají podobný problém -
+mají J2EE backend, k němu by chtěli J2EE frontend, ale nenašli výhodný hosting a sami si hostovat nechtějí,
+a tak pro ně bylo cenově výhodnější sáhnout po "nouzovém řešení":http://www.php.net.
+
+Využit kamarádův stroj a znalosti ke zřízení Java hostingu se samo nabízelo.
+Netrvalo dlouho a stroj se přesunul  do server-housingové společnosti a objevila se na něm Java a Tomcat.
+Zatím na něm běží jen moje J2EE "pokusy", a stroj lačně čeká na další využití :-)
+
+
+Co tedy nabízím?
+****************
+
+Pokud byste chtěli na výše zmíněném serveru zkusit hostovat svoji J2EE aplikaci,
+můžete se ozvat a zprostředkuji kontakt.
+
+Možná by se někomu mohlo po přečtení předchozích odstavců zdát nedůvěryhodné
+dávat hosting "ke kamarádovi nějakého Ondry Žižky" - ale tento kamarád
+pracuje jako správce sítě v organizaci s řádově několika tisíci počítači
+a programátor systému automatické správy této sítě.
+
+Nemá však zkušenosti s administrací Java hostingu,
+a proto to momentálně řešíme tak, že mám plný přístup k Tomcatu
+a spravuji si sám.
+
+Řešení vašeho hostingu by vypadalo podobně - server by se nejspíše rozdělil 
+na virtuální hostingy, ať už na úrovni Linuxu nebo Javy,
+a svůj virtuální hosting byste si spravovali sami.
+
+Zkouška bude nejspíše zdarma - podle dohody.
+
+Máte-li zájem, ozvěte se na ondra@dynawest.cz, kamarád mě pověřil zpracováním "úvodního kontaktu" :-)
+

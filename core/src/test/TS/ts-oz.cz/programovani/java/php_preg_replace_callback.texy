@@ -1,0 +1,61 @@
+
+Java alternative of PHP's `preg_replace_callback` 
+*************************************************
+
+
+A quick implementation to have it at hand.
+
+
+
+/--code java .[brush:]
+
+	/**
+	 * Substitute for PHP's preg_replace_callback().
+	 */
+	public static final String replaceWithCallback(
+					String str, String regexp, StringsReplaceCallback cb)
+	{
+		Pattern pat = Pattern.compile(regexp);
+		return replaceWithCallback(str, pat, cb);
+	}
+
+
+	/**
+	 * Substitute for PHP's preg_replace_callback().
+	 */
+	public static final String replaceWithCallback(
+					String str, Pattern pat, StringsReplaceCallback cb
+	){
+		Matcher mat = pat.matcher(str);
+
+		StringBuilder sb = new StringBuilder(str.length() * 11 / 10);
+
+		int prevStart = 0;
+		int prevEnd = 0;
+		int offset = 0;
+
+		while( mat.find() ){
+
+			// Create the groups array.
+			String[] groups = new String[mat.groupCount()+1];
+			for (int i = 0; i < groups.length; i++) {
+				groups[i] = mat.group(i);
+			}
+
+			// Append string before match.
+			sb.append( str.substring(prevEnd+offset, mat.start()+offset) );
+
+			// Call the callback and append what it returns.
+			String newStr = cb.replace( groups );
+			sb.append( newStr );
+
+			// Set the offset according to the lengths difference.
+			//offset -= mat.group().length();
+			prevStart = mat.start() + offset;
+			prevEnd = mat.end() + offset;
+		}
+		sb.append( str.substring(prevEnd) );
+
+		return sb.toString();
+	}
+\--

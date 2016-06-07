@@ -1,0 +1,207 @@
+Nedomyšlenost webové služby Insolvenčním rejstříku
+***************************************************
+
+S webovou službou Insolvenčního rejstříku pracuji již asi měsíc,
+ale stále nevycházím z údivu, jak hloupá tato služba je.
+Již jsem psal o "prapodivném konceptu celé webové služby":index.texy,
+ale jak je vidět, oním článkem jsem popis jejích velice četných nedostatků ještě zdaleka nevyčerpal.
+
+Pojďme se nyní podívat, jak vypadá samotná obsahová stránka služby ISIR.
+
+
+Nesmysl první: chaos v událostech
+==========================================
+
+Jak se dozvíte ve výše odkazovaném článku, webová služba Insolvenční rejstřík
+funguje jako internetový záznam událostí, které se staly během existence systému ISIR.
+To znamená, že nežádáte o konkrétní informace, ale výstup tohoto typu:
+
+/--code xml .[brush:]
+  <tns:udalost ... >
+    <info cas="2008-01-22 00:00:00.0" id="2644" oddil="A" poradi="1" typ="6"
+           typ_text="Insolvenční návrh spojený s návrhem na povolení oddlužení"/>
+    <idOsobyPuvodce>KSVYCHK</idOsobyPuvodce>
+    <vec> <druhStavRizeni>NEVYRIZENA</druhStavRizeni> </vec>
+  </tns:udalost>
+  <tns:udalost ... >
+    <info cas="2008-01-22 00:00:00.0" id="2645" oddil="" poradi="-1" typ="1" typ_text="Změna osoby"/>
+    <idOsobyPuvodce>KSVYCHK</idOsobyPuvodce>
+    <osoba>
+      <idOsoby>KRUPKA ROMA050373  1</idOsoby>
+      <druhRoleVRizeni>DLUŽNÍK</druhRoleVRizeni>
+      <nazevOsoby>Krupka</nazevOsoby>
+      <druhOsoby>F</druhOsoby>
+      <jmeno>Roman</jmeno>
+      <rc>730305/0689</rc>
+      <datumNarozeni>1973-03-05</datumNarozeni>
+    </osoba>
+  </tns:udalost>
+  <tns:udalost ... >
+    <info cas="2008-01-22 00:00:00.0" id="2646" oddil="" poradi="-1" typ="2" typ_text="Změna adresy osoby"/>
+    <idOsobyPuvodce>KSVYCHK</idOsobyPuvodce>
+    <osoba> ...  </osoba>
+  </tns:udalost>
+
+\--
+
+O kvalitě tohoto zpracování jsem již napsal dost.
+
+
+"Buďiž", řekli byste si po prvním rozčarování, "budeme si tedy tvořit lokální databázi ISIR".
+Jenže ouha. To, co přichází jako obsah, má jen velmi mlhavou definici, v jejímž rámci se dějí skutečné divy.
+
+Pořadí událostí
+---------------
+
+Pokud byste čekali, že události chodí pro každé řížení zhruba ve stejném pořadí, tak jste velmi na omylu.
+Jednou se spis zakládá událostí typu `185 - Vyhláška o zahájení insolvenčního řízení`, jindy 
+událostí typu `6 - Insolvenční návrh spojený s návrhem na povolení oddlužení`,
+jindy událostí typu `5 - Insolvenční návrh`, a jindy zase typu `204 - Pokyn insolvenčního soudu`.
+
+Dále vám přijde událost s osobou:
+
+/--code xml .[brush:]
+<tns:udalost>
+  <info cas="2008-02-18 00:00:00.0" id="7859" oddil="" poradi="-1" typ="1" typ_text="Změna osoby"/>
+  <idOsobyPuvodce>KSJICCB</idOsobyPuvodce>
+    <osoba>
+    <idOsoby>CBS S.R.O25165488  1</idOsoby>
+    <druhRoleVRizeni>DLUŽNÍK</druhRoleVRizeni>
+    <nazevOsoby>CBS s.r.o.</nazevOsoby>
+    <druhOsoby>P</druhOsoby>
+    <ic>25165488</ic>
+  </osoba>
+</tns:udalost>
+\--
+
+A o chvíli později přide další událost, která se liží //pouze v ID události//!
+
+/--code xml .[brush:]
+<tns:udalost>
+  <info cas="2008-02-18 00:00:00.0" id="7863" oddil="" poradi="-1" typ="1" typ_text="Změna osoby"/>
+  <idOsobyPuvodce>KSJICCB</idOsobyPuvodce>
+  <osoba>
+    <idOsoby>CBS S.R.O25165488  1</idOsoby>
+    <druhRoleVRizeni>DLUŽNÍK</druhRoleVRizeni>
+    <nazevOsoby>CBS s.r.o.</nazevOsoby>
+    <druhOsoby>P</druhOsoby>
+    <ic>25165488</ic>
+  </osoba>
+</tns:udalost>
+\--
+
+Událost je tedy úplně zbytečná. Stejné je to ovšem i s jinými událostmi - např. pro adresu.
+A aby toho nebylo dost, tak takováto zbytečná událost se v jednom spise může objevit klidně třeba pětkrát.
+
+Následně k tomu přistupují lahůdky typu "Mylný zápis", kdy zpracujete nějakou událost,
+a následně přijde tato, která vám říká, že ta předchozí byla chybná a soudce ji zrušil.
+Co kdyby raději události týkající se onoho mylného zápisu vyřadili a informace 
+o mylných zápisech by byly zpracované volitelně? Kdepak, pro CCA moc složité.
+
+//"Kompletní seznam událostí k 1.7.2008":isir_typy_akci.texy//
+
+
+
+Nesmysl druhý: nicneříkající události
+======================================
+
+Velká spousta (ne-li většina) události nenesou jakoukoliv použitelnou informaci. Jako příklad vezměme třeba tuto:
+
+/--code xml .[brush:]
+<tns:udalost ... >
+  <info cas="2008-02-18 00:00:00.0" id="7865" oddil="A" poradi="2" typ="23" typ_text="Návrh - přílohy"/>
+  <idOsobyPuvodce>KSJICCB</idOsobyPuvodce>
+  <vec> <druhStavRizeni>NEVYRIZENA</druhStavRizeni> </vec>
+</tns:udalost>
+\--
+
+Ta nám říká, že na budějovickém krajském soudu se objevila příloha k návrhu.
+Nic víc a žádné další informace se již ve webové službě neobjeví. //K čemu je taková událost?//
+
+Moje naprosto nejoblíbenější událost je typ "Jiné":
+
+/--code xml .[brush:]
+<tns:udalost ... >
+  <info cas="2008-04-04 12:14:48.0" id="29563" oddil="P19" poradi="2" typ="239" typ_text="Jiné"/>
+  <idOsobyPuvodce>KSJICCB</idOsobyPuvodce>
+  <vec> <druhStavRizeni>KONKURS</druhStavRizeni> </vec>
+</tns:udalost>
+\--
+
+Zde opravdu netuším, co tím chtěl básník říci. Pokud by se vám zdálo, že jde o tu položku KONKURS, tak nikoliv - ta již je ve spisu od přiřazení správce konkursu.
+
+Zde si můžete prohlédnout "typický obsah spisu Insolvenčního rejstříku":isir_spis.htm (zde spis `INS 116~2008`).
+ Další takovéto dokumenty dám zájemcům k dispozici.
+
+
+/--comment
+Nesmysl třetí: logika a dekompozice objektů
+============================================
+
+Další perlou z dílny CCA je zcela nepochopitelná dekompozice entit (objektů).
+
+Už i děti na střední škole v kurzu Paskalu pochopí,
+že používat pro reprezentaci úplně jiných objektů modelovaného problému
+tu samou datovou strukturu a jejím jednotlivým položkám přiřadit pokaždé jiný význam je holý nesmysl.
+
+Ve firmě CCA ale mají zato, že Osoba a Firma je v podstatě to samé,
+a tak se stane, že příjmenní fyzické osoby jde do stejné kolonky jako název firmy.
+Velmi inteligentní. Nechápu tedy, proč podle stejné logiky také nedali IČ do kolonky pro rodné číslo.
+
+Tím ovšem hlouposti v návrhu u osob a adres nekončí.
+Pokud byste si tipnuli, že existují dva druhy osob, tedy fyzická osoba a právnická osoba,
+tak v CCA znají ještě třetí druh, a to je `"SPRÁV_INS"`. Ano - správce konkurzu nejspíš nemůže být 
+ani právnická, ani fyzická osoba, a proto je třeba mu zavést zcela nový druh, i když používá
+naprosto stejné kolonky jako fyzická osoba, a lze jej odlišit podle role ve spisu.
+
+A aby toho nebylo málo, tak správce používá i zvláštní druh adresy, tedy `"SÍDLO ORG."`,
+ačkoliv ta je jinak stejná jako jakákoliv jiná adresa, a tedy by stačilo přiřadit již existující druh `"SÍDLO FY"`.
+
+Když už jsme u adres: Fyzické osoby mohou také mít sídlo firmy, a firmy mohou mít trvalou adresu -
+viz událost č. 2603 ve spisu `INS 112/2008` a událost č. 2617 ve spisu `INS 97/2008`.
+
+Telefon je potom buď součástí adresy v elementu `<telefon>`,
+a nebo jako speciální druh adresy s číslem v elementu `<text_adresy>`.
+
+Třešničkou buďiž fakt, že Česká Republika je v Insolvenčním rejstříku zastoupena patvarem Vladimíra Železného, "Česko".
+\--
+
+
+
+Nesmysl třetí: chaos v datech
+===============================
+
+Kdybyste programovali informační systém s identifikací osob podle rodného čísla,
+nejspíše byste vybrali nějakou formu jeho reprezentace a následně zajistili,
+všechna uložená rodná čísla měla stejný tvar.
+
+Ne tak ve webové službě Insolvenční rejstřík - zde je v rodných číslech jedno,
+je-li s lomítkem, bez lomítka, nebo není uvedené vůbec.
+
+Říkáte si, "jak může chybět rodné číslo? Jak potom identifikuji osobu?"
+Odpověď zní: Nijak! Pokud totiž dlužník podává žádost o insolvenční řízeni,
+může požádat o skrytí svých osobních údajů, tedy rodného čísla i data narození,
+a vy jej tedy můžete identifikovat jen podle jména, příjmení a adresy.
+
+Adresu vyplňuje opět soudce, takže bydlištěm Františka Dlužníka může být
+jednou `Ostrava-hrabůvka`, jindy "Ostrava - Hrabůvka", a jindy zase "Ostrava Hrabůvka";
+no a když se soudce přepíše, tak to může být klidně i "Ostrava Harbůvka".
+Proč ne, když máme událost "Mylný zápis"...
+
+
+Suma sumárum
+============
+
+Když to shrnu:
+Chápu, že u komplexního informačního systému, jako je ISIR, 
+je obtížné reflektovat často se měnící požadavky zadavatele často s nereálnými termíny dokončení,
+a webová služba zpřístupňující vybrané údaje pak podle toho může vypadat.
+
+Je však mnoho věcí, od maličkostí po zcela zásadní, které firma CCA Group provést mohla, ale neprovedla.
+Jedná se o typickou ukázku nezdravosti státních zakázek:
+
+* Zadavateli (ministerstvo spravedlnosti) je jedno, jak kvalitní služba je, hlavně když je principiálně vůbec možné, aby byl s její pomocí splněn požadavek zákona.
+* Zhotoviteli (CCA Group) je jedno, jak kvalitní služba je, jen když to bude stačit zadavateli.
+* Programátoři, kteří musí tuto službu následně používat, mohou remcat, jak chtějí, ale dokud nebude zhotovitel nějakým způsobem motivován k tomu, aby byla webová služba kvalitní, do té doby mají smůlu.
+
+

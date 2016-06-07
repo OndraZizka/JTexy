@@ -1,0 +1,31 @@
+
+
+SVNbot - IRC bot announcing SVN commits, written in Java
+********************************************************
+
+https://svn.devel.redhat.com/repos/jboss-qa/bots/SvnBot/trunk/
+
+
+Configurable:
+
+/--code xml .[brush:]
+  <repositories>
+    <repository name="JBoss AS" url="http://anonsvn.jboss.org/repos/jbossas/" checkInterval="300">
+      <ircChannels>jbossqa some</ircChannels>
+    </repository>
+    <repository name="JBoss Embedded Jopr" url="http://anonsvn.jboss.org/repos/embjopr/" checkInterval="300">
+      <ircChannels>embjopr some</ircChannels>
+    </repository>
+
+    <!--
+    <repository name="FutureTest" url="https://svn.devel.redhat.com/repos/jboss-qa/" checkInterval="300" user="ozizka" pass="">
+      <paths>
+        <path path="/bots" channels="some"/>
+        <path path="/EmbJopr" channels="embjopr"/>
+        <path path="/hudson" channels="hudson"/>
+      <paths>
+    </repository>
+    -->
+
+  </repositories>
+\--

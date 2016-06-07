@@ -1,0 +1,42 @@
+Java - výhody a nevýhody
+########################
+
+
+Zde najdete výhody a nevýhody, které já sám spatřuji na technologii Java.
+Nejprve Java SE (J2SE), níže potom Java EE (J2EE).
+
+
+
+Výhody
+******
+
+Těch je tolik moc, že je ani nebudu vypisovat...
+
+
+Nevýhody
+********
+
+* Chybí klíčové slovo `self` odkazující na aktuální třídu
+* V JRE chybí některé základní funkce, např. spojení pole/kolekce stringů do jednoho stringu
+* Někdy se vůbec nehodí zpracování výskytu hodnoty `null` pomocí výjimky `NullPointerException`, ale to je spíše chyba konkrétních API
+* Chybí přístup k hash-mapám pomocí operátoru `[]`
+
+
+J2EE
+****
+
+Výhody
+======
+
+Opět mnoho... Záleží oproti čemu.
+
+* Mnoho kvalitních frameworků pro mnoho různých účelů
+* Na většinu úloh již existuje kvalitní řešení
+* Mnoho různých paradigmat vývoje a architektury webové aplikace
+
+
+
+Nevýhody
+========
+
+* Při vývoji webové aplikace je nutné na server při každé úpravě aplikaci deployovat. V pokročilých IDE je podpora inkrementálních úprav.

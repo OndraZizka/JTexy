@@ -1,0 +1,158 @@
+
+Profiles in Spring Framework Configuration
+*****************************************************
+
+Spring is a perfect place to centralize your project's configuration.
+Afterall, that was it's initial purpose.
+
+Sooner or later, you will want to parametrize your configuration.
+That means, by setting one parameter, e.g. `profile`, many configuration details should change.
+
+I'll show you how to do that.
+
+
+Substitution in Values - `PropertyPlaceholderConfigurer`
+========================================================
+
+
+You can read some properties from a file and use them to substitute
+some "variables" in bean properties' values.
+A typical usage example is JDBC configuration - one for developement and other for release:
+
+/--code xml .[brush:]
+  <!-- JDBC Datasource -->
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="${jdbc.driver}" />
+    <property name="url" value="${jdbc.url}" />
+    <property name="username" value="${jdbc.username}" />
+    <property name="password" value="${jdbc.password}" />
+  </bean>
+\--
+
+Now you must specify a file where the values of these `${...}`-enclosed variables, 
+called placeholders, are defined. You can use more files, the later overriding the former.
+
+Here we use `properties/database.properties` from the .jar to define "defaults"
+and then override some properties in an external file.
+
+/--code xml .[brush:]
+<context:property-placeholder location="
+  classpath:properties/database.properties,
+  file:conf/database.properties" />
+\--
+
+If you want to keep the possibility of removing the external file and relying solely on the defaults,
+you might use the `ignoreResourceNotFound` attribute:
+
+/--code xml .[brush:]
+<context:property-placeholder location="
+  classpath:properties/database.properties,
+  file:conf/database.properties" ignoreResourceNotFound="true" />
+\--
+
+However, in `Spring 2.x`, only the `location` attribute is supported for `<context:property-placeholder/>` element
+(this shall "probably work in Spring 3.0":http://jira.springframework.org/browse/SPR-4661).
+So, you need to define it "old way" - as a bean:
+
+
+/--code xml .[brush:]
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations" value="
+        classpath:properties/database.properties, 
+        file:conf/database.properties" />
+    <property name="ignoreResourceNotFound" value="true" />
+  </bean>
+\--
+
+
+
+Setting up a Profile - Parametrized Configuration
+=================================================
+
+
+In the preamble, I promissed I'll show how to set up some basic profiling.
+
+Profiles can be set up using the placeholders in the placeholder configuration itself -
+e.g. by setting `location` to `file:conf/${profile}/nastaveni.properties`.
+But where does the ${profile} come from, when we still don't have the properties from the files available?
+
+Spring can substitute placeholders in the definitions of property placeholders 
+using the system properties and evironment variables, that is, 
+what is available from `System.getProperty(String)` and `System.getenv(String)`.
+
+So first, we define the system property, either as a JVM `-D` parameter, or programatically:
+
+/--code
+## in the command line:
+$ java -Dprofile=testing
+
+// Or in Java:
+System.setProperty( "profile", "testing" );
+\--
+
+Then we can set the bean up using all our weapons:
+
+/--code xml .[brush:]
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations" value="
+        classpath:properties/database.properties,
+        file:nastaveni.properties, 
+        file:conf/${profile}/nastaveni.properties" />
+    <property name="ignoreResourceNotFound" value="true" />
+    <property name="ignoreUnresolvablePlaceholders" value="true" />
+    <property name="searchSystemEnvironment" value="true" />
+    <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+  </bean>
+\--
+
+The `searchSystemEnvironment` and `systemPropertiesModeName` have reasonable defaults and can be ommited.
+For more information, see the 
+"PropertyPlaceholderConfigurer javadoc":http://static.springframework.org/spring/docs/2.5.x/api/org/springframework/beans/factory/config/PropertyPlaceholderConfigurer.html.
+
+See also the oficial (and up-to-date) Spring guide to placeholders and overriding:
+"3.7.2. Customizing configuration metadata with BeanFactoryPostProcessors":http://static.springframework.org/spring/docs/2.5.x/reference/beans.html#beans-factory-extension-factory-postprocessors.
+
+
+
+
+Overriding (or Overwriting) default values - `PropertyOverrideConfigurer`
+=========================================================================
+
+When using `PropertyPlaceholderConfigurer`, you inherently must define the values at least once in some properties file.
+Sometimes you could assume that the defaults will be rarely needed to be overridden,
+so you might want to keep the defaults right in the custom beans' configuration in Spring's `.xml`.
+
+That is possible with `PropertyOverrideConfigurer`. Simply configure your bean as usualy:
+
+/--code xml .[brush:]
+  <bean  name="projectInfo" class="cz.dynawest.springtest.CoolProject">
+    <property name="author" value="Ondřej Žižka" />
+    <property name="maintainer" value="Ondřej Žižka" />
+  </bean>
+\--
+
+Then, you can override some of the properties in a properties file.
+The syntax of the name is `<bean-name>.<property-name>=<value>`.
+
+/--code properties
+## newProjectInfo.properties
+projectInfo.maintainer="Reese Witherspoon"
+\--
+
+The final piece of the puzzle is to create a bean that will apply the value to the bean.
+
+/--code xml .[brush:]
+<context:property-override location="classpath:newProjectInfo.properties"/>
+\--
+
+More information on overriding can be found in Spring Reference Documentation -
+"3.7.2.2. Example: the PropertyOverrideConfigurer":http://static.springframework.org/spring/docs/2.5.x/reference/beans.html#beans-factory-overrideconfigurer
+or "PropertyOverrideConfigurer JavaDoc":http://static.springframework.org/spring/docs/2.5.x/api/org/springframework/beans/factory/config/PropertyOverrideConfigurer.html.
+
+
+
+
+
+
+
+

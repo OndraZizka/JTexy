@@ -1,0 +1,326 @@
+SQL procedury pro MySQL 5.0
+***************************
+
+V průběhu doby jsem při řešení různých projektů vytvořil 
+užitečné procedury a funkce, které usnadňují vývoj procedur pro MySQL a mohly by se kdekomu hodit.
+Proto je na těchto stránkách zveřejňuji.
+
+Nejprve něco o principu, jak procedury pracují. Většinou je jejich výstupem tabulka.
+A jelikož v MySQL 5.0 **není žádná možnost**, jak výsledek selectu vraceného procedurou
+zpracovat v jiné proceduře, osvojil jsem si pravidlo, že výsledek uložím do
+`TEMPORARY TABLE` se stejným názvem, jako je název procedury. Tedy např. takto:
+
+/--code
+CALL lib_Explode();
+SELECT * FROM lib_Explode;
+DROP TEMPORARY TABLE IF EXISTS lib_Explode; -- Volitelně
+\--
+
+O uvoňování se obvykle nemusíte starat, funkce si sama tabulku příště přepíše,
+a `TEMPORARY` tabulky se samy uvolní při ukončení vlákna (tedy např. po odpojení od databáze).
+
+Procedury, které vracejí tabulku, se snažím psát tak, aby ji vracely pokaždé;
+při chybě vracejí prázdnou. Pokud tomu tak u některé není, považujte to za chybu a nahlašte.
+
+
+Pro pohodlí uvádím procedury s určením oddělovače pro MySQL Query Browser. Proto příklady začínají a končí takto:
+/--code
+DELIMITER $$
+...
+END; $$
+\--
+
+
+
+
+
+* **Utils** - různé užitečné procedurky, většinou na generování sekvencí a podobně.
+* **Strings** - pro práci s textem.
+  - **`lib_Expode()`** - obdoba expode() z PHP.
+  - **`F1() - F6()`** - `"sprintf()"` s 1 až 6 parametry.
+* **Logování** - sada funkcí pro logování z procedur.
+* **Geografické funkce** - pro převod souřadnic mezi geografickými souřadnicovými systémy
+  a výpočet vzdálenosti na (země)kouli podle zadané zeměpisné polohy.
+
+
+
+Logging
+=======
+
+/--code
+CREATE TABLE lib_logg (
+  `whn` datetime NOT NULL,
+  `thread` int(10) unsigned NOT NULL,
+  `level` enum('info','warn','error') NOT NULL default 'info',
+  `str` text NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+\--
+
+/--code
+DELIMITER $$
+CREATE PROCEDURE  Logg( sStr TEXT ) BEGIN
+  INSERT DELAYED INTO lib_logg SET str = sStr, whn = NOW(), thread = CONNECTION_ID();
+END; $$
+
+CREATE PROCEDURE  Logg_warn( sStr TEXT ) BEGIN
+  INSERT DELAYED INTO lib_logg SET level = 'warn', str = sStr, whn = NOW(), thread = CONNECTION_ID();
+END; $$
+
+CREATE PROCEDURE  Logg_error( sStr TEXT ) BEGIN
+  INSERT DELAYED INTO lib_logg SET level = 'error', str = sStr, whn = NOW(), thread = CONNECTION_ID();
+END; $$
+
+CREATE PROCEDURE LoggP( sRout VARCHAR(255), sStr TEXT ) BEGIN
+  INSERT DELAYED INTO lib_logg SET rout = sRout, str = sStr, whn = NOW(), thread = CONNECTION_ID();
+END $$
+
+CREATE PROCEDURE LoggEnter(sRout VARCHAR(255)) BEGIN
+  INSERT INTO lib_logg SET rout = SUBSTRING_INDEX(sRout,'(',1), 
+    level='enter', str = sRout, whn = NOW(), thread = CONNECTION_ID();
+END $$
+
+CREATE PROCEDURE LoggLeave(sRout VARCHAR(255)) BEGIN
+ INSERT INTO lib_logg SET rout = sRout, level='leave', str = NULL, whn = NOW(), thread = CONNECTION_ID();
+END $$
+\--
+
+
+
+String funkce
+=============
+
+
+`lib_Explode()` - obdoba `Explode()` z PHP
+--------------------------------------
+
+
+/--code
+DELIMITER $$
+
+CREATE PROCEDURE lib_Explode( sSepar VARCHAR(255), saVal TEXT )
+body:
+BEGIN
+
+  DROP TEMPORARY TABLE IF EXISTS lib_Explode;
+  CREATE TEMPORARY TABLE lib_Explode(
+    `pos` int unsigned NOT NULL auto_increment,
+    `val` VARCHAR(255) NOT NULL,
+    PRIMARY KEY  (`pos`)
+  ) ENGINE=Memory COMMENT='Explode() results.';
+
+  IF sSepar IS NULL OR saVal IS NULL THEN LEAVE body; END IF;
+
+  SET @saTail = saVal;
+  SET @iSeparLen = LENGTH( sSepar );
+
+  create_layers:
+  WHILE @saTail != '' DO
+
+    # Get the next value
+    SET @sHead = SUBSTRING_INDEX(@saTail, sSepar, 1);
+    SET @saTail = SUBSTRING( @saTail, LENGTH(@sHead) + 1 + @iSeparLen );
+    INSERT INTO lib_Explode SET val = @sHead;
+
+  END WHILE;
+
+END; $$
+\--
+
+
+Použití:
+
+/--code
+CALL lib_Explode( ',' ,  'Ahoj, jak se máte, 212' );
+\--
+
+Výsledek:
+|pos|val
+|-------
+|1|Ahoj
+|2|&nbsp;jak se máte
+|3|&nbsp;212
+
+
+Poznámka: Pokud byste hledali něco jako `lib_Implode()`, tedy ekvivalent k `explode()`,
+poohlédněte se po "agregační funkci" `GROUP_CONCAT()`:
+
+/--code
+CALL lib_GenerateSequence( 5, 15, 2 );
+SELECT GROUP_CONCAT(i SEPARATOR ' a ') AS vysledek FROM lib_GenerateSequence;
+\--
+
+Výsledek:
+
+|vysledek
+|--------
+|5 a 7 a 9 a 11 a 13 a 15
+
+
+
+`F1() - F6()` - obdoba `"sprintf()"` s 1 až 6 parametry.
+-----------------------------------------------------
+Ve funkci F1() se nahrazuje string %s,
+v ostatních `{1}` až `{6}`.
+
+
+/--code
+DELIMITER $$
+
+CREATE FUNCTION  F1 ( sFormat TEXT, sPar1 TEXT ) 
+    RETURNS text CHARSET utf8 BEGIN
+  RETURN REPLACE(sFormat, '%s', sPar1);
+END; $$
+
+CREATE FUNCTION  F2 ( sFormat TEXT, sPar1 TEXT, sPar2 TEXT ) 
+    RETURNS text CHARSET utf8 BEGIN
+  RETURN REPLACE( REPLACE(sFormat, '{1}', sPar1) , '{2}', sPar2);
+END; $$
+
+CREATE FUNCTION  F3 ( sFormat TEXT, sPar1 TEXT, sPar2 TEXT, sPar3 TEXT )
+    RETURNS text CHARSET utf8 BEGIN
+  RETURN REPLACE( REPLACE( REPLACE(sFormat, '{3}', sPar3), '{1}', sPar1), '{2}', sPar2);
+END; $$
+
+CREATE FUNCTION  F4 ( sFormat TEXT, sPar1 TEXT, sPar2 TEXT, sPar3 TEXT, 
+       sPar4 TEXT ) RETURNS text CHARSET utf8 BEGIN
+  RETURN REPLACE( REPLACE( REPLACE( REPLACE( sFormat,
+    '{1}', sPar1), '{2}', sPar2), '{3}', sPar3), '{4}', sPar4); 
+END; $$
+
+CREATE FUNCTION  F5 ( sFormat TEXT, sPar1 TEXT, sPar2 TEXT,  sPar3 TEXT, 
+       sPar4 TEXT, sPar5 TEXT  ) RETURNS text CHARSET utf8 BEGIN
+  RETURN REPLACE( REPLACE( REPLACE( REPLACE( REPLACE( sFormat,
+    '{1}', sPar1), '{2}', sPar2), '{3}', sPar3), '{4}', sPar4), '{5}', sPar5); 
+END; $$
+
+CREATE FUNCTION  F6 ( sFormat TEXT, sPar1 TEXT, sPar2 TEXT,  sPar3 TEXT,
+       sPar4 TEXT, sPar5 TEXT, sPar6 TEXT  ) RETURNS text CHARSET utf8 BEGIN
+  RETURN REPLACE( REPLACE( REPLACE( REPLACE( REPLACE( REPLACE( sFormat,
+    '{1}', sPar1), '{2}', sPar2), '{3}', sPar3), '{4}', sPar4), '{5}', sPar5), '{6}', sPar6);
+END; $$
+\--
+
+
+Použití:
+
+/--code
+SELECT F2( 'Ve městě {1} je {2} stupňů.', 'Praha', 31.2 ) FROM DUAL;
+\--
+
+Výsledek:
+
+|Ve městě Praha je 31.2 stupňů.
+
+
+
+
+
+NULL-safe functions
+===================
+
+Somethimes you need to ensure that no parameter of a function is `NULL`,
+e.g. in case of calling CONCAT(), which returns `NULL` if any of parameters is `NULL`.
+Writing IFNULL(@param,'') every time can be tedious; so here are some convenience functions.
+Mainly for debugging purposes.
+
+Funkce hlavně pro potřeby logování.
+
+NS() - NULL-safe
+----------------
+NSB() - NULL-safe boolean
+----------------
+NSQ() - NULL-safe quoted
+----------------
+If the only argument is `NULL`, returns the string "NULL".
+Otherwise returns:
+* NS(): argument.
+* NSB(): String "TRUE", if the argument evaluates as true, or "FALSE" in the opposite case.
+* NSQ(): argument surrounded by quotes.
+
+/--code
+DELIMITER $$
+
+CREATE FUNCTION NS( s VARCHAR(255) ) 
+RETURNS varchar(255) CHARSET utf8 BEGIN
+  RETURN IF( s IS NULL, 'NULL', CONCAT('"',s,'"') );
+END $$
+
+CREATE FUNCTION NSB(b BOOLEAN) RETURNS char(5)
+CHARSET utf8 NO SQL DETERMINISTIC BEGIN
+  RETURN IF( b IS NULL, 'NULL', IF(b,'TRUE','FALSE') );
+END $$
+
+CREATE FUNCTION NSQ(s VARCHAR(255)) RETURNS varchar(255)
+CHARSET utf8 NO SQL DETERMINISTIC BEGIN
+  RETURN IF( s IS NULL, 'NULL', CONCAT('"',s,'"') );
+END  $$
+
+DELIMITER ;
+\--
+
+Použití:
+
+/--code
+CALL Logg( F1('Computing level %s.', NS(@iLevel)) )
+\--
+
+
+
+
+Utilities
+=========
+
+
+lib_GenerateSequence - generování lineární sekvence čísel
+--------------------
+
+
+/--code
+DELIMITER $$
+
+CREATE PROCEDURE lib_GenerateSequence( 
+  iFrom INTEGER, iTo INTEGER, iStep INTEGER )
+body:
+BEGIN
+
+  DROP TEMPORARY TABLE IF EXISTS lib_GenerateSequence;
+  CREATE TEMPORARY TABLE lib_GenerateSequence (i INTEGER NOT NULL);
+
+  ##  Exit if one of arguments is NULL.
+  IF iFrom IS NULL OR iTo IS NULL OR iStep IS NULL
+    THEN LEAVE body; END IF;
+
+
+  SET @iMin = iFrom;
+  SET @iMax = iTo;
+
+  InsertLoop: LOOP
+    IF @iMin > @iMax THEN LEAVE InsertLoop; END IF;
+    INSERT INTO lib_GenerateSequence SET i = @iMin;
+    SET @iMin = @iMin + iStep;
+  END LOOP;
+
+END; $$
+\--
+
+Použití:
+
+/--code
+CALL lib_GenerateSequence( 5, 15, 2 )
+\--
+
+Výsledek:
+
+|i
+|-------
+|5
+|7
+|9
+|11
+|13
+|15
+
+
+
+
+

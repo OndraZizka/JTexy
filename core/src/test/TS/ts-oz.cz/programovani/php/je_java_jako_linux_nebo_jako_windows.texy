@@ -1,0 +1,207 @@
+Je Java jako Linux nebo jako Windows?
+*************************************
+
+<!-- //Článek momentálně upravuji.// -->
+
+
+//Přesunuto "sem":/stranky/programovani/java/je_java_jako_linux_nebo_jako_windows.texy.//
+
+
+Po napsání předchozího článku "Výhody a nevýhody PHP":vyhody_a_nevyhody_php.texy
+se ozval Jakub Vrána a chvíli jsme si mailovali nad některými body článku,
+což se, jak to bývá, stočilo na srovnání PHP s technologií, kterou já preferuji - tedy s Javou.
+
+V závěru jsme se dostali k tomu, zda je Java nebo PHP podobnější Linuxu nebo Windows.
+Zde je část z mailu:
+
+<blockquote>
+
+Jednu věc nechápu a budu rád, když mi jako (předpokládám) fanda Linuxu 
+vysvětlíš:
+
+Jak je možné, že lidé, kteří preferují Linux před Windows, zároveň preferují 
+PHP před Javou. Protože pokud bychom zobecnili vlastnosti a požadavky na 
+systémy a plaformy, potom právě Java oproti PHP by byla jako Linux oproti 
+Windows - technologicky vyspělejší, vývojově stabilnější, zpětně 
+kompatibilnější, modulárnější, konfigurovatelnější, víceúčelovější, a druhé 
+ideologicky vykrádá první, přičemž to ani nezvládne dotáhnout do konce a 
+zbyde jenom nedotažený hybrid zatížený historií svého vývoje.
+
+PHP se mi zdá jako takový rozjetý mnohakilometrový vlak tažený slabou 
+mašinkou, ke kterému stále napojují další a další vagóny - některé velice 
+moderní, přepychové, a pokud jedete po rovince, vše je ok - ale pak přijde 
+kopeček a mašinka se sotva vleče; a pak i v  těch nejpřepychovějších 
+vagónech poznáte, že je něco špatně. (Mašinka zde nepředstavuje výkonnost, 
+ale právě ono "jádro".)
+
+Co je tedy podle tebe na PHP lepšího? Co tě k němu táhne kromě citové vazby? 
+(Tvoje zásluhy v PHP komunitě zhruba znám a oceňuji, a chápu a znám z 
+vlastní zkušenosti, že z takového rozjetého vlaku se velmi těžko vyskakuje.) 
+Zkoušels někdy proniknout do J2EE? Znáš základní konceptuální rozdíly? 
+Nechci tě nijak shazovat, jen mě zajímá, jestli se dokážeš vžít do mojí 
+situace a pochopit tak, proč PHP tak "haním".
+
+Zdraví
+Ondra Žižka 
+
+</blockquote>
+
+
+Dovolím si zkopírovat Jakubovo resumé z článku "Je PHP jako Linux nebo jako Windows?":http://php.vrana.cz/je-php-jako-linux-nebo-jako-windows.php:
+
+<blockquote>
+
+Jakub Vrána:
+------------
+
+    **PHP a Linux** – malé jádro, k tomu volitelné jednoúčelové knihovny s jednoduchým rozhraním.
+
+    **Java a Windows** – vše v jednom spravované přes komplexní objektové rozhraní.
+
+Ondřej Žižka:
+-------------
+
+    **PHP a Windows** (z pohledu programátora WinAPI): Silně proměnlivá technologie, v lecčems zpětně nekompatibilní, počáteční návrh špatný a směřující k lepšímu po vzoru lepších technologií, mnohé významné featury dodělávané ad hoc a nepřirozeně vmontované do návrhu.
+
+    **Java a Linux**: Stabilní technologie stavěná velmi rozvážně podle promyšleného návrhu dlouho laděného a diskutovaného mnoha IT firmami, silná a zaručená zpětná kompatibilita, standardizované API, mnoho různých použití (od embedded zařízení až po clusterované farmy serverů). Nejčastěji používaná rozšíření časem projdou procesem standardizace a začlení se do jádra, resp. JRE.
+
+</blockquote>
+
+Jak někdo poznamenal v tamějších komentářích, Jakub posuzuje z pohledu technického,
+zatímco já se snažím spíše o ideologické srovnání - zkrátka principy, 
+na kterých vývojáři a komunita dané technologie (ne)staví.
+
+A to je z dlouhodobého hlediska mnohem důležitější -
+jistě chcete vyvíjet bez obav,
+že by příští major verze opět přinesla další sadu vlastností z jiných jazyků
+chaoticky splácaných dohromady se stávající verzí.
+
+------------------------------------------------------------------
+
+Aby byla debata co k čemu, měli bychom tato hesla něčím podpořit, případně vyvrátit.
+Pusťme se do toho :-)
+
+
+Malé jádro
+==========
+
+Jak změřit velikost jádra? A co je vůbec jádro?
+Řekněme, že je to ta část technologie, která je nezbytně nutná pro její běh.
+- Binárky pro Java Virtual Machine (interpret Javy) nejnovější verze mají cca 6 MB, což zahrnuje mimo jiné nativní knihovny pro zobrazování desktop aplikací, práci se zvukem, fonty atd.
+- K Javě patří ještě `rt.jar`, což je balík, ve kterém jsou knihovny obsažené ve standardní distribuci. Z toho se dá jako jádro počítat maximálně část z nich.
+- Jádro PHP, `php6ts.dll`, má cca. 14 MB (standardní distribuce windows), a tento modul je dále nedělitelný.
+- S okolními knihovnami (kromě API pro Apache, ISAPI a NSAPI) má kolem 20 MB.
+- `php5ts.dll` má cca. 5 MB, a spolu s okolními `.dll` má asi 10 MB.
+
+Ale velikost dat není nejlepší ukazatel. Vyberme tedy jiné kritérium.
+Nabízí se možnost miniaturizace jádra technologie a složitost syntaxe, a Jakubem uvedená "komplexnost jádra".
+
+
+Komplexnost jádra
+=================
+
+Co se týká "ne/komplexnosti" jádra, tak si nejsem zcela jist, jak rozlišit, co v jádru je či není.
+
+Pokud vím, v jádru Javy je jen několik tříd typu Object, String, Throwable, 
+dále nativní metody základních systémových tříd, a tím to hasne; 
+drtivá většina funkcionality JRE je již implementovaná v Javě a je oddělitelná.
+
+V PHP je mnoho knihoven instalovatelných z repozitáře PEAR,
+a většina těch, které jsou ve Windows verzi v phpXts.dll,
+jsou na linuxu volitelné za cenu vlastní kompilace PHP.
+Nicméně nevolitelnou součástí jádra jsou funkce 
+jako `money_format()`, `apache_note()` nebo `highlight_file()`,
+na kterých jistě technologie závislá není.
+
+V tomto je tedy Linuxu podobnější Java, který v jádru obsahuje pouze to nutné (ať už pro funkčnost systému nebo kvůli výkonu).
+
+Že by Java obsahovala vše v jednom je vyvráceno, a za "all-in-one" technologii se dá považovat spíše PHP.
+
+
+
+Windows a "vše v jednom"
+------------------------------
+
+U té architektury Windows bych řekl, že se Jakub seknul;
+<!-- Dovolil bych si polemizovat i o "komplexnosti" jádra Windows -->
+od verzí NT až po XP (Visty neznám)
+je systém poměrně modulárni a dá se očesat skoro až na HAL.
+
+Stejně tak předchozí verze Windows - existuje mnoho různých amatérských minidistribucí Windows 98 (bohužel teď je nenajdu).
+
+"spravované přes komplexní objektové rozhraní" - to nevím, co tím Jakub u Windows myslel.
+Na WinAPI není objektového nic, to je čisté C.
+
+
+
+
+Možnost miniaturizace jádra
+===========================
+
+Až teprve v extrémních podmínkách se ukáže, co vše lze z "jádra" vypustit, aby technologie stále byla sama sebou.
+
+Takovými podmínkami jsou například mobilní telefony.
+Java šlape i na telefonech jako jsou několik let staré mobily Nokia.
+Zde se velikost jádra těžko určí, protože implementace je do jisté míry hardwarová.
+
+Naproti tomu nejmenší mě známý výskyt PHP je verze PHP pro servery Novell, která je osekaná o leccos, a přesto má hlavní knihovna stále několik MB.
+
+Řekl bych, že tím je v tomto bodě jasno - malé jádro a mnoho volitelných knihoven jednoznačně pasuje spíše na Javu.
+
+
+//Update:// O tom, že Java je skutečně univerzální, se můžete přesvědčit např. na
+http://www.knihy.cpress.cz/BookDoc.asp?BookID=160&DocID=626&DownloadSection=12,
+kde najdete publikaci pro grafiky, která se věnuje se programování skeneru pomocí Javy.
+
+
+
+
+Složitost syntaxe PHP a Javy
+============================
+
+
+Syntaxe Java oproti syntaxi PHP:
+- Nemá & reference
+- Není zde @ na umlčení
+- Nenahrazují se proměnné ve stringu
+- Nejsou zde věci typu __call, __autoload a další __*
+- Nemá # komentáře
+- Nemá `systémová volání`
+- Nemá podivné konstrukce typu Array($objekt, "VolanáMetoda")
+- Nemá konstrukty, které se tváří jako funkce, ale nejsou funkce 
+- Nemá operátory and, or, xor, !==, ===
+- Nemá konstrukty require, require_once, include_once, declare
+- Nemá alternativní zápis kontrolních struktur s dvojtečkou
+- Nemá `global`
+- Nemá `$GLOBALS`, `$_GET`, `$_POST`, `$_COOKIE`, `$_FILES`, `$_ENV`, `$_REQUEST`
+
+Naopak:
+- Má @anotace
+- Má generické &lt;typy&gt;
+- Má navíc klíčová slova pro různé účely (synchronized, transient, enum, volatile a další)
+
+
+Java syntaxe je jednodušší než syntaxe PHP.
+
+
+
+Závěr
+======
+
+Co se tedy týký připodobnění Javy a PHP k Linuxu a Windows,
+není mnoho argumentů, proč PHP připodobňovat k Linuxu a Javu k Windows - spíše naopak.
+
+PHP je prostě na ocasu vývoje a s velkými obtížemi adoptuje vymoženosti 
+jiných technologií (OOP, Unicode, výjimky, synchronizaci a sdílení, ...) - stejně jako Windows.
+
+Naproti tomu Java je spolu s C# a .NET na špičce vývoje na poli IT, podobně jako Linux na poli OS.
+
+--------------------------------------------------------
+
+Jako tečku cituji člověka, který má PHP opravdu v malíku (a autora skvělého Texy!) - Davida Grudla:
+
+> Programovat v Javě umí kdekdo. O ASP.NET ani nemluvě. Jen v PHP píši skuteční hrdinové. 
+> Renesanční bytosti. Fascinující a neskutečně trpěliví lidé. Trpěliví od slova trpět. Třeba jako já.
+>
+> -- David Grudl, http://latrine.dgx.cz/php-surprise .>
+

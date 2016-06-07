@@ -1,0 +1,24 @@
+Sardine - mavenized version
+***************************
+
+//Copied from Sardine README.txt without editation.//
+
+This is a maven repository of the Sardine project.
+
+To add a new version, do the following:
+**Note:** This is not a copy-paste code - edit it according to your situation.
+
+  mvn install:install-file -DpomFile=sardine-pom.xml -Dpackaging=jar -DgeneratePom=true -DgroupId=com.googlecode.sardine -Dfile=sardine-XX\sardine.jar -DartifactId=sardine -Dversion=XX
+
+  svn co https://sardine.googlecode.com/svn/maven sardine-mvn --username you@gmail.com
+
+  cp -r ~/.m2/repository/com/googlecode/sardine/sardine sardine-mvn/com/googlecode/sardine/sardine
+  mv ~/.m2/repository/com/googlecode/sardine/sardine/maven-metadata-local.xml ~/.m2/repository/com/googlecode/sardine/sardine/maven-metadata.xml
+
+  svn add --force *
+  svn commit -m "Maven repo: Added version XX"
+
+
+* `~/.m2/repository/` is your local Maven repository. On windows it is usually `c:\Documents and Settings\user\.m2\repository\`.
+* The `pom.xml` is there because it contains dependency definitions.
+* sardine-mvn/com/googlecode/sardine/sardine/maven-metadata-local.xml

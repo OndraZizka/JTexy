@@ -1,0 +1,214 @@
+User Songs Rating
+*****************
+
+To save user's rating, call `rate.php`:
+
+/--code url
+rate.php?user=Trapper852@Adelphia.net&song_id=1500&rating=10
+http://d02-0330a.kn.vutbr.cz/winlyrics/real/rate.php?user=Trapper852@Adelphia.net&song_id=1500&rating=10
+\--
+
+**Params:**
+
+/--code doc
+@param user  	string         Identifier - e.g. e-mail - of the user who rates the song. 
+@param song_id	unsigned int   ID of the rated song.  UNSIGNED INT
+@param rating	signed byte    Rating of the song.
+\--
+
+**Returns:**
+
+one of `OK`, `BAD_PARAM`, `DB_ERROR`, `SQL_ERROR`, `SESSION_ERROR`.
+
+May be followed by a space and additional data, specifying the error details.
+
+* `OK` - everything ok, rating saved.
+* `BAD_PARAM` - bad parameters (see above) - may also mean non-existent user, song, etc.
+  * May be followed by the name of the bad param.
+* `DB_ERROR`  - database error, e.g. could not connect to DB.
+* `SQL_ERROR` - error occured when performing SQL query. Details in `/logs/log.txt` .
+* `SESSION_ERROR` - given session ID is not valid, need to re-authentize.
+
+
+Session-based rating
+====================
+
+1) Authentize using `authentize.php`
+2) Use the session to rate:
+
+/--code
+>> `http://localhost:81/winlyrics/real/rate_sess.php?sess_id=f8675g1390s7dngloohqitsd74&song_id=15&rating=10`
+<< `OK`
+\--
+
+**Params:**
+
+/--code doc
+@param sess_id 	string         Session ID, previously acquired using authentize.php
+@param song_id	unsigned int   ID of the rated song.  UNSIGNED INT
+@param rating	signed byte    Rating of the song.
+\--
+
+**Returns:** Same as above.
+
+
+
+
+
+
+SQL code
+========
+
+Tests
+-----
+
+Creates a user-song-rating triplet for user `Trapper852@Adelphia.net` and song `1500`, rated `-10`:
+
+/--code sql .[brush:]
+CALL wl2_SetRating( (SELECT id FROM wl2_users WHERE email = 'Trapper852@Adelphia.net'), 1500, -10 );
+\--
+
+Changes that rating to 50:
+
+/--code sql .[brush:]
+CALL wl2_SetRating( (SELECT id FROM wl2_users WHERE email = 'Trapper852@Adelphia.net'), 1500, 50 );
+\--
+
+Creates rating for other song and other user:
+
+/--code sql .[brush:]
+CALL wl2_SetRating( 20, 1700, 40 );
+\--
+
+Does nothing (invalid user)
+
+/--code sql .[brush:]
+CALL wl2_SetRating( (SELECT id FROM wl2_users WHERE email = 'non@existent@user'), 200, 30 );
+\--
+
+Removes the rating for given user-song tuple:
+
+/--code sql .[brush:]
+CALL wl2_SetRating( (SELECT id FROM wl2_users WHERE email = 'Trapper852@Adelphia.net'), 1500, NULL );
+\--
+
+
+
+
+Tables
+-------
+
+
+/--code sql .[brush:]
+CREATE TABLE  `winlyricscom`.`wl2_users` SELECT * FROM users; 
+ALTER TABLE `winlyricscom`.`wl2_users` 
+  ADD COLUMN `pass_md5` char(32) character set cp1250 collate cp1250_bin NOT NULL,
+  MODIFY `email` `email` varchar(128) character set cp1250 NOT NULL,
+  KEY `email` (`email`);
+
+-- evt. --
+INSERT INTO wl2_users
+  SELECT id, '' AS pass, jmeno, adresa, mesto, stat_kod, postal, email FROM reg_users;
+\--
+
+
+
+/--code sql .[brush:]
+CREATE TABLE  `winlyricscom`.`wl2_songs_rating` (
+  `id_song` int(10) unsigned NOT NULL auto_increment,
+  `rating_sum` int(10) unsigned NOT NULL,
+  `rating_cnt` int(10) unsigned NOT NULL,
+  `rating` float NOT NULL,
+  PRIMARY KEY  (`id_song`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf-8;
+\--
+
+
+
+/--code sql .[brush:]
+CREATE TABLE  `winlyricscom`.`wl2_users_ratings` (
+  `id_user` int(10) unsigned NOT NULL,
+  `id_lyrics` int(10) unsigned NOT NULL,
+  `rating` tinyint(4) NOT NULL,
+  PRIMARY KEY  (`id_user`,`id_lyrics`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+\--
+
+
+
+
+
+Procedure `wl2_SetRating`
+-------------------------
+
+Creates / updates rating of given song by the given user.
+Repeated rating from one user changes his previous rating.
+Stores the data in `wl2_users_ratings`.
+
+
+
+/--code sql .[brush:]
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `winlyricscom`.`wl2_SetRating`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE  `winlyricscom`.`wl2_SetRating`(idUser INT UNSIGNED, idSong INT UNSIGNED, iRating TINYINT)
+BEGIN
+
+
+  SELECT rating INTO @iRating FROM wl2_users_ratings WHERE id_user = idUser AND id_song = idSong;
+
+  IF @iRating = 0 THEN
+    INSERT INTO wl2_users_ratings SET id_user = idUser, id_song = idSong, rating = iRating;
+  ELSE
+    UPDATE wl2_users_ratings SET rating_sum = iRating WHERE id_user = idUser AND id_song = idSong;
+  END IF;
+
+
+END $$
+
+DELIMITER ;
+\--
+
+
+Procedure `wl2_RebuildRating`
+-------------------
+
+Rebuilds the average ratings in `wl2_songs_rating` based on data in `wl2_users_ratings`.
+
+
+/--code sql .[brush:]
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `winlyricscom`.`wl2_RebuildRating`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE  `winlyricscom`.`wl2_RebuildRating`()
+BEGIN
+
+  TRUNCATE wl2_songs_rating;
+
+  INSERT INTO wl2_songs_rating
+  SELECT id_song,
+      SUM(rating) AS rating_sum, COUNT(*) AS rating_cnt,
+      SUM(rating) / COUNT(*) AS rating
+    FROM wl2_users_ratings GROUP BY id_song;
+
+
+
+END $$
+
+DELIMITER ;
+\--
+
+
+
+/--code sql .[brush:]
+
+\--
+
+
+
+/--code sql .[brush:]
+
+\--
+
+
+

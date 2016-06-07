@@ -1,0 +1,31 @@
+The difference between `java` and `javaw`
+#########################################
+
+There are more ways to run Java programs (either .class or .jar).
+One is to use the executable named `java` and the other is to use `javaw`.\
+So what is the difference?
+
+**`java`** (`java.exe` on Windows) runs the program in a console window.
+If you run the command
+
+/--code cmd
+java -jar Application.jar
+\--
+
+then a console window appears (if not already done in a console)
+and the program uses it for the input and standard output and standard error streams.
+
+On the contrary, `javaw` or `javaw.exe` runs the program without console window appearing,
+and all input and output (using e.g. `System.out.println()` or System.err.print()`) is silenced.
+
+So, if you have the same problem I had, that is, running the `.jar` file in a windows console 
+(`cmd.exe`) and having no output,
+then you can fix that by changing the Windows registry value `HKEY_CLASSES_ROOT\jarfile\shell\open\command`.
+In my case, its value is:
+
+/--code cmd
+HKEY_CLASSES_ROOT\jarfile\shell\open\command = "C:\sw\Java\jre1.6.0_07_32bit\bin\javaw.exe" -jar "%1" %*
+\--
+
+Just change the `javaw.exe` to `java.exe`. After changing, you will see the output in the console 
+when running `.jar` files just by "double-clicking" it.

@@ -1,0 +1,16 @@
+List test
+
+1) List item 1
+2) List item 2
+3) List item 3
+
+
+A) List item with paragraph
+  Paragraph inside list item.
+B) List item 2
+C) List item 3
+
+.[test]
+I) Item of a list with a class
+II) List item with a style .{color: red;}
+III) List item

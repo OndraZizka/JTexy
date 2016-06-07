@@ -1,0 +1,275 @@
+
+
+Linux: Bash generic script to switch versions (like `alternatives` and Gentoo's `eselect`)
+******************************************************************************************
+
+I've made a switch script.
+
+Usage
+======
+
+/--code bash .[xbrush:]
+  $ switch
+  $ switch maven 2.2.1
+  $ mvn -version
+  $ switch maven 2.1.0
+  $ mvn -version
+\--
+
+Installation
+=============
+
+It uses your ~/sw/tools/.links, so update your PATH.
+
+/--code bash .[xbrush:]
+  export PATH=~/sw/tools/.links:$PATH
+\--
+
+Then (optionally):
+
+/--code bash .[xbrush:]
+  $ /mnt/jqa/sw/tools/switch.sh install
+  Creating ~/sw/tools/.links/switch -> /mnt/jqa/sw/tools/switch.sh
+\--
+
+
+Download
+========
+
+Download "here":switch.zip.
+
+
+Script's code
+=============
+
+/--code bash .[xbrush:]
+#####################################################################################################
+#
+#  This script creates switches between the versions of various tools,
+#  found in /mnt/jqa/sw/tools/ (curently hard-coded).
+#
+#  Usage:
+#    $ switch maven 2.1.0
+#    $ mvn ...
+#
+#  Installation:
+#   * Set PATH to begin with ~/sw/tools/.links (in ~/.bashrc)
+#
+#  Tools directory structure:
+#   * .../<tool_name>/
+#     * <tool_version>/
+#     * <tool_version2>/
+#     * onSwitch.sh
+#     * onRun.sh
+#
+#  Callback scripts:
+#
+#   * onSwitch.sh - called when the version switch is performed.
+#     * Called using:   . onSwitch.sh <tool_name> <tool_version>
+#
+#   * onRun.sh - if present, all tool's runnables will be called through a script,
+#                which will be re-created each time the versions are switched:
+#
+#          TOOL_NAME=<tool_name>    # Few variables are set at the top of the script.
+#          TOOL_VERSION=<...>       # 1.2.3
+#          TOOL_HOME=<...>          # Tool home dir - i.e., the dir particular version.
+#          TOOL_RUNNABLE_PATH=<...> # Path to the runnable to be called. 
+#
+#          <content of onRun.sh>    # The content is simply pasted here.
+#          <tool_runnable> $@       # Calls the current version of the tool runnable.
+#
+#  Todo:
+#   * Upon switch, remove links created with previous switch.
+#     * All that belong to the tools/<tool_name> dir (parse the variables at the top of the scripts)
+#
+#  History:
+#  2009-12-22:
+#   * Runnables are now searched automatically in TOOL_HOME/bin if there's no runnables.txt.
+#   * Softlinks to executable files also count as runnables.
+#   * Home dir of this script is detected automatically.
+#   * Meta-dirs now start with a dot (.links, .homes, .template).
+#
+#
+#####################################################################################################
+
+
+##  
+##  @param  $1  Tool name
+##  @param  $2  Tool version
+##  @param  $3  Tool runnable path
+##  @param  $4  TOOL_HOME - path to the home dir of the selected version of the tool.
+##  @param  $5  ON_RUN - a script to execute before the runnable is run.
+##  
+function createRunnableScript {
+
+	TOOL_RUNNABLE_PATH=$3
+	TOOL_HOME=$4
+	ON_RUN=$5
+	
+	TOOL_RUNNABLE_NAME=`basename $TOOL_RUNNABLE_PATH`;
+	MY_LINK=~/sw/tools/.links/$TOOL_RUNNABLE_NAME
+	if [ -e "$MY_LINK" ] ; then rm $MY_LINK; fi
+	if [ -z "$ON_RUN" ] ; then
+		echo "Creating link $MY_LINK -> $TOOL_RUNNABLE_PATH"
+		ln -s  $TOOL_RUNNABLE_PATH  $MY_LINK
+	else
+		echo "Creating bash script: $MY_LINK"
+		echo "TOOL_NAME=$1" > $MY_LINK;
+		echo "TOOL_VERSION=$2" >> $MY_LINK;
+		echo "TOOL_HOME=$TOOL_HOME" >> $MY_LINK;
+		echo "TOOL_RUNNABLE_PATH=$TOOL_RUNNABLE_PATH" >> $MY_LINK;
+		cat $ON_RUN >> $MY_LINK;
+		echo "" >> $MY_LINK
+		echo "exec $TOOL_RUNNABLE_PATH \"\$@\"" >> $MY_LINK;
+	fi
+	chmod +x $MY_LINK
+}
+
+
+
+##  Return value.
+RET=0
+
+
+	##  Determine this script's location ("Tools" home dir).
+
+	#TOOLS="/home/ondra/sw/tools"
+
+	#scriptPath=$(cd ${0%/*} && echo $PWD/${0##*/})
+	scriptPath="$(cd "${0%/*}" 2>/dev/null; echo "$PWD"/"${0##*/}")"
+	# For the case when called through a symlink (eg. sw/tools/.links/switch -> ../switch.sh).
+	scriptPath=`readlink -f "$scriptPath"`
+	
+	TOOLS=`dirname "$scriptPath"`
+
+
+
+##  Install - create the .links dir and a link to the switch.sh script.
+##  Assumes that user will put ~/sw/tools/.links at the beginning of his $PATH.
+if [ "$1" == "install" ] ; then
+	if [ ! -x ~/sw/tools/.links/switch ] ; then
+		echo "Creating ~/sw/tools/.links/switch -> $scriptPath" 
+		mkdir -p ~/sw/tools/.links
+		ln -s  $scriptPath ~/sw/tools/.links/switch
+	else
+		echo "~/sw/tools/.links/switch already exists." 
+	fi
+	exit;
+fi
+
+
+
+while true; do
+
+
+	if [ "on" == "$1" ] ; then 
+		## No way to export a variable without sourcing this script :(
+		export PATH=~/sw/tools/.links:$PATH
+	fi
+	
+	##  No arguments: List available tools and versions.
+	if [ -z "$1" -o -z "$2" ] ; then 
+		echo "    Usage:   switch <tool> <ver>";
+		echo "    Available tools and versions:"
+		for TOOL in `ls -1 --ignore=switch.* --ignore=.* --ignore=_* $TOOLS`; do
+			if [ ! -d "$TOOLS/$TOOL" ] ; then continue; fi
+			#echo "      $TOOL `ls --ignore=*.path $TOOLS/$TOOL`";
+			echo "      "$(echo "$TOOL `find -L $TOOLS/$TOOL/ -mindepth 1 -maxdepth 1 -type d | sed 's#.*/##'`");
+			#tree -diL 1
+			#ls -l | grep ^d | awk '{print $9}'
+		done
+		break;
+	fi
+	
+	##  Has to be sourced for it sets variables into the environment (like M2_HOME).
+	if [ "$0" == "switch.sh" ] ; then
+		echo "This file (switch.sh) has to be source'd  ('. switch.sh').";
+		exit 666;
+	fi
+	
+	
+	
+	##  Tool's root dir (contains dirs with concrete versions).
+	TOOL_DIR="$TOOLS/$1"
+	if [ ! -d "$TOOL_DIR" ] ; then echo "Unknown tool: $1"; RET=1; break; fi
+	
+	##  Particular version's dir.
+	TOOL_HOME="$TOOL_DIR/$2"
+	if [ ! -d "$TOOL_HOME" ] ; then echo "$1 doesn't have a version: $2"; RET=2; break; fi
+	
+	
+	mkdir -p ~/sw/tools/.links
+	mkdir -p ~/sw/tools/.homes
+
+
+	##  Commands to perform before running the tool (each time).
+	if [ -x "$TOOL_DIR/onRun.sh" ] ; then
+		ON_RUN=$TOOL_DIR/onRun.sh;
+	fi
+
+
+	##  Create the HOME links.
+	echo "Creating link ~/sw/tools/.homes/$1 -> $TOOL_HOME"
+	rm ~/sw/tools/.homes/$1
+	ln -s $TOOL_HOME ~/sw/tools/.homes/$1
+	
+	
+	##  Commands to run upon version switching.
+	if [ -x "$TOOL_DIR/onSwitch.sh" ] ; then
+		echo "Running '$TOOL_DIR/onSwitch.sh $TOOL_HOME'..."; 
+		$TOOL_DIR/onSwitch.sh $TOOL_HOME;
+	fi
+	
+
+
+
+	##  Tool's runnable from the path.
+	##  Check the symlink existence.
+	if [ ! -h $TOOL_DIR/runnable.path ] ; then
+		#echo "Every tool has to have an (invalid) symlink with the path from tool's HOME to the executable."; RET=3; break;
+		true;
+	else
+		TOOL_RUNNABLE_PATH=$TOOL_HOME/`readlink $TOOL_DIR/runnable.path`
+		if [ ! -e "$TOOL_RUNNABLE_PATH" ] ; then echo "Non-existent runnable: $TOOL_RUNNABLE_PATH"; RET=4; break; fi
+		if [ ! -x "$TOOL_RUNNABLE_PATH" ] ; then echo "Non-executable runnable: $TOOL_RUNNABLE_PATH"; RET=5; break; fi
+	
+		##  Create a link to the runnable in ~/sw/tools/.links/, named like the tool name.
+		createRunnableScript $1 $2 $TOOL_RUNNABLE_PATH $TOOL_HOME $ON_RUN
+	fi 
+	
+
+	
+	if [ -x "$TOOL_DIR/runnables.txt" ] ; then 
+		##   Link runnables listed in a file /sw/tools/<tool>/runnables.txt .
+		##   TODO: Find automatically all executables from the tool's dir.
+		##         Upon creation of those, remove links pointing to the particular tool's dir.
+		for RUNNABLE_SUBPATH in `cat $TOOL_DIR/runnables.txt`; do 
+			TOOL_RUNNABLE_PATH=$TOOL_HOME/$RUNNABLE_SUBPATH;
+			if [ ! -e "$TOOL_RUNNABLE_PATH" ] ; then echo "Non-existent runnable: $TOOL_RUNNABLE_PATH"; RET=4; break 2; fi
+			if [ ! -x "$TOOL_RUNNABLE_PATH" ] ; then echo "Non-executable runnable: $TOOL_RUNNABLE_PATH"; RET=5; break 2; fi
+		done
+	
+		for RUNNABLE_SUBPATH in `cat $TOOL_DIR/runnables.txt`; do 
+			TOOL_RUNNABLE_PATH=$TOOL_HOME/$RUNNABLE_SUBPATH;
+			createRunnableScript $1 $2 $TOOL_RUNNABLE_PATH $TOOL_HOME $ON_RUN
+		done
+	else
+		##   runnables.txt does not exist, scan the dir for executable files and links.
+		#for RUNNABLE_SUBPATH in `ls -l $TOOL_HOME/bin | grep -e ^[-l]..x | cut  -b47- | cut -d' ' -f1`; do
+			#TOOL_RUNNABLE_PATH=$TOOL_HOME/bin/$RUNNABLE_SUBPATH;
+		for TOOL_RUNNABLE_PATH in $TOOL_HOME/bin/* ; do if [ -x "$TOOL_RUNNABLE_PATH" -a -f "$TOOL_RUNNABLE_PATH" ] ; then
+			createRunnableScript $1 $2 $TOOL_RUNNABLE_PATH $TOOL_HOME $ON_RUN
+		fi ; done
+	fi
+
+break;
+done # while true
+
+##  Clear bash's cache.
+hash -r
+
+
+##  If called without `source`, return an exit code.
+if [ "$0" == "switch.sh" ] ; then exit $RET; fi
+\--
+

@@ -1,0 +1,274 @@
+Insolvenční rejstřík - typy akcí webové služby ISIR
+***************************************************
+
+
+"Insolvenční rejstřík":http://www.pohlidame.cz za vás pohlídá server Pohlídáme.cz.
+
+
+"Zpět na kritiku webové služby ISIR":index.texy
+
+| číslo typu | typ akce
+|----------------------
+|1   | Změna osoby
+|2   | Změna adresy osoby
+|4   | Změna v číselníku událostí
+|5   | Insolvenční návrh
+|6   | Insolvenční návrh spojený s návrhem na povolení oddlužení
+|8   | Návrh
+|9   | Návrh na předběžné opatření
+|10   | Návrh na moratorium
+|18   | Návrh na povolení oddlužení
+|21   | Návrh - zpětvzetí
+|22   | Návrh - doplnění návrhu
+|23   | Návrh - přílohy
+|24   | Námitky
+|27   | Žaloba
+|28   | Sdělení
+|29   | Sdělení dlužníka
+|30   | Sdělení věřitele
+|31   | Sdělení známého věřitele o pohledávce
+|32   | Sdělení finančního úřadu
+|33   | Sdělení banky
+|34   | Sdělení živnostenského úřadu
+|35   | Sdělení Ministerstva vnitra (auta)
+|36   | Sdělení Střediska cenných papírů
+|37   | Sdělení Katastru nemovitostí
+|39   | Sdělení správce o plnění oddlužení
+|41   | Vyjádření
+|42   | Vyjádření dlužníka
+|42   | Vyjádření dlužníka k návrhu
+|43   | Vyjádření navrhovatele
+|44   | Dotaz na stav řízení
+|46   | Stížnost dlužníka
+|48   | Zpráva
+|49   | Zpráva o hospodářské situaci dlužníka
+|54   | Znalecký posudek
+|55   | Plná moc
+|56   | Výpis
+|58   | Výpis z obchodního rejstříku
+|61   | Jiné podání
+|62   | Hlasovací lístek
+|63   | Přihláška pohledávky
+|64   | Seznam přihlášených pohledávek
+|65   | Seznam přihlášených pohledávek - výpis
+|66   | Usnesení
+|67   | Usnesení o vyhlášení moratoria
+|68   | Usnesení o odmítnutí návrhu na moratorium
+|72   | Usnesení o odmítnutí insolvenčního návrhu
+|73   | Usnesení o zastavení řízení pro zpětvzetí insolvenčního návrhu
+|75   | Usnesení o úpadku
+|76   | Usnesení o úpadku spojené s prohlášením konkursu
+|78   | Usnesení o úpadku spojené s povolením oddlužení
+|81   | Usnesení o zastavení řízení pro nedostatek podmínky řízení
+|82   | Usnesení o zamítnutí insolvenčního návrhu
+|83   | Usnesení o zamítnutí insolvenčního návrhu pro nedostatek majetku dlužníka
+|85   | Usnesení o vydání předběžného opatření
+|87   | Usnesení o zastavení řízení pro nezaplacení zálohy na náklady řízení
+|88   | Usnesení o ustanovení předběžného správce
+|89   | Usnesení o záloze na náklady předběžného správce
+|94   | Usnesení o prohlášení konkursu
+|95   | Usnesení o zrušení konkursu
+|97   | Usnesení o nepatrném konkursu
+|98   | Usnesení o zrušení rozhodnutí o nepatrném konkursu
+|103   | Usnesení o zastavení řízení o žalobě
+|105   | Usnesení o ustanovení správce
+|106   | Usnesení o potvrzení správce zvoleného schůzí věřitelů
+|108   | Usnesení o odvolání správce z funkce
+|110   | Usnesení o zproštění funkce správce po skončení řízení
+|115   | Usnesení o potvrzení volby členů a náhradníků věřitelského výboru
+|116   | Usnesení o jmenování prozatímního věřitelského výboru
+|117   | Usnesení o jmenování členů a náhradníků věřitelského výboru
+|122   | Usnesení o uložení pořádkové pokuty
+|123   | Usnesení o předvolání k výslechu
+|124   | Usnesení o odmítnutí přihlášky
+|126   | Usnesení o vzetí na vědomí zpětvzetí přihlášky
+|128   | Usnesení o ukončení účasti věřitele v insolvenčním řízení
+|139   | Usnesení o pokračování v přerušeném řízení
+|141   | Usnesení o schválení dohody o vypořádání SJM
+|145   | Usnesení o prodloužení lhůty ke splnění povinností
+|149   | Usnesení o konečné zprávě
+|151   | Usnesení o omezení nakládat s majetkovou podstatou
+|166   | Usnesení o zastavení řízení dle § 427
+|167   | Usnesení o odmítnutí návrhu na povolení oddlužení pro vady
+|168   | Usnesení o odmítnutí návrhu na povolení oddlužení pro opožděnost nebo neoprávněnost
+|171   | Usnesení o zamítnutí návrhu na povolení oddlužení
+|172   | Usnesení o povolení oddlužení
+|173   | Usnesení o způsobu oddlužení dle § 402 odst. 4
+|174   | Usnesení o schválení oddlužení zpeněžením majetkové podstaty
+|175   | Usnesení o schválení oddlužení plněním splátkového kalendáře
+|176   | Usnesení o neschválení oddlužení
+|181   | Usnesení o zrušení schváleného oddlužení
+|182   | Dotaz
+|184   | Vyhláška
+|185   | Vyhláška o zahájení insolvenčního řízení
+|186   | Vyhláška o svolání schůze věřitelů
+|187   | Vyhláška o svolání přezkumného jednání
+|188   | Vyhláška o konečné zprávě
+|189   | Výzva
+|190   | Výzva na zálohu na náklady řízení
+|191   | Výzva věřitelům k podávání přihlášek pohledávek
+|192   | Výzva na doplnění příloh insolvenčního návrhu
+|193   | Výzva na předložení seznamů k insolvenčnímu návrhu
+|194   | Výzva dlužníkovi k vyjádření se k insolvenčnímu návrhu
+|195   | Výzva na správce
+|199   | Výzva k opravě nebo doplnění návrhu na povolení oddlužení
+|200   | Výzva na zprávu správce o plnění oddlužení
+|202   | Výzva k opravě nebo doplnění návrhu
+|204   | Pokyn insolvenčního soudu
+|205   | Souhlas
+|210   | Vyrozumění
+|212   | Protokol
+|214   | Protokol ze schůze věřitelů
+|215   | Protokol o jednání
+|219   | Předkládací zpráva
+|220   | Svolání
+|222   | Nařízení jednání
+|223   | Úřední záznam
+|224   | Záznam o nahlédnutí do spisu
+|226   | Konečná zpráva
+|227   | Opatření
+|228   | Opatření o určení osoby správce
+|230   | Odvolání
+|231   | Odvolání - doplnění
+|232   | Odvolání - zpětvzetí odvolání
+|233   | Vrácení spisu
+|234   | Zapůjčení spisu
+|236   | Záznam o nahlížení do spisu
+|237   | Vrácení spisu soudu I. stupně
+|238   | Mylný zápis
+|239   | Jiné
+|241   | Výzva
+|242   | Výzva na doplnění odvolání
+|243   | Výzva k vyjádření se k odvolání
+|245   | Usnesení na doplnění odvolání
+|246   | Usnesení k vyjádření se k odvolání
+|311   | Rozhodnutí o odvolání ve věci zproštění funkce insolv. správce, jeho výdajích a způsob úhrady - jiné
+|328   | Rozhodnutí opravné usnesení
+|329   | Záznam o mylném zařazení
+|330   | Změna XSD dokumentu poznámky
+|331   | Náhradní doručení
+|332   | Zpráva IS o stavu řízení
+|333   | Dohoda o vypořádání SJM
+|334   | Soupis majetkové podstaty
+|339   | Návrh na schválení dohody o vypořádání SJM
+|344   | Návrh na zrušení konkurzu
+|347   | Návrh na vydání souhlasu se zpeněžením MP mimo dražbu
+|348   | Omluva
+|350   | Zpráva IS o uzavření účetních knih
+|351   | Platební poukaz
+|354   | Pověření asistenta soudce
+|354   | Pověření asistentky soudce
+|355   | Pověření vyšší soudní úřednice
+|355   | Pověření vyššího soudního úředníka
+|356   | Prezenční listina
+|357   | Přípis
+|358   | Sdělení o vstupu KSZ do řízení
+|359   | Vstup KSZ do řízení
+|362   | Usnesení o ustanovení tlumočníka
+|365   | Výzva k zaplacení SOP
+|366   | Zaplacení SOP
+|367   | Žádost
+|368   | Náhradní doručení
+|369   | Právní moc
+|370   | Právní moc konečného rozhodnutí
+|371   | Informační zpráva
+|372   | Změna stavu věci
+|373   | Rozhodnutí o odvolání - potvrzeno
+|374   | Rozhodnutí o odvolání - změněno
+|375   | Rozhodnutí o odvolání - zrušeno a vráceno
+|376   | Rozhodnutí o odvolání - zastavení řízení
+|377   | Rozhodnutí o odvolání - odmítnuto
+|378   | Rozhodnutí o odvolání - jinak
+|380   | Zaslání rozhodnutí odvolacího soudu
+|381   | Zaslání rozhodnutí odvolacího soudu a vrácení spisu
+|382   | Převzetí věci Vrchním soudem
+|383   | Rozhodnutí o tom, zda je soudce vyloučen
+|386   | Protokol o hlasování
+|387   | Žádost o zapůjčení spisu
+|388   | Příprava jednání
+|391   | Rozhodnutí o místní příslušnosti (§ 105 odst. 3)
+|392   | Předložení věci Vrchnímu soudu
+|393   | Přípis - bez věcného vyřízení
+|399   | Rozhodnutí o dovolání - zrušeno a vráceno soudu 1. stupně
+|405   | Změna senátu věci
+|407   | Dovolání
+|410   | Insolvenční návrh spojený s návrhem na prohlášení konkursu
+|411   | Námitka podjatosti
+|413   | Přihláška - návrh na vstup nového věřitele
+|414   | Návrh dlužníka
+|415   | Návrh na odvolání správce
+|423   | Návrh na zproštění správce z funkce
+|425   | Odvolání jiné
+|426   | Omluva
+|427   | Oznámení
+|428   | Oznámení soudu
+|429   | Oznámení o změně konání jednání
+|430   | Platební poukaz
+|432   | Protokol z jednání věřitelského výboru
+|434   | Předvolání k výslechu
+|436   | Převedení spisu příslušenému soudu
+|437   | Předvolání ke slyšení
+|438   | Převzetí spisu z jiného soudu
+|439   | Přezkumné jednání
+|440   | Přihláška pohledávky - částečné zpětvzetí
+|441   | Přihláška pohledávky - doplnění, oprava
+|442   | Přihláška pohledávky - zpětvzetí
+|443   | Příloha k protokolu o jednání
+|444   | Přistoupení k řízení (§ 107 IZ)
+|445   | Referát
+|447   | Sdělení o odstoupení z funkce ve v.v.
+|448   | Sdělení o osobě jednající jménem člena/náhradníka v.o.
+|449   | Seznam přihlášených pohledávek - změna
+|450   | Seznam/upravený seznam přihlášených pohledávek
+|451   | Schůze věřitelů
+|453   | Soupis majetkové podstaty
+|454   | Soupis majetkové podstaty - doplnění
+|461   | Usnesení o odměně a hotových výdajích tlumočníka
+|463   | Usnesení o odmítnutí návrhu na předběžné opatření
+|464   | Usnesení o postoupení věci
+|466   | Usnesení o schválení konečné zprávy
+|468   | Usnesení o uložení povinnosti
+|470   | Usnesení o vyplacení zálohy na odměnu správce
+|471   | Usnesení o zamítnutí návrhu na předběžné opatření
+|473   | Usnesení o zastavení řízení
+|475   | Usnesení o zastavení řízení vůči učastníku (§ 130 odst. 2 IZ)
+|477   | Usnesení o změně rozhodnutí soudu I.stupně
+|478   | Usnesení o zrušení rozhodnutí soudu I.stupně
+|480   | Vrácená obálka
+|481   | Vrácení příloh
+|483   | Vyhláška o jednání o konečné zprávě
+|484   | Vyhláška o svolání zvláštního přezkumného jednání
+|485   | Výpis z evidence ARES
+|488   | Vyúčtování odměny a výdajů správce
+|490   | Vzdání se práva odvolání
+|493   | Zaslání doplnění přihlášky správci
+|494   | Zaslání přihlášky správci
+|495   | Záznam o složení zálohy
+|496   | Záznam o zaplacení zálohy na insolvenční řízení
+|498   | Zpětvzetí popřené pohledávky insolvenčním správcem
+|499   | Zvláštní přezkumné jednání
+|501   | Žádost o určení osoby správce
+|502   | Rozhodnutí o odvolání - potvrzeno
+|503   | Rozhodnutí o odvolání - změněno
+|504   | Rozhodnutí o odvolání - zrušeno a vráceno
+|506   | Rozhodnutí o odvolání - odmítnuto
+|507   | Rozhodnutí o odvolání - jinak
+|508   | Zaslání rozhodnutí odvolacího soudu
+|510   | Převzetí věci vrchním soudem
+|524   | Protokol o hlasování
+|525   | Žádost o zapůjčení spisu
+|528   | Rozhodnutí o místní příslušnosti
+|529   | Zpětvzetí návrhu
+|531   | Protokol o prohlídce prostor
+|532   | Opravné usnesení
+|533   | Sdělení Ministerstva vnitra (auta)
+|534   | Výpis ze seznamu přihlášených pohledávek
+|535   | Usnesení o prodeji mimo dražbu
+|538   | Soupis majetkové podstaty - změna
+|539   | Usnesení o svolání věřitelského výboru
+|544   | Výzva k podávání přihlášek pohledávek
+|553   | Usnesení o zrušení rozhodnutí soudu I.stupně (bez změny stavu)
+|554   | Opětovné doručení vyhláškou
+|555   | Usnesení o změně insolvenčního správce
+|556   | Reklamace doručenky
+|561   | Konečný/Závěrečný referát

@@ -1,0 +1,41 @@
+
+
+How to get a heap dump
+**********************
+
+
+..out of running JVM
+====================
+
+JDK 5:
+
+/--code bash .[brush:]
+~/sw/java/jdk/jdk1.5.0_17/bin/jmap -heap:format=b 765
+\--
+
+JDK 6:
+
+/--code bash .[brush:]
+~/sw/java/jdk/jdk1.6.0_19/bin/jmap -dump:file=JON-OOME.hprof 765
+\--
+
+
+
+...automatically when OutOfMemoryException strikes
+==================================================
+
+Dump heap to file when java.lang.OutOfMemoryError is thrown:
+
+/--code bash .[brush:]
+java ... -XX:-HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=<path>
+\--
+
+`-XX:HeapDumpPath`s default is `./java_pid<pid>.hprof`
+
+
+
+
+Sources
+=======
+
+* "JVM options":http://java.sun.com/javase/technologies/hotspot/vmoptions.jsp

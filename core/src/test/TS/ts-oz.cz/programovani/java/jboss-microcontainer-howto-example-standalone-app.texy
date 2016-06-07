@@ -1,0 +1,273 @@
+
+JBoss Microcontainer Sample Application - Howto
+***********************************************
+
+//A very brief intro to JBoss Microcontainer.//
+
+
+Prerequisites
+=============
+
+This tutorial assumes you're familiar with Maven. If you're not, don't worry - most IDE's will hide it from you quite well.
+
+You may also be familiar with Spring IoC((inversion of control)), which is not only similar to, but compatible with JBoss Microcontainer.
+
+
+Maven configuration
+-------------------
+
+You need to set up Maven to use JBoss Maven repository (all JBoss projects use this repository, by the way).
+Follow instalation instructions in 
+"JBoss Micontainer User Guide":http://www.jboss.org/file-access/default/members/jbossmc/freezone/docs/2.0.x/userGuide/ch02.html.
+Here is the shortened version of the profile:
+
+/--code xml .[brush:]
+    <profile>
+      <id>jboss.repository</id>
+        <activation> <property> <name>!jboss.repository.off</name> </property> </activation>
+      <repositories>
+        <repository> <id>snapshots.jboss.org</id> <url>http://snapshots.jboss.org/maven2</url> <snapshots> <enabled>true</enabled> </snapshots> </repository>
+        <repository> <id>repository.jboss.org</id> <url>http://repository.jboss.org/maven2</url> <snapshots><enabled>false</enabled></snapshots> </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository> <id>repository.jboss.org</id> <url>http://repository.jboss.org/maven2</url> <snapshots><enabled>false</enabled></snapshots> </pluginRepository>
+        <pluginRepository> <id>snapshots.jboss.org</id> <url>http://snapshots.jboss.org/maven2</url> <snapshots><enabled>true</enabled></snapshots> </pluginRepository>
+      </pluginRepositories>
+    </profile>
+\--
+
+Then add this dependency to your project:
+
+<!-- Old versions
+    <dependency>
+      <groupId>org.jboss.microcontainer</groupId>
+      <artifactId>jboss-kernel</artifactId>
+      <version>2.0.0.Beta6</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.aop</groupId>
+      <artifactId>jboss-aop</artifactId>
+      <version>2.0.0.beta1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.microcontainer</groupId>
+      <artifactId>jboss-aop-mc-int</artifactId>
+      <version>2.0.0.Beta6</version>
+      <scope>runtime</scope>
+    </dependency>
+-->
+
+/--code xml .[brush:]
+    <dependency>
+      <groupId>org.jboss.microcontainer</groupId>
+      <artifactId>jboss-kernel</artifactId>
+      <version>2.0.9.GA</version>
+    </dependency>
+\--
+
+Then clean and build the project - that will download all the dependencies (may take a while).
+
+
+
+
+What is JBoss Microcontainer good for?
+======================================
+
+It's an inversion of control (IoC) framework, like Spring or Guice.
+IoC frameworks let you create, configure and wire up simple Java objects (POJOs).
+Classes of these objects need no special coding to be usable with JBoss Microcontainer.
+These objects usualy represent the modules of your application.
+
+An example of how to use IoC in a typical web application
+---------------------------------------------------------
+
+1) Create and configure a JDBC datasource
+2) Create and configure a connection pool (C3P0), and attach 1) as it's datasource.
+3) Create and configure Hibernate entity manager, and attach 2) as it's datasource.
+4) Create and configure your controller, and "inject" (== attach) 3) as it's `EntityManagerFactory`.
+
+
+Creating a class to use with JBoss Microcontainer
+=================================================
+
+As written above, any class can be used.
+
+/--code java .[brush:]
+package cz.zizka.ondra.jbmctest;
+
+public class Car
+{
+
+  private String name;
+  public String getName() {    return name;  }
+  public void setName( String name ) {    this.name = name;  }
+
+  public int litresOfFuel;
+  public int getLitresOfFuel() {    return litresOfFuel;  }
+  public void setLitresOfFuel( int litresOfFuel ) {    this.litresOfFuel = litresOfFuel;  }
+
+
+  public Car(){}
+
+  public Car( String name, int litres ){
+    this.name = name;
+    this.litresOfFuel = litres;
+  }
+
+  public String toString(){  return "Car \""+this.name+"\"";  }
+
+}
+\--
+
+
+Instantiating a class in JBoss Microcontainer
+=============================================
+
+Create a XML file named `jboss-beans.xml` and put it to the resources dir (Maven's default is `src/main/resources`).
+
+/--code xml .[brush:]
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="urn:jboss:bean-deployer:2.0 bean-deployer_2_0.xsd"
+            xmlns="urn:jboss:bean-deployer:2.0">
+
+   <bean name="myCar" class="cz.zizka.ondra.jbmctest.Car">
+     <property name="name">Red Devil</property>
+     <property name="litresOfFuel">37</property>
+   </bean>
+
+</deployment>
+\--
+
+The example above calls a default constructor (with no arguments),
+and then sets the properties. If they were private and you had setters for them, those would be used.
+
+An alternative way is to call the constructor:
+
+/--code xml .[brush:]
+   <bean name="myCar" class="cz.zizka.ondra.jbmctest.Car">
+    <constructor>
+        <parameter>Red Devil</parameter>
+        <parameter>37</parameter>
+    </constructor>
+   </bean>
+\--
+
+Wiring up the objects
+=============================================
+
+To attach one object to the other, use `<inject>`:
+
+/--code java .[brush:]
+package cz.zizka.ondra.jbmctest;
+
+public class Garage
+{
+  private Car carInside;
+  public Car getCarInside() {    return carInside;  }
+  public void setCarInside( Car car ) {    this.carInside = car;  }
+
+  public String toString(){
+    return "Garage with a car: "+this.getCar();
+  }
+}
+\--
+
+
+/--code xml .[brush:]
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="urn:jboss:bean-deployer:2.0 bean-deployer_2_0.xsd"
+            xmlns="urn:jboss:bean-deployer:2.0">
+
+   <bean name="myCar" class="cz.zizka.ondra.jbmctest.Car">
+     <property name="name">Red Devil</property>
+     <property name="litresOfFuel">37</property>
+   </bean>
+
+   <bean name="myGarage" class="cz.zizka.ondra.jbmctest.Garage">
+     <property name="myGarage"><inject bean="myCar"/></property>
+   </bean>
+
+</deployment>
+\--
+
+
+Creating JBoss Microcontainer object in your application (bootstraping)
+=======================================================================
+
+/--code java .[brush:]
+public class App {
+
+  public static void main( String[] args ) throws Throwable
+  {
+
+    // Bootstrap.
+    BasicBootstrap bootstrap = new BasicBootstrap();
+    bootstrap.run();
+    
+
+    // Load the bean definitions.
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    URL url = cl.getResource("jboss-beans.xml");
+    BasicXMLDeployer deployer = new BasicXMLDeployer( bootstrap.getKernel() );
+    deployer.deploy( url );
+
+    // Get the garage bean.
+    ControllerContext context = bootstrap.getKernel().getController().getInstalledContext("myGarage");
+    System.out.println( "I have a garage: "+context.getTarget());
+
+    // Clean up.
+    deployer.shutdown();
+ 
+  }// main()
+
+}// class
+\--
+
+
+
+See also
+=========
+
+Unlike spring, JBoss Microcontainer is not much documented when it comes to usage in a standalone application.
+
+You can download "the examples":http://labs.jboss.com/file-access/default/members/jbossmc/downloads/userGuide-examples-13112007.zip
+from the JBoss site, but the code which copes with microcontainer is buried deep in the testsuite harness.
+
+
+"A Look Inside the JBoss Microcontainer, Part I -- Component Models":http://soa.dzone.com/articles/a-look-inside-jboss-microconta
+ "A Look Inside JBoss Microcontainer, Part II – Advanced Dependency Injection and IoC":http://java.dzone.com/articles/a-look-inside-jboss-microconta-0
+
+XML schemas for the jboss-beans.xml file can be found on "this JBoss Wiki page":http://www.jboss.org/community/wiki/JBossDTDs,
+in the SVN, or inside the JBoss Microcontainer kernel JAR.
+
+A "chapter about JBoss Microcontainer":http://docs.jboss.org/jbossas/jboss4guide/r4/html/mc.chapter.html in the JBoss AS 4 guide.
+
+
+//TODO:// Have look at `org.jboss.kernel.plugins.bootstrap.standalone.StandaloneBootstrap` - loads all `jboss-beans.xml` from the classpath.
+
+
+/--code xml .[brush:]
+
+\--
+
+/--code java .[brush:]
+\--
+
+/--code java .[brush:]
+\--
+
+/--code java .[brush:]
+\--
+
+/--code java .[brush:]
+\--
+
+/--code java .[brush:]
+\--
+
+/--code java .[brush:]
+\--
+
+

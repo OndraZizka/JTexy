@@ -1,0 +1,716 @@
+<h1>Java + J2EE</h1>
+
+<p>This page is a mix of czech and english, sorry for non-separated and loosely
+organized content, but hopefully you will find your subject by using
+<code>Ctrl+F</code> :-)</p>
+
+<hr />
+
+<p><a href="howto/quartz-howto-intro.texy">Quartz intro</a> and <a
+href="web/wicket/wicket-quartz-scheduler-example.texy">how to use Quartz in
+Wicket</a></p>
+
+<p><a href="web/wicket/index.texy">My Wicket notes</a></p>
+
+<p><a href="jboss/svn-commit-irc-bot-java.texy">SVNbot</a> – an IRC bot
+announcing SVN commits, written in Java</p>
+
+<p>My usual MySQL JDBC params:</p>
+
+<pre
+class="brush: plain">jdbc:mysql://localhost/test?characterEncoding=UTF-8&amp;characterSetResults=UTF-8&amp;autoReconnect=true&amp;zeroDateTimeBehavior=convertToNull</pre>
+
+<p><a
+href="http://ondrazizka.googlecode.com/svn/maven/mysql/mysql-connector-java/5.1.12/">MySQL
+JDBC driver for Maven</a> – mavenized Connector/J</p>
+
+<p><a
+href="http://code.google.com/p/ondrazizka/source/browse/#svn/maven/cz/dynawest/third/pircbot/PircBot">PircBot
+Mavenized</a></p>
+
+<ul>
+	<li>PircBot IRC Bot framework library in a provisory Maven repository.</li>
+</ul>
+
+<p><a href="jaxb/jaxb-howto-introduction-tutorial.texy">JAXB example</a> –
+keywords: JAXB howto example tutorial intro.</p>
+
+<p><a href="sardine-java-webdav-client-library.texy">Sardine – WebDAV client
+library for Java</a></p>
+
+<p><a href="jboss/jboss-as-startup-run-sh-java-system-variables.texy">JBoss AS
+Java system variables</a> (<code>-D</code> for <code>bin/run.sh</code>)</p>
+
+<p><a href="jboss/Tomcat-JON-Windows-2003-2008.texy">JBoss Operation Network and
+Tomcat on Windows 2003: No-go</a></p>
+
+<p><a href="jetty-how-to-stop.texy">How to stop Jetty</a></p>
+
+<p><a href="jboss/web-services.texy">JBoss WebServices (JBossWS) notes</a></p>
+
+<p><a href="jboss/clustering-session-replication.texy">Simple JBoss AS
+clustering example</a> (2 nodes, JSP session replication).</p>
+
+<h2>Maven Tips</h2>
+
+<p><a href="maven/log4j-missing-jmx-sun-deps.texy">Maven and Log4j: Missing JMX
+dependencies</a> – mavenized jmxri and jmxtools.</p>
+
+<p>To start maven goals in debug mode:</p>
+
+<pre class="brush: xml">mvnDebug test ...</pre>
+
+<p>This does not work for me:</p>
+
+<pre
+class="brush: xml">mvn test -DargLine="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=4000"</pre>
+
+<p><a href="maven/profile-activation-and-properties.texy">Profile activation and
+properties</a></p>
+
+<p><a href="maven/how-to-add-existing-project-jar-to-maven-repository.texy">How
+to add existing Java project's <code>.jar</code>s to Maven repository</a></p>
+
+<p><a href="maven/maven-create-distribution-package.texy">How to create an
+application distribution package with Maven</a></p>
+
+<p><a href="maven/maven-create-jnlp-file.texy">How to create a JNPL file (for
+Java WebStart) with Maven</a></p>
+
+<p><a href="maven/mavenize-quick-and-dirty.texy">Quick and dirty
+mavenization</a> – How to install an existing library with dependencies to
+Maven repository.</p>
+
+<p>I've presented Maven 2 for the company I work for. Download here: <a
+href="download/Maven2presentation.pdf">Maven presentation for Red Hat /
+JBoss</a>. <!-- See https://www.jboss.org/community/docs/DOC-13358 . --></p>
+
+<p>A short polemic against <a
+href="http://ant.apache.org/ivy/m2comparison.html">Ivy / Maven2 Comparison</a>:
+Read my own opinion about <a href="maven/maven-ant-ivy-comparison.texy">How
+Maven 2 compares to Ivy</a>.</p>
+
+<p><a href="maven/ant-run-plugin-short.texy">Short code for Antrun Maven
+plugin</a></p>
+
+<h2>Java alternative of PHP's <code>preg_replace_callback</code></h2>
+
+<p><a href="php_preg_replace_callback.texy">Here</a>.</p>
+
+<h2>XSLT transformation in Java</h2>
+
+<p>My <a href="xslt-commandline-with-xalan.texy">XSLT + Java notes</a> show:</p>
+
+<ul>
+	<li>How to call Xalan from a command line</li>
+
+	<li>A simple class for XSLT conversion using JDK's XSLT</li>
+
+	<li>Template which does some change and copies all other data</li>
+</ul>
+
+<h2>What I would change about Java</h2>
+
+<p><a href="java-feature-requests.texy">My Java feature requests</a></p>
+
+<h2>Enum with a lookup map</h2>
+
+<p><a href="enum-with-lookup-map.texy">Enum with a lookup map</a></p>
+
+<h2>JAXB – a List with inherited classes</h2>
+
+<p><a href="jaxb/jaxb-list-with-inherited-classes.texy">JAXB – a List with
+inherited classes</a></p>
+
+<h2>Groovy bootloader bug with DOMBuilder</h2>
+
+<p>Is <a href="groovy-dombuilder-bug.texy">this</a> a bug?</p>
+
+<h2>JBoss</h2>
+
+<p>Unsign JBoss AS distribution: <code>find . -type f -iname '*.jar' -exec zip
+-d '{}' META-INF/JBOSSCOD.{SF,RSA} \;</code></p>
+
+<p><a href="jboss/filesystem-resource-adapter.texy">Filesystem Resource
+Adapter</a></p>
+
+<p><a href="jboss/jboss-embedded-bottstrapping.texy">Bootstrapping JBoss
+Embedded server</a> A very brief how-to – just a maven deps and the
+bootstraping code.</p>
+
+<p><a href="jboss/common-mistakes-and-exceptions.texy">Common JBoss AS mistakes
+and exceptions</a></p>
+
+<p><a href="jboss/jboss-vs-spring.texy">JBoss vs. Spring</a> An attempt to
+answer what to use as a base for an enterprise web application.</p>
+
+<h2>How to transform <code>web.xml</code> with XSTL and XPath</h2>
+
+<p>In short, the trick is that XPath doesn't work well with element names
+containing a minus. So you have to match e.g <code>web-xml</code>
+like this:</p>
+
+<pre class="xpath">*[name()='web-xml']</pre>
+
+<h2>How to incrementally update a JAXB-mapped object</h2>
+
+<p>Using a factory delegating the setters to the original object. <em>To be
+eventually written later.</em></p>
+
+<h2>JSON with JAXB – Jackson</h2>
+
+<p>How to <a href="jaxb/jaxb-json-jackson-howto.texy">create JSON output from
+POJOs using JAXB annotations</a>.</p>
+
+<h2>JBoss AOP in a standalone application – example / howto</h2>
+
+<p>Few articles about JBoss AOP:</p>
+
+<ul>
+	<li>A <a href="jboss/jboss-aop-howto-example-standalone-app.texy">brief
+	introduction to usage of JBoss MC with JBoss AOP</a></li>
+
+	<li><a href="java.lang.IllegalArgumentException-Unknown-AOP-tag-bean.texy">JBoss
+	AOP: <code>java.lang.IllegalArgumentException: Unknown AOP tag:
+	bean</code></a></li>
+
+	<li><a href="jboss-aop-could-not-find-class.texy">JBoss AOP: Could not find
+	class</a></li>
+</ul>
+
+<h2>JBoss Microcontainer in a standalone application</h2>
+
+<p>A <a
+href="jboss/jboss-microcontainer-howto-example-standalone-app.texy">brief
+introduction to usage of JBoss MC in a standalone app</a>.</p>
+
+<h2>Java Concurency, Threads and Synchronization</h2>
+
+<p>Attempt for <a href="modifier-and-concurent-readers.texy">one modifier and
+many concurent readers</a> – a variant of producers and consumers
+problem.</p>
+
+<h2>Maven: Order of execution of plugins in profiles</h2>
+
+<p>I was curious in which order Maven executes the plugins: Whether it uses POM
+profile appearance order, or uses the ordering from the command line's
+<code>-P</code> param value.</p>
+
+<p>Here is the <a
+href="maven/maven-plugin_in_profiles_execution_order.texy">result of my
+try-out</a>.</p>
+
+<h2>Spring AOP common mistake: CGLIB2 is not available</h2>
+
+<p>You've added a new bean to Spring. And want to do some AOP over its methods.
+But you run into this:</p>
+
+<pre
+class="brush: text">org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'udalostiQueueController' defined in class path resource [properties/Actions.xml]: Initialization of bean failed; nested exception is org.springframework.aop.framework.AopConfigException: Cannot proxy target class because CGLIB2 is not available. Add CGLIB to the class path or specify proxy interfaces.
+
+Caused by: org.springframework.aop.framework.AopConfigException: Cannot proxy target class because CGLIB2 is not available. Add CGLIB to the class path or specify proxy interfaces.
+        at org.springframework.aop.framework.DefaultAopProxyFactory.createAopProxy(DefaultAopProxyFactory.java:67)
+        at org.springframework.aop.framework.ProxyCreatorSupport.createAopProxy(ProxyCreatorSupport.java:106)
+        at org.springframework.aop.framework.ProxyFactory.getProxy(ProxyFactory.java:110)
+        etc.</pre>
+
+<p>The reason is simple: To do AOP, Spring needs either CGLIB to do class
+instrumentation (bytecode magic) at runtime, or you have to use your bean
+through an interface.</p>
+
+<p>So, put all your public methods into an interface and put all it's methods
+into an implementation. Use the implementation in Spring as the bean class, and
+when obtaining the bean in the code, store it into interface-typed
+reference.</p>
+
+<pre
+class="brush: java">public interface MyBean {
+  public void doSomethingInAOP();
+}
+
+public class MyBeanImpl implements MyBean {
+  public void doSomethingInAOP(){ ... }
+}</pre>
+
+<pre
+class="brush: xml">&lt;bean id="myBean" class="info.insolvencnirejstrik.controllers.MyBeanImpl" /&gt;
+
+&lt;aop:config&gt;
+
+  &lt;aop:pointcut id="controllerMethods" expression="execution(* info.insolvencnirejstrik.controllers.*.*(..))"/&gt;
+
+  &lt;aop:advisor advice-ref="txAdvice" pointcut-ref="controllerMethods"/&gt;
+
+&lt;/aop:config&gt;</pre>
+
+<pre class="java">MyBean bean = appContext.getBean("myBean");</pre>
+
+<h2>Ibatis instantiation error</h2>
+
+<p><a href="ibatis-instantiation-exception.texy">Ibatis instantiation
+exception</a> can arise from the lack of default constructor.</p>
+
+<h2>StackOverflowError with Xerces 2.0.2</h2>
+
+<p>Beware of DBCP in combination with Spring and iBatis using Maven. DBCP uses
+Xerces 2.0.2, which is old buggy version and causes stack overflow exception
+when parsing Spring's <code>applicationContext.xml</code>, which uses namespaces
+(e.g. for AOP).</p>
+
+<pre>Caused by: java.lang.StackOverflowError at org.apache.xerces.util.URI.isConformantSchemeName</pre>
+
+<p>Because Maven uses the „nearest node in dependency graph“ rule for
+resolving version conflicts, it choses DBCP's Xerces 2.0.2, because other
+dependencies have Xerces deeper.</p>
+
+<h2>Maven Unzip Plugin</h2>
+
+<p>I'm going to write unzip plugin for Maven2. Stay tuned.</p>
+
+<p><em>Update:</em> So here it is: <a
+href="http://www.pohlidame.cz/insolvencni-rejstrik/maven-unzip-plugin.html">Maven
+Unzip Plugin</a></p>
+
+<p>Enjoy :-)</p>
+
+<h2>Jabber (XMPP) Maven plugin</h2>
+
+<p>I've created a simple plugin for Maven2, which can send a message from the
+Maven build process.</p>
+
+<p>See <a href="maven/jabber-xmpp-maven-plugin.texy">Jabber (XMPP) Maven
+plugin</a></p>
+
+<p>Used in the <a href="http://www.pohlidame.cz/">Insolvenèní rejstøík</a>
+
+project.</p>
+
+<h2>JPA and Hibernate mapping with MySQL – common errors and exceptions</h2>
+
+<p>Some <a href="hibernate-common-errors-and-exceptions.texy">tips for those
+tampering with Java Persistence API and Hibernate</a> – how to tame the
+exceptions comming from Hibernate EntityManager, Hibernate Annotations
+and JDBC.</p>
+
+<h2>ImmutableProperties class</h2>
+
+<p>I've created an <a href="immutable_properties.texy">immutable adapter of the
+java.util.Pro­perties class</a>. Not that there aren't bunches of similar over
+the net…</p>
+
+<h2>How to read properties file in Spring Framework</h2>
+
+<p>A new short tutorial on <a
+href="howto-spring-reading_properties_file.texy">how to provide properties read
+from a file to a bean</a>.</p>
+
+<h2>Parametrized Spring Configuration</h2>
+
+<p>Here's a short sketch of my idea about <a
+href="howto-substitutions_in_spring_configuration-tutorial.texy">parametrizing
+Spring configuration</a>, using placeholders
+(<code>PropertyPlaceholderConfigurer</code>) and overrides
+(<code>PropertyOverrideConfigurer</code>).</p>
+
+<h2>Web service client from WSDL using Axis2</h2>
+
+<p>Here's <a href="web_service_client_from_wsdl_using_axis2.texy">how to create
+web service client from WSDL using Axis2</a>.</p>
+
+<h2>Logov?n? v Jav? ? <code>log4j</code> a <code>java.util.logging</code></h2>
+
+<p>Sepsal jsem si <a href="navod_logovani_java.util.logging.texy">stru?n? ?vod
+do logov?n? v Jav?</a><br />
+
+s uk?zkou konfigurace.</p>
+
+<h2>JPA with Hibernate common mistakes</h2>
+
+<pre
+class="exception">ERROR [org.hibernate.LazyInitializationException] (main:) could not initialize proxy - no Session
+Exception in thread "main" org.hibernate.LazyInitializationException: could not initialize proxy - no Session
+        at org.hibernate.proxy.AbstractLazyInitializer.initialize(AbstractLazyInitializer.java:57)
+org.hibernate.LazyInitializationException: could not initialize proxy - no Session
+        at org.hibernate.proxy.AbstractLazyInitializer.getImplementation(AbstractLazyInitializer.java:111)
+        at org.hibernate.proxy.AbstractLazyInitializer.initialize(AbstractLazyInitializer.java:57)
+        at org.hibernate.proxy.AbstractLazyInitializer.getImplementation(AbstractLazyInitializer.java:111)
+        at org.hibernate.proxy.pojo.cglib.CGLIBLazyInitializer.invoke(CGLIBLazyInitializer.java:150)
+        at cz.dynawest.isir.entities.User$$EnhancerByCGLIB$$f6910a6b.setMail(&lt;generated&gt;)
+        at cz.dynawest.isir.test.Manipulace.main(Manipulace.java:49)
+        at org.hibernate.proxy.pojo.cglib.CGLIBLazyInitializer.invoke(CGLIBLazyInitializer.java:150)
+        at cz.dynawest.isir.entities.User$$EnhancerByCGLIB$$f6910a6b.setMail(&lt;generated&gt;)
+        at cz.dynawest.isir.test.Manipulace.main(Manipulace.java:49)\--
+
+**Two common reasons:**
+
+1) You have loaded an entity containing a collection (List, Set, ...), but by default,
+Hibernate does not load their members; instead, it puts a proxy, which waits for the case
+you access the collection and then loads it.
+
+
+2) You've loaded the entity using JPA's `getReference()` or Hibernate's `load()`.
+That creates a proxy object, which holds only an ID.
+Try calling JPA's `find()`, resp. Hibernate's `get()` //(sure, JPA quite messed the nomenclature...)//
+
+
+So you're trying to manipulate the entity without having any open transaction (session).
+Hibernate generally needs every database operation to happen in a transaction,
+opened either explicitly (using e.g. `EntityManager.getTransaction()`)
+or implicitly (using e.g. Spring AOP).
+
+
+
+------------------------------------------------</pre>
+
+<pre
+class="exception">org.hibernate.PersistentObjectException: detached entity passed to persist</pre>
+
+<p>You load or create an entity in one transaction, which then ends, and then
+you try to call <code>persist()</code>. Instead, you must call
+<code>merge()</code>, because that's the method which is meant to re-attach
+detached entities. Use <code>persist()</code> to store the entity when you
+change it inside the same transaction as it was loaded in.</p>
+
+<hr />
+
+<p><strong>Generally speaking:</strong></p>
+
+<p>If you load an entity using a DAO, usualy you have a transaction in that
+DAO's methods. Thus when changing the entity inside DAO, use
+
+<code>persist()</code>; When you change it outside DAO and then call some DAO
+method to save it, call <code>merge()</code>.</p>
+
+<h2>Za??tky se Spring AOP (Aspect Oriented Programming)</h2>
+
+<p>Rozchodil jsem Spring AOP a zde d?v?m <a
+href="navod-spring-aop-zacatky.texy">stru?n? n?vod, jak si Spring AOP</a>
+rozchod?te taky.</p>
+
+<h2>FreeMarker templates via Spring in non-web application</h2>
+
+<p>Note on how to use <a
+href="navod-spring_freemarker_in_standalone_application.texy">FreeMarker
+configured by Spring Dependency Injection in a standalone (non-web)
+application</a>.</p>
+
+<h2>iBatis inline map format: empty String in nullValue</h2>
+
+<blockquote>
+	<p>If i want to set a nullValue replacement for an empty String I use this in
+	an explicit parameterMap:</p>
+
+	<pre
+	class="xml">&lt;parameter property="street" jdbcType="VARCHAR" nullValue=""/&gt;</pre>
+
+	<p>I want to do the same thing using inline parameters. I've tried the
+	following:</p>
+
+	<pre
+	class="ibatis">#street:VARCHAR:""#
+#street:VARCHAR:#
+#street,jdbcType=VARCHAR,nullValue=""#
+#street,jdbcType=VARCHAR,nullValue=#</pre>
+
+	<p>but none works.</p>
+
+	<p>How should i write the statement?</p>
+
+	<p>Thanks, Ondra</p>
+</blockquote>
+
+<blockquote>
+	<p>I recommend not using <code>nullValue</code> replacement. It's confusing
+	and doesn't work the way most people would expect it to, quite the opposite
+	actually. It's used to map nullable columns to non-nullable class members, like
+	int, long, double, boolean etc…</p>
+
+	<p><strong>It will not be available in iBATIS 3.</strong></p>
+
+	<p>Clinton Begin</p>
+</blockquote>
+
+<blockquote>
+	<p>Quite bad news for me :(</p>
+
+	<p>I use <code>nullValue</code> as a convenient brief instrument to unify both
+	null values OR empty String to <code>NULL</code> in the database (e.g. when
+	importing from Excel and some cells are empty (that yields <code>null</code>)
+	and some have empty strings). Handling it in Java or SQL code would clutter it
+	quite much.</p>
+
+	<p>Can we expect some substitute for this in iBatis 3?</p>
+
+	<p>Ondra</p>
+</blockquote>
+
+<p>While waiting for response, I realized this:</p>
+
+<p>In case of MySQL, one can use <code>NULLIF(expr1,expr2)</code> function in
+
+<code>INSERT</code>, which returns <code>NULL</code> if <code>expr1</code> =
+<code>expr2</code> is true, otherwise returns <code>expr1</code>.</p>
+
+<pre class="sql">INSERT INTO table SET name = NULLIF(#name#,'');</pre>
+
+<h2><code>java.lang.InstantiationException</code> in iBatis when using
+java.util.Map</h2>
+
+<p>Exception:</p>
+
+<pre>JavaBeansDataExchange could not instantiate result class.  Cause: java.lang.InstantiationException: java.util.Map</pre>
+
+<p>SQL mapping code:</p>
+
+<pre>&lt;select id="getMatchingDluzniciForUser" parameterClass="long" resultClass="map"&gt;
+
+SELECT * FROM table
+&lt;/select&gt;</pre>
+
+<p><strong>Cause:</strong> iBatis is trying to instantiate
+<code>java.util.Map</code>, which is an interface, thus can't be
+instantiated.</p>
+
+<p><strong>Fix:</strong> Instead, use <code>java.util.HashMap</code> or other
+
+<code>Map</code> implementation as the result class.</p>
+
+<h2>Compiling Connector/J</h2>
+
+<p>If you try to compile MySQL Connector/J from the source, after resolving
+dependencies, you will probably end up with many compiler errors.</p>
+
+<p>That is because of the special way how Connector/J is compiled. Let <a
+href="http://www.jroller.com/mmatthews/">Mark Matthews</a> <a
+href="http://bugs.mysql.com/bug.php?id=38060#c176729">say it</a></p>
+
+<blockquote>The issue is that you can't compile Connector/J with <em>just</em>
+JDK6, as the driver supports JDBC4 and pre-JDBC4 APIs from the same codebase,
+and there are new classes and methods in JDBC4 that aren't available
+pre-JDK6.Therefore, the way it works is that you have to set JAVA_HOME to point
+to JDK-1.4 or 1.5, and then set the Ant properties
+„com.mysql.jdbc­.java6.javac“ with the full path to your JDK6 java
+compiler, and „com.mysql.jdbc­.java6.rtjar“ with the full path to your JDK6
+runtime class libraries, when invoking Ant.</blockquote>
+
+<h2><code>SQLException</code> for zero <code>DATETIME</code> or
+<code>TIMESTAMP</code> column? Use <code>zeroDateTimeBehavior</code></h2>
+
+<p>When working with MySQL over JDBC and the driver encounters a zero
+<code>DATE</code>, <code>TIME</code>, or <code>DATETIME</code> value (that is,
+e.g, ‚0000–00–00‘ for <code>DATE</code>), an exception is thrown:</p>
+
+<pre
+class="exception">java.sql.SQLException: Cannot convert value '0000-00-00 00:00:00' from column 4 to TIMESTAMP.</pre>
+
+<p>In this case, using SQL commands like</p>
+
+<pre>SET GLOBAL sql_mode = 'NO_ZERO_DATE';</pre>
+
+<p>does not help much, because that works only in „strict SQL mode“, and
+needs to be set for every connection, or globally for the whole server.</p>
+
+<p>What helps is setting JDBC driver's <code>zeroDateTimeBehavior</code>
+property to <code>convertToNull</code>:</p>
+
+<blockquote>
+	<p>What should happen when the driver encounters DATETIME values that are
+	composed entirely of zeroes (used by MySQL to represent invalid dates)? Valid
+	values are <code>"exception"</code>, <code>"round"</code> and
+	<code>"convertToNull"</code>.</p>
+
+</blockquote>
+
+<p>The way to set it depends on the way you configure JDBC driver. The most
+common case is to use connection URL parameters. In my case it reads:</p>
+
+<pre>jdbc:mysql://localhost/test?zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true&amp;characterEncoding=UTF-8&amp;characterSetResults=UTF-8</pre>
+
+<h2><code>java</code> and <code>javaw</code> difference</h2>
+
+<p><a href="java_javaw_difference.texy">What's the difference between
+<code>java</code> and <code>javaw</code>?</a></p>
+
+<h2>N?vod: Import projektu ze SVN do NetBeans projektu</h2>
+
+<p>Cht?l jsem se trochu povrtat v projektu <a
+href="http://poi.apache.org/subversion.html">Apache POI</a>, ale jak pr?vodci
+v NetBeans, tak instrukce na str?nce projektu p?edpokl?daj?, ?e se SVN um?te,
+jak kdy? bi?em mrsk?, co? v m?m p??pad? bylo dote? p?esn? naopak :-)</p>
+
+<p>Proto jsem sepsal velmi stru?n? <a
+href="navod-svn_subversion_v_netbeans.texy">n?vod, jak do NetBeans dostat
+projekt ze Subversion repository</a>.</p>
+
+<h2>Levn? Java/JSP/J2EE hosting</h2>
+
+<p>Pokud hled?te levn? hosting pro svoji J2EE webovou aplikaci, mo?n?
+v?s zaujme <a href="nabidka_levny_j2ee_jsp_hosting.texy">tato nab?dka</a>.</p>
+
+<h2>Converting a number to Excel column character name</h2>
+
+<p>When working with Excel sheets, you might need to convert the column number
+to it's letter name – like <code>1</code> to <code>A</code>, <code>2</code>
+
+to <code>B</code>, <code>43</code> to <code>AQ</code>, etc. It's not as trivial
+as converting a number between two radixes. Here is <a
+href="converting_number_to_excel_column_letters_name.texy">my solution</a>.</p>
+
+<h2>Uz?v?ry v jazyce Java – p?es m?stn? vnit?n? t??du</h2>
+
+<p>P?i tvorb? GUI k jednomu syst?mu se mi zastesklo po snadnosti uz?v?r?
+v JavaScriptu. Prozkoumal jsem <a
+href="uzavery_v_jave_mistni_vnitrni_trida.texy">mo?nosti uz?v?r?
+v Jav?</a>.</p>
+
+<h2>Spring Framework – ?vod</h2>
+
+<p>P?ipravil jsem velmi stru?n? <a
+href="navod-spring-framework-zacatky.texy">tutori?l na rozb?h?n? jedn? ??sti
+Spring Frameworku, a sice Beans Factory</a>. V ?e?tin?.</p>
+
+<h2>Hibernate super-quick start in NetBeans</h2>
+
+<p>Here's my how-to for <a
+href="hibernate_netbeans_howto_tutorial.texy">starting a Hibernate project using
+Java Persistence API (JPA)</a>.</p>
+
+<p>Later, I'll write something about object-relational mapping.</p>
+
+<h2>Hibernate Compatibility Matrix Error</h2>
+
+<p>Beware of the Hibernate Compatibility Matrix at <a
+href="http://www.hibernate.org/6.html">http://www.hibernate.org/6.html</a>.</p>
+
+<p><strong>Hibernate EntityManager 3.3.2 GA</strong> is said to be compatible
+with <strong>Hibernate Annotations 3.3.x</strong>. But, it is not compatible
+with Hibernate Annotations 3.3.0 – only with Hibernate Annotations
+3.3.1. This information could spare you few minutes, as it would do to me if
+I knew it :)</p>
+
+<pre>java.lang.NoSuchMethodError: org.hibernate.cfg.AnnotationConfiguration.addProperties(Ljava/util/Properties;)Lorg/hibernate/cfg/AnnotationConfiguration;</pre>
+
+<h2>Simplest One-line Formatter for <code>java.util.logging</code></h2>
+
+<p>I didn't like the two-line output of
+<code>java.util.logging.SimpleFormatter</code>. On current widescreen LCDs,
+whole log record can fit at a single line. So I've written
+<code>cz.dynawest.logging.SimplestFormatter</code>. Compare:</p>
+
+<pre
+class="log">13.7.2008 0:47:10 cz.dynawest.isir.Conversion3Controller ZpracujArchiv - INFO:   Test
+13.7.2008 0:47:10 cz.dynawest.isir.Conversion3Controller ZpracujArchiv - INFO:   Test2</pre>
+
+<p>vs.</p>
+
+<pre
+class="log">13.7.2008 0:47:10 cz.dynawest.isir.Conversion3Controller ZpracujArchiv
+INFO:   Test
+13.7.2008 0:47:10 cz.dynawest.isir.Conversion3Controller ZpracujArchiv
+INFO:   Test2</pre>
+
+<p>If you like it, the source code is available for <a
+href="download/cz.dynawest.logging.SimplestFormatter.zip">download here</a>.</p>
+
+<h2>Java tipy a triky</h2>
+
+<p>Patøíte mezi programátory, kteøí prvnì hledají øešení na Google
+jako slovní úlohu a až pak studují jakékoliv API? Pak vám možná pomùže
+moje <a href="tipy.texy">stránka tipù pro Javu</a>. Zatím není nijak moc
+rozsáhlá, budu postupnì doplòovat.<br />
+
+Podobných tipù a trikù jsou po webu kvanta, ale ne tolik v èeštinì.</p>
+
+<p><em>Update:</em> Tak nakonec stejnì vše zveøejòuju v angliètinì…</p>
+
+<h2>Bug in MySQL JDBC implementation – Connector/J</h2>
+
+<p>I've found a bug in <a
+href="http://dev.mysql.com/downloads/connector/j/5.1.html">Connector/J</a> ver.
+5.1.6. It appears upon subsequently called <code>Connection.isValid()</code>,
+which uses unsynchronized threads.</p>
+
+<p>Reported at <a
+href="http://bugs.mysql.com/bug.php?id=38060&amp;thanks=2&amp;notify=3">http://bugs.mysql.com/bug.php?…</a>.</p>
+<!-- jdk_jre_64bit_not_found.texy -->
+<h2>Java Runtime Environment or Java Developement Kit not found on
+64-bit system</h2>
+
+<p>I have 64-bit version of Windows XP and 64-bit version of JDK and JRE.<br />
+During instalation of jEdit, I got this message from the installer:</p>
+
+<blockquote>
+	<p>Setup was unable to find an installed Java Runtime Environment or Java
+	Developement Kit of version 1.4, or higher. You must have installed at least JDK
+	or JRE 1.4 to continue setup.</p>
+
+</blockquote>
+
+<p>jEdit installer looks for 32-bit version of JRE. Install it alongside the
+64-bit version to fix the problem.</p>
+
+<p>The same problem was with NetBeans installer.</p>
+<!-- texy_java_implementation.texy -->
+<h2>Texy! Java Implementation</h2>
+
+<p>Anyone knows about any? Please, <a href="mailto:ondra&#64;dynawest.cz">let me
+know via e-mail</a>.</p>
+
+<p><a href="http://download.texy.info/refs.zip">Texy! syntax use cases
+here</a>.</p>
+
+<h2>Java implementace pøekladaèe Texy!</h2>
+
+<blockquote>Zdravím,
+	<p>nechtìl by nìkdo èirou náhodou implementovat pøekladaè Texy
+	v Javì?</p>
+
+	<p><a href="http://www.texy.info">www.texy.info</a></p>
+
+	<p>Mohlo by to být dobré téma projektu / bakaláøky… Formální
+	specifikace není, jen podle popisu syntaxe a ukázek použití…</p>
+
+	<p>Java komunita by vás jistì oslavovala :-)</p>
+
+	Ondra</blockquote>
+
+<hr />
+
+<blockquote>
+	<p>Autor Texy David Grudl sestavil sadu testovacích souborù, na kterých lze
+	ovìøit implementaci pøekladaèe. K dispozici na <a
+	href="http://download.texy.info/refs.zip">http://download.texy.info/refs.zip</a></p>
+
+	<p>Algou a omegou pùvodní PHP imiplementace jsou PCRE. Knihovna pro Javu,
+	která zvládá PCRE podle Perl 5, je na <a
+	href="http://jakarta.apache.org/oro/">http://jakarta.apache.org/oro/</a> .</p>
+
+	<p>Ondra ?i?ka</p>
+</blockquote>
+
+<h2>?pln? za??tky v Jav?</h2>
+
+<p>Java èasto zaèáteèníka odradí relativní složitost pøípravy kódu a
+jeho pøekladu do èehokoliv spustitelného (v roce 1998 to byl i mùj
+pøípad a Javou jsem se prokousal až o další dva roky pozdìji :-) .</p>
+
+<p>Pro ten pøípad jsem pøipravil velmi polopatický <a
+href="navod-java_zacatky.texy">návod, jak vytvoøit zdroják v Javì, jak ho
+pøeložit do souboru <code>.class</code> a jak jej spustit</a>.</p>
+
+<h2>J2EE – Java pro web</h2>
+
+<p>V poslední dobé se prokousávám svìtem J2EE. Je to svìt rozsáhlý a
+nepøehledný. V této souvislosti uvedu jeden trefný citát:</p>
+
+<blockquote>
+	<p>Entrance to this world is a cultural conversion, not a choice of one simple
+	programming language over another.</p>
+
+	<p>-- GBdirect, „Active Web Sites and Comparison of Scripting Languages“</p>
+</blockquote>
+
+<p>Pro kamaráda jsem zaèal psát <a href="navod-j2ee_uvod.texy">velmi
+struèný úvod</a>, aby se hned zkraje neutopil v záplavì tøí až
+pìtipísmenných zkratek.</p>
+

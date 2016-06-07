@@ -1,0 +1,89 @@
+
+Maven 2 and Ant + Ivy Comparison
+================================
+
+
+I'm no big Maven fan. Anyway:
+
+Different concepts
+------------------
+
+Comparing configuration and scopes is nonsense.
+Scope says when the dependency should be used with the meaning of  _in_which_part_of_the_build_process_ to use it.
+When you want to use different dependencies for different app builds, Maven provides profiles.
+
+/--code
+<dependency org="hibernate" name="hibernate" rev="2.1.8" conf="default->proxool,oscache"/>
+<dependency org="hibernate" name="hibernate" rev="2.1.8" conf="default->dbcp,swarmcache"/>
+\--
+
+becomes
+
+/--code
+mvn <goal> -Pproxool,oscache
+mvn <goal> -Pdbcp,swarmcache
++ the respective profiles in pom.xml.
+\--
+
+Matt Raible citation stating "...For example, Hibernate downloads a bunch of JBoss JARs..." - that's not Maven's fault at all, rather Hibernate dev's. They shouldn't include optional dependencies in metadata... you should include it in your project / profile. But give it some time, JBoss is moving to Maven and some day the metadata will be hopefully correct.
+
+
+Documentation
+------------------
+
+I agree that "An important thing to be able to use a tool is its amount of documentation", but again, that doesn't affect quality of the tool itself. And I'm quite happy with Maven's doc.
+
+Concerning Ivy's documentation quality, I would cite recent mailing-list post from Angel Cervera Claudio:
+
+> Our objective is continue using  our private repository (nexus maven
+> repository manager), which is protected with user and password.
+>
+> After several hours looking for documentation in ivy web  we give up.
+
+So much the amount of documentation of Ivy.
+
+
+
+Conflict management
+------------------
+
+> "So if your module depends on foo 1.0, none of your dependencies will ever manage
+> to get foo 1.1 without a change in your own dependency declaration.
+> It may be ok in some cases, it may not in others..."
+
+In which cases you might want the build tool to use other version than you asked for?
+
+It's surely much better if the tool does what you tell it to do.
+The only problem is that Maven should warn you about the need of using other version by the dependency.
+
+Also note that Maven let's you chose a range of versions to use, afaik, using [1.2,1.5),
+or similar - but I never used it, I always want to use the version I developed and tested with, 
+and wonder whether anyone does otherwise.
+
+
+Flexibility
+------------------
+
+> "In Ivy many things can be configured, and many others can be plugged in: dependency resolvers, conflict manager, module descriptor parser, latest revision strategy, ... "
+
+Ok, that can be a problem, e.g. when someone wants to build Java projects in entirely different way than Maven supposes, like building dependencies from sources on the client side. But for usual projects - what would I need to plug a "module descriptor parser" for? Perhaps caused by my unexperienced view, but this argument reminds me the arguments for comparing Java and C++, that in Java you can't use pointer arithmetics - similar logical skew.
+
+
+Public Repositories
+------------------
+
+> "The only problem some may face is that module descriptors are not always checked, so some are not really well written."
+True, this is the real problem of Maven - poorly written metadata. But see above - is it a fault of the tool or the author of metadata?
+
+> "Ivy provides features and documentation to build your own enterprise repository based (or not) on data available in the public repository."
+So does Maven.
+
+------------------
+
+Summarized, most of the article is either outdated or written by someone uninformed. 
+
+The only true advantages of Ant + Ivy combo nowadays is only 
+the relative freedom of control of execution and perhaps better metadata.
+
+Maven's disadvantage is the verboseness of the `pom.xml` and relatively bad metadata, 
+but I believe that will improve for quality projects.

@@ -1,0 +1,160 @@
+
+
+Wicket and nice URLs - URL coding strategies
+********************************************
+
+
+Intro: http://www.javalobby.org/java/forums/t68753.html
+
+"Not much nice wiki page":https://cwiki.apache.org/WICKET/url-coding-strategies.html - almost useless, just aggregated JavaDoc's
+
+
+
+URL coding strategies
+=====================
+
+
+BookmarkablePageRequestTargetUrlCodingStrategy example
+----------------------------------------------
+
+/--code plain .[brush:]
+http://localhost/app/mountPath/param1/value1/param2/value2
+
+// [in AlohaApplication.init()]
+mountBookmarkablePage("/mountPath", MyPage.class);
+
+pageParameters.getString("param1"); // "value1"
+pageParameters.getString("param2"); // "value2"
+\--
+
+
+IndexedParamUrlCodingStrategy example
+----------------------------------------------
+
+/--code plain .[brush:]
+http://localhost/app/mountPath/value1/value2
+
+pageParameters.getString("0"); // "value1"
+pageParameters.getString("1"); // "value2"
+\--
+
+
+HybridUrlCodingStrategy example
+----------------------------------------------
+
+"The url with HybridUrlCodingStrategy  looks like 
+`/mount/path/param1/value1.3.` or `/mount/path/param1/value1.3.2`
+where `3` is page ID and `2` is version number." I haven't tried this yet.
+
+
+/--code plain .[brush:]
+http://localhost/app/mountPath/param1/value1.3.2
+
+pageParameters.getString("param1"); // "value1"
+// what else?
+\--
+
+
+PackageRequestTargetUrlCodingStrategy example
+----------------------------------------------
+
+/--code plain .[brush:]
+ + cz.dynawest.wicketdemo
+ |--HomePage.class
+ |--HomePage.html
+ |--Contacts.class 
+ \--Contacts.html
+
+
+// [in AlohaApplication.init()]
+mount("/main", PackageName.forClass(HomePage.class));
+
+
+http://localhost/app/mountPath/HomePage/param1/value1/param2/value2
+http://localhost/app/mountPath/Contacts/param1/value1/param2/value2
+
+pageParameters.getString("param1"); // "value1"
+pageParameters.getString("param2"); // "value2"
+\--
+
+
+
+
+
+
+
+
+QueryStringUrlCodingStrategy example
+----------------------------------------------
+
+The PHP way.  "JavaDoc":http://wicket.apache.org/docs/1.4/org/apache/wicket/request/target/coding/QueryStringUrlCodingStrategy.html
+
+/--code plain .[brush:]
+http://localhost/app/mountPath?param1=value1&param2=value2
+
+// [in AlohaApplication.init()]
+private <C extends Page> void mountBookmarkablePageWithUrlCoding(String path, Class<C> pageClass)
+{
+  mount(new QueryStringUrlCodingStrategy(path, pageClass));
+}
+
+
+pageParameters.getString("param1"); // "value1"
+pageParameters.getString("param2"); // "value2"
+\--
+
+
+
+
+
+
+MixedParamUrlCodingStrategy example ("JavaDoc":http://wicket.apache.org/docs/1.4/org/apache/wicket/request/target/coding/MixedParamUrlCodingStrategy.html)
+----------------------------------------------
+
+Url coding strategy for bookmarkable pages that encodes a set of given parameters in the url's path and the rest in the query-string.
+
+Strategy looks for path-parameters whose name is read from an array of names e.g. ["param0", "param1"]. Found parameters will be appended to the url in the form 
+
+
+/--code plain .[brush:]
+http://localhost/app/mountPath/paramvalue0/valueA/valueB?param1=value1&param2=value2
+
+// [in AlohaApplication.init()]
+
+String[]{"paramA","paramB"}
+
+pageParameters.getString("paramA"); // "valueA"
+pageParameters.getString("paramB"); // "valueB"
+pageParameters.getString("param1"); // "value1"
+pageParameters.getString("param2"); // "value2"
+\--
+
+  JavaDoc errata: 
+  "When both "b" and "c" are missing on encode, the**y** will not get a value during decode."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CryptedUrlWebRequestCodingStrategy example
+----------------------------------------------
+
+TBD
+
+/--code plain .[brush:]
+http://localhost/app/mountPath/value1/value2
+
+pageParameters.getString("0"); // "value1"
+pageParameters.getString("1"); // "value2"
+\--
+

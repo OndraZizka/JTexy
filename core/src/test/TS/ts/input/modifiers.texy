@@ -1,0 +1,22 @@
+Ahoj  .[class1 brush: class2 #id1]{styl: cosi}
+=======
+
+.[trida]{styl: foo}
+Nejaky odstavec
+dalsi radka odstavce
+
+/--code brush: java
+Code with brush: java
+\--
+
+/--code js .[brush:]
+Code with .[brush:] ...
+\--
+
+.[trida]{styl: foo}
+> Blockquote
+> blablabla
+
+"Odkaz na neco .[trida1]{styl1}":http://ondra.zizka.cz/
+
+A to je asi tak "vsechno .[foo]{onmouseover: alert('Mouseover');}".

@@ -1,0 +1,65 @@
+`canvas` element selection buffer
+*********************************
+
+I wonder whether canvas element can do any kind of "selection buffer" functionality (the name taken from OpenGL, I'm sure you know it).
+
+I consider making a Populous-like isometric game in JavaScript, or better said, using web technologies. So it would be isometric, and the cells can be at different "floors" and they will carry different objects (high buildings, etc). Thus, I can not determine the selected cell/object from the position of the mouse using just some math - I need to store what each pixel or DOM object represents.
+
+* OpenGL has per-pixel selection buffer.
+* HTML offers `<img>` + `<map>` layer over my game rendered in a `<div>`.
+* SVG offers events on the respective DOM objects.
+
+
+Does `<canvas>` offer something?
+I haven't found anything in the docs at Mozilla and the fact that
+"":http://blog.nihilogic.dk
+also uses keyboard selection in 
+"Javascript 3D chess":http://blog.nihilogic.dk/search/label/chess
+also hints that he hasn't found such thing.
+
+
+Thanks for any tips (ondra@dynawest.cz).
+
+
+Update - Jacob Seidelin
+------
+
+Napsal jsem Jacobovi Seidelinovi, který si s `<canvas>`em opravdu vyhraje.
+(Omlouvám se za redundantnost, ale nemám čas to moc editovat.)
+
+
+> Hello Jacob,
+>
+> I wonder whether canvas element can do any kind of "selection buffer" functionality (the name taken from OpenGL, I'm sure you know it).
+>
+> I consider making a Populous-like isometric game in JavaScript, or better said, using web technologies. So it would be isometric, and the cells can be at different "floors" and they will carry different objects (high buildings, etc). Thus, I can not determine the selected cell/object from the position of the mouse using just some math - I need to store what each pixel or DOM object represents.
+>
+> OpenGL has per-pixel selection buffer.
+> HTML offers <img> + <map> layer over my game rendered in a <div>.
+> SVG offers events on the respective DOM objects.
+> Does <canvas> offer something? I haven't found anything in the docs at Mozilla and your chess keyboard selection also hint's that you haven't found such thing.
+>
+> Thanks for any help, Ondra
+
+-------
+
+> Hey Ondra,
+> 
+> No, there's no such thing for <canvas> that I'm aware of, unfortunately. 
+> I guess you'll have to cook your own thing for that purpose.
+> And yes, the chess keyboard controls were a response to exactly that :-)
+> 
+> Although, if you can describe your areas as polygons or paths, I think 
+> there's a isPointInPath() method you could use, although I haven't 
+> touched it yet myself.
+> I imagine you'd have to go through all objects, set up a path and check 
+> at every mousemove "frame", though.
+
+> Cheers,
+> Jacob
+
+
+Takže zatím asi nic. Zvažuji podání feature requestu, jestli již někdo něco takového nenavrhnul či se dokonce nechystá.
+
+
+

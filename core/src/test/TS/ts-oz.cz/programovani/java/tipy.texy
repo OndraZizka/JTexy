@@ -1,0 +1,188 @@
+Java tipy
+*********
+
+
+
+
+
+
+Co všechno umí interface?
+=========================
+
+Zajímavým jevem je, že člověk pohybující se v jistém oboru na úrovni nejvyšší abstrakce
+a žhavých novinek často zapomíná samotné základy.
+Matematici snící o univerzálních algebrách neumí sčítat,
+manažeři se nedokáží v obchodě rozhodnout, který salám koupit na večeři,
+a J2EE vývojáři si jen matně rozpomenou na různá zákoutí jazyka Java.
+
+
+Právě jsem řešil návrhový problém, kdy jsem měl v projektu třídy, která dědily jinou.
+A kvůli Spring AOP a jeho pohodlné správě vnořených transakcí jsem chtěl dědit
+z `JpaTemplate`. A teď co s tím?
+
+Moje nadtřída vypadala takto (zkráceno):
+
+/--code java .[brush:]
+public abstract class Action {
+  
+  protected static Logger log;
+  static{
+    log = Logger.getLogger(Action.class.getName());
+  }
+  
+  public Action(){}
+  
+  public abstract String execute( AppContext appContext, Map<String, Object> params, Map<String, Object> mapOutput );
+  
+  public static final String SUCCESS = "success";
+  public static final String ERROR   = "error";
+  
+  
+  public class Output{
+    
+    // -- Fields -- //
+    String view;
+    Map<String, Object> data;
+
+    
+    public Output( String view, Map<String, Object> data ) {
+      this.view = view;
+      this.data = data;
+    }
+
+    // -- Getters / Setters -- //
+    public Map<String, Object> getData() {     return data;    }
+    public void setData( Map<String, Object> data ) {      this.data = data;    }
+    
+    public String getView() {      return view;    }    
+    public void setView( String view ) {      this.view = view;    }    
+  }
+
+}// class Action
+\--
+
+V podstatě velmi jednoduchá třída. Když jsem se na ni zběžně podíval,
+zdálo se mi, že na to, abych z ní udělal interface je moc složitá.
+Až když jsem zjistil, že nepoužívat `JpaTemplate` by bylo ještě složitější,
+než se vykašlat na polymorfizmus a tuto nad-třídu zcela zrušit,
+podíval jsem se ještě na 
+"popis `interface` z tutoriálu od Sunu":http://java.sun.com/docs/books/tutorial/java/IandI/createinterface.html.
+
+Zde stoji:
+
+> In the Java programming language, an interface is a reference type, 
+> similar to a class, that can contain only constants, method signatures, and nested types. 
+
+Přičemž i vnitřní třída je vnořený typ.
+`JpaTemplate` používá vlastní referenci na `logger`, takže `log` jsem mohl vyhodit;
+A jinak v mojí třídě nic "závadného" (až na zbytečný konstruktor) nebylo.
+A krásná refaktorizace je na světě :-)
+
+Takže až budete někde potřebovat vícenásobnou dědičnost, vzpomeňte si,
+že do `interface` můžete kromě metod dávat i konstanty a hlavně //vnitřní třídy//.
+
+
+
+
+
+Vnitřní třídy pro seskupení funkčnosti vnější třídy
+===================================================
+
+Pokud chcete v nějaké třídě uklidit, možná vám pomůže použití vnitřní třídy.
+
+/--code
+class VnějšíTřída {
+
+    class VnitřníTřída {
+        ...
+    }
+
+}
+\--
+
+Vnitřní třída (//inner class//) neboli nestatické vnořené třídy mají zajímavou vlastnost:
+Jejich instance je součástí instance vnější třídy:
+
+[* img\tipy\classes-inner.gif *]
+
+//(Vnitřních koleček by mohlo být i více, protože pro daný objekt vnější třídy 
+můžete vytvořit libovolný počet instancí vnitřní třídy.)//
+
+Díky tomu z ní můžete přistupovat ke všem jejím prvkům:
+
+/--code
+class MujProgram(){
+  Logger log;
+  
+  // inicializace v konstruktoru...
+  public MujProgram(){ ... }
+
+  class ProvadecAkci {
+
+     private void provedAkci(){
+       log.info("Provádím akci");
+     }
+
+     private void provedJinouAkci(){
+       log.info("Provádím jinou akci");
+     }
+
+  }
+
+}
+\--
+
+Jedná se tedy o podobný mechanismus, jako vnořené funkce v Pascalu (které kdysi sháněl můj kamarád Karel Kyrian :-)
+
+
+Osobně vnitřní třídy používám pro zapouzdření implementace rozhraní (//interface//),
+například pro obsluhu událostí:
+Vnitřní třída implementuje rozhraní `*Listener` a její instanci potom u zdroje událostí registruji jako posluchače.
+
+
+
+
+
+Nastavení kódování JDBC MySQL připojení
+=======================================
+
+MySQL standardně nastavuje kódování spojení na ISO-LATIN-1 (tuším).
+Proto je třeba spojení přenastavit.
+
+JDBC nemá přímou standardní metodu, která by změnu prováděla.
+Proto je třeba MySQL spojení nastavit jinak - a to parametrem v "Connection URL":
+
+/--code url
+jdbc:mysql://dev:3306/myDatabase?autoReconnect=true&amp;allowMultiQueries=true&amp;characterEncoding=UTF-8&amp;characterSetResults=UTF-8
+\--
+
+Pokud byste chtěli kódování `Windows-1250`, použijte hodnotu `Cp1250`.
+ Na stránkách MySQL pak najdete ostatní 
+"kódování, která MySQL podporuje":http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-charsets.html.
+
+//Vyzkoušeno s Connector/J 5.1.6, Java 1.6.x MySQL 5.0.53.//
+
+Další zajímavé tipy ohledně Unicode a Javy najdete na http://www.macroware.cz/software/unicode/.
+
+Klíčová slova: databáze, JDBC, MySQL, nastavení, kódování, iBatis, Hibernate.   
+Keywords:  database, JDBC, character set, setting, charset.
+
+
+
+
+Jak zjistit, zda cesta (adresář) existuje, a pokud ne, vytvořit jej?
+====================================================================
+
+/--code java .[brush:]
+    try{
+      File dir = new File("./spisy_xml");
+      if( !dir.exists() && !dir.mkdirs() ) 
+        throw new Exception("Nepodařilo se vytvořit adresář "+dir.getPath());
+    }
+    catch( Exception ex ){
+      throw new Exception("Chyba při vytváření adresáře pro XML soubory.", ex);
+    }
+\--
+
+Klíčová slova: java, j2se, adresář, složka, kontrola, existence, existuje, vytvoření.
+Keywords:      java, directory, folder, check, existence, exists, create.

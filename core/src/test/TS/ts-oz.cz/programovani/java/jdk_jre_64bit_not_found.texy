@@ -1,0 +1,12 @@
+Java Runtime Environment or Java Developement Kit not found on 64-bit system
+****************************************
+
+I have 64-bit version of Windows XP and 64-bit version of JDK and JRE.
+ During instalation of jEdit, I got this message from the installer:
+
+> Setup was unable to find an installed Java Runtime Environment or Java Developement Kit of version 1.4, or higher.
+> You must have installed at least JDK or JRE 1.4 to continue setup.
+
+jEdit installer looks for 32-bit version of JRE. Install it alongside the 64-bit version to fix the problem.
+
+The same problem was with NetBeans installer.

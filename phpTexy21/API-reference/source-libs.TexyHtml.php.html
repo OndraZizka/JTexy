@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="Nette Framework Apigen" />	<meta name="robots" content="noindex" />
+
+	<title>libs\TexyHtml.php</title>
+
+	<script type="text/javascript" src="media/jquery.min.js"></script>
+	<script type="text/javascript" src="media/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="media/jquery.sortElements.js"></script>
+	<script type="text/javascript" src="allclasses.js"></script>
+	<script type="text/javascript" src="media/main.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="media/style.css?v=2010100721" />
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+</head>
+
+<body>
+<div id="left">
+	<a href="allclasses.html">All Classes</a>
+
+	<h3>Namespaces</h3>
+	<ul>
+		<li><a href="namespace-internal.html">internal</a></li>
+		<li>Texy</li>
+	</ul>
+
+	<h3>Classes</h3>
+
+	<ul>
+		<li><a href="Texy.html">Texy</a></li>
+		<li><a href="TexyBlockParser.html">TexyBlockParser</a></li>
+		<li><a href="TexyConfigurator.html">TexyConfigurator</a></li>
+		<li><a href="TexyHandlerInvocation.html">TexyHandlerInvocation</a></li>
+		<li>TexyHtml</li>
+		<li><a href="TexyLineParser.html">TexyLineParser</a></li>
+		<li><a href="TexyModifier.html">TexyModifier</a></li>
+		<li><a href="TexyModule.html">TexyModule</a></li>
+		<li><a href="TexyObject.html">TexyObject</a></li>
+		<li><a href="TexyParser.html">TexyParser</a></li>
+		<li><a href="TexyUtf.html">TexyUtf</a></li>
+	</ul>
+
+	<h3>Interfaces</h3>
+
+	<ul>
+	</ul>
+</div>
+
+<div id="right">
+	<form action="http://www.google.com/cse" id="search" onsubmit="if(this.q.value.indexOf('more:')==-1)this.q.value+=' more:api'">
+		<input type="hidden" name="cx" value="011549293477758430224:vxofa9ufnhc" /><input type="hidden" name="ie" value="UTF-8" /><input type="text" name="q" class="text" /><input type="submit" value="Search" />
+	</form>
+
+<div id="navigation">
+	<ul>
+		<li><a href="overview.html" title="Summary of all namespaces">Overview</a></li>
+		<li><a href="elements.html">Elements</a></li>
+	</ul>
+</div>
+
+<pre><code><a href="#L1" id="L1" class="l">  1: </a><span class="xlang">&lt;?php</span>
+<a href="#L2" id="L2" class="l">  2: </a>
+<a href="#L3" id="L3" class="l">  3: </a><span class="php-comment">/**
+</span><a href="#L4" id="L4" class="l">  4: </a><span class="php-comment"> * Texy! - human-readable text to HTML converter.
+</span><a href="#L5" id="L5" class="l">  5: </a><span class="php-comment"> *
+</span><a href="#L6" id="L6" class="l">  6: </a><span class="php-comment"> * @copyright  Copyright (c) 2004, 2010 David Grudl
+</span><a href="#L7" id="L7" class="l">  7: </a><span class="php-comment"> * @license    GNU GENERAL PUBLIC LICENSE version 2 or 3
+</span><a href="#L8" id="L8" class="l">  8: </a><span class="php-comment"> * @link       http://texy.info
+</span><a href="#L9" id="L9" class="l">  9: </a><span class="php-comment"> * @package    Texy
+</span><a href="#L10" id="L10" class="l"> 10: </a><span class="php-comment"> */</span>
+<a href="#L11" id="L11" class="l"> 11: </a>
+<a href="#L12" id="L12" class="l"> 12: </a>
+<a href="#L13" id="L13" class="l"> 13: </a>
+<a href="#L14" id="L14" class="l"> 14: </a><span class="php-comment">/**
+</span><a href="#L15" id="L15" class="l"> 15: </a><span class="php-comment"> * HTML helper.
+</span><a href="#L16" id="L16" class="l"> 16: </a><span class="php-comment"> *
+</span><a href="#L17" id="L17" class="l"> 17: </a><span class="php-comment"> * usage:
+</span><a href="#L18" id="L18" class="l"> 18: </a><span class="php-comment"> *       $anchor = TexyHtml::el('a')-&gt;href($link)-&gt;setText('Texy');
+</span><a href="#L19" id="L19" class="l"> 19: </a><span class="php-comment"> *       $el-&gt;class = 'myclass';
+</span><a href="#L20" id="L20" class="l"> 20: </a><span class="php-comment"> *
+</span><a href="#L21" id="L21" class="l"> 21: </a><span class="php-comment"> *       echo $el-&gt;startTag(), $el-&gt;endTag();
+</span><a href="#L22" id="L22" class="l"> 22: </a><span class="php-comment"> *
+</span><a href="#L23" id="L23" class="l"> 23: </a><span class="php-comment"> * @property   mixed element's attributes
+</span><a href="#L24" id="L24" class="l"> 24: </a><span class="php-comment"> * @copyright  Copyright (c) 2004, 2010 David Grudl
+</span><a href="#L25" id="L25" class="l"> 25: </a><span class="php-comment"> * @package    Texy
+</span><a href="#L26" id="L26" class="l"> 26: </a><span class="php-comment"> */</span>
+<a href="#L27" id="L27" class="l"> 27: </a><span class="php-keyword1">class</span> TexyHtml <span class="php-keyword1">extends</span> TexyObject <span class="php-keyword1">implements</span> ArrayAccess, <span class="php-comment">/* Countable, */</span> IteratorAggregate
+<a href="#L28" id="L28" class="l"> 28: </a>{
+<a href="#L29" id="L29" class="l"> 29: </a>    <span class="php-comment">/** @var string  element's name */</span>
+<a href="#L30" id="L30" class="l"> 30: </a>    <span class="php-keyword1">private</span> <span class="php-var">$name</span>;
+<a href="#L31" id="L31" class="l"> 31: </a>
+<a href="#L32" id="L32" class="l"> 32: </a>    <span class="php-comment">/** @var bool  is element empty? */</span>
+<a href="#L33" id="L33" class="l"> 33: </a>    <span class="php-keyword1">private</span> <span class="php-var">$isEmpty</span>;
+<a href="#L34" id="L34" class="l"> 34: </a>
+<a href="#L35" id="L35" class="l"> 35: </a>    <span class="php-comment">/** @var array  element's attributes */</span>
+<a href="#L36" id="L36" class="l"> 36: </a>    <span class="php-keyword1">public</span> <span class="php-var">$attrs</span> = <span class="php-keyword1">array</span>();
+<a href="#L37" id="L37" class="l"> 37: </a>
+<a href="#L38" id="L38" class="l"> 38: </a>    <span class="php-comment">/** @var array  of TexyHtml | string nodes */</span>
+<a href="#L39" id="L39" class="l"> 39: </a>    <span class="php-keyword1">protected</span> <span class="php-var">$children</span> = <span class="php-keyword1">array</span>();
+<a href="#L40" id="L40" class="l"> 40: </a>
+<a href="#L41" id="L41" class="l"> 41: </a>    <span class="php-comment">/** @var bool  use XHTML syntax? */</span>
+<a href="#L42" id="L42" class="l"> 42: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-var">$xhtml</span> = <span class="php-keyword1">TRUE</span>;
+<a href="#L43" id="L43" class="l"> 43: </a>
+<a href="#L44" id="L44" class="l"> 44: </a>    <span class="php-comment">/** @var array  empty elements */</span>
+<a href="#L45" id="L45" class="l"> 45: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-var">$emptyElements</span> = <span class="php-keyword1">array</span>(<span class="php-quote">'img'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'hr'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'br'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'input'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'meta'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'area'</span>=&gt;<span class="php-num">1</span>,
+<a href="#L46" id="L46" class="l"> 46: </a>        <span class="php-quote">'base'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'col'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'link'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'param'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'basefont'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'frame'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'isindex'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'wbr'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'embed'</span>=&gt;<span class="php-num">1</span>);
+<a href="#L47" id="L47" class="l"> 47: </a>
+<a href="#L48" id="L48" class="l"> 48: </a>    <span class="php-comment">/** @var array  %inline; elements; replaced elements + br have value '1' */</span>
+<a href="#L49" id="L49" class="l"> 49: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-var">$inlineElements</span> = <span class="php-keyword1">array</span>(<span class="php-quote">'ins'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'del'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'tt'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'i'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'b'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'big'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'small'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'em'</span>=&gt;<span class="php-num">0</span>,
+<a href="#L50" id="L50" class="l"> 50: </a>        <span class="php-quote">'strong'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'dfn'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'code'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'samp'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'kbd'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'var'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'cite'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'abbr'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'acronym'</span>=&gt;<span class="php-num">0</span>,
+<a href="#L51" id="L51" class="l"> 51: </a>        <span class="php-quote">'sub'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'sup'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'q'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'span'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'bdo'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'a'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'object'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'img'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'br'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'script'</span>=&gt;<span class="php-num">1</span>,
+<a href="#L52" id="L52" class="l"> 52: </a>        <span class="php-quote">'map'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'input'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'select'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'textarea'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'label'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'button'</span>=&gt;<span class="php-num">1</span>,
+<a href="#L53" id="L53" class="l"> 53: </a>        <span class="php-quote">'u'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'s'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'strike'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'font'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'applet'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'basefont'</span>=&gt;<span class="php-num">0</span>, <span class="php-comment">// transitional
+</span><a href="#L54" id="L54" class="l"> 54: </a>        <span class="php-quote">'embed'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'wbr'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'nobr'</span>=&gt;<span class="php-num">0</span>,<span class="php-quote">'canvas'</span>=&gt;<span class="php-num">1</span>, <span class="php-comment">// proprietary
+</span><a href="#L55" id="L55" class="l"> 55: </a>    );
+<a href="#L56" id="L56" class="l"> 56: </a>
+<a href="#L57" id="L57" class="l"> 57: </a>    <span class="php-comment">/** @var array  elements with optional end tag in HTML */</span>
+<a href="#L58" id="L58" class="l"> 58: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-var">$optionalEnds</span> = <span class="php-keyword1">array</span>(<span class="php-quote">'body'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'head'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'html'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'colgroup'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'dd'</span>=&gt;<span class="php-num">1</span>,
+<a href="#L59" id="L59" class="l"> 59: </a>        <span class="php-quote">'dt'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'li'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'option'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'p'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'tbody'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'td'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'tfoot'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'th'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'thead'</span>=&gt;<span class="php-num">1</span>,<span class="php-quote">'tr'</span>=&gt;<span class="php-num">1</span>);
+<a href="#L60" id="L60" class="l"> 60: </a>
+<a href="#L61" id="L61" class="l"> 61: </a>    <span class="php-comment">/** @see http://www.w3.org/TR/xhtml1/prohibitions.html */</span>
+<a href="#L62" id="L62" class="l"> 62: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-var">$prohibits</span> = <span class="php-keyword1">array</span>(
+<a href="#L63" id="L63" class="l"> 63: </a>        <span class="php-quote">'a'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'a'</span>,<span class="php-quote">'button'</span>),
+<a href="#L64" id="L64" class="l"> 64: </a>        <span class="php-quote">'img'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'pre'</span>),
+<a href="#L65" id="L65" class="l"> 65: </a>        <span class="php-quote">'object'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'pre'</span>),
+<a href="#L66" id="L66" class="l"> 66: </a>        <span class="php-quote">'big'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'pre'</span>),
+<a href="#L67" id="L67" class="l"> 67: </a>        <span class="php-quote">'small'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'pre'</span>),
+<a href="#L68" id="L68" class="l"> 68: </a>        <span class="php-quote">'sub'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'pre'</span>),
+<a href="#L69" id="L69" class="l"> 69: </a>        <span class="php-quote">'sup'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'pre'</span>),
+<a href="#L70" id="L70" class="l"> 70: </a>        <span class="php-quote">'input'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'button'</span>),
+<a href="#L71" id="L71" class="l"> 71: </a>        <span class="php-quote">'select'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'button'</span>),
+<a href="#L72" id="L72" class="l"> 72: </a>        <span class="php-quote">'textarea'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'button'</span>),
+<a href="#L73" id="L73" class="l"> 73: </a>        <span class="php-quote">'label'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'button'</span>, <span class="php-quote">'label'</span>),
+<a href="#L74" id="L74" class="l"> 74: </a>        <span class="php-quote">'button'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'button'</span>),
+<a href="#L75" id="L75" class="l"> 75: </a>        <span class="php-quote">'form'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'button'</span>, <span class="php-quote">'form'</span>),
+<a href="#L76" id="L76" class="l"> 76: </a>        <span class="php-quote">'fieldset'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'button'</span>),
+<a href="#L77" id="L77" class="l"> 77: </a>        <span class="php-quote">'iframe'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'button'</span>),
+<a href="#L78" id="L78" class="l"> 78: </a>        <span class="php-quote">'isindex'</span> =&gt; <span class="php-keyword1">array</span>(<span class="php-quote">'button'</span>),
+<a href="#L79" id="L79" class="l"> 79: </a>    );
+<a href="#L80" id="L80" class="l"> 80: </a>
+<a href="#L81" id="L81" class="l"> 81: </a>
+<a href="#L82" id="L82" class="l"> 82: </a>
+<a href="#L83" id="L83" class="l"> 83: </a>    <span class="php-comment">/**
+</span><a href="#L84" id="L84" class="l"> 84: </a><span class="php-comment">     * Static factory.
+</span><a href="#L85" id="L85" class="l"> 85: </a><span class="php-comment">     * @param  string element name (or NULL)
+</span><a href="#L86" id="L86" class="l"> 86: </a><span class="php-comment">     * @param  array|string element's attributes (or textual content)
+</span><a href="#L87" id="L87" class="l"> 87: </a><span class="php-comment">     * @return TexyHtml
+</span><a href="#L88" id="L88" class="l"> 88: </a><span class="php-comment">     */</span>
+<a href="#L89" id="L89" class="l"> 89: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> el(<span class="php-var">$name</span> = <span class="php-keyword1">NULL</span>, <span class="php-var">$attrs</span> = <span class="php-keyword1">NULL</span>)
+<a href="#L90" id="L90" class="l"> 90: </a>    {
+<a href="#L91" id="L91" class="l"> 91: </a>        <span class="php-var">$el</span> = <span class="php-keyword1">new</span> self;
+<a href="#L92" id="L92" class="l"> 92: </a>        <span class="php-var">$el</span>-&gt;setName(<span class="php-var">$name</span>);
+<a href="#L93" id="L93" class="l"> 93: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">is_array</span>(<span class="php-var">$attrs</span>)) {
+<a href="#L94" id="L94" class="l"> 94: </a>            <span class="php-var">$el</span>-&gt;attrs = <span class="php-var">$attrs</span>;
+<a href="#L95" id="L95" class="l"> 95: </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$attrs</span> !== <span class="php-keyword1">NULL</span>) {
+<a href="#L96" id="L96" class="l"> 96: </a>            <span class="php-var">$el</span>-&gt;setText(<span class="php-var">$attrs</span>);
+<a href="#L97" id="L97" class="l"> 97: </a>        }
+<a href="#L98" id="L98" class="l"> 98: </a>        <span class="php-keyword1">return</span> <span class="php-var">$el</span>;
+<a href="#L99" id="L99" class="l"> 99: </a>    }
+<a href="#L100" id="L100" class="l">100: </a>
+<a href="#L101" id="L101" class="l">101: </a>
+<a href="#L102" id="L102" class="l">102: </a>
+<a href="#L103" id="L103" class="l">103: </a>    <span class="php-comment">/**
+</span><a href="#L104" id="L104" class="l">104: </a><span class="php-comment">     * Changes element's name.
+</span><a href="#L105" id="L105" class="l">105: </a><span class="php-comment">     * @param  string
+</span><a href="#L106" id="L106" class="l">106: </a><span class="php-comment">     * @param  bool  Is element empty?
+</span><a href="#L107" id="L107" class="l">107: </a><span class="php-comment">     * @return TexyHtml  provides a fluent interface
+</span><a href="#L108" id="L108" class="l">108: </a><span class="php-comment">     * @throws InvalidArgumentException
+</span><a href="#L109" id="L109" class="l">109: </a><span class="php-comment">     */</span>
+<a href="#L110" id="L110" class="l">110: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> setName(<span class="php-var">$name</span>, <span class="php-var">$empty</span> = <span class="php-keyword1">NULL</span>)
+<a href="#L111" id="L111" class="l">111: </a>    {
+<a href="#L112" id="L112" class="l">112: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$name</span> !== <span class="php-keyword1">NULL</span> &amp;&amp; !<span class="php-keyword2">is_string</span>(<span class="php-var">$name</span>)) {
+<a href="#L113" id="L113" class="l">113: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> InvalidArgumentException(<span class="php-quote">&quot;Name must be string or NULL.&quot;</span>);
+<a href="#L114" id="L114" class="l">114: </a>        }
+<a href="#L115" id="L115" class="l">115: </a>
+<a href="#L116" id="L116" class="l">116: </a>        <span class="php-var">$this</span>-&gt;name = <span class="php-var">$name</span>;
+<a href="#L117" id="L117" class="l">117: </a>        <span class="php-var">$this</span>-&gt;isEmpty = <span class="php-var">$empty</span> === <span class="php-keyword1">NULL</span> ? <span class="php-keyword1">isset</span>(self::<span class="php-var">$emptyElements</span>[<span class="php-var">$name</span>]) : (bool) <span class="php-var">$empty</span>;
+<a href="#L118" id="L118" class="l">118: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
+<a href="#L119" id="L119" class="l">119: </a>    }
+<a href="#L120" id="L120" class="l">120: </a>
+<a href="#L121" id="L121" class="l">121: </a>
+<a href="#L122" id="L122" class="l">122: </a>
+<a href="#L123" id="L123" class="l">123: </a>    <span class="php-comment">/**
+</span><a href="#L124" id="L124" class="l">124: </a><span class="php-comment">     * Returns element's name.
+</span><a href="#L125" id="L125" class="l">125: </a><span class="php-comment">     * @return string
+</span><a href="#L126" id="L126" class="l">126: </a><span class="php-comment">     */</span>
+<a href="#L127" id="L127" class="l">127: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getName()
+<a href="#L128" id="L128" class="l">128: </a>    {
+<a href="#L129" id="L129" class="l">129: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;name;
+<a href="#L130" id="L130" class="l">130: </a>    }
+<a href="#L131" id="L131" class="l">131: </a>
+<a href="#L132" id="L132" class="l">132: </a>
+<a href="#L133" id="L133" class="l">133: </a>
+<a href="#L134" id="L134" class="l">134: </a>    <span class="php-comment">/**
+</span><a href="#L135" id="L135" class="l">135: </a><span class="php-comment">     * Is element empty?
+</span><a href="#L136" id="L136" class="l">136: </a><span class="php-comment">     * @return bool
+</span><a href="#L137" id="L137" class="l">137: </a><span class="php-comment">     */</span>
+<a href="#L138" id="L138" class="l">138: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> isEmpty()
+<a href="#L139" id="L139" class="l">139: </a>    {
+<a href="#L140" id="L140" class="l">140: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;isEmpty;
+<a href="#L141" id="L141" class="l">141: </a>    }
+<a href="#L142" id="L142" class="l">142: </a>
+<a href="#L143" id="L143" class="l">143: </a>
+<a href="#L144" id="L144" class="l">144: </a>
+<a href="#L145" id="L145" class="l">145: </a>    <span class="php-comment">/**
+</span><a href="#L146" id="L146" class="l">146: </a><span class="php-comment">     * Overloaded setter for element's attribute.
+</span><a href="#L147" id="L147" class="l">147: </a><span class="php-comment">     * @param  string    property name
+</span><a href="#L148" id="L148" class="l">148: </a><span class="php-comment">     * @param  mixed     property value
+</span><a href="#L149" id="L149" class="l">149: </a><span class="php-comment">     * @return void
+</span><a href="#L150" id="L150" class="l">150: </a><span class="php-comment">     */</span>
+<a href="#L151" id="L151" class="l">151: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> __set(<span class="php-var">$name</span>, <span class="php-var">$value</span>)
+<a href="#L152" id="L152" class="l">152: </a>    {
+<a href="#L153" id="L153" class="l">153: </a>        <span class="php-var">$this</span>-&gt;attrs[<span class="php-var">$name</span>] = <span class="php-var">$value</span>;
+<a href="#L154" id="L154" class="l">154: </a>    }
+<a href="#L155" id="L155" class="l">155: </a>
+<a href="#L156" id="L156" class="l">156: </a>
+<a href="#L157" id="L157" class="l">157: </a>
+<a href="#L158" id="L158" class="l">158: </a>    <span class="php-comment">/**
+</span><a href="#L159" id="L159" class="l">159: </a><span class="php-comment">     * Overloaded getter for element's attribute.
+</span><a href="#L160" id="L160" class="l">160: </a><span class="php-comment">     * @param  string    property name
+</span><a href="#L161" id="L161" class="l">161: </a><span class="php-comment">     * @return mixed    property value
+</span><a href="#L162" id="L162" class="l">162: </a><span class="php-comment">     */</span>
+<a href="#L163" id="L163" class="l">163: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> &amp;__get(<span class="php-var">$name</span>)
+<a href="#L164" id="L164" class="l">164: </a>    {
+<a href="#L165" id="L165" class="l">165: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;attrs[<span class="php-var">$name</span>];
+<a href="#L166" id="L166" class="l">166: </a>    }
+<a href="#L167" id="L167" class="l">167: </a>
+<a href="#L168" id="L168" class="l">168: </a>
+<a href="#L169" id="L169" class="l">169: </a>
+<a href="#L170" id="L170" class="l">170: </a>    <span class="php-comment">/**
+</span><a href="#L171" id="L171" class="l">171: </a><span class="php-comment">     * Overloaded setter for element's attribute.
+</span><a href="#L172" id="L172" class="l">172: </a><span class="php-comment">     * @param  string attribute name
+</span><a href="#L173" id="L173" class="l">173: </a><span class="php-comment">     * @param  array value
+</span><a href="#L174" id="L174" class="l">174: </a><span class="php-comment">     * @return TexyHtml  provides a fluent interface
+</span><a href="#L175" id="L175" class="l">175: </a><span class="php-comment">     */</span>
+<a href="#L176" id="L176" class="l">176: </a><span class="php-comment">/*
+</span><a href="#L177" id="L177" class="l">177: </a><span class="php-comment">    final public function __call($m, $args)
+</span><a href="#L178" id="L178" class="l">178: </a><span class="php-comment">    {
+</span><a href="#L179" id="L179" class="l">179: </a><span class="php-comment">        if (count($args) !== 1) {
+</span><a href="#L180" id="L180" class="l">180: </a><span class="php-comment">            throw new InvalidArgumentException(&quot;Just one argument is required.&quot;);
+</span><a href="#L181" id="L181" class="l">181: </a><span class="php-comment">        }
+</span><a href="#L182" id="L182" class="l">182: </a><span class="php-comment">        $this-&gt;attrs[$m] = $args[0];
+</span><a href="#L183" id="L183" class="l">183: </a><span class="php-comment">        return $this;
+</span><a href="#L184" id="L184" class="l">184: </a><span class="php-comment">    }
+</span><a href="#L185" id="L185" class="l">185: </a><span class="php-comment">*/</span>
+<a href="#L186" id="L186" class="l">186: </a>
+<a href="#L187" id="L187" class="l">187: </a>
+<a href="#L188" id="L188" class="l">188: </a>    <span class="php-comment">/**
+</span><a href="#L189" id="L189" class="l">189: </a><span class="php-comment">     * Special setter for element's attribute.
+</span><a href="#L190" id="L190" class="l">190: </a><span class="php-comment">     * @param  string path
+</span><a href="#L191" id="L191" class="l">191: </a><span class="php-comment">     * @param  array query
+</span><a href="#L192" id="L192" class="l">192: </a><span class="php-comment">     * @return TexyHtml  provides a fluent interface
+</span><a href="#L193" id="L193" class="l">193: </a><span class="php-comment">     */</span>
+<a href="#L194" id="L194" class="l">194: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> href(<span class="php-var">$path</span>, <span class="php-var">$query</span> = <span class="php-keyword1">NULL</span>)
+<a href="#L195" id="L195" class="l">195: </a>    {
+<a href="#L196" id="L196" class="l">196: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$query</span>) {
+<a href="#L197" id="L197" class="l">197: </a>            <span class="php-var">$query</span> = <span class="php-keyword2">http_build_query</span>(<span class="php-var">$query</span>, <span class="php-keyword1">NULL</span>, <span class="php-quote">'&amp;'</span>);
+<a href="#L198" id="L198" class="l">198: </a>            <span class="php-keyword1">if</span> (<span class="php-var">$query</span> !== <span class="php-quote">''</span>) <span class="php-var">$path</span> .= <span class="php-quote">'?'</span> . <span class="php-var">$query</span>;
+<a href="#L199" id="L199" class="l">199: </a>        }
+<a href="#L200" id="L200" class="l">200: </a>        <span class="php-var">$this</span>-&gt;attrs[<span class="php-quote">'href'</span>] = <span class="php-var">$path</span>;
+<a href="#L201" id="L201" class="l">201: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
+<a href="#L202" id="L202" class="l">202: </a>    }
+<a href="#L203" id="L203" class="l">203: </a>
+<a href="#L204" id="L204" class="l">204: </a>
+<a href="#L205" id="L205" class="l">205: </a>
+<a href="#L206" id="L206" class="l">206: </a>    <span class="php-comment">/**
+</span><a href="#L207" id="L207" class="l">207: </a><span class="php-comment">     * Sets element's textual content.
+</span><a href="#L208" id="L208" class="l">208: </a><span class="php-comment">     * @param  string
+</span><a href="#L209" id="L209" class="l">209: </a><span class="php-comment">     * @return TexyHtml  provides a fluent interface
+</span><a href="#L210" id="L210" class="l">210: </a><span class="php-comment">     */</span>
+<a href="#L211" id="L211" class="l">211: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> setText(<span class="php-var">$text</span>)
+<a href="#L212" id="L212" class="l">212: </a>    {
+<a href="#L213" id="L213" class="l">213: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">is_scalar</span>(<span class="php-var">$text</span>)) {
+<a href="#L214" id="L214" class="l">214: </a>            <span class="php-var">$this</span>-&gt;removeChildren();
+<a href="#L215" id="L215" class="l">215: </a>            <span class="php-var">$this</span>-&gt;children = <span class="php-keyword1">array</span>(<span class="php-var">$text</span>);
+<a href="#L216" id="L216" class="l">216: </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$text</span> !== <span class="php-keyword1">NULL</span>) {
+<a href="#L217" id="L217" class="l">217: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> InvalidArgumentException(<span class="php-quote">'Content must be scalar.'</span>);
+<a href="#L218" id="L218" class="l">218: </a>        }
+<a href="#L219" id="L219" class="l">219: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
+<a href="#L220" id="L220" class="l">220: </a>    }
+<a href="#L221" id="L221" class="l">221: </a>
+<a href="#L222" id="L222" class="l">222: </a>
+<a href="#L223" id="L223" class="l">223: </a>
+<a href="#L224" id="L224" class="l">224: </a>    <span class="php-comment">/**
+</span><a href="#L225" id="L225" class="l">225: </a><span class="php-comment">     * Gets element's textual content.
+</span><a href="#L226" id="L226" class="l">226: </a><span class="php-comment">     * @return string
+</span><a href="#L227" id="L227" class="l">227: </a><span class="php-comment">     */</span>
+<a href="#L228" id="L228" class="l">228: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getText()
+<a href="#L229" id="L229" class="l">229: </a>    {
+<a href="#L230" id="L230" class="l">230: </a>        <span class="php-var">$s</span> = <span class="php-quote">''</span>;
+<a href="#L231" id="L231" class="l">231: </a>        <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;children as <span class="php-var">$child</span>) {
+<a href="#L232" id="L232" class="l">232: </a>            <span class="php-keyword1">if</span> (<span class="php-keyword2">is_object</span>(<span class="php-var">$child</span>)) <span class="php-keyword1">return</span> <span class="php-keyword1">FALSE</span>;
+<a href="#L233" id="L233" class="l">233: </a>            <span class="php-var">$s</span> .= <span class="php-var">$child</span>;
+<a href="#L234" id="L234" class="l">234: </a>        }
+<a href="#L235" id="L235" class="l">235: </a>        <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L236" id="L236" class="l">236: </a>    }
+<a href="#L237" id="L237" class="l">237: </a>
+<a href="#L238" id="L238" class="l">238: </a>
+<a href="#L239" id="L239" class="l">239: </a>
+<a href="#L240" id="L240" class="l">240: </a>    <span class="php-comment">/**
+</span><a href="#L241" id="L241" class="l">241: </a><span class="php-comment">     * Adds new element's child.
+</span><a href="#L242" id="L242" class="l">242: </a><span class="php-comment">     * @param  TexyHtml|string child node
+</span><a href="#L243" id="L243" class="l">243: </a><span class="php-comment">     * @return TexyHtml  provides a fluent interface
+</span><a href="#L244" id="L244" class="l">244: </a><span class="php-comment">     */</span>
+<a href="#L245" id="L245" class="l">245: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> add(<span class="php-var">$child</span>)
+<a href="#L246" id="L246" class="l">246: </a>    {
+<a href="#L247" id="L247" class="l">247: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;insert(<span class="php-keyword1">NULL</span>, <span class="php-var">$child</span>);
+<a href="#L248" id="L248" class="l">248: </a>    }
+<a href="#L249" id="L249" class="l">249: </a>
+<a href="#L250" id="L250" class="l">250: </a>
+<a href="#L251" id="L251" class="l">251: </a>
+<a href="#L252" id="L252" class="l">252: </a>    <span class="php-comment">/**
+</span><a href="#L253" id="L253" class="l">253: </a><span class="php-comment">     * Creates and adds a new TexyHtml child.
+</span><a href="#L254" id="L254" class="l">254: </a><span class="php-comment">     * @param  string  elements's name
+</span><a href="#L255" id="L255" class="l">255: </a><span class="php-comment">     * @param  array|string element's attributes (or textual content)
+</span><a href="#L256" id="L256" class="l">256: </a><span class="php-comment">     * @return TexyHtml  created element
+</span><a href="#L257" id="L257" class="l">257: </a><span class="php-comment">     */</span>
+<a href="#L258" id="L258" class="l">258: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> create(<span class="php-var">$name</span>, <span class="php-var">$attrs</span> = <span class="php-keyword1">NULL</span>)
+<a href="#L259" id="L259" class="l">259: </a>    {
+<a href="#L260" id="L260" class="l">260: </a>        <span class="php-var">$this</span>-&gt;insert(<span class="php-keyword1">NULL</span>, <span class="php-var">$child</span> = self::el(<span class="php-var">$name</span>, <span class="php-var">$attrs</span>));
+<a href="#L261" id="L261" class="l">261: </a>        <span class="php-keyword1">return</span> <span class="php-var">$child</span>;
+<a href="#L262" id="L262" class="l">262: </a>    }
+<a href="#L263" id="L263" class="l">263: </a>
+<a href="#L264" id="L264" class="l">264: </a>
+<a href="#L265" id="L265" class="l">265: </a>
+<a href="#L266" id="L266" class="l">266: </a>    <span class="php-comment">/**
+</span><a href="#L267" id="L267" class="l">267: </a><span class="php-comment">     * Inserts child node.
+</span><a href="#L268" id="L268" class="l">268: </a><span class="php-comment">     * @param  int
+</span><a href="#L269" id="L269" class="l">269: </a><span class="php-comment">     * @param  TexyHtml node
+</span><a href="#L270" id="L270" class="l">270: </a><span class="php-comment">     * @param  bool
+</span><a href="#L271" id="L271" class="l">271: </a><span class="php-comment">     * @return TexyHtml  provides a fluent interface
+</span><a href="#L272" id="L272" class="l">272: </a><span class="php-comment">     * @throws Exception
+</span><a href="#L273" id="L273" class="l">273: </a><span class="php-comment">     */</span>
+<a href="#L274" id="L274" class="l">274: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> insert(<span class="php-var">$index</span>, <span class="php-var">$child</span>, <span class="php-var">$replace</span> = <span class="php-keyword1">FALSE</span>)
+<a href="#L275" id="L275" class="l">275: </a>    {
+<a href="#L276" id="L276" class="l">276: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$child</span> <span class="php-keyword1">instanceof</span> TexyHtml || <span class="php-keyword2">is_string</span>(<span class="php-var">$child</span>)) {
+<a href="#L277" id="L277" class="l">277: </a>            <span class="php-keyword1">if</span> (<span class="php-var">$index</span> === <span class="php-keyword1">NULL</span>)  { <span class="php-comment">// append
+</span><a href="#L278" id="L278" class="l">278: </a>                <span class="php-var">$this</span>-&gt;children[] = <span class="php-var">$child</span>;
+<a href="#L279" id="L279" class="l">279: </a>
+<a href="#L280" id="L280" class="l">280: </a>            } <span class="php-keyword1">else</span> { <span class="php-comment">// insert or replace
+</span><a href="#L281" id="L281" class="l">281: </a>                <span class="php-keyword2">array_splice</span>(<span class="php-var">$this</span>-&gt;children, (int) <span class="php-var">$index</span>, <span class="php-var">$replace</span> ? <span class="php-num">1</span> : <span class="php-num">0</span>, <span class="php-keyword1">array</span>(<span class="php-var">$child</span>));
+<a href="#L282" id="L282" class="l">282: </a>            }
+<a href="#L283" id="L283" class="l">283: </a>
+<a href="#L284" id="L284" class="l">284: </a>        } <span class="php-keyword1">else</span> {
+<a href="#L285" id="L285" class="l">285: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> <span class="php-comment">/*::*/</span>InvalidArgumentException(<span class="php-quote">'Child node must be scalar or TexyHtml object.'</span>);
+<a href="#L286" id="L286" class="l">286: </a>        }
+<a href="#L287" id="L287" class="l">287: </a>
+<a href="#L288" id="L288" class="l">288: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
+<a href="#L289" id="L289" class="l">289: </a>    }
+<a href="#L290" id="L290" class="l">290: </a>
+<a href="#L291" id="L291" class="l">291: </a>
+<a href="#L292" id="L292" class="l">292: </a>
+<a href="#L293" id="L293" class="l">293: </a>    <span class="php-comment">/**
+</span><a href="#L294" id="L294" class="l">294: </a><span class="php-comment">     * Inserts (replaces) child node (ArrayAccess implementation).
+</span><a href="#L295" id="L295" class="l">295: </a><span class="php-comment">     * @param  int
+</span><a href="#L296" id="L296" class="l">296: </a><span class="php-comment">     * @param  TexyHtml node
+</span><a href="#L297" id="L297" class="l">297: </a><span class="php-comment">     * @return void
+</span><a href="#L298" id="L298" class="l">298: </a><span class="php-comment">     */</span>
+<a href="#L299" id="L299" class="l">299: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> offsetSet(<span class="php-var">$index</span>, <span class="php-var">$child</span>)
+<a href="#L300" id="L300" class="l">300: </a>    {
+<a href="#L301" id="L301" class="l">301: </a>        <span class="php-var">$this</span>-&gt;insert(<span class="php-var">$index</span>, <span class="php-var">$child</span>, <span class="php-keyword1">TRUE</span>);
+<a href="#L302" id="L302" class="l">302: </a>    }
+<a href="#L303" id="L303" class="l">303: </a>
+<a href="#L304" id="L304" class="l">304: </a>
+<a href="#L305" id="L305" class="l">305: </a>
+<a href="#L306" id="L306" class="l">306: </a>    <span class="php-comment">/**
+</span><a href="#L307" id="L307" class="l">307: </a><span class="php-comment">     * Returns child node (ArrayAccess implementation).
+</span><a href="#L308" id="L308" class="l">308: </a><span class="php-comment">     * @param  int index
+</span><a href="#L309" id="L309" class="l">309: </a><span class="php-comment">     * @return mixed
+</span><a href="#L310" id="L310" class="l">310: </a><span class="php-comment">     */</span>
+<a href="#L311" id="L311" class="l">311: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> offsetGet(<span class="php-var">$index</span>)
+<a href="#L312" id="L312" class="l">312: </a>    {
+<a href="#L313" id="L313" class="l">313: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;children[<span class="php-var">$index</span>];
+<a href="#L314" id="L314" class="l">314: </a>    }
+<a href="#L315" id="L315" class="l">315: </a>
+<a href="#L316" id="L316" class="l">316: </a>
+<a href="#L317" id="L317" class="l">317: </a>
+<a href="#L318" id="L318" class="l">318: </a>    <span class="php-comment">/**
+</span><a href="#L319" id="L319" class="l">319: </a><span class="php-comment">     * Exists child node? (ArrayAccess implementation).
+</span><a href="#L320" id="L320" class="l">320: </a><span class="php-comment">     * @param  int index
+</span><a href="#L321" id="L321" class="l">321: </a><span class="php-comment">     * @return bool
+</span><a href="#L322" id="L322" class="l">322: </a><span class="php-comment">     */</span>
+<a href="#L323" id="L323" class="l">323: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> offsetExists(<span class="php-var">$index</span>)
+<a href="#L324" id="L324" class="l">324: </a>    {
+<a href="#L325" id="L325" class="l">325: </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">isset</span>(<span class="php-var">$this</span>-&gt;children[<span class="php-var">$index</span>]);
+<a href="#L326" id="L326" class="l">326: </a>    }
+<a href="#L327" id="L327" class="l">327: </a>
+<a href="#L328" id="L328" class="l">328: </a>
+<a href="#L329" id="L329" class="l">329: </a>
+<a href="#L330" id="L330" class="l">330: </a>    <span class="php-comment">/**
+</span><a href="#L331" id="L331" class="l">331: </a><span class="php-comment">     * Removes child node (ArrayAccess implementation).
+</span><a href="#L332" id="L332" class="l">332: </a><span class="php-comment">     * @param  int index
+</span><a href="#L333" id="L333" class="l">333: </a><span class="php-comment">     * @return void
+</span><a href="#L334" id="L334" class="l">334: </a><span class="php-comment">     */</span>
+<a href="#L335" id="L335" class="l">335: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> offsetUnset(<span class="php-var">$index</span>)
+<a href="#L336" id="L336" class="l">336: </a>    {
+<a href="#L337" id="L337" class="l">337: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword1">isset</span>(<span class="php-var">$this</span>-&gt;children[<span class="php-var">$index</span>])) {
+<a href="#L338" id="L338" class="l">338: </a>            <span class="php-keyword2">array_splice</span>(<span class="php-var">$this</span>-&gt;children, (int) <span class="php-var">$index</span>, <span class="php-num">1</span>);
+<a href="#L339" id="L339" class="l">339: </a>        }
+<a href="#L340" id="L340" class="l">340: </a>    }
+<a href="#L341" id="L341" class="l">341: </a>
+<a href="#L342" id="L342" class="l">342: </a>
+<a href="#L343" id="L343" class="l">343: </a>
+<a href="#L344" id="L344" class="l">344: </a>    <span class="php-comment">/**
+</span><a href="#L345" id="L345" class="l">345: </a><span class="php-comment">     * Required by the Countable interface.
+</span><a href="#L346" id="L346" class="l">346: </a><span class="php-comment">     * @return int
+</span><a href="#L347" id="L347" class="l">347: </a><span class="php-comment">     */</span>
+<a href="#L348" id="L348" class="l">348: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> <span class="php-keyword2">count</span>()
+<a href="#L349" id="L349" class="l">349: </a>    {
+<a href="#L350" id="L350" class="l">350: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">count</span>(<span class="php-var">$this</span>-&gt;children);
+<a href="#L351" id="L351" class="l">351: </a>    }
+<a href="#L352" id="L352" class="l">352: </a>
+<a href="#L353" id="L353" class="l">353: </a>
+<a href="#L354" id="L354" class="l">354: </a>
+<a href="#L355" id="L355" class="l">355: </a>    <span class="php-comment">/**
+</span><a href="#L356" id="L356" class="l">356: </a><span class="php-comment">     * Removed all children.
+</span><a href="#L357" id="L357" class="l">357: </a><span class="php-comment">     * @return void
+</span><a href="#L358" id="L358" class="l">358: </a><span class="php-comment">     */</span>
+<a href="#L359" id="L359" class="l">359: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> removeChildren()
+<a href="#L360" id="L360" class="l">360: </a>    {
+<a href="#L361" id="L361" class="l">361: </a>        <span class="php-var">$this</span>-&gt;children = <span class="php-keyword1">array</span>();
+<a href="#L362" id="L362" class="l">362: </a>    }
+<a href="#L363" id="L363" class="l">363: </a>
+<a href="#L364" id="L364" class="l">364: </a>
+<a href="#L365" id="L365" class="l">365: </a>
+<a href="#L366" id="L366" class="l">366: </a>    <span class="php-comment">/**
+</span><a href="#L367" id="L367" class="l">367: </a><span class="php-comment">     * Required by the IteratorAggregate interface.
+</span><a href="#L368" id="L368" class="l">368: </a><span class="php-comment">     * @return ArrayIterator
+</span><a href="#L369" id="L369" class="l">369: </a><span class="php-comment">     */</span>
+<a href="#L370" id="L370" class="l">370: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getIterator()
+<a href="#L371" id="L371" class="l">371: </a>    {
+<a href="#L372" id="L372" class="l">372: </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">new</span> ArrayIterator(<span class="php-var">$this</span>-&gt;children);
+<a href="#L373" id="L373" class="l">373: </a>    }
+<a href="#L374" id="L374" class="l">374: </a>
+<a href="#L375" id="L375" class="l">375: </a>
+<a href="#L376" id="L376" class="l">376: </a>
+<a href="#L377" id="L377" class="l">377: </a>    <span class="php-comment">/**
+</span><a href="#L378" id="L378" class="l">378: </a><span class="php-comment">     * Returns all of children.
+</span><a href="#L379" id="L379" class="l">379: </a><span class="php-comment">     * return array
+</span><a href="#L380" id="L380" class="l">380: </a><span class="php-comment">     */</span>
+<a href="#L381" id="L381" class="l">381: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getChildren()
+<a href="#L382" id="L382" class="l">382: </a>    {
+<a href="#L383" id="L383" class="l">383: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;children;
+<a href="#L384" id="L384" class="l">384: </a>    }
+<a href="#L385" id="L385" class="l">385: </a>
+<a href="#L386" id="L386" class="l">386: </a>
+<a href="#L387" id="L387" class="l">387: </a>
+<a href="#L388" id="L388" class="l">388: </a>    <span class="php-comment">/**
+</span><a href="#L389" id="L389" class="l">389: </a><span class="php-comment">     * Renders element's start tag, content and end tag to internal string representation.
+</span><a href="#L390" id="L390" class="l">390: </a><span class="php-comment">     * @param  Texy
+</span><a href="#L391" id="L391" class="l">391: </a><span class="php-comment">     * @return string
+</span><a href="#L392" id="L392" class="l">392: </a><span class="php-comment">     */</span>
+<a href="#L393" id="L393" class="l">393: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> toString(Texy <span class="php-var">$texy</span>)
+<a href="#L394" id="L394" class="l">394: </a>    {
+<a href="#L395" id="L395" class="l">395: </a>        <span class="php-var">$ct</span> = <span class="php-var">$this</span>-&gt;getContentType();
+<a href="#L396" id="L396" class="l">396: </a>        <span class="php-var">$s</span> = <span class="php-var">$texy</span>-&gt;protect(<span class="php-var">$this</span>-&gt;startTag(), <span class="php-var">$ct</span>);
+<a href="#L397" id="L397" class="l">397: </a>
+<a href="#L398" id="L398" class="l">398: </a>        <span class="php-comment">// empty elements are finished now
+</span><a href="#L399" id="L399" class="l">399: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$this</span>-&gt;isEmpty) {
+<a href="#L400" id="L400" class="l">400: </a>            <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L401" id="L401" class="l">401: </a>        }
+<a href="#L402" id="L402" class="l">402: </a>
+<a href="#L403" id="L403" class="l">403: </a>        <span class="php-comment">// add content
+</span><a href="#L404" id="L404" class="l">404: </a>        <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;children as <span class="php-var">$child</span>) {
+<a href="#L405" id="L405" class="l">405: </a>            <span class="php-keyword1">if</span> (<span class="php-keyword2">is_object</span>(<span class="php-var">$child</span>)) {
+<a href="#L406" id="L406" class="l">406: </a>                <span class="php-var">$s</span> .= <span class="php-var">$child</span>-&gt;toString(<span class="php-var">$texy</span>);
+<a href="#L407" id="L407" class="l">407: </a>            } <span class="php-keyword1">else</span> {
+<a href="#L408" id="L408" class="l">408: </a>                <span class="php-var">$s</span> .= <span class="php-var">$child</span>;
+<a href="#L409" id="L409" class="l">409: </a>            }
+<a href="#L410" id="L410" class="l">410: </a>        }
+<a href="#L411" id="L411" class="l">411: </a>
+<a href="#L412" id="L412" class="l">412: </a>        <span class="php-comment">// add end tag
+</span><a href="#L413" id="L413" class="l">413: </a>        <span class="php-keyword1">return</span> <span class="php-var">$s</span> . <span class="php-var">$texy</span>-&gt;protect(<span class="php-var">$this</span>-&gt;endTag(), <span class="php-var">$ct</span>);
+<a href="#L414" id="L414" class="l">414: </a>    }
+<a href="#L415" id="L415" class="l">415: </a>
+<a href="#L416" id="L416" class="l">416: </a>
+<a href="#L417" id="L417" class="l">417: </a>
+<a href="#L418" id="L418" class="l">418: </a>    <span class="php-comment">/**
+</span><a href="#L419" id="L419" class="l">419: </a><span class="php-comment">     * Renders to final HTML.
+</span><a href="#L420" id="L420" class="l">420: </a><span class="php-comment">     * @param  Texy
+</span><a href="#L421" id="L421" class="l">421: </a><span class="php-comment">     * @return string
+</span><a href="#L422" id="L422" class="l">422: </a><span class="php-comment">     */</span>
+<a href="#L423" id="L423" class="l">423: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> toHtml(Texy <span class="php-var">$texy</span>)
+<a href="#L424" id="L424" class="l">424: </a>    {
+<a href="#L425" id="L425" class="l">425: </a>        <span class="php-keyword1">return</span> <span class="php-var">$texy</span>-&gt;stringToHtml(<span class="php-var">$this</span>-&gt;toString(<span class="php-var">$texy</span>));
+<a href="#L426" id="L426" class="l">426: </a>    }
+<a href="#L427" id="L427" class="l">427: </a>
+<a href="#L428" id="L428" class="l">428: </a>
+<a href="#L429" id="L429" class="l">429: </a>
+<a href="#L430" id="L430" class="l">430: </a>    <span class="php-comment">/**
+</span><a href="#L431" id="L431" class="l">431: </a><span class="php-comment">     * Renders to final text.
+</span><a href="#L432" id="L432" class="l">432: </a><span class="php-comment">     * @param  Texy
+</span><a href="#L433" id="L433" class="l">433: </a><span class="php-comment">     * @return string
+</span><a href="#L434" id="L434" class="l">434: </a><span class="php-comment">     */</span>
+<a href="#L435" id="L435" class="l">435: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> toText(Texy <span class="php-var">$texy</span>)
+<a href="#L436" id="L436" class="l">436: </a>    {
+<a href="#L437" id="L437" class="l">437: </a>        <span class="php-keyword1">return</span> <span class="php-var">$texy</span>-&gt;stringToText(<span class="php-var">$this</span>-&gt;toString(<span class="php-var">$texy</span>));
+<a href="#L438" id="L438" class="l">438: </a>    }
+<a href="#L439" id="L439" class="l">439: </a>
+<a href="#L440" id="L440" class="l">440: </a>
+<a href="#L441" id="L441" class="l">441: </a>
+<a href="#L442" id="L442" class="l">442: </a>    <span class="php-comment">/**
+</span><a href="#L443" id="L443" class="l">443: </a><span class="php-comment">     * Returns element's start tag.
+</span><a href="#L444" id="L444" class="l">444: </a><span class="php-comment">     * @return string
+</span><a href="#L445" id="L445" class="l">445: </a><span class="php-comment">     */</span>
+<a href="#L446" id="L446" class="l">446: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> startTag()
+<a href="#L447" id="L447" class="l">447: </a>    {
+<a href="#L448" id="L448" class="l">448: </a>        <span class="php-keyword1">if</span> (!<span class="php-var">$this</span>-&gt;name) {
+<a href="#L449" id="L449" class="l">449: </a>            <span class="php-keyword1">return</span> <span class="php-quote">''</span>;
+<a href="#L450" id="L450" class="l">450: </a>        }
+<a href="#L451" id="L451" class="l">451: </a>
+<a href="#L452" id="L452" class="l">452: </a>        <span class="php-var">$s</span> = <span class="php-quote">'&lt;'</span> . <span class="php-var">$this</span>-&gt;name;
+<a href="#L453" id="L453" class="l">453: </a>
+<a href="#L454" id="L454" class="l">454: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">is_array</span>(<span class="php-var">$this</span>-&gt;attrs)) {
+<a href="#L455" id="L455" class="l">455: </a>            <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;attrs as <span class="php-var">$key</span> =&gt; <span class="php-var">$value</span>)
+<a href="#L456" id="L456" class="l">456: </a>            {
+<a href="#L457" id="L457" class="l">457: </a>                <span class="php-comment">// skip NULLs and false boolean attributes
+</span><a href="#L458" id="L458" class="l">458: </a>                <span class="php-keyword1">if</span> (<span class="php-var">$value</span> === <span class="php-keyword1">NULL</span> || <span class="php-var">$value</span> === <span class="php-keyword1">FALSE</span>) <span class="php-keyword1">continue</span>;
+<a href="#L459" id="L459" class="l">459: </a>
+<a href="#L460" id="L460" class="l">460: </a>                <span class="php-comment">// true boolean attribute
+</span><a href="#L461" id="L461" class="l">461: </a>                <span class="php-keyword1">if</span> (<span class="php-var">$value</span> === <span class="php-keyword1">TRUE</span>) {
+<a href="#L462" id="L462" class="l">462: </a>                    <span class="php-comment">// in XHTML must use unminimized form
+</span><a href="#L463" id="L463" class="l">463: </a>                    <span class="php-keyword1">if</span> (self::<span class="php-var">$xhtml</span>) <span class="php-var">$s</span> .= <span class="php-quote">' '</span> . <span class="php-var">$key</span> . <span class="php-quote">'=&quot;'</span> . <span class="php-var">$key</span> . <span class="php-quote">'&quot;'</span>;
+<a href="#L464" id="L464" class="l">464: </a>                    <span class="php-comment">// in HTML should use minimized form
+</span><a href="#L465" id="L465" class="l">465: </a>                    <span class="php-keyword1">else</span> <span class="php-var">$s</span> .= <span class="php-quote">' '</span> . <span class="php-var">$key</span>;
+<a href="#L466" id="L466" class="l">466: </a>                    <span class="php-keyword1">continue</span>;
+<a href="#L467" id="L467" class="l">467: </a>
+<a href="#L468" id="L468" class="l">468: </a>                } <span class="php-keyword1">elseif</span> (<span class="php-keyword2">is_array</span>(<span class="php-var">$value</span>)) {
+<a href="#L469" id="L469" class="l">469: </a>
+<a href="#L470" id="L470" class="l">470: </a>                    <span class="php-comment">// prepare into temporary array
+</span><a href="#L471" id="L471" class="l">471: </a>                    <span class="php-var">$tmp</span> = <span class="php-keyword1">NULL</span>;
+<a href="#L472" id="L472" class="l">472: </a>                    <span class="php-keyword1">foreach</span> (<span class="php-var">$value</span> as <span class="php-var">$k</span> =&gt; <span class="php-var">$v</span>) {
+<a href="#L473" id="L473" class="l">473: </a>                        <span class="php-comment">// skip NULLs &amp; empty string; composite 'style' vs. 'others'
+</span><a href="#L474" id="L474" class="l">474: </a>                        <span class="php-keyword1">if</span> (<span class="php-var">$v</span> == <span class="php-keyword1">NULL</span>) <span class="php-keyword1">continue</span>;
+<a href="#L475" id="L475" class="l">475: </a>
+<a href="#L476" id="L476" class="l">476: </a>                        <span class="php-keyword1">if</span> (<span class="php-keyword2">is_string</span>(<span class="php-var">$k</span>)) <span class="php-var">$tmp</span>[] = <span class="php-var">$k</span> . <span class="php-quote">':'</span> . <span class="php-var">$v</span>;
+<a href="#L477" id="L477" class="l">477: </a>                        <span class="php-keyword1">else</span> <span class="php-var">$tmp</span>[] = <span class="php-var">$v</span>;
+<a href="#L478" id="L478" class="l">478: </a>                    }
+<a href="#L479" id="L479" class="l">479: </a>
+<a href="#L480" id="L480" class="l">480: </a>                    <span class="php-keyword1">if</span> (!<span class="php-var">$tmp</span>) <span class="php-keyword1">continue</span>;
+<a href="#L481" id="L481" class="l">481: </a>                    <span class="php-var">$value</span> = <span class="php-keyword2">implode</span>(<span class="php-var">$key</span> === <span class="php-quote">'style'</span> ? <span class="php-quote">';'</span> : <span class="php-quote">' '</span>, <span class="php-var">$tmp</span>);
+<a href="#L482" id="L482" class="l">482: </a>
+<a href="#L483" id="L483" class="l">483: </a>                } <span class="php-keyword1">else</span> {
+<a href="#L484" id="L484" class="l">484: </a>                    <span class="php-var">$value</span> = (string) <span class="php-var">$value</span>;
+<a href="#L485" id="L485" class="l">485: </a>                }
+<a href="#L486" id="L486" class="l">486: </a>
+<a href="#L487" id="L487" class="l">487: </a>                <span class="php-comment">// add new attribute
+</span><a href="#L488" id="L488" class="l">488: </a>                <span class="php-var">$value</span> = <span class="php-keyword2">str_replace</span>(<span class="php-keyword1">array</span>(<span class="php-quote">'&amp;'</span>, <span class="php-quote">'&quot;'</span>, <span class="php-quote">'&lt;'</span>, <span class="php-quote">'&gt;'</span>, <span class="php-quote">'@'</span>), <span class="php-keyword1">array</span>(<span class="php-quote">'&amp;amp;'</span>, <span class="php-quote">'&amp;quot;'</span>, <span class="php-quote">'&amp;lt;'</span>, <span class="php-quote">'&amp;gt;'</span>, <span class="php-quote">'&amp;#64;'</span>), <span class="php-var">$value</span>);
+<a href="#L489" id="L489" class="l">489: </a>                <span class="php-var">$s</span> .= <span class="php-quote">' '</span> . <span class="php-var">$key</span> . <span class="php-quote">'=&quot;'</span> . Texy::freezeSpaces(<span class="php-var">$value</span>) . <span class="php-quote">'&quot;'</span>;
+<a href="#L490" id="L490" class="l">490: </a>            }
+<a href="#L491" id="L491" class="l">491: </a>        }
+<a href="#L492" id="L492" class="l">492: </a>
+<a href="#L493" id="L493" class="l">493: </a>        <span class="php-comment">// finish start tag
+</span><a href="#L494" id="L494" class="l">494: </a>        <span class="php-keyword1">if</span> (self::<span class="php-var">$xhtml</span> &amp;&amp; <span class="php-var">$this</span>-&gt;isEmpty) {
+<a href="#L495" id="L495" class="l">495: </a>            <span class="php-keyword1">return</span> <span class="php-var">$s</span> . <span class="php-quote">' /&gt;'</span>;
+<a href="#L496" id="L496" class="l">496: </a>        }
+<a href="#L497" id="L497" class="l">497: </a>        <span class="php-keyword1">return</span> <span class="php-var">$s</span> . <span class="php-quote">'&gt;'</span>;
+<a href="#L498" id="L498" class="l">498: </a>    }
+<a href="#L499" id="L499" class="l">499: </a>
+<a href="#L500" id="L500" class="l">500: </a>
+<a href="#L501" id="L501" class="l">501: </a>
+<a href="#L502" id="L502" class="l">502: </a>    <span class="php-comment">/**
+</span><a href="#L503" id="L503" class="l">503: </a><span class="php-comment">     * Returns element's end tag.
+</span><a href="#L504" id="L504" class="l">504: </a><span class="php-comment">     * @return string
+</span><a href="#L505" id="L505" class="l">505: </a><span class="php-comment">     */</span>
+<a href="#L506" id="L506" class="l">506: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> endTag()
+<a href="#L507" id="L507" class="l">507: </a>    {
+<a href="#L508" id="L508" class="l">508: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$this</span>-&gt;name &amp;&amp; !<span class="php-var">$this</span>-&gt;isEmpty) {
+<a href="#L509" id="L509" class="l">509: </a>            <span class="php-keyword1">return</span> <span class="php-quote">'&lt;/'</span> . <span class="php-var">$this</span>-&gt;name . <span class="php-quote">'&gt;'</span>;
+<a href="#L510" id="L510" class="l">510: </a>        }
+<a href="#L511" id="L511" class="l">511: </a>        <span class="php-keyword1">return</span> <span class="php-quote">''</span>;
+<a href="#L512" id="L512" class="l">512: </a>    }
+<a href="#L513" id="L513" class="l">513: </a>
+<a href="#L514" id="L514" class="l">514: </a>
+<a href="#L515" id="L515" class="l">515: </a>
+<a href="#L516" id="L516" class="l">516: </a>    <span class="php-comment">/**
+</span><a href="#L517" id="L517" class="l">517: </a><span class="php-comment">     * Clones all children too.
+</span><a href="#L518" id="L518" class="l">518: </a><span class="php-comment">     */</span>
+<a href="#L519" id="L519" class="l">519: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> __<span class="php-keyword1">clone</span>()
+<a href="#L520" id="L520" class="l">520: </a>    {
+<a href="#L521" id="L521" class="l">521: </a>        <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;children as <span class="php-var">$key</span> =&gt; <span class="php-var">$value</span>) {
+<a href="#L522" id="L522" class="l">522: </a>            <span class="php-keyword1">if</span> (<span class="php-keyword2">is_object</span>(<span class="php-var">$value</span>)) {
+<a href="#L523" id="L523" class="l">523: </a>                <span class="php-var">$this</span>-&gt;children[<span class="php-var">$key</span>] = <span class="php-keyword1">clone</span> <span class="php-var">$value</span>;
+<a href="#L524" id="L524" class="l">524: </a>            }
+<a href="#L525" id="L525" class="l">525: </a>        }
+<a href="#L526" id="L526" class="l">526: </a>    }
+<a href="#L527" id="L527" class="l">527: </a>
+<a href="#L528" id="L528" class="l">528: </a>
+<a href="#L529" id="L529" class="l">529: </a>
+<a href="#L530" id="L530" class="l">530: </a>    <span class="php-comment">/**
+</span><a href="#L531" id="L531" class="l">531: </a><span class="php-comment">     * @return int
+</span><a href="#L532" id="L532" class="l">532: </a><span class="php-comment">     */</span>
+<a href="#L533" id="L533" class="l">533: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getContentType()
+<a href="#L534" id="L534" class="l">534: </a>    {
+<a href="#L535" id="L535" class="l">535: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">isset</span>(self::<span class="php-var">$inlineElements</span>[<span class="php-var">$this</span>-&gt;name])) <span class="php-keyword1">return</span> Texy::CONTENT_BLOCK;
+<a href="#L536" id="L536" class="l">536: </a>
+<a href="#L537" id="L537" class="l">537: </a>        <span class="php-keyword1">return</span> self::<span class="php-var">$inlineElements</span>[<span class="php-var">$this</span>-&gt;name] ? Texy::CONTENT_REPLACED : Texy::CONTENT_MARKUP;
+<a href="#L538" id="L538" class="l">538: </a>    }
+<a href="#L539" id="L539" class="l">539: </a>
+<a href="#L540" id="L540" class="l">540: </a>
+<a href="#L541" id="L541" class="l">541: </a>
+<a href="#L542" id="L542" class="l">542: </a>    <span class="php-comment">/**
+</span><a href="#L543" id="L543" class="l">543: </a><span class="php-comment">     * @param  array
+</span><a href="#L544" id="L544" class="l">544: </a><span class="php-comment">     * @return void
+</span><a href="#L545" id="L545" class="l">545: </a><span class="php-comment">     */</span>
+<a href="#L546" id="L546" class="l">546: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> validateAttrs(<span class="php-var">$dtd</span>)
+<a href="#L547" id="L547" class="l">547: </a>    {
+<a href="#L548" id="L548" class="l">548: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword1">isset</span>(<span class="php-var">$dtd</span>[<span class="php-var">$this</span>-&gt;name])) {
+<a href="#L549" id="L549" class="l">549: </a>            <span class="php-var">$allowed</span> = <span class="php-var">$dtd</span>[<span class="php-var">$this</span>-&gt;name][<span class="php-num">0</span>];
+<a href="#L550" id="L550" class="l">550: </a>            <span class="php-keyword1">if</span> (<span class="php-keyword2">is_array</span>(<span class="php-var">$allowed</span>)) {
+<a href="#L551" id="L551" class="l">551: </a>                <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;attrs as <span class="php-var">$attr</span> =&gt; <span class="php-var">$foo</span>) {
+<a href="#L552" id="L552" class="l">552: </a>                    <span class="php-keyword1">if</span> (!<span class="php-keyword1">isset</span>(<span class="php-var">$allowed</span>[<span class="php-var">$attr</span>])) <span class="php-keyword1">unset</span>(<span class="php-var">$this</span>-&gt;attrs[<span class="php-var">$attr</span>]);
+<a href="#L553" id="L553" class="l">553: </a>                }
+<a href="#L554" id="L554" class="l">554: </a>            }
+<a href="#L555" id="L555" class="l">555: </a>        }
+<a href="#L556" id="L556" class="l">556: </a>    }
+<a href="#L557" id="L557" class="l">557: </a>
+<a href="#L558" id="L558" class="l">558: </a>
+<a href="#L559" id="L559" class="l">559: </a>
+<a href="#L560" id="L560" class="l">560: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> validateChild(<span class="php-var">$child</span>, <span class="php-var">$dtd</span>)
+<a href="#L561" id="L561" class="l">561: </a>    {
+<a href="#L562" id="L562" class="l">562: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword1">isset</span>(<span class="php-var">$dtd</span>[<span class="php-var">$this</span>-&gt;name])) {
+<a href="#L563" id="L563" class="l">563: </a>            <span class="php-keyword1">if</span> (<span class="php-var">$child</span> <span class="php-keyword1">instanceof</span> TexyHtml) <span class="php-var">$child</span> = <span class="php-var">$child</span>-&gt;name;
+<a href="#L564" id="L564" class="l">564: </a>            <span class="php-keyword1">return</span> <span class="php-keyword1">isset</span>(<span class="php-var">$dtd</span>[<span class="php-var">$this</span>-&gt;name][<span class="php-num">1</span>][<span class="php-var">$child</span>]);
+<a href="#L565" id="L565" class="l">565: </a>        } <span class="php-keyword1">else</span> {
+<a href="#L566" id="L566" class="l">566: </a>            <span class="php-keyword1">return</span> <span class="php-keyword1">TRUE</span>; <span class="php-comment">// unknown element
+</span><a href="#L567" id="L567" class="l">567: </a>        }
+<a href="#L568" id="L568" class="l">568: </a>    }
+<a href="#L569" id="L569" class="l">569: </a>
+<a href="#L570" id="L570" class="l">570: </a>
+<a href="#L571" id="L571" class="l">571: </a>
+<a href="#L572" id="L572" class="l">572: </a>    <span class="php-comment">/**
+</span><a href="#L573" id="L573" class="l">573: </a><span class="php-comment">     * Parses text as single line.
+</span><a href="#L574" id="L574" class="l">574: </a><span class="php-comment">     * @param  Texy
+</span><a href="#L575" id="L575" class="l">575: </a><span class="php-comment">     * @param  string
+</span><a href="#L576" id="L576" class="l">576: </a><span class="php-comment">     * @return void
+</span><a href="#L577" id="L577" class="l">577: </a><span class="php-comment">     */</span>
+<a href="#L578" id="L578" class="l">578: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> parseLine(Texy <span class="php-var">$texy</span>, <span class="php-var">$s</span>)
+<a href="#L579" id="L579" class="l">579: </a>    {
+<a href="#L580" id="L580" class="l">580: </a>        <span class="php-comment">// TODO!
+</span><a href="#L581" id="L581" class="l">581: </a>        <span class="php-comment">// special escape sequences
+</span><a href="#L582" id="L582" class="l">582: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">str_replace</span>(<span class="php-keyword1">array</span>(<span class="php-quote">'\)'</span>, <span class="php-quote">'\*'</span>), <span class="php-keyword1">array</span>(<span class="php-quote">'&amp;#x29;'</span>, <span class="php-quote">'&amp;#x2A;'</span>), <span class="php-var">$s</span>);
+<a href="#L583" id="L583" class="l">583: </a>
+<a href="#L584" id="L584" class="l">584: </a>        <span class="php-var">$parser</span> = <span class="php-keyword1">new</span> TexyLineParser(<span class="php-var">$texy</span>, <span class="php-var">$this</span>);
+<a href="#L585" id="L585" class="l">585: </a>        <span class="php-var">$parser</span>-&gt;parse(<span class="php-var">$s</span>);
+<a href="#L586" id="L586" class="l">586: </a>        <span class="php-keyword1">return</span> <span class="php-var">$parser</span>;
+<a href="#L587" id="L587" class="l">587: </a>    }
+<a href="#L588" id="L588" class="l">588: </a>
+<a href="#L589" id="L589" class="l">589: </a>
+<a href="#L590" id="L590" class="l">590: </a>
+<a href="#L591" id="L591" class="l">591: </a>    <span class="php-comment">/**
+</span><a href="#L592" id="L592" class="l">592: </a><span class="php-comment">     * Parses text as block.
+</span><a href="#L593" id="L593" class="l">593: </a><span class="php-comment">     * @param  Texy
+</span><a href="#L594" id="L594" class="l">594: </a><span class="php-comment">     * @param  string
+</span><a href="#L595" id="L595" class="l">595: </a><span class="php-comment">     * @param  bool
+</span><a href="#L596" id="L596" class="l">596: </a><span class="php-comment">     * @return void
+</span><a href="#L597" id="L597" class="l">597: </a><span class="php-comment">     */</span>
+<a href="#L598" id="L598" class="l">598: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> parseBlock(Texy <span class="php-var">$texy</span>, <span class="php-var">$s</span>, <span class="php-var">$indented</span> = <span class="php-keyword1">FALSE</span>)
+<a href="#L599" id="L599" class="l">599: </a>    {
+<a href="#L600" id="L600" class="l">600: </a>        <span class="php-var">$parser</span> = <span class="php-keyword1">new</span> TexyBlockParser(<span class="php-var">$texy</span>, <span class="php-var">$this</span>, <span class="php-var">$indented</span>);
+<a href="#L601" id="L601" class="l">601: </a>        <span class="php-var">$parser</span>-&gt;parse(<span class="php-var">$s</span>);
+<a href="#L602" id="L602" class="l">602: </a>    }
+<a href="#L603" id="L603" class="l">603: </a>
+<a href="#L604" id="L604" class="l">604: </a>}
+<a href="#L605" id="L605" class="l">605: </a></code></pre>
+
+	<div id="footer">
+		Texy2 API documentation generated by <a href="http://github.com/nette/apigen">Apigen</a>
+	</div>
+</div>
+</body>
+</html>

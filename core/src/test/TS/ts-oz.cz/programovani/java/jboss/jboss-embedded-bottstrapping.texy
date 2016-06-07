@@ -1,0 +1,55 @@
+
+
+Bootstrapping JBoss Embedded server
+***********************************
+
+Maven dependencies:
+
+
+/--code xml .[brush:]
+  <dependency>
+    <groupId>org.jboss.embedded</groupId>
+    <artifactId>jboss-embedded-all</artifactId>
+    <version>beta3.SP12</version>
+    <scope>test</scope>
+    <exclusions>
+      <exclusion>
+        <groupId>org.jboss.microcontainer</groupId>                                        
+        <artifactId>jboss-deployers-client-spi</artifactId>
+      </exclusion>
+    </exclusions>
+  </dependency>
+  <dependency>
+    <groupId>org.jboss.embedded</groupId>
+    <artifactId>thirdparty-all</artifactId>
+    <version>beta3.SP12</version>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.jboss.embedded</groupId>
+    <artifactId>hibernate-all</artifactId>
+    <version>beta3.SP12</version>
+    <scope>test</scope>
+  </dependency>
+\--
+
+
+
+Bootstrapping:
+
+
+/--code java .[brush:]
+Bootstrap.getInstance().bootstrap("bootstrap");
+Bootstrap.getInstance().scanClasspath("target/test-classes,target/classes");
+\--
+
+
+
+References
+==========
+
+http://shrubbery.mynetgear.net/wiki/Embedded_JBoss_/_Embedded_EJB3
+
+http://www.jboss.org/community/wiki/EmbeddedAndJUnit
+
+Thanks to Pavel Slavicek.

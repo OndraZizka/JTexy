@@ -1,0 +1,39 @@
+nainstaluj openvpn, to novsi (2008..)
+
+(zip)
+
+toto je cfg, to rozbal do programfiles/openvpn
+
+uprav si etc/hosts ($win / system32 / drivers /etc)
+pridej tam:
+
+/--code
+192.168.77.1 hosting.vpn.rozsnyo.com
+192.168.77.1 sql.vpn.rozsnyo.com
+\--
+
+muzes zkusit ssh na tu ip/host, port 20202 ondra/ondrazizka a zmen heslo (passwd i smbpasswd)
+
+
+zkus \\hosting.vpn.rozsnyo.com\ondra
+ ondra/ a heslo ze smbpasswd
+ a na http://sql.vpn.rozsnyo.com  bys mel videt php my admin
+
+nasmeruj tu tvou domenu na 77.93.215.16
+
+
+toto je jen 2jadro (P4@3.4, 4G ram, 2x 74G/10k v mirroru)
+
+DB:  winlyricscom / winlyricscom , heslo vygeneruj (choze: poslu SMSkou)
+
+Na linuxu:
+----------
+
+nainstalujes si openvpn a na tom sdileni je ta slozka .vpn,
+v ni jsou konfiguraky a certifikaty
+pak to nejak prinutis at to pouzije..  (openvpn vyzaduje v jadru povolit "tun/tap" device, treba jako modul)
+a pak do etc/fstab jede neco takovehoto:
+
+/--code
+hosting.vpn.rozsnyo.com:/home/daniel    /home/daniel/hosting  nfs  noatime,noauto,user  0 0
+\--

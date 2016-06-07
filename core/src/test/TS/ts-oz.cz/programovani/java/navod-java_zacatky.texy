@@ -1,0 +1,137 @@
+Úplné začátky v Javě - kompilace
+********************************
+
+**Návod pro práci s Javou v konzoli, nikoliv přes IDE ("NetBeans":http://www.netbeans.org/).**
+Každý programátor v Javě by měl tyto základy určitě znát, jinak se dřív nebo později ztratí.
+
+//**Napsáno:** Kdysi dávno (2002?)//
+ //**Aktualizace:** 17.7.2008//
+
+--------------------------------------------------------------------------------
+
+
+Jak přeložit soubor s příponou `.java`
+======================================
+
+
+Pokud máte soubor s příponou `.java`, máte zdrojový kód neboli zdroják. Takže:
+
+<ul><li>
+Stáhnete a **nainstalujte JDK** odněkud z http://java.sun.com/ - 
+v době tvorby stránky je to "JDK 6 Update 7"
+"zde":http://java.sun.com/javase/downloads/index.jsp.
+Vyberte //offline instalation//.
+
+**JDK - Java Developement Kit** - je hafo souborů, které
+a) umožní kompilaci,
+b) obsahují knihovny.
+Potřebují ho jen ti, kteří chtějí v Javě programovat.
+
+Pro běh zkompilovaných .class souborů stačí **JRE - Java Runtime Environment**.
+
+</li><li>
+Do systémové proměnné `PATH` přidejte cestu k právě nainstalovanému JDK.
+ To provedete buď na konzoli příkazem
+/--code
+`set PATH=%PATH%;"D:\Program Files\j2sdk141\bin\";`
+\--
+(cestu samozřemě změňte tam, kam jste JDK instalovali),
+ nebo nastavíte na Windows XP v `Ovládací panely -> Systém -> Upřesnít -> Proměnné prostředí -> Systémové proměnné`.
+ První možnost trvá do uzavření konzole a je možno jí automatizovat pomocí `.bat` souboru.
+ Druhá možnost je trvalá.
+
+</li><li>
+Spusťte konzoli. To proveďte přes zkratku `Win+R`, zapište `cmd` a OK.
+ Nyní se dostaňte pomocí dosových příkazů `cd ..` apod. do adresáře, kde máte zdroják.
+ Zvažte, jestli se radši nenaučíte používat //Total Commander//, 
+ jelikož v tom stačí mačknout `Ctrl+šipku dolů`, napsat `cmd` a stisknout Enter, a už jste doma.
+
+</li><li>
+Zkuste spustit kompilátor Javy - `javac.exe`. Prostě napište `javac` a entr.
+ Pokud vám toto nejde, někde se stala chyba - zřejmě máte špatně systémovou proměnnou `PATH`.
+ Opakuji, že nastavení pomocí `set path=...` platí do zavření konzole!
+ Hodnotu `PATH` zkontrolujete pomocí příkazu `set path`.
+ Pokud by se vám to nedařilo, můžete to zkusit ošmejdit přes `.bat` s příkazem 
+
+/--code java .[brush:]
+`javac {cesta k javac.exe} %1 %2 %3 %4 %5 %6 %7 %8 %9`,
+\--
+
+který dáte do adresáře Windows.
+Když pak z jakéhokoliv adresáře spustíte příkaz `javac`, 
+všechny parametry se předají kompilátoru `javac.exe`.
+
+</li><li>
+Mrkněte na výpis. Pokud vám dává smysl, zapamatujte si, co všechno můžete ovlivnit.
+
+</li><li>
+Přeložte zdroják příkazem `javac Zdrojak.java` .
+Pokud jste uspěli, máte soubor `Zdrojak.class`, který už obsahuje hotový "program".
+
+</li></ul>
+
+
+Jak spustit soubor s příponou `.class`
+======================================
+
+Máte soubor s příponou `.class`. Ten obsahuje tzv. "bajtový kód" Javy.
+
+<em>
+Žádné `.exe` nečekejte - na to Java není dělaná.
+Neexistuje nic, co by z `.class` udělalo rozumně veliké nezávislé `.exe`
+(nezávislé = nepotřebuje nainstalovanou Javu).
+Jinak se můžete kouknout na "JexePack":http://www.duckware.com/jexepack/index.html
+a "český referát o něm":http://www-kiv.zcu.cz/~herout/pruzkumy/jexepack/jexepack.html.
+</em>
+
+Po instalaci současných JRE (je i součástí JDK) se soubory `.jar` spouštějí jako `.exe`.
+Soubory `.class` není příliš často třeba spouštět, ale můžete použít můj JavaLoader - pokud ho najdete :-)
+
+
+Podívejme se, jak ze souboru `.class` dostat nějakou akci:
+
+<ul><li> 
+Pokud soubor `.class` nemáte ve stejném adresáři, ve kterém se nacházíte,
+  V následujícím kroku zadejte parametr `-classpath <cesta k .class>` .
+  Pokud byste to měli dělat často, pak do systémových proměnných přidejte proměnnou `CLASSPATH` 
+  a nastavte ji na onen adresář (kde je váš `.class` soubor).
+
+</li><li>
+Spusťte
+
+/--code
+`java [-classpath ...] <JménoTřídy>`
+\--
+
+  V našem případě to bude 
+
+/--code
+`java [-classpath ...] Zdrojak` .
+\--
+
+  Všimněte si a vtlučte si do hlavy, že jako **parametr, co spustit**, se nedává název souboru, ale **jméno třídy**!
+    Podmínkou pro úspěšné spuštění je, že v adresáři, který je definovaný v systémové proměnné `CLASSPATH`
+    nebo za parametrem `-classpath`, se musí vyskytovat soubor `"JménoTřídy.class"`,
+    a v něm musí být veřejná třída `JménoTřídy` a v ní statická veřejná metoda `main`
+    nevracející nic a s parametrem typu pole `String`ů, neboli:
+    
+/--code
+public class JménoTřídy { public static void main(String[]){...} }
+\--
+
+  Tato metoda se spustí jako první. Je obdobou funkce `int main(int argc, char* argv[])` v //C++//.
+
+</li><li>
+--Tyto dva kroky vám odpadnou, pokud použijete můj JavaLoader.-- Kdoví, kde je mu konec.
+
+</li></ul>
+
+
+Běží? Gratuluji :-) Konzoli máte za sebou. Zbytek už je pure Java code.
+
+Pro normální vývoj doporučují "//NetBeans IDE//":http://www.netbeans.org/, 
+případně jeho verzi pro začátečníky //BlueJ Edition// (tamtéž).
+
+
+
+Kdyby tu něco bylo špatně, napište mi - ondra@dynawest.cz.

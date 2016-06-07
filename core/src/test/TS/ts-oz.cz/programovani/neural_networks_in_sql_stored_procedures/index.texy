@@ -1,0 +1,1138 @@
+Neural Networks SQL implementation - Stored Procedures
+****************************************
+
+<!--
+//The page is being updated at the moment.//
+-->
+
+Have you ever worked with neural networks? Did you run out of memory?
+And were you looking for a simple solution for work with many large networks,
+for teaching them and for their storage? Then this may interest you.
+
+<a name="Contents"/>
+Contents
+========
+* Introduction
+* "News":[#News]
+* "Persistent Tables":[#Persistent Tables]
+* "Neural Network Creation":[#Neural Network Creation]
+* "Geting Info about Neural Network":[#Geting Info about Neural Network]
+* Neural Network Computation:[#Neural Network Computation]
+* "Teaching the Neural Network with Backpropagation Algorithm":[#Teaching the Neural Network with Backpropagation Algorithm]
+* "Training sets":[#Training sets]
+* "Project Info":[#Project Info]
+* "Future developement":[#Future developement]
+* Download:[#Download]
+* Resources:[#Resources]
+
+
+<a name="Introduction"/>
+Introduction
+============
+
+For an overview of what neuron networks are and what they are used to,
+see e.g. "Wikipedia's article":http://en.wikipedia.org/wiki/Artificial_neural_network.
+This page assumes you have some experience with neural networks.
+
+
+Why implement neural networks in SQL, when C++/Java implementation is much faster?
+--------------------------------------------
+
+Imagine a task solved by a very large neural networks,
+like "speech recognition":http://speech.fit.vutbr.cz/, text recognition and all the other *recognitions,
+time-tabling, etc. The count of the weights of such nets rises up to millions.
+
+Thinking of OOP NN implementation in Java, each weight will consume about 30-70 bytes of memory,
+each neuron about 50-100. That consumes about 70 MB for each such network.
+
+Now imagine some graph task with hundreds of nodes where each node has it's own neural network.
+All networks should be available for computation at any time (say, you use them on a server
+for a service of some kind).
+We are getting to the limits of the computers that are commonly available for a common mortals.
+
+Now imagine that these neural networks do not learn by simple backpropagation,
+instead they learn using techniques like Reinforcement Learning. What would you do?
+Would you have all the networks in memory? Would you load, compute, and store it again and again?
+What to do with the RL-data? Stop all computations and let the net learn for a while, making it
+inaccessible for a while?
+
+Moving the entire process to a database leaves all these problems far behind you.
+You have one persistent representation of the network, which can be used for computing
+and taught at the same time.
+
+The memory management is left up to the server, which caches the table rows
+based on how often you use them.
+
+With reinforcement learning, you can log the results and teach the net in the background process,
+which modifies the weights when the server has resources for it, but allows computation
+of the network for "time-critical" task (don't let your users wait).
+
+So, generally speaking, SQL implementation of neural networks enables you to use
+much larger networks and more of them than if you used only in-memory networks.
+
+
+
+
+
+**Notes:**
+
+* Code is full of debugging logs (`CALL LoggP(...)`) and commented statements, which can be safely deleted.
+* Procedures listed below use the procedures and functions listed on the "MySQL Stored Procedures":../sql/mysql_stored_procedures.texy page.
+* I also have versions of stored procedures that work with multiple networks at once, but they are not tested yet.
+
+
+
+
+<a name="News"/>
+News
+====
+
+//2008-05-03://
+Available for download: "Complete database creation script":download/NN_SQL.zip.
+**Do not use the snippets from the page, they may be obsolete** and are here mostly for explanation / documentation purposes.
+I'll try to keep the ZIP file up to date.
+However, that's the snapshot right from my database, so expect it to have plenty of debug stuff like `Logg()` calls etc.
+
+
+//2008-04-29://
+I'm finishing a version which gets training data from a database.
+While being more optimized than independent case-by-case training,
+it learns much much faster.
+<!-- On XOR 2,2,1 network it does about 5 000 "teach cases"
+per minute on my slow computer. -->
+
+
+
+<a name="Persistent Tables"/>
+Persistent Tables
+=================
+
+This implementation is designed to hold any number of networks of any architecture
+in fixed number of tables. So, all neurons are in one table (`nn_net_neurons`),
+all connections in other (`nn_net_synapses`),
+and the networks themselves are registered in the `nn_networks` table.
+
+Originally, I used InnoDB tables for integrity checking.
+But since that slowed down the computation, which took about seven times longer,
+I had to switch to MyISAM or Memory engine.
+
+
+/--code
+CREATE TABLE  nn_networks (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(45) NOT NULL,
+  `inputs` int(10) unsigned NOT NULL default '0',
+  `outputs` int(10) unsigned NOT NULL default '0',
+  `architecture` enum('perceptron') NOT NULL default 'perceptron',
+  `definition` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='Neural networks';
+\--
+
+
+/--code
+CREATE TABLE  nn_net_neurons (
+  `id_net` int(10) unsigned NOT NULL,
+  `id_neuron` int(10) unsigned NOT NULL auto_increment,
+  `bias` double NOT NULL,
+  PRIMARY KEY  (`id_neuron`),
+  KEY `id_net` (`id_net`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='Neural net neurons';
+\--
+
+
+
+/--code
+CREATE TABLE  nn_net_synapses (
+  `id_from` int(10) unsigned default '0',
+  `id_to` int(10) unsigned default '0',
+  `weight` double NOT NULL,
+  UNIQUE KEY `from_to` (`id_from`,`id_to`),
+  KEY `id_to` (`id_to`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='Connections between neurons';
+\--
+
+
+/--code
+CREATE TABLE lib_logg (
+  `whn` datetime NOT NULL,
+  `thread` int(10) unsigned NOT NULL,
+  `level` enum('info','warn','error','enter','leave') NOT NULL default 'info',
+  `str` text,
+  `rout` varchar(255) default NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+\--
+
+
+
+<a name="Neural Network Creation"/>
+Neural Network Creation
+=======================
+
+Usage:
+------
+/--code
+##    Layers definition,  initial weigths range, initial bias range, OUT network ID
+CALL nn_CreatePerceptron('2,2,1','XOR', 0.10, 0.5, @out_NetID);
+\--
+
+
+
+
+Result:
+-------
+
+Creates a perceptron with an architecture defined by first parameter.
+`2,2,1` creates 2 input neurons, 2 hidden neurons and 1 output neuron.
+Layers are fully connected ("cartesian product").
+Second parameter is the name of the network (not unique).
+Third parameter is the range of initial weights, which are set randomly.
+Fourth parameter is the range of initial biases, also set randomly.
+In the fifth parameter the procedure returns an ID of the created network.
+
+
+Source:
+-------
+
+Procedure `nn_CreatePerceptron` is a wrapper for `nn_GeneratePerceptron` (see below).
+
+
+/--code
+CREATE PROCEDURE `nn_CreatePerceptron`(
+  sLayers VARCHAR(255), sName VARCHAR(255),
+  dWeightsRange DOUBLE, dBiasRange DOUBLE,
+  out_iNetId INT UNSIGNED)
+BEGIN
+
+  /*
+   *  Creates a network with perceptron architecture.
+   *  INSERTs into nn_network, nn_net_neurons and nn_net_synapses.
+   *  @returns: The ID of the network created goes into  out_iNetId
+   */
+
+  ##  Log
+  CALL Logg(CONCAT( 'nn_CreatePerceptron( sLayers: ', NSQ(sLayers), ', sName: ', NSQ(sName), ' )' ));
+
+  ##  Generate the perceptron to temp table.
+  CALL nn_GeneratePerceptron(sLayers, dWeightsRange, dBiasRange);
+
+
+  ##  Create the new network record and get it's new ID.
+  INSERT INTO nn_networks SET name = sName, architecture = 'perceptron', definition = sLayers,
+   inputs = sLayers, outputs = SUBSTRING_INDEX(sLayers, ',', -1);
+  SELECT LAST_INSERT_ID() INTO out_iNetId;
+
+  ##  Get last neuron's ID.
+  SELECT IFNULL(MAX(id_neuron)+1,0) INTO @iLastNeuronId FROM nn_net_neurons;
+
+  CALL Logg(CONCAT( 'Created network #',out_iNetId,' and neurons with ID #',@iLastNeuronId,' and up.' ));
+
+
+  INSERT INTO nn_net_neurons
+    SELECT out_iNetId AS id_net, id_neuron + @iLastNeuronId, bias
+      FROM nn_GeneratePerceptron_neurons;
+  CALL Logg(CONCAT( 'Created neurons for nn #',out_iNetId,'' ));
+
+  INSERT INTO nn_net_synapses
+    SELECT IF( 0 = id_from, NULL, CAST( id_from + @iLastNeuronId AS UNSIGNED ) ) AS id_from,
+           IF( 0 = id_to,   NULL, CAST( id_to   + @iLastNeuronId AS UNSIGNED ) ) AS id_to,
+           weight
+      FROM nn_GeneratePerceptron_synapses;
+  CALL Logg(CONCAT( 'Created synapses for nn #',out_iNetId,'' ));
+
+
+END $$
+\--
+
+
+
+Procedure `nn_GeneratePerceptron`  is called by `nn_CreatePerceptron`.
+That's because `nn_GeneratePerceptron` works independently and creates the network 
+in a virtual space, before merging it to the persistent tables.
+This helps isolating the eventual transactions and improves the performance.
+
+
+/--code
+CREATE PROCEDURE `nn_GeneratePerceptron`(
+  sLayers VARCHAR(255), dWeightsRange DOUBLE, dBiasRange DOUBLE
+)
+body: BEGIN
+
+  ##  Push old auto-increment settings and set to 1,1.
+  SET @oldInc = @@session.auto_increment_increment, @oldOff = @@session.auto_increment_offset;
+  SET @@session.auto_increment_increment = 1, @@session.auto_increment_offset = 1;
+
+
+  SET @sLayers = sLayers;
+
+  CALL Logg(CONCAT('nn_GeneratePerceptron( ', @sLayers, ' )'));
+
+  ##  Create tables for the result. ##
+  DROP TEMPORARY TABLE IF EXISTS nn_GeneratePerceptron_neurons;
+  DROP TEMPORARY TABLE IF EXISTS nn_GeneratePerceptron_synapses;
+
+  CREATE TEMPORARY TABLE nn_GeneratePerceptron_neurons(
+    `id_neuron` int unsigned NOT NULL auto_increment,
+    `bias` double NOT NULL
+    , PRIMARY KEY  (`id_neuron`)
+  ) ENGINE=Memory COMMENT='Neural net neurons';
+
+  CREATE TEMPORARY TABLE nn_GeneratePerceptron_synapses(
+    `id_from` int unsigned,
+    `id_to` int unsigned,
+    `weight` double NOT NULL,
+    UNIQUE KEY  (`id_from`,`id_to`)
+  ) ENGINE=Memory COMMENT='Connections between neurons';
+
+
+  DROP TEMPORARY TABLE IF EXISTS nn_GeneratePerceptron_tmp;
+  CREATE TEMPORARY TABLE nn_GeneratePerceptron_tmp(
+    `id_neuron` int unsigned NOT NULL auto_increment,
+    `bias` double NOT NULL,
+    PRIMARY KEY  (`id_neuron`)
+  ) ENGINE=Memory COMMENT='New layer neurons';
+
+  DROP TEMPORARY TABLE IF EXISTS nn_GeneratePerceptron_prev_layer;
+  CREATE TEMPORARY TABLE nn_GeneratePerceptron_prev_layer(
+    `id_neuron` int unsigned #NOT NULL
+    #, PRIMARY KEY  (`id_neuron`)
+    , UNIQUE KEY  (`id_neuron`)
+  ) ENGINE=Memory COMMENT='IDs of previous layer neurons.';
+
+
+
+  ##  Create pseudo-synapses for the input layer.
+  SET @iNeurons = CAST( @sLayers AS UNSIGNED );
+  CALL lib_GenerateSequence(1, @iNeurons, 1);
+  ##  Instead, create virtual layer, to which the WHILE loop will create synapses.
+  INSERT INTO nn_GeneratePerceptron_prev_layer
+   VALUES (NULL); -- Only one pseudo-synapse per input neuron.
+
+
+  SET @iLayer = 0;
+
+  create_layers:
+  WHILE @sLayers != '' DO
+
+    # Get the next layer's volume
+    SET @sHead = SUBSTRING_INDEX(@sLayers, ',', 1);
+    #CALL Logg(CONCAT( 'Head: ', @sHead ));
+    SET @sLayers = SUBSTRING( @sLayers, LENGTH(@sHead)+2 );  -- +2 - SUBSTRING() is 1-based.
+    #CALL Logg(CONCAT( 'Tail: ', @sLayers ));
+
+    SET @iNeurons = CAST( @sHead AS UNSIGNED );
+    IF NOT @iNeurons THEN ITERATE create_layers; END IF;
+    SET @iLayer = @iLayer + 1;
+
+    ##  Create the layer. ##
+
+    CALL Logg(CONCAT('Generating layer ', @iLayer, ' with ', @iNeurons, ' neurons.'));
+
+    # Last inserted id.
+    SELECT IFNULL(MAX(id_neuron),0) INTO @iLastId FROM nn_GeneratePerceptron_neurons;
+    # Create new neurons IDs.
+    CALL lib_GenerateSequence(@iLastId+1, @iLastId + @iNeurons, 1);
+    # Insert neurons with corresponding IDs.
+    INSERT INTO nn_GeneratePerceptron_neurons
+      SELECT NULL AS id_neuron,
+        -- 0.0 AS bias
+        -- (RAND()-0.5)*1.6 AS bias  # <-0.8, 0.8)
+        (RAND()-0.5)*2*dBiasRange AS bias
+        FROM lib_GenerateSequence;
+    CALL Logg('...neurons generated.');
+
+
+    # Connect this new layer with previous layer.
+    INSERT INTO nn_GeneratePerceptron_synapses
+      SELECT
+        nn_GeneratePerceptron_prev_layer.id_neuron AS id_from,
+        lib_GenerateSequence.i AS id_to,
+        (RAND()-0.5)*2*dWeightsRange AS weight
+      FROM nn_GeneratePerceptron_prev_layer CROSS JOIN lib_GenerateSequence;
+    CALL Logg('...synapses generated.');
+
+    # Make this layer the "previous" for next turn
+    TRUNCATE nn_GeneratePerceptron_prev_layer;
+    INSERT INTO nn_GeneratePerceptron_prev_layer
+      SELECT i AS id_neuron FROM lib_GenerateSequence;
+
+    ##  Final Report of this layer creation round.
+    SELECT COUNT(*) INTO @iNeuronsTotal FROM nn_GeneratePerceptron_neurons;
+    SELECT COUNT(*) INTO @iSynapsesTotal FROM nn_GeneratePerceptron_synapses;
+    CALL Logg(CONCAT('Generated layer', NS(@iLayer), '. The net has now ',
+                NS(@iNeuronsTotal), ' neurons and ',
+                NS(@iSynapsesTotal),' synapses.'));
+
+
+  END WHILE;
+
+
+  ##  Create pseudo-synapses for the output layer.
+  INSERT INTO nn_GeneratePerceptron_synapses
+    SELECT id_neuron AS id_from, NULL AS id_to, 1.0 AS weight   FROM nn_GeneratePerceptron_prev_layer;
+  ##  Reset input pseudo-synapses weights.
+  UPDATE nn_GeneratePerceptron_synapses SET weight = 1.0 WHERE id_from IS NULL;
+  ##  Reset input neurons' biases to zero.
+  UPDATE nn_GeneratePerceptron_neurons AS neu
+    LEFT JOIN nn_GeneratePerceptron_synapses AS syn ON neu.id_neuron = syn.id_to
+    SET bias   = 0.0 WHERE syn.id_from IS NULL;
+
+
+  ##  Restore original auto-increment settings.
+  SET @@session.auto_increment_increment = @oldInc, @@session.auto_increment_offset = @oldOff;
+
+END $$
+\--
+
+
+
+
+<a name="Geting Info about Neural Network"/>
+Geting Info about Neural Network
+================================
+
+When we have an existing network, we want to be able to identify it's input and output neurons.
+That's what `nn_GetInputNeuronIDs` and `nn_GetOutputNeuronIDs` are.
+
+
+Usage:
+------
+/--code
+##  Get the input neuron IDs for the network with ID 1.
+CALL nn_GetInputNeuronIDs( 1 );
+
+##  Get the output neuron IDs for the network with ID 1.
+CALL nn_GetOutputNeuronIDs( 1 );
+\--
+
+Result:
+-------
+For the XOR network with 2,2,1 architecture, the output could be like this:
+
+[* img/xor-2-2-1-network.png >]
+
+|pos |id_neuron
+|-------------
+|1   |1
+|2   |2
+
+|pos |id_neuron
+|-------------
+|1   |5
+
+
+Source:
+-------
+/--code
+CREATE PROCEDURE `nn_GetInputNeuronIDs`(iNetID INTEGER)
+    COMMENT 'Returns tmp.t. (pos, id_neuron) with given net''s input neurons.'
+body:
+BEGIN
+
+  #CALL LoggP('nn_GetInputNeuronIDs', CONCAT('nn_GetInputNeuronIDs( ',NS(iNetID),' )'));
+
+  DROP TEMPORARY TABLE IF EXISTS nn_GetInputNeuronIDs;
+  CREATE TEMPORARY TABLE nn_GetInputNeuronIDs (
+    `pos` int unsigned NOT NULL auto_increment,
+    `id_neuron` INTEGER UNSIGNED NOT NULL,
+    PRIMARY KEY USING HASH (`pos`)
+  ) ENGINE=Memory ROW_FORMAT=FIXED COMMENT='Input neuron IDs indexed by position.';
+
+  IF iNetID IS NULL THEN LEAVE body; END IF;
+
+  INSERT INTO nn_GetInputNeuronIDs
+  -- SELECT syn.id_to FROM nn_net_synapses AS syn WHERE syn.id_from = 0;
+  SELECT NULL AS pos, id_to AS id_neuron
+    FROM nn_net_synapses AS syn
+    LEFT JOIN nn_net_neurons AS neu ON neu.id_net = iNetID AND syn.id_to = neu.id_neuron
+    WHERE id_net = iNetID AND syn.id_from IS NULL
+    ORDER BY id_to;
+END $$
+\--
+
+/--code
+CREATE PROCEDURE `nn_GetOutputNeuronIDs`(iNetID INTEGER)
+    COMMENT 'Returns tmp.t. (pos, id_neuron) with given net''s output neurons.'
+body:
+BEGIN
+
+  CALL LoggP('nn_GetOutputNeuronIDs', CONCAT('nn_GetOutputNeuronIDs( ', NS(iNetID), ' )'));
+
+  DROP TEMPORARY TABLE IF EXISTS nn_GetOutputNeuronIDs;
+  CREATE TEMPORARY TABLE nn_GetOutputNeuronIDs (
+    `pos` int unsigned NOT NULL auto_increment,
+    `id_neuron` INTEGER UNSIGNED NOT NULL,
+    PRIMARY KEY USING HASH (`pos`)
+  ) ENGINE=Memory ROW_FORMAT=FIXED COMMENT='Output neuron IDs indexed by position.';
+
+  IF iNetID IS NULL THEN LEAVE body; END IF;
+
+  INSERT INTO nn_GetOutputNeuronIDs
+  -- SELECT syn.id_to FROM nn_net_synapses AS syn WHERE syn.id_from = 0;
+  SELECT NULL AS pos, id_from AS id_neuron
+    FROM nn_net_synapses AS syn
+    LEFT JOIN nn_net_neurons AS neu ON neu.id_net = iNetID AND syn.id_from = neu.id_neuron
+    WHERE id_net = iNetID AND  syn.id_to IS NULL
+    ORDER BY id_from;
+
+  #SELECT * FROM nn_GetInputNeuronIDs; -- DEBUG
+
+END $$
+\--
+
+
+
+<a name="Neural Network Computation"/>
+Neural Network Computation
+==========================
+
+Procedure `nn_ComputeNet`
+-------------------------
+
+Computes a single network output for given input.
+
+Usage:
+------
+/--code
+CALL nn_ComputeNet(1, '-1, 1', TRUE);
+SELECT * FROM nn_ComputeNet;
+\--
+
+/--code
+SELECT * FROM nn_ComputeNet_InternalValues;
+\--
+
+Result:
+-------
+|id_neuron|val
+|-------------
+|5        |0.984
+
+
+|id_neuron |val
+|--------------
+|1 |-1
+|2 |1
+|3 |0.0166427942550775
+|4 |0.972952595778587
+|5 |0.984122623404696
+
+
+Source:
+-------
+/--code
+\--
+
+
+/--code
+CREATE PROCEDURE `nn_ComputeNet`(
+  iNetId INTEGER, sadInput VARCHAR(255), bStoreInternalValues BOOLEAN)
+body: BEGIN
+
+  DROP TEMPORARY TABLE IF EXISTS nn_ComputeNet;
+  CALL LoggP('nn_ComputeNet', F3('nn_ComputeNet( {1}, {2}, {3} );.', NS(iNetId), NSQ(sadInput), NSB(bStoreInternalValues) ));
+  IF iNetId IS NULL OR sadInput IS NULL THEN LEAVE body; END IF;
+
+  SET @bStoreInternalValues = TRUE; -- IFNULL(bStoreInternalValues, FALSE);
+
+
+  ##  Get a table with input values as rows.
+  # pos, val
+  CALL lib_Explode(',', sadInput);
+  #SELECT * FROM lib_Explode; LEAVE body;            -- DEBUG
+
+  # pos, id_neuron
+  CALL nn_GetInputNeuronIDs( iNetId );
+  #SELECT * FROM nn_GetInputNeuronIDs; LEAVE body;   -- DEBUG
+
+  SET @iCntInputNeurons = (SELECT COUNT(*) FROM nn_GetInputNeuronIDs);
+  SET @iCntInputValues  = (SELECT COUNT(*) FROM lib_Explode);
+  IF @iCntInputNeurons != @iCntInputValues THEN
+    CALL Logg_error(F2('Number of input neurons {1} and number of input values {2} differs.', @iCntInputNeurons, @iCntInputValues ));
+    LEAVE body;
+  END IF;
+
+
+  ##  Create the work table and fill it with input neurons' IDs.
+  DROP TEMPORARY TABLE IF EXISTS nn_ComputeNet_new_layer;
+  DROP TEMPORARY TABLE IF EXISTS nn_ComputeNet_prev_layer;
+  CREATE TEMPORARY TABLE nn_ComputeNet_prev_layer  (
+    id_neuron INT UNSIGNED NOT NULL
+    ,PRIMARY KEY USING HASH (id_neuron)
+    ,val DOUBLE NOT NULL
+  ) ENGINE = Memory  ROW_FORMAT = FIXED
+  SELECT id_neuron, val
+      FROM lib_Explode AS ex
+      LEFT JOIN nn_GetInputNeuronIDs AS inp USING(pos);
+
+  CALL LoggP('nn_ComputeNet', CONCAT('Input: ', (
+    SELECT GROUP_CONCAT( CONCAT(id_neuron,': ',val) SEPARATOR '; ') FROM nn_ComputeNet_prev_layer
+  )));
+
+
+  ##  If we were asked to store internal neurons' output values, do so.
+  IF @bStoreInternalValues THEN
+    DROP TEMPORARY TABLE IF EXISTS nn_ComputeNet_InternalValues;
+    CREATE TEMPORARY TABLE nn_ComputeNet_InternalValues (
+      id_neuron INT UNSIGNED NOT NULL
+      ,PRIMARY KEY USING HASH (id_neuron)
+      ,val DOUBLE NOT NULL
+    ) ENGINE = Memory  ROW_FORMAT = FIXED
+      SELECT * FROM nn_ComputeNet_prev_layer;
+  END IF;
+
+  SET @iInputNeurons = (SELECT COUNT(*) FROM nn_ComputeNet_prev_layer);
+  SET @iRound = 1;
+
+  compute_layers:
+  LOOP
+
+    SET @iRound = @iRound +1;
+    IF @iRound > 5 THEN LEAVE compute_layers; END IF; -- DEBUG
+    #CALL LoggP('nn_ComputeNet', F1('Computing next layer. %s neurons on input.', @iInputNeurons));  -- DEBUG
+
+    ##  Compute the values for the next layer.
+    CREATE TEMPORARY TABLE nn_ComputeNet_new_layer  (
+      id_neuron INT UNSIGNED NOT NULL
+      ,PRIMARY KEY USING HASH (id_neuron)
+      ,val DOUBLE NOT NULL
+    ) ENGINE = Memory  ROW_FORMAT = FIXED
+    SELECT neu.id_neuron,
+      #SIGMOID(SUM(inp.val * syn.weight)+neu.bias) AS val -- Too slow :-/
+      1 / (1 + EXP(- (SUM(inp.val * syn.weight)+neu.bias) ) ) AS val
+      FROM nn_ComputeNet_prev_layer AS inp
+      LEFT JOIN nn_net_synapses AS syn ON inp.id_neuron = syn.id_from
+      LEFT JOIN nn_net_neurons  AS neu ON syn.id_to = neu.id_neuron
+      WHERE neu.id_neuron IS NOT NULL
+      GROUP BY(neu.id_neuron);
+    #CALL LoggP('nn_ComputeNet', 'Computed.');  -- DEBUG
+
+    ##  Update the number of input neurons for next layer.
+    SELECT COUNT(*) INTO @iInputNeurons FROM nn_ComputeNet_new_layer;
+    ##  If no further neurons are left, quit the loop.
+    IF 0 = @iInputNeurons THEN LEAVE compute_layers; END IF;
+
+    CALL LoggP('nn_ComputeNet', CONCAT('Input: ', (
+      SELECT GROUP_CONCAT( CONCAT(id_neuron,': ',val) SEPARATOR '; ') FROM nn_ComputeNet_prev_layer
+    )));
+
+
+    ##  Switch  ##
+    DROP TEMPORARY TABLE IF EXISTS nn_ComputeNet_prev_layer;
+    ALTER TABLE nn_ComputeNet_new_layer RENAME TO nn_ComputeNet_prev_layer;
+
+    ##  If we were asked to store internal neurons' output values, do so.
+    ##  This can be after the Switch - we do NOT want to duplicate output values.
+    IF @bStoreInternalValues THEN
+      INSERT INTO nn_ComputeNet_InternalValues SELECT * FROM nn_ComputeNet_prev_layer;
+    END IF;
+
+  END LOOP;
+
+  ALTER TABLE nn_ComputeNet_prev_layer RENAME TO nn_ComputeNet;
+
+END $$
+\--
+
+
+
+<a name="Teaching the Neural Network with Backpropagation Algorithm"></a>
+Teaching the Neural Network with Backpropagation Algorithm
+==========================================================
+
+For explanation of backpropagation, see
+"Don Tveter's backpropagation tutorial":http://dontveter.com/bpr/public2.html.
+
+Usage:
+------
+
+Again, the API is very simple.
+First, procedure `nn_ComputeNet` computes the net's output.
+While doing that, it also stores the internal neurons' values;
+we asked to do so by setting the third parameter to `TRUE`.
+
+/--code
+CALL nn_ComputeNet( iNetID, '1, -1', TRUE );  ##  Be sure to set to TRUE!
+\--
+
+Then we have to rename the tables, because MySQL does not allow
+to pass the result set in any other way.
+(At least one row could be spared... see my 
+"MySQL wish-list":../sql/mysql_wishlist/alter_table_rename_overwrite.texy.)
+
+/--code
+  DROP TEMPORARY TABLE IF EXISTS nn_CorrectWeights, nn_CorrectWeights_InternalValues;
+  ALTER TABLE nn_ComputeNet RENAME TO nn_CorrectWeights;
+  ALTER TABLE nn_ComputeNet_InternalValues RENAME TO nn_CorrectWeights_InternalValues;
+\--
+
+And finally we call the `nn_CorrectWeights` procedure, which applies the
+backpropagation algorithm to the network, and returns the //error value// to the OUT param.
+
+First param is the ID of the network to compute, then comes the Lambda, Fi, Psi, Alfa, Beta, Gama, Pi,
+or however you call it - I call it "learning rate". Finally it's the output variable for error level.
+
+/--code
+CALL nn_CorrectWeights(iNetID, '1', @dLearn, @out_dErrorSum);
+\--
+
+Based on the error level, you can apply the simulated annealing, as we will show later.
+Using that, you can get to very low error levels, less than 0.0001 for some tasks.
+
+Result:
+-------
+After calling `nn_CorrectWeights`, the weights in the persistent table are updated
+to reflect the changes made by the backpropagation algorithm.
+
+
+Source:
+-------
+/--code
+CREATE PROCEDURE `nn_CorrectWeights`(
+  id_net INTEGER, sadValuesWanted VARCHAR(255), dLearn DOUBLE, OUT out_dErrorSum DOUBLE
+)
+BEGIN body: BEGIN
+
+  CALL LoggP('nn_CorrectWeights', F2('nn_CorrectWeights( {1}, {2} )', NS(id_net), NSQ(sadValuesWanted) ));
+  IF id_net IS NULL OR sadValuesWanted IS NULL THEN LEAVE body; END IF;
+
+
+
+
+  ###  Check the output neurons table for existence and structure.  ###
+  CALL lib_TemporaryTableHasColumns('nn_CorrectWeights', 'id_neuron,val', @iInputExists);
+  IF NOT @iInputExists THEN
+    CALL Logg_error('nn_CorrectWeights input table must be: (id_neuron INTEGER UNSIGNED NOT NULL, val DOUBLE NOT NULL).'); LEAVE body;
+  END IF;
+  #CALL LoggP('nn_CorrectWeights', 'nn_CorrectWeights input table OK');
+
+  CALL lib_TemporaryTableHasColumns('nn_CorrectWeights_InternalValues', 'id_neuron,val', @iInputExists);
+  IF NOT @iInputExists THEN
+    CALL Logg_error('... nn_CorrectWeights_InternalValues input table must be: (id_neuron INTEGER UNSIGNED NOT NULL, val DOUBLE NOT NULL).'); LEAVE body;
+  END IF;
+  #CALL LoggP('nn_CorrectWeights', '... nn_CorrectWeights_InternalValues input table OK');
+
+
+
+
+  ###  Create the list of wanted neuron network output values  from the string param.
+  ###  Result: TEMPORARY TABLE nn_CorrectWeights_Wanted( id_neuron INT PK,  val DOUBLE ).
+  CALL lib_TemporaryTableHasColumns('nn_CorrectWeights_Wanted', 'id_neuron, val', @bHas);
+  IF NOT @bHas THEN
+
+    CALL lib_Explode(',', sadValuesWanted);
+    DROP TEMPORARY TABLE IF EXISTS nn_CorrectWeights_Wanted;
+    ALTER TABLE lib_Explode RENAME TO nn_CorrectWeights_Wanted;     # TODO: Feature request - RENAME OVERWRITE TO...
+    #CALL LoggP('nn_CorrectWeights', '... exploded the wanted values');
+
+
+
+    ###  Get the output neurons and check if their count also matches.
+    CALL lib_TemporaryTableHasColumns('nn_GetOutputNeuronIDs', 'pos, id_neuron', @bHas);
+    IF NOT @bHas THEN
+      CALL nn_GetOutputNeuronIDs( id_net );
+    END IF;
+
+
+    ###  Mint wanted values' positions into neurons ID.
+    #CALL LoggP('nn_CorrectWeights', '... converting wanted values\' position into output neuron\'s ID.');
+
+    /* This way is unsafe (? - PK collision), but fast. But DROP PRIMARY KEY is available only for MyISAM.
+    ALTER TABLE nn_CorrectWeights_Wanted DROP PRIMARY KEY;   -- Does this prevent PK collision? I think so.
+    UPDATE nn_CorrectWeights_Wanted AS want LEFT JOIN nn_GetOutputNeuronIDs AS out_neu USING(pos)
+      SET want.pos = out_neu.id_neuron;
+    ALTER TABLE nn_CorrectWeights_Wanted MODIFY COLUMN pos id_neuron INT UNSIGNED NOT NULL PRIMARY KEY; */
+
+    #   This way is safe.
+    DROP TEMPORARY TABLE IF EXISTS nn_CorrectWeights_Wanted_pos;
+    ALTER TABLE nn_CorrectWeights_Wanted RENAME TO nn_CorrectWeights_Wanted_pos;
+    CREATE TEMPORARY TABLE nn_CorrectWeights_Wanted (
+      id_neuron INT UNSIGNED NOT NULL PRIMARY KEY,
+      val       DOUBLE NOT NULL
+    ) ENGINE = Memory
+    SELECT out_neu.id_neuron, want.val
+      FROM nn_CorrectWeights_Wanted_pos AS want
+      LEFT JOIN nn_GetOutputNeuronIDs AS out_neu USING(pos);
+    DROP TEMPORARY TABLE nn_CorrectWeights_Wanted_pos;
+    
+    CALL LoggP('nn_CorrectWeights', CONCAT('Wanted values: ', (
+      SELECT GROUP_CONCAT( CONCAT(id_neuron,': ',val) SEPARATOR '; ') FROM nn_CorrectWeights_Wanted
+    )));
+
+  END IF;
+
+
+
+
+  ###  Check if the counts of wanted values and actual output values are equal.
+  SELECT COUNT(*) INTO @iCntWanted FROM nn_CorrectWeights_Wanted;
+  SELECT COUNT(*) INTO @iCntComputed FROM nn_CorrectWeights;
+  IF @iCntWanted != @iCntComputed THEN
+    CALL LoggP_error('nn_CorrectWeights', 'Counts of wanted and computed values differs.'); LEAVE body;
+  END IF;
+  #CALL LoggP('nn_CorrectWeights', '... counts OK');
+
+  SELECT COUNT(*) INTO @iCntOutputNeurons FROM nn_GetOutputNeuronIDs;
+  IF @iCntWanted != @iCntOutputNeurons THEN
+    CALL LoggP_error('nn_CorrectWeights', 'Counts of wanted values and output neurons differs.'); LEAVE body;
+  END IF;
+  #CALL LoggP('nn_CorrectWeights', '... count in iCntOutputNeurons OK');
+
+
+
+  ###  Rename the input table to nn_CorrectWeights_Computed.
+  DROP TEMPORARY TABLE IF EXISTS nn_CorrectWeights_Computed;
+  ALTER TABLE nn_CorrectWeights RENAME TO nn_CorrectWeights_Computed;
+
+
+
+
+
+
+
+  #####################################################################
+  ###  Enough of checking; Now the weights correction really begins.
+  /*
+     We have:
+      nn_GetOutputNeuronIDs       (pos, id_neuron)
+      nn_CorrectWeights_Computed  (id_neuron, val)
+      nn_CorrectWeights_Wanted    (id_neuron, val)
+      nn_CorrectWeights_InternalValues (id_neuron, val)
+  */
+
+
+
+  ###  Create the table for data of the "current layer" - id_neuron and difference.
+  #CALL LoggP('nn_CorrectWeights', 'Creating table nn_CorrectWeights_cur_layer.');
+  DROP TEMPORARY TABLE IF EXISTS nn_CorrectWeights_prev_layer;
+  DROP TEMPORARY TABLE IF EXISTS nn_CorrectWeights_cur_layer;
+  CREATE TEMPORARY TABLE nn_CorrectWeights_cur_layer (
+    id_neuron INTEGER UNSIGNED NOT NULL PRIMARY KEY
+    ,error DOUBLE NOT NULL DEFAULT 0.0
+  ) ENGINE Memory   ROW_FORMAT = FIXED
+  SELECT comp.id_neuron
+    ,(want.val - comp.val)   *   comp.val * (1-comp.val) AS error
+    FROM nn_CorrectWeights_Computed AS comp
+    LEFT JOIN nn_CorrectWeights_Wanted AS want USING(id_neuron);
+
+  ###  Total error of the output layer.  Not used yet - later for teaching cycle control.
+  SELECT SUM(ABS(error)) INTO out_dErrorSum FROM nn_CorrectWeights_cur_layer;
+
+   -- DEBUG:
+  #CREATE TABLE IF NOT EXISTS foo (id_neuron INT, error DOUBLE);
+  #INSERT INTO foo SELECT 11111, 0.666666666666;
+  #INSERT INTO foo SELECT * FROM nn_CorrectWeights_cur_layer;
+
+  SET @iLayers = 0;
+  layers: LOOP
+
+    SET @iLayers = @iLayers + 1;
+    CALL LoggP('nn_CorrectWeights', F2('Correcting {1} th layer. IDs: {2}', @iLayers,
+      NS(  (SELECT GROUP_CONCAT( CONCAT(id_neuron,' / err: ', ROUND(error,5) ) SEPARATOR ',  ')
+              FROM nn_CorrectWeights_cur_layer AS cur)  )));
+
+
+
+
+    ###  Create table for previous layer.
+    #    Computes their diff and runs their output thru current neuron's function derivation.
+    CREATE TEMPORARY TABLE nn_CorrectWeights_prev_layer (
+      id_neuron INTEGER UNSIGNED NOT NULL
+      ,PRIMARY KEY USING HASH (id_neuron)
+      ,error     DOUBLE NOT NULL
+    ) ENGINE = Memory  ROW_FORMAT = FIXED
+    SELECT upstream.id_neuron,
+         SUM( cur.error * syn.weight )  *  upstream.val * (1-upstream.val)   AS error
+      FROM nn_CorrectWeights_cur_layer           AS cur
+      LEFT JOIN nn_net_synapses                  AS syn ON syn.id_to = cur.id_neuron
+      LEFT JOIN nn_CorrectWeights_InternalValues AS upstream  ON syn.id_from = upstream.id_neuron
+      WHERE upstream.id_neuron != 0  #IS NOT NULL
+    GROUP BY upstream.id_neuron;
+
+    -- ##  ROW_COUNT() always returns -1. Is it a BUG??
+    -- CALL Logg(CONCAT('RC: ',ROW_COUNT()));
+
+    ###  If there are no more upstream neurons, quit the loop.
+    IF 0 = (SELECT COUNT(*) FROM nn_CorrectWeights_prev_layer) THEN LEAVE layers; END IF;
+    IF @iLayers > 20 THEN CALL Logg('bye >'); LEAVE layers;  END IF; -- DEBUG - prevent infinite loop.
+
+
+    CALL LoggP('nn_CorrectWeights',
+      (SELECT GROUP_CONCAT( F6('{1}(err:{2}) --(w:{3})--> {4}(val:{5}) => delta:{6}',
+          NS(id_to), ROUND(cur.error,3),    NS(ROUND(syn.weight,3)),   NS(id_from),  NS(ROUND(iv.val,3)),
+          NS(ROUND(dLearn * cur.error * iv.val, 3)) ) SEPARATOR ' ;  ')
+        FROM nn_CorrectWeights_cur_layer       AS cur
+        LEFT JOIN nn_net_synapses              AS syn ON syn.id_to = cur.id_neuron
+        LEFT JOIN nn_CorrectWeights_InternalValues AS iv  ON syn.id_from = iv.id_neuron
+      )
+    );
+
+
+
+
+    ###  Update the BIAS of the neurons of the current layer.
+    UPDATE nn_CorrectWeights_cur_layer AS cur
+      LEFT JOIN nn_net_neurons AS neu USING(id_neuron)
+      SET neu.bias = neu.bias + dLearn * cur.error;
+    CALL LoggP('nn_CorrectWeights', F1('Updated %s biases.', ROW_COUNT())); -- DEBUG
+
+
+
+
+    ###  Update the WEIGHTS of synapses to previous layer's neurons
+    UPDATE nn_CorrectWeights_cur_layer       AS cur
+      LEFT JOIN nn_net_synapses              AS syn ON syn.id_to = cur.id_neuron
+      LEFT JOIN nn_CorrectWeights_InternalValues AS iv  ON syn.id_from = iv.id_neuron
+    SET syn.weight = syn.weight + dLearn * cur.error * iv.val;
+
+    CALL LoggP('nn_CorrectWeights', F1('Updated %s weights.', ROW_COUNT())); -- DEBUG
+
+
+    ###  Switch  ###
+    DROP TEMPORARY TABLE nn_CorrectWeights_cur_layer;
+    ALTER TABLE nn_CorrectWeights_prev_layer RENAME TO nn_CorrectWeights_cur_layer;
+
+
+  END LOOP layers;
+
+  #CALL LoggP('nn_CorrectWeights', 'All layers done, all weights updated.');
+
+END body;
+  DROP TEMPORARY TABLE IF EXISTS nn_CorrectWeights_Wanted;
+  DROP TEMPORARY TABLE IF EXISTS nn_CorrectWeights_Computed;
+  #DROP TEMPORARY TABLE IF EXISTS nn_GetOutputNeuronIDs;
+  # CALL LoggLeave('nn_CorrectWeights');
+END $$
+\--
+
+
+
+
+
+Training sets
+=============
+
+For effective use of SQL implementation of NN, it's good to have an option
+to feed the network directly from the database. Assumming you prepared the data
+into an appropriate data structure, you can teach the network with one `CALL`.
+
+Tables structure
+----------------
+
+A training data set is defined in the `nn_trainsets` table.
+Such set is, for example, train data for XOR.
+
+Each data set contains input-output pairs, I call them `train cases`, in the
+`nn_trainsets_cases` table. E.g. XOR train data has 4 train cases:
+ `{-1,-1} -> {0.0}, {-1,1} -> {1.0}, ...` etc.
+
+The individual input and output values are stored in
+`nn_trainsets_input` and `nn_trainsets_output` tables, respectively.
+
+/--code
+CREATE TABLE `nn_trainsets` (
+  `id_set` int(10) unsigned NOT NULL auto_increment,
+  `name` varchar(45) NOT NULL,
+  `input_count` int(10) unsigned NOT NULL,
+  `output_count` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`id_set`)
+) ENGINE=MyISAM ROW_FORMAT=FIXED;
+
+CREATE TABLE `nn_trainsets_cases` (
+  `id_case` int(10) unsigned NOT NULL auto_increment,
+  `id_set` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`id_case`),
+  KEY `id_set` USING BTREE (`id_set`)
+) ENGINE=MyISAM ROW_FORMAT=FIXED;
+
+CREATE TABLE `nn_trainsets_input` (
+  `id_case` int(10) unsigned NOT NULL,
+  `pos` int(10) unsigned NOT NULL,
+  `val` double NOT NULL,
+  PRIMARY KEY  USING BTREE (`pos`,`id_case`)
+) ENGINE=MyISAM  ROW_FORMAT=FIXED;
+
+CREATE TABLE `nn_trainsets_output` (
+  `id_case` int(10) unsigned NOT NULL,
+  `pos` int(10) unsigned NOT NULL,
+  `val` double NOT NULL,
+  PRIMARY KEY  USING BTREE (`pos`,`id_case`)
+) ENGINE=MyISAM  ROW_FORMAT=FIXED;
+\--
+
+
+Modified procedures for computation and teaching
+------------------------------------------------
+
+Due to need of optimization, procedures `nn_ComputeNet` and `nn_CorrectWeights`
+had to be modified. Two specialized procedures complete this task - 
+`nn_ts_ComputeNet` and `nn_ts_CorrectWeights`.
+Their difference is in that they do not take serialized values
+in parameters; instead, they expect pre-created tables with these values.
+
+/--code
+CREATE PROCEDURE `nn_ts_ComputeNet`( iNetID INTEGER, bStoreInternalValues BOOLEAN )
+body: BEGIN
+
+  /*
+   *   PROCEDURE nn_ts_ComputeNet( iNetID, bStoreInternalValues )
+   *
+   *   Computes a network's output value.
+   *   Expects the following input tables:
+   *
+   *   nn_ts_ComputeNet_Input ( id_neuron INT UNSIGNED, val DOUBLE )
+   */
+
+  -- Code too long - snipped. --
+
+END $$
+
+
+CREATE PROCEDURE `nn_ts_CorrectWeights`( iNetID INTEGER, dLearn DOUBLE, OUT out_dErrorSum DOUBLE )
+BEGIN body: BEGIN
+
+  /*
+   *   PROCEDURE  nn_ts_CorrectWeights( id_net, dLearn, out_dErrorSum )
+   *
+   *   Corrects weights using the backprop algorithm.
+   *   Expects the following input tables:
+   *
+   *   nn_ts_CorrectWeights_Computed ( id_neuron INT UNSIGNED, val DOUBLE ) - computed values on output neurons.
+   *   nn_ts_CorrectWeights_InternalValues ( id_neuron INT UNSIGNED, val DOUBLE ) - computed values on hidden neurons.
+   *   nn_ts_CorrectWeights_Wanted ( id_neuron INT UNSIGNED, val DOUBLE ) - desired output values.
+   *
+   */
+
+  -- Code too long - snipped. --
+
+END body; END $$
+\--
+
+
+The training process
+--------------------
+
+Finally, procedure `nn_ts_TeachTrainset` teaches the net using the prepared training data set.
+All it needs is the network ID, the training set ID, the learning rate, target error and the 
+maximum rounds to be completed (a "round" means that all cases from the training set are used exactly once).
+
+The training itself is done by "incremental backpropagation". The process of teaching is stopped
+immediatelly when the target error is reached with some training case (insufficient, to be fixed).
+
+/--code
+CREATE PROCEDURE `neural_network`.`nn_ts_TeachTrainset` (
+  iNetID INT UNSIGNED, iTrainsetID INT UNSIGNED, dLearn DOUBLE, dTargetError DOUBLE, iMaxRounds INT UNSIGNED
+)
+body: BEGIN
+
+  /*
+   *   Teaches the given network using the given trainset.
+   *   Expects the following input tables:
+   *
+   *   `nn_trainsets_input` and `nn_trainsets_output` tables filled with the training data.
+   */
+
+  -- Code too long - snipped. --
+
+END body; $$
+\--
+
+Then, teaching the neural network is as easy as a one-line `CALL`.
+This trains the network #2 using training set #1, having learn rate of `0.5`,
+target error `0.0001` and with maximum of `1000` passes through the training set:
+
+/--code
+CALL nn_ts_TeachTrainset( 2, 1, 0.5, 0.0001, 1000 );
+\--
+
+This way, "simulated annealing":http://en.wikipedia.org/wiki/Simulated_annealing
+can be easily applied:
+
+/--code
+CALL nn_ts_TeachTrainset( 2, 1, 0.7,  0.01, 6000 );
+CALL nn_ts_TeachTrainset( 2, 1, 0.3,  0.003, 2000 );
+CALL nn_ts_TeachTrainset( 2, 1, 0.1,  0.0005, 1000 );
+CALL nn_ts_TeachTrainset( 2, 1, 0.05, 0.0001, 1000 );
+\--
+
+
+You can have a look what was happening during the process:
+
+/--code
+SELECT * FROM lib_logg WHERE rout = 'nn_ts_TeachTrainset';
+\--
+
+| when               |thread|level  | message       | routine
+|---------------------------------------------------------------
+|2008-04-28 20:50:11 |  176 |  info |  Teaching net #2 for trainset 1 case 3 (4996th case} |  nn_ts_TeachTrainset
+|2008-04-28 20:50:11 |  176 |  info |   #2 (1.00000 , -1.00000) computed: [0.97996]; |  nn_ts_TeachTrainset
+|2008-04-28 20:50:11 |  176 |  info |  Error: 0.0004 |  nn_ts_TeachTrainset
+|2008-04-28 20:50:11 |  176 |  info |  Teaching net #2 for trainset 1 case 1 (4997th case} |  nn_ts_TeachTrainset
+|2008-04-28 20:50:11 |  176 |  info |   #2 (-1.00000 , -1.00000) computed: [0.02026]; |  nn_ts_TeachTrainset
+|2008-04-28 20:50:11 |  176 |  info |  Error: 0.0004 |  nn_ts_TeachTrainset
+|2008-04-28 20:50:11 |  176 |  info |  Teaching net #2 for trainset 1 case 2 (4998th case} |  nn_ts_TeachTrainset
+|2008-04-28 20:50:11 |  176 |  info |   #2 (-1.00000 , 1.00000) computed: [0.97514]; |  nn_ts_TeachTrainset
+|2008-04-28 20:50:11 |  176 |  info |  Error: 0.0006 |  nn_ts_TeachTrainset
+|...|||||
+
+
+The structure of the network representation remains the same, so use the network with the same `CALL`s.
+
+
+
+
+<a name="Project Info"/>
+Project Info
+============
+Tested with MySQL version 5.0.51a, 5.1.24 and 6.0.4-alpha.
+ Currently developed only by myself :-) Anyone is welcome to `JOIN` and help with the tasks below.
+
+
+<a name="Download"/>
+Download
+========
+
+Download: "Complete database creation script":download/NN_SQL.zip (ZIP, 15 kB).
+
+**Do not use the snippets from the page, they may be obsolete** and are here mostly for explanation / documentation purposes.
+
+I'll try to keep the ZIP file up to date.
+
+However, that's the snapshot right from my database, so expect it to have plenty of debug stuff like `Logg()` calls etc.
+
+Also, there are some parts of code that might cause problems, like <code>DEFINER=`root`@`localhost`</code> etc.
+
+And, lastly, the persistent **tables may have the Memory engine** set; so if you need your data to prevail the MySQL server reboot, 
+ensure that ALL non-TEMPORARY tables' engine is MyISAM (recommended native engine) 
+or "PBXT":http://www.primebase.org/ (recommended plug-in engine, experimental).
+
+
+
+<a name="Future developement"/>
+Future developement
+===================
+I will focus further developement on these areas:
+
+* I will consider moving whole computation to memory - first selecting the concerned rows into a temp table, then computing, and finally merging them back to the persistent tables.
+* Possibility to work with multiple networks at once - e.g. teaching thousands of networks with same <strike>architecture</strike> number of input and output neurons by one CALL.
+* I will also consider implementing other neural networks, but their implementation in SQL could be slower (eg. for competitive nets) than ML-perceptrons, which are computed in linear time.
+* Serialization / deserialization to some common format - XML or JSON.
+* Hibernate mapping for the entities.
+
+
+<a name="Resources"/>
+Resources
+=========
+
+* Don Tveter: "Backpropagator's Review":http://www.dontveter.com/bpr/bpr.html, esp. 
+* Russell D. Reed, Robert J. Marks II: "Neural Smithing":http://mitpress.mit.edu/catalog/item/default.asp?ttype=2&tid=8104&mode=toc. MIT Press 1999. ISBN-10: 0-262-18190-8
+* "comp.ai.neural-nets FAQ":ftp://ftp.sas.com/pub/neural/FAQ.html#questions
+
+
+
+
+Questions? See "contacts":../../osobni/kontakty.texy.
+
+
+
+Keywords: Neural networks stored procedures mysql sql MyISAM InnoDB PBXT PBTX.

@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="Nette Framework Apigen" />
+	<title>Class TexyHtml</title>
+
+	<script type="text/javascript" src="media/jquery.min.js"></script>
+	<script type="text/javascript" src="media/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="media/jquery.sortElements.js"></script>
+	<script type="text/javascript" src="allclasses.js"></script>
+	<script type="text/javascript" src="media/main.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="media/style.css?v=2010100721" />
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+</head>
+
+<body>
+<div id="left">
+	<a href="allclasses.html">All Classes</a>
+
+	<h3>Namespaces</h3>
+	<ul>
+		<li><a href="namespace-internal.html">internal</a></li>
+		<li>Texy</li>
+	</ul>
+
+	<h3>Classes</h3>
+
+	<ul>
+		<li><a href="Texy.html">Texy</a></li>
+		<li><a href="TexyBlockParser.html">TexyBlockParser</a></li>
+		<li><a href="TexyConfigurator.html">TexyConfigurator</a></li>
+		<li><a href="TexyHandlerInvocation.html">TexyHandlerInvocation</a></li>
+		<li>TexyHtml</li>
+		<li><a href="TexyLineParser.html">TexyLineParser</a></li>
+		<li><a href="TexyModifier.html">TexyModifier</a></li>
+		<li><a href="TexyModule.html">TexyModule</a></li>
+		<li><a href="TexyObject.html">TexyObject</a></li>
+		<li><a href="TexyParser.html">TexyParser</a></li>
+		<li><a href="TexyUtf.html">TexyUtf</a></li>
+	</ul>
+
+	<h3>Interfaces</h3>
+
+	<ul>
+	</ul>
+</div>
+
+<div id="right">
+	<form action="http://www.google.com/cse" id="search" onsubmit="if(this.q.value.indexOf('more:')==-1)this.q.value+=' more:api'">
+		<input type="hidden" name="cx" value="011549293477758430224:vxofa9ufnhc" /><input type="hidden" name="ie" value="UTF-8" /><input type="text" name="q" class="text" /><input type="submit" value="Search" />
+	</form>
+
+<div id="navigation">
+	<ul>
+		<li><a href="overview.html" title="Summary of all namespaces">Overview</a></li>		<li class="active">Class</li>
+		<li><a href="elements.html">Elements</a></li>
+	</ul>
+</div>
+
+<div id="content">
+	<div id="classSummary">
+		<h1>Class TexyHtml</h1>
+		<div class="classDescription">
+
+		
+<p>HTML helper.</p>
+
+<p>usage:<br>
+$anchor = TexyHtml::el(‚a‘)-&gt;href($link)-&gt;setText(‚Texy‘);<br>
+$el-&gt;class = ‚myclass‘;</p>
+
+<p>echo $el-&gt;startTag(), $el-&gt;endTag();</p>
+
+		</div>
+		<dl class="tree">
+
+			<dd style="padding-left:0px">				<a href="TexyObject.html">TexyObject</a>
+				
+			</dd>
+			<dd style="padding-left:30px">				<img src="media/inherit.gif" alt="extended by " />
+<b>TexyHtml</b>				 implements <a href="ArrayAccess.html">ArrayAccess</a>, <a href="IteratorAggregate.html">IteratorAggregate</a>, <a href="Traversable.html">Traversable</a>
+			</dd>
+		</dl>
+
+		<div class="classInfo">
+			
+				<b>Copyright:</b> Copyright (c) 2004, 2010 David Grudl<br />
+				<b>Package:</b> Texy<br />
+			<b>Located at</b> <a href="source-libs.TexyHtml.php.html#L14">/libs/TexyHtml.php</a><br />
+		</div>
+	</div>
+
+	<div id="methodSummary">
+
+		<table class="summary">
+		<caption>Method Summary</caption>
+		<tr data-order="0 el" id="el()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public static
+				<a href="TexyHtml.html">TexyHtml</a>
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#el()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L83" title="go to source code"><b>el</b></a>(
+					string
+					<var>$name</var> = <span class="php-keyword1">NULL</span>, 
+					array|string
+					<var>$attrs</var> = <span class="php-keyword1">NULL</span>
+			)</code>
+
+			<div class="short">
+				
+<p>Static factory.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Static factory.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string element name (or NULL)<br />
+						<code>$attrs</code> array|string element&#039;s attributes (or textual content)<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 setName" id="setName()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				<a href="TexyHtml.html">TexyHtml</a>
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#setName()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L103" title="go to source code"><b>setName</b></a>(
+					string
+					<var>$name</var>, 
+					bool
+					<var>$empty</var> = <span class="php-keyword1">NULL</span>
+			)</code>
+
+			<div class="short">
+				
+<p>Changes element's name.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Changes element's name.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string<br />
+						<code>$empty</code> bool  Is element empty?<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">TexyHtml  provides a fluent interface</div>
+
+					<h4>Throws</h4>
+					<div class="smallList">
+InvalidArgumentException<br />
+					</div>
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getName" id="getName()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getName()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L123" title="go to source code"><b>getName</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Returns element's name.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Returns element's name.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 isEmpty" id="isEmpty()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				bool
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#isEmpty()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L134" title="go to source code"><b>isEmpty</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Is element empty?</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Is element empty?</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 __set" id="__set()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__set()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L145" title="go to source code"><b>__set</b></a>(
+					string
+					<var>$name</var>, 
+					mixed
+					<var>$value</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Overloaded setter for element's attri­bute.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Overloaded setter for element's attri­bute.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string    property name<br />
+						<code>$value</code> mixed     property value<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 __get" id="__get()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				mixed
+				&amp;
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__get()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L158" title="go to source code"><b>__get</b></a>(
+					string
+					<var>$name</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Overloaded getter for element's attri­bute.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Overloaded getter for element's attri­bute.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string    property name<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">mixed    property value</div>
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 href" id="href()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				<a href="TexyHtml.html">TexyHtml</a>
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#href()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L188" title="go to source code"><b>href</b></a>(
+					string
+					<var>$path</var>, 
+					array
+					<var>$query</var> = <span class="php-keyword1">NULL</span>
+			)</code>
+
+			<div class="short">
+				
+<p>Special setter for element's attri­bute.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Special setter for element's attri­bute.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$path</code> string path<br />
+						<code>$query</code> array query<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">TexyHtml  provides a fluent interface</div>
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 setText" id="setText()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				<a href="TexyHtml.html">TexyHtml</a>
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#setText()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L206" title="go to source code"><b>setText</b></a>(
+					string
+					<var>$text</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Sets element's textual content.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Sets element's textual content.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$text</code> string<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">TexyHtml  provides a fluent interface</div>
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getText" id="getText()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getText()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L224" title="go to source code"><b>getText</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Gets element's textual content.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Gets element's textual content.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 add" id="add()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				<a href="TexyHtml.html">TexyHtml</a>
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#add()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L240" title="go to source code"><b>add</b></a>(
+					<a href="TexyHtml.html">TexyHtml</a>|string
+					<var>$child</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Adds new element's child.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Adds new element's child.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$child</code> TexyHtml|string child node<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">TexyHtml  provides a fluent interface</div>
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 create" id="create()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				<a href="TexyHtml.html">TexyHtml</a>
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#create()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L252" title="go to source code"><b>create</b></a>(
+					string
+					<var>$name</var>, 
+					array|string
+					<var>$attrs</var> = <span class="php-keyword1">NULL</span>
+			)</code>
+
+			<div class="short">
+				
+<p>Creates and adds a new TexyHtml child.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Creates and adds a new TexyHtml child.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$name</code> string  elements&#039;s name<br />
+						<code>$attrs</code> array|string element&#039;s attributes (or textual content)<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">TexyHtml  created element</div>
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 insert" id="insert()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				<a href="TexyHtml.html">TexyHtml</a>
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#insert()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L266" title="go to source code"><b>insert</b></a>(
+					int
+					<var>$index</var>, 
+					<a href="TexyHtml.html">TexyHtml</a>
+					<var>$child</var>, 
+					bool
+					<var>$replace</var> = <span class="php-keyword1">false</span>
+			)</code>
+
+			<div class="short">
+				
+<p>Inserts child node.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Inserts child node.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$index</code> int<br />
+						<code>$child</code> TexyHtml node<br />
+						<code>$replace</code> bool<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">TexyHtml  provides a fluent interface</div>
+
+					<h4>Throws</h4>
+					<div class="smallList">
+Exception<br />
+					</div>
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 offsetSet" id="offsetSet()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#offsetSet()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L293" title="go to source code"><b>offsetSet</b></a>(
+					int
+					<var>$index</var>, 
+					<a href="TexyHtml.html">TexyHtml</a>
+					<var>$child</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Inserts (replaces) child node (ArrayAccess implementation).</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Inserts (replaces) child node (ArrayAccess implementation).</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$index</code> int<br />
+						<code>$child</code> TexyHtml node<br />
+					</div>
+
+
+
+					<h4>Implementation of</h4>
+					<div class="smallList"><code><a href="ArrayAccess.html#offsetSet()">ArrayAccess::offsetSet</a></code></div>
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 offsetGet" id="offsetGet()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				mixed
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#offsetGet()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L306" title="go to source code"><b>offsetGet</b></a>(
+					int
+					<var>$index</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Returns child node (ArrayAccess implementation).</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Returns child node (ArrayAccess implementation).</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$index</code> int index<br />
+					</div>
+
+
+
+					<h4>Implementation of</h4>
+					<div class="smallList"><code><a href="ArrayAccess.html#offsetGet()">ArrayAccess::offsetGet</a></code></div>
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 offsetExists" id="offsetExists()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				bool
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#offsetExists()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L318" title="go to source code"><b>offsetExists</b></a>(
+					int
+					<var>$index</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Exists child node? (ArrayAccess implementation).</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Exists child node? (ArrayAccess implementation).</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$index</code> int index<br />
+					</div>
+
+
+
+					<h4>Implementation of</h4>
+					<div class="smallList"><code><a href="ArrayAccess.html#offsetExists()">ArrayAccess::offsetExists</a></code></div>
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 offsetUnset" id="offsetUnset()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#offsetUnset()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L330" title="go to source code"><b>offsetUnset</b></a>(
+					int
+					<var>$index</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Removes child node (ArrayAccess implementation).</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Removes child node (ArrayAccess implementation).</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$index</code> int index<br />
+					</div>
+
+
+
+					<h4>Implementation of</h4>
+					<div class="smallList"><code><a href="ArrayAccess.html#offsetUnset()">ArrayAccess::offsetUnset</a></code></div>
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 count" id="count()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				int
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#count()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L344" title="go to source code"><b>count</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Required by the Countable interface.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Required by the Countable interface.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 removeChildren" id="removeChildren()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#removeChildren()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L355" title="go to source code"><b>removeChildren</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Removed all children.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Removed all children.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getIterator" id="getIterator()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				ArrayIterator
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getIterator()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L366" title="go to source code"><b>getIterator</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Required by the IteratorAggregate interface.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Required by the IteratorAggregate interface.</p>
+
+
+
+
+
+
+					<h4>Implementation of</h4>
+					<div class="smallList"><code><a href="IteratorAggregate.html#getIterator()">IteratorAggregate::getIterator</a></code></div>
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getChildren" id="getChildren()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getChildren()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L377" title="go to source code"><b>getChildren</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Returns all of children.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Returns all of children. return array</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 toString" id="toString()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#toString()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L388" title="go to source code"><b>toString</b></a>(
+					<a href="Texy.html">Texy</a>
+					
+					<var>$texy</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Renders element's start tag, content and end tag to internal string
+representation.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Renders element's start tag, content and end tag to internal string
+representation.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$texy</code> Texy<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 toHtml" id="toHtml()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#toHtml()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L418" title="go to source code"><b>toHtml</b></a>(
+					<a href="Texy.html">Texy</a>
+					
+					<var>$texy</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Renders to final HTML.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Renders to final HTML.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$texy</code> Texy<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 toText" id="toText()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#toText()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L430" title="go to source code"><b>toText</b></a>(
+					<a href="Texy.html">Texy</a>
+					
+					<var>$texy</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Renders to final text.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Renders to final text.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$texy</code> Texy<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 startTag" id="startTag()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#startTag()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L442" title="go to source code"><b>startTag</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Returns element's start tag.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Returns element's start tag.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 endTag" id="endTag()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#endTag()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L502" title="go to source code"><b>endTag</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Returns element's end tag.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Returns element's end tag.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 __clone" id="__clone()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__clone()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L516" title="go to source code"><b>__clone</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Clones all children too.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Clones all children too.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getContentType" id="getContentType()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				int
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getContentType()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L530" title="go to source code"><b>getContentType</b></a>(
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 validateAttrs" id="validateAttrs()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#validateAttrs()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L542" title="go to source code"><b>validateAttrs</b></a>(
+					array
+					<var>$dtd</var>
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$dtd</code> array<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 validateChild" id="validateChild()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#validateChild()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L559" title="go to source code"><b>validateChild</b></a>(
+					
+					<var>$child</var>, 
+					
+					<var>$dtd</var>
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 parseLine" id="parseLine()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#parseLine()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L572" title="go to source code"><b>parseLine</b></a>(
+					<a href="Texy.html">Texy</a>
+					
+					<var>$texy</var>, 
+					string
+					<var>$s</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Parses text as single line.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Parses text as single line.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$texy</code> Texy<br />
+						<code>$s</code> string<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 parseBlock" id="parseBlock()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#parseBlock()">#</a>
+			<code class="nowrap">
+				<a href="source-libs.TexyHtml.php.html#L591" title="go to source code"><b>parseBlock</b></a>(
+					<a href="Texy.html">Texy</a>
+					
+					<var>$texy</var>, 
+					string
+					<var>$s</var>, 
+					bool
+					<var>$indented</var> = <span class="php-keyword1">false</span>
+			)</code>
+
+			<div class="short">
+				
+<p>Parses text as block.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Parses text as block.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$texy</code> Texy<br />
+						<code>$s</code> string<br />
+						<code>$indented</code> bool<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		</table>
+	</div>
+
+
+	<h2>Methods Inherited From <a href="TexyObject.html#methodSummary">TexyObject</a></h2>
+	<div class="box"><code>
+		<a href="TexyObject.html#getClass()">getClass()</a>, <a href="TexyObject.html#getReflection()">getReflection()</a>, <a href="TexyObject.html#__call()">__call()</a>, <a href="TexyObject.html#__callStatic()">__callStatic()</a>, <a href="TexyObject.html#extensionMethod()">extensionMethod()</a>, <a href="TexyObject.html#__get()">__get()</a>, <a href="TexyObject.html#__set()">__set()</a>, <a href="TexyObject.html#__isset()">__isset()</a>, <a href="TexyObject.html#__unset()">__unset()</a>
+	</code></div>
+
+
+
+	<div id="propertySummary">
+
+		<table class="summary">
+		<caption>Property Summary</caption>
+		<tr data-order="attrs" id="$attrs">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				array
+			</code></td>
+
+			<td width="1%"><var>$attrs</var></td>
+			<td><pre><span class="php-keyword1">array</span> (
+)</pre></td>
+			<td>element's attri­butes <a href="#$attrs" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="children" id="$children">
+			<td align="right" width="1%"><code class="nowrap">
+				protected 
+				array
+			</code></td>
+
+			<td width="1%"><var>$children</var></td>
+			<td><pre><span class="php-keyword1">array</span> (
+)</pre></td>
+			<td>of TexyHtml | string nodes <a href="#$children" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="xhtml" id="$xhtml">
+			<td align="right" width="1%"><code class="nowrap">
+				 static
+				bool
+			</code></td>
+
+			<td width="1%"><var>$xhtml</var></td>
+			<td><pre><span class="php-keyword1">true</span></pre></td>
+			<td>use XHTML syntax? <a href="#$xhtml" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="emptyElements" id="$emptyElements">
+			<td align="right" width="1%"><code class="nowrap">
+				 static
+				array
+			</code></td>
+
+			<td width="1%"><var>$emptyElements</var></td>
+			<td><pre><span class="php-keyword1">array</span> (
+  <span class="php-quote">'img'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'hr'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'br'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'input'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'meta'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'area'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'base'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'col'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'link'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'param'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'basefont'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'frame'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'isindex'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'wbr'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'embed'</span> =&gt; <span class="php-num">1</span>,
+)</pre></td>
+			<td>empty elements <a href="#$emptyElements" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="inlineElements" id="$inlineElements">
+			<td align="right" width="1%"><code class="nowrap">
+				 static
+				array
+			</code></td>
+
+			<td width="1%"><var>$inlineElements</var></td>
+			<td><pre><span class="php-keyword1">array</span> (
+  <span class="php-quote">'ins'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'del'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'tt'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'i'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'b'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'big'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'small'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'em'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'strong'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'dfn'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'code'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'samp'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'kbd'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'var'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'cite'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'abbr'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'acronym'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'sub'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'sup'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'q'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'span'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'bdo'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'a'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'object'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'img'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'br'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'script'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'map'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'input'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'select'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'textarea'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'label'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'button'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'u'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'s'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'strike'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'font'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'applet'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'basefont'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'embed'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'wbr'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'nobr'</span> =&gt; <span class="php-num">0</span>,
+  <span class="php-quote">'canvas'</span> =&gt; <span class="php-num">1</span>,
+)</pre></td>
+			<td>%inline; elements; replaced elements + br have value ‚1‘ <a href="#$inlineElements" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="optionalEnds" id="$optionalEnds">
+			<td align="right" width="1%"><code class="nowrap">
+				 static
+				array
+			</code></td>
+
+			<td width="1%"><var>$optionalEnds</var></td>
+			<td><pre><span class="php-keyword1">array</span> (
+  <span class="php-quote">'body'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'head'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'html'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'colgroup'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'dd'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'dt'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'li'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'option'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'p'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'tbody'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'td'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'tfoot'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'th'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'thead'</span> =&gt; <span class="php-num">1</span>,
+  <span class="php-quote">'tr'</span> =&gt; <span class="php-num">1</span>,
+)</pre></td>
+			<td>elements with optional end tag in HTML <a href="#$optionalEnds" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="prohibits" id="$prohibits">
+			<td align="right" width="1%"><code class="nowrap">
+				 static
+				
+			</code></td>
+
+			<td width="1%"><var>$prohibits</var></td>
+			<td><pre><span class="php-keyword1">array</span> (
+  <span class="php-quote">'a'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'a'</span>,
+    <span class="php-num">1</span> =&gt; <span class="php-quote">'button'</span>,
+  ),
+  <span class="php-quote">'img'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'pre'</span>,
+  ),
+  <span class="php-quote">'object'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'pre'</span>,
+  ),
+  <span class="php-quote">'big'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'pre'</span>,
+  ),
+  <span class="php-quote">'small'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'pre'</span>,
+  ),
+  <span class="php-quote">'sub'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'pre'</span>,
+  ),
+  <span class="php-quote">'sup'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'pre'</span>,
+  ),
+  <span class="php-quote">'input'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'button'</span>,
+  ),
+  <span class="php-quote">'select'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'button'</span>,
+  ),
+  <span class="php-quote">'textarea'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'button'</span>,
+  ),
+  <span class="php-quote">'label'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'button'</span>,
+    <span class="php-num">1</span> =&gt; <span class="php-quote">'label'</span>,
+  ),
+  <span class="php-quote">'button'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'button'</span>,
+  ),
+  <span class="php-quote">'form'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'button'</span>,
+    <span class="php-num">1</span> =&gt; <span class="php-quote">'form'</span>,
+  ),
+  <span class="php-quote">'fieldset'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'button'</span>,
+  ),
+  <span class="php-quote">'iframe'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'button'</span>,
+  ),
+  <span class="php-quote">'isindex'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+    <span class="php-num">0</span> =&gt; <span class="php-quote">'button'</span>,
+  ),
+)</pre></td>
+			<td> <a href="#$prohibits" class="anchor">#</a></td>
+		</tr>
+		</table>
+	</div>
+
+
+</div>
+
+	<div id="footer">
+		Texy2 API documentation generated by <a href="http://github.com/nette/apigen">Apigen</a>
+	</div>
+</div>
+</body>
+</html>

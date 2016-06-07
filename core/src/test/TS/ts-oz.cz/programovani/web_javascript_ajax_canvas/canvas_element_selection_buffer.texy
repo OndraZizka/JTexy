@@ -1,0 +1,127 @@
+`canvas` element selection buffer
+*********************************
+
+I wonder whether canvas element can do any kind of "selection buffer" functionality (the name taken from OpenGL, I'm sure you know it).
+
+I consider making a Populous-like isometric game in JavaScript, or better said, using web technologies. So it would be isometric, and the cells can be at different "floors" and they will carry different objects (high buildings, etc). Thus, I can not determine the selected cell/object from the position of the mouse using just some math - I need to store what each pixel or DOM object represents.
+
+* OpenGL has per-pixel selection buffer.
+* HTML offers `<img>` + `<map>` layer over my game rendered in a `<div>`.
+* SVG offers events on the respective DOM objects.
+
+
+Does `<canvas>` offer something?
+I haven't found anything in the docs at Mozilla and the fact that
+"":http://blog.nihilogic.dk
+also uses keyboard selection in 
+"Javascript 3D chess":http://blog.nihilogic.dk/search/label/chess
+also hints that he hasn't found such thing.
+
+
+Thanks for any tips (ondra@dynawest.cz).
+
+
+Update - Jacob Seidelin's mail reply
+------
+
+I wrote Jacob Seidelin, who literally plays with `<canvas>`.
+(Sorry for redundancy of information - not much time to edit.)
+
+
+> Hello Jacob,
+>
+> I wonder whether canvas element can do any kind of "selection buffer" functionality (the name taken from OpenGL, I'm sure you know it).
+>
+> I consider making a Populous-like isometric game in JavaScript, or better said, using web technologies. So it would be isometric, and the cells can be at different "floors" and they will carry different objects (high buildings, etc). Thus, I can not determine the selected cell/object from the position of the mouse using just some math - I need to store what each pixel or DOM object represents.
+>
+> OpenGL has per-pixel selection buffer.
+> HTML offers `<img>` + `<map>` layer over my game rendered in a `<div>`.
+> SVG offers events on the respective DOM objects.
+> Does `<canvas>` offer something? I haven't found anything in the docs at Mozilla and your chess keyboard selection also hint's that you haven't found such thing.
+>
+> Thanks for any help, Ondra
+
+
+> Hey Ondra,
+> 
+> No, there's no such thing for `<canvas>` that I'm aware of, unfortunately. 
+> I guess you'll have to cook your own thing for that purpose.
+> And yes, the chess keyboard controls were a response to exactly that :-)
+> 
+> Although, if you can describe your areas as polygons or paths, I think 
+> there's a `isPointInPath()` method you could use, although I haven't 
+> touched it yet myself.
+> I imagine you'd have to go through all objects, set up a path and check 
+> at every mousemove "frame", though.
+>
+> Cheers,
+> Jacob
+
+
+So much for the selection support of the `<canvas>` element.
+I will consider creating a feature request, if I will not find any existing suggestion of such kind.
+
+Thanks also belongs to Martin Hassman for his reply and his
+"blogposts":http://met.blog.root.cz/2008/05/05/kouzla-s-canvasem-libo-sachy-nebo-wolfensteina/,
+"2":http://met.blog.root.cz/2008/06/03/canvas-editace-fotek-a-jezdici-super-mario/ 
+about canvas (in Czech), where I found the link to Jacob's work.
+
+
+
+
+Suggestion at WHATWG mailing list 
+---------------------------------
+
+<blockquote>
+
+Hi,
+
+I've been looking for something similar to OpenGL's selection buffer - that is, you can get some object ID for the given coordinates.
+
+E.g.,  Jacob Seidelin's chess game http://blog.nihilogic.dk/search/label/chess could use it, but instead, keyboard control had to be used.
+
+isPointInPath() does not solve the problem effectively if the path would be too complex - e.g. pixel-based sprites in several layers.
+
+For an example of what I want to implement, see e.g.
+http://www.openttd.org/screens.php?image=images/screens/0.5.0/japan_national_railway_3_aug_1984 .
+Mathematical computation of the object is principially impossible (or too complex in best case).
+
+
+So, my suggestion is to add functionality similar to OpenGL's selection buffer:
+The canvas element would keep a 2D array with an integer ID for each pixel. When turned on, these values would be set by every operation that changes the pixel, seting it to the current context's value. Pseudo-code example:
+
+/--code javascript
+function DrawCell( iCellId ){
+
+  canvas.selectionBuffer.trackChanges( ON );
+  canvas.selectionBuffer.setFillValue( iCellId );
+
+  canvas.drawRasterImage( ..., cellImage );
+
+  canvas.selectionBuffer.trackChanges( OFF );
+
+}
+
+\----
+
+Then, upon user's mouse click on the canvas, you could determine which object was clicked:
+
+/--code javascript
+canvas.onclick = function( e ){
+  id = canvas.selectionBuffer.getIdAt( e.x, e.y );
+  // eventually:
+  id = e.selectionBufferID;
+}
+\--
+
+Such feature would allow interactive application with isometric or 3D graphic.
+Is something like this planned or already suggested? I haven't found.
+
+Regards,
+Ondra Zizka
+
+</blockquote>
+
+
+
+

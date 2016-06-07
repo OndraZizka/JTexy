@@ -1,0 +1,316 @@
+
+
+What I would change about the Java language
+*******************************************
+
+Basically, I am quite happy with Java, exept it could have a little more syntax shortcuts.
+
+
+"Silent fallback operators" - `?.` and `!.`
+===========================================
+
+An operator which would return `null` or `0` 
+if a `NullPointerException`, resp. `Throwable`,
+would occur when computing expression's value.
+
+/--code java .[brush:]
+// val will be 0 if getMap() or getKey(String) returned null.
+int val = unreliableMapProvider.getMap()?.get("key")?.getName();
+\--
+
+One use case: Logging performance.
+
+/--code java .[brush:]
+log.info()?.log( timeConsumingCall() ); 
+// ... instead of ...
+if( log.isLoggable(Level.INFO) ) log.info( timeConsumingCall() );
+\--
+
+Of course there's much more use cases, I bet you could find many in your code.
+
+
+Better cast operator
+====================
+
+Writing `((Type)something).useItAsType()` is very boring. How about this:
+
+/--code java .[brush:]
+Programmer prog = getJavaProgrammer();
+String anwser = prog.cast(JavaProgrammer).askAboutJava();
+\--
+
+Combined with the above operator,
+answer would be `null` if there was a `ClassCastException`:
+
+/--code java .[brush:]
+String anwser = prog.cast(JavaProgrammer)!.askAboutJava();
+\--
+
+
+
+Automatic casting after `instanceof`
+====================================
+
+The compiler should look for the following usage of `instanceof`
+and consider the variable as being of the checked type:
+
+/--code java .[brush:]
+if( myObject instanceof String ){
+  // No more redundant casting.
+  myObject.length();
+  // As myObject is now treated as string, this would cause a compiler error:
+  myObject = new Integer(5);
+}
+\--
+
+
+Properties (automatic getters and setters)
+==========================================
+
+Writing and reading getters and setters is the worst annoyance on Java.
+Except web developement, they are seldom used for custom behavior, anyway.
+
+I like how it's done in C#. I'd do it similarly in Java.
+
+ * Declaring a `public property` automatically creates default getters and setters too.
+ * Declaring a `private property` creates no get/setters.
+ * Declaring a `readonly property` creates a public getter.
+ * Getters and setters are overridable.
+
+
+
+
+
+Closures
+========
+
+Of course, closures... so instead of
+
+/--code java .[brush:]
+interface RainListener {
+  void itsRaining();
+}
+
+public void announceRain ( RainListener lis ){
+  lis.itsRaining();
+}
+
+public void testRain(){
+  announceRain(
+    new RainListener {
+      void itsRaining(){  System.out.println("Hey, take your coat!");
+    }
+  );
+}
+\--
+
+it would be just
+
+/--code java .[brush:]
+public void announceRain ( void fn() ){  fn();  }
+
+public void testRain(){
+  announceRain( { System.out.println("Hey, take your coat!"); } )
+}
+\--
+
+or similar.
+
+--------------------
+
+I like the "proposal published recently on JSR":http://www.javac.info/consensus-closures-jsr.html.
+
+Basically, closures ought to be syntax shortcut for functors.
+So they should be backward compatible with interfaces - that means,
+each closure parameter type would create one "anonymous interface",
+and each closure implementation should be a static final functor implementing that interface.
+
+
+/--code java .[brush:]
+public String process( List<String> list, String fn(String item) ){
+  String res = "";
+  for( String str:  list )
+    res += fn( str );
+}
+
+public void testClosure(){
+  List<String> list = Arrays.asList( new String[]{"foo","bar"} );
+
+  // item - auto-named, using the process params definition.
+  System.out.println( process( list, { item.reverse() } ) );  // like { return item.reverse(); }
+}
+\--
+
+
+Generics:
+---------
+
+/--code java .[brush:]
+public String process( List<T> list, String fn(T item) ){
+  String res = "";
+  for( T str:  list )
+    res += fn( str );
+  return res;
+}
+
+public void testClosure(){
+  List<String> list = Arrays.asList( new String[]{"foo","bar"} );
+
+  // item - type computed from the type of `List` item and `fn`'s definition.
+  System.out.println( process( list, { item.reverse() } ) );
+}
+\--
+
+
+
+Explicit closures (closure objects)
+-----------------------------------
+
+This would work like "anonymous interfaces" - the compiler
+would check whether the method fits the type constraints.
+**This would keep interfaces and functors backwards compatible.**
+
+/--code java .[brush:]
+public class ClosureExample {
+  public String process( List<T> list, String fn(T item) ){ ... }
+
+  String myClosure(String item){ return item.reverse(); }
+  
+  public void testClosure(){
+    System.out.println( process( list, myClosure ) );
+  }
+}
+\--
+
+... would act like if there was an "anonymous interface":
+
+/--code java .[brush:]
+private interface AnonInterface01 {  String fn(T item);  }
+
+public class ClosureExample {
+  public String process( List<T> list, AnonInterface01 fn ){ ... }
+
+  class AnonFunctor_1 implements AnonInterface01 {
+    String myClosure(String item){ return item.reverse(); }
+  }
+
+  final AnonFunctor_1 FUNCTOR_01;
+
+  public ClosureExample(){ FUNCTOR_01 = new AnonFunctor_1(); }
+  
+  public void testClosure(){
+    System.out.println( process( list, FUNCTOR_01 ) );
+  }
+}
+\--
+
+For the case with `myClosure` in other class, `AnonFunctor_1` would be moved to that class,
+and thus `this` would also point to that class.
+
+The syntax of calling a closure in other class would simply use a dot (I dislike the hash notation):
+
+/--code java .[brush:]
+  public void testClosure(){
+    System.out.println( process( list, OtherClass.myClosure ) );
+  }
+\--
+
+
+
+
+
+Closures in a context (using `this` in closures):
+-------------------------------------------------
+
+
+/--code java .[brush:]
+private String concat = "";
+
+public void testClosure(){
+  List<String> list = Arrays.asList( new String[]{"foo","bar"} );
+
+  // For anonymous closures, "this" resolved to current "this"
+  System.out.println( list.each( { this.concat += item.reverse(); } )
+
+  // For explicit closures, "this" resolves to their object.
+  System.out.println( list.each( myClosure ) );
+}
+\--
+
+
+
+
+Methods in interfaces
+=====================
+
+These would be methods that reference only methods in itself.
+Intended to abstract some common logic without need of `abstract` classes or AOP.
+
+/--code java .[brush:]
+interface Phone {
+
+  void callNumber( String number );
+
+  void callMe(){ this.callNumber("+420 777 555 555"); }
+
+}
+\--
+
+Combined with inheritance, this could be a very effective way to create mix-ins:
+
+/--code java .[brush:]
+interface Sumarizer extends ListIterator<Integer> {
+
+  public int getSum(){
+    int ret = 0;
+    while( hasNext() )
+      ret += next();
+  }
+
+}
+/* Couldn't come up with better use case out of my head. */
+\--
+
+
+
+
+
+
+
+/--div .{display: none;}
+Language constructs that return a value - `switch`, `if`/`else`
+===============================================================
+
+/--code java .[brush:]
+String num = switch(4){ case 1: yield "one"; default: yield "more"; }
+
+boolean isSunShining
+String dayPart = if( isSunShining ) yield "day"; else yield "night";
+\--
+
+The `if`/`else` would not be just a nicer form of the ternary operator for long expressions;
+it would allow more statements before yielding.
+
+Compiler would check for execution branches that would not yield a value like it does with `return`.
+\--
+
+
+
+JDK standard library feature requests
+=====================================
+
+ * implement an ordered map.
+ * include `org.apache.commons.lang.StringUtils`.
+ * Simpler API for sound.
+ * `java.util.Properties` - rewrite, do not inherit from a map.
+ * `java.util.regex`: Support for recursion as in PCRE - `(?0)`.
+
+
+
+//More to come later.//
+
+
+
+-----------------
+
+See also: http://www.linkedin.com/groupAnswers?viewQuestionAndAnswers=&discussionID=10672776&gid=43888&trk=EML_anet_qa_ttle-dnhOon0JumNFomgJt7dBpSBA

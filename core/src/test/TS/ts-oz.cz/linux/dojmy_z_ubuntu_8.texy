@@ -1,0 +1,264 @@
+Dojmy z Ubuntu 8 - Hardy Heron
+******************************
+
+//Update: Čtvrt roku poté - čtěte na konci.//
+
+Již delší dobu zkouším proniknout do světa linuxu - až podezřele moc mých známých jej postupně začínalo opěvovat.
+
+Kdysi jsem zkoušel Knoppix, ale upřímně řečeno, nějak to nebylo ono. Příliš nestabilní a netransparentní.
+
+Potom mi kamarád na notebook, který mi prodával, nainstaloval Gentoo. Pro nováčka v linuxu to také moc dobrá volba nebyla.
+Nechal mi na linux 20 GB z disku a když jsem chtěl nainstalovat standardní aplikace (asi Mozillu, OpenOffice atd),
+vše se chtělo překládat, ale během překladu došlo na disku místo a systém emerge se sesypal do nenávratného stavu.
+
+Potom přišlo Ubuntu. Nevím přesně, kdy jsem si ho všimnul, tuším že u verze 5 a nainstaloval jsem šestku.
+Jelikož jsem to zkoušel na notebooku, nikdy jsem nedokázal vypnout LCD notebooku Acer TravelMate 8080 s ATI Radeon 9600
+a obraz přesměrovat na LCD monitor 1600 x 1200 - a to jsem zkoušel všelicos vždy až do totálního rozpadu X serveru :-)
+
+Ve verzi 7 (Gutsy Gibon) již byla jakási grafická utilita, která měla být GUI pro nastavení monitorů a rozlišení,
+ale ani ta si s touto konfigurací neporadila.
+
+Přelomem pro mě byla verze 8 (Hardy Heroin), ale nikoliv proto, že bych v ní již dokázal přesměrovat výstup grafiky,
+ale protože jsem si koupil desktop :-) Do něj jsem dal starší disk, co se válel v 
+"počítači, který jsem prodal":/stranky/osobni/prodavam_shanim.texy
+"spolubydlovi":http://www.steigl.com/, a na jeho posledních asi 30 GB šlo Ubuntu.
+
+
+Spokojenost
+===========
+
+Musím říci, že Ubuntu již dospělo do stavu, kdy i člověk jako já, který neprahne po tom, aby si vše kompiloval,
+nastavoval v texťácích a podobně, jej zvládne bez problémů nejen používat, ale i spravovat.
+
+Zásluhu na tom má především vynikající integrace. Na úpravě Gnome je vidět, 
+že Ubuntu se snaží vyjít vstříc uživatelům windows (což je podle mě dobře),
+a to se projevuje i jinde:
+
+* Automaticky konfiguruje **hardware** - já nemusel konfigurovat //vůbec nic//, a jede veškerý hardware. Dokonce Ubuntu komunita upustila od patetického zakazování ("nepovolování") "nesvobodných" ovladačů nVidia; použijí se automaticky, což se dozvíte, až když otevřete správce hardwaru.
+* Automatická konfigurace se týká i připojování disků. Když tedy zasunete do USB flashku nebo externí disk, Ubuntu se zachová stejně jako Windows - detekuje, najde a připojí. Například mojí USB klíčenku připojí cca do sekundy jako `/media/KINGSTON/`.
+* Skvělé zpracování **rootovských práv** - žádné konzolové hlášky, vždy se pěkně zjeví okénko se žádostí o heslo, zadáte a jede se dál.
+* Grafické rozhraní instalačního systému `apt-get`, **Synaptic**, mě osvobodilo od ubíjejícího řešení závislostí, které jsem řešil s emerge v Gentoo
+* Standardně nainstalovaná sada aplikací je sice trochu mimo můj záběr, ale velice snadno jsem si doinstaloval to svoje.
+* Perfektně funguje **Wine** - spustil jsem **Miranda IM** a výsledek je úžasný (až na problémy s transparentností). Dobře šlape také **HomeSite**. Pro editaci PHP zdrojáků ale brzy přejdu na NetBeans (stejně snad už PHP dlouho editovat nebudu :-).
+* Krusader už také není takové ořezávátko jako před lety, nyní již pokrývá valnou část funkčnosti Total Commanderu, chybí jen podružné (např. možnost uložit do záložek nějaký příkaz - třeba `cmd_View` - jdou jen adresáře).
+* Nainstaloval jsem **64-bitovou verzi** Ubuntu, vše běhá naprosto bez problémů, kromě **Skype**, ten se trochu cukal, že na x64 nechce, ale nakonec to vyřešilo `sudo dpkg --force-architecture -i skype-...deb`.
+* **Java** lítá velice svižně, vývoj v **NetBeans** je, řekl bych, plynulejší (nechrochtá pořád disk).
+* Místo **FTPDrive** jsem nainstaloval nějaký FTP filesystem, teď si nevzpomenu na jméno... šlape skvěle.
+* Editor z Krusaderu je mnohem lepší než notepad :-)  gEdit už ale tak skvělý není, nemá dobře ošetřenou práci s kódováním.
+* Video šlape dobře hned po instalaci, a to i Flashe ve Firefoxu.
+
+Je tu ale i pár nevýhod:
+* **Antialiasing** mi přijde nějaký nedotažený; ve Windows se mi písmo zdá mnohem ostřejší. V NetBeans jsem si na linuxu musel dát o dva stupně větší `Courier New`. Tohle je snad asi nejpalčivější problém, doufám, že se ukáže, že je to někde opravitelné.
+* Můj oblíbený nástroj pro vývoj SQL, **MySQL Query Browser**, funguje na linuxu dost jinak, o dost hůř. Nechápu proč, vypadá to, jako bych měl dva roky starou verzi, ale mám aktuální. //Update:// Naštěstí Wine nezklamalo, Query Browser pro Windows funguje bezchybně.
+* Chybí mi **WinAmp**, hlavně jeho **Media Library** a plugin **AlbumList**, ale ještě jsem nehledal náhradu, zatím stačí přehrávač z Ubuntu nebo XMMP.
+* **Klávesové zkratky** fungují nějak pošahaně:
+  * V systému (tím myslím Gnome) nějak moc nefunguje **klávesa Windows**. Dá se to sice nějak ponastavovat, nastavení je ale zmatené a ani tak mi WinKey nefunguje.
+  * Ve **Firefoxu** jsou některé zkratky jinak - nechápu proč, ale např. moje skoro nejpoužívanější `Ctrl+E` je zde pod `Ctrl+K` nebo `Ctrl+J`. `Ctrl+E` asi nic nedělá.
+  * V **NetBeans** se nastavení zkratek celkově chová nějak divně, ale to bude spíše chyba NetBeans.
+* Zkoušel jsem nainstalovat **VirtualBox** a nějak se mi podařilo nainstalovat více kernelů (verzí jádra). Následně systém startoval ze serverové verze jádra a mě to rozhodilo ovladače grafiky, zvuku a kdoví čeho ještě (v serverové verzi nejspíš vůbec nejsou). Naštěstí jsem tušil, že staré jádro aktualizace jen tak nezahodila, ale někde bude. Kamarád mi poradil, že když mám GRUB, tak mám jít hledat kamsi do `/boot/grub` a tam upravit `menu.lst`. Hodil jsem staré jádro jako default a zas všechno šlape. Vlastně to ani nebylo o moc složitější než s Windows, jen to stačí znát.
+* Linuxová komunita nějak nemá ráda různé utilitky pro správu serverů - dost mi chybí **Apache Launcher** a **MySQL Instance Manager**.
+
+Co jsem ještě nezkoušel:
+* **Tisk** (asi půjde)
+* **Visual Studio** přes Wine (asi nepůjde) 
+
+Celkově bych to tedy shrnul tak, že Ubuntu 8 už je systém, který je možné dát do rukou zkušenému Windowsákovi, aniž by neustále něco šteloval, ladil a opravoval, jen aby moh už konečně pohodlně pracovat.
+
+U mě to na přechod ještě nevypadá - ke změně systému mě obvykle dokope něco, co potřebuju, ale ve starém to není.
+Nic takového ale pro mě Linux zatím nenabízí:
+* Java je multiplatformní a vše běhá i pod Windows.
+* Mít super operační systém je fajn, ale prakticky se to u mě nijak neprojevuje - Windows mi nepadají, běhají rychle a viry nemám.
+* Gnome je moc hezké prostředí (narozdíl od hnusně přeplácaného kýčovitě nablýskaného infantilního KDE (já vím že se dá vzhled měnit, ale nechce se mi), ale na tom zas tak moc nesejde...
+* Compiz a Beryl jsou fajn věci, ale já, který Windows XP vždy ihned po instalaci přenastavuje do vzhledu Windows 2000, takové věci ani nevnímám.
+* Ve Windows toho mám dost rozdělaného - poštu, kontakty, záložky... nechci trávit hodiny exportem a importem 
+* Hry - i když hraju zřídkakdy a dalo by se přebootovat...
+* a samozřejmě velmi vyladěný oblíbený software, který přeci jen nativně funguje o něco lépe: Total Commander HomeSite, Miranda IM, ... (tím vyladěním myslím pluginy, nastavení, klávesové zkratky, atd atd... prostě ty tisíce malých drobností, které byste dohromady dělali celé dny, a přenést nejdou).
+
+Takže ještě uvidíme - třeba Ubuntu 9 (třeba //Instant Ichtyl//?) přinese něco naprosto úžasného, co mě přetáhne.
+Nebo bude mít pravdu Pepa Kyrian, který říká: "Linux je návykovej... Uvidíš, do půl roka budeš linuxák." :-)
+
+
+
+O čtvrt roku později
+********************
+
+Je říjen 2008 a já používám Ubuntu již čtvrt roku jako hlavní pracovní platformu.
+Mé střednědobé dojmy z této distribuce a celkově dojmy z Linuxu dané jejím prostřednictvím shrnuji na následujících řádkách.
+
+Fonty
+=====
+
+V původním textu si stěžuji na antialiasing. Pokusil jsem se to řešit podle 
+"návodu na zprovoznění microsoftích písem v Ubuntu":http://www.techdot.eu/index.php/2008/01/27/windows-xp-fonty-pro-ubuntu/.
+Nevím, jestli jsem si už zvyknul, nebo tento návod zabral, každopádně s `MS Courier New` v NetBeans
+už se mi pracuje hezky a s fonty není problém.
+
+
+
+Stabilita
+=========
+
+Doufám, že tohle nebude číst někdo z kolegů, jinak by mě asi ukamenovali :-)
+Stabilita Linuxu jako desktopu mi přijde nižší než stabilita Windows XP.
+A hned musím uvést konkrétní příklady.
+
+* Uspání do paměti nefunguje vůbec, to je obecně linuxová slabost a ví to každý.
+* Uspání na disk funguje na Ubuntu dobře, dokud jste neprovedli update systému. Systém vám uspání s klidem odsouhlasí, ale při startu nabootuje normálně a vy máte vše, co jste neuložili, v řiti. Naštěstí mám ve zvyku Ctrl+S mačkat skoro za každým entrem, a jak NetBeans, tak Firefox naběhnou zhruba do stavu, v jakém jste je opustili.
+* Všeobecně jsou problémy s multimédii.
+  * Různé formy videa se mi často nepodaří rozchodit - zejména v prohlížečích.
+  * Audio dělá problémy - např. pauznutí Amaroku mi občas virtuálně "ukradne klávesnici" - prostě v Gnome nelze psát, jediné, co funguje, je přepnutí do konzole (Ctrl+Alt+Fx).
+* Stabilita některých Linuxových programů je prachbídná, zejména po bootu z uspání. Mezi nejhorší patří Pidgin a Evolution, které mě svými pády štvou každý den. Ať je Outlook Expres sebehorší, nepamatuji si, že by mi kdy v životě spadnul, stejně tak Miranda.
+
+
+Rychlost
+========
+
+S rychlostí je na tom Linuxový desktop v něčem dobře, v něčem bídně.
+
+
+Firefox
+-------
+
+Desktop, to jsou hlavně okénkové aplikace,
+a mezi nimi kraluje Firefox s několika desítkami otevřených záložek. A Firefox na Xkách, to je bída.
+Schválně si proveďte tento test: Načtěte delší stránku (třeba manuál MySQL v kuse), a mačkněte F11 (fullscreen).
+Zatímco na Windows se změna provede ihned (tj. nepostřehnutelná prodleva), v Ubuntu čekám několik sekund (cca. pět).
+Podobně přepínání mezi záložkami je velmi pomalé. Ale to může být problém Firefoxu - nevím.
+
+Chování při zátěži disku
+------------------------
+
+Nevím, zda je to nastavením, které neznám, ale Ubuntu se docela špatně vyrovnává s velkou zátěží disku.
+Celý systém začne reagovat velmi pomalu. Když jsem si na disk překopíroval svoji legální sbírku empétrojek 
+a dal ji indexovat Amarokem a na pozadí běžely testy z EJB modulu TCK, celý systém se stal 
+na několik desítek minut skoro nepoužitelným, a to mám 2x QuadCore. 
+Windows jsou v takové situaci stále svěží a čilé, a to i na obyč DualCore.
+
+Komunikace s médii, síťová komunikace
+-------------------------------------
+
+Naopak velmi dobře je na tom Linux v práci se sítí a nejrůznějšími protokoly.
+Například FTP lítá na Linuxu mnohem lépe. Jedinou výjimkou je implementace 
+virtuálního diskového systému přes SSH (gvfs),
+která je schopná na minutu zaseknout programy, které naivně používá blokující volání na filesystem -
+a to jsou asi všechny: Gnome, Krusader, Konqueror... kupodivu programy psané v Javě (např. NetBeans)
+s tím problém neměly a prostě načítaly výpis adresářů postupně.
+
+Stejně tak s některým HW asi dokáže Linux pracovat efektivněji, 
+protože když jsem na Ubuntu kopíroval fotky z flašky, lítalo to kolem 32 MB/s,
+zatímco na Windows mezi 20 a 25 MB/s. Dlužno ale dodat, že šlo o jiné počítače,
+takže je to dost možná právě tím. Budu muset vyzkoušet na stejném...
+
+
+Java
+=====
+
+Podle mého soudu se Java na Linuxu stává velmi pozvolna, ale čím dál důležitější.
+Ačkoliv celkově se Linuxová komunita sestává z fundamentalistů, kteří si musí celý den překládat KDE,
+aby jim jelo o 1% rychleji a ušetřili tak denně několik sekund,
+postupně se k Linuxu (i díky projektům jako je Ubuntu) dostávají i lidé, kterým je šumák,
+jestli je všechno přeložené na míru mé architektuře, a raději vyžadují minimální námahu
+se správou systému a soustředí se na vlastní produktivitu.
+
+Pro takové lidi se programy v Javě stávají mostem mezi Windows a Linuxem.
+Osobně jsem se již na Windows ustálil na několika málo programech, ve kterých trávím 90 % času
+(NetBeans, Firefox, Total Commander, Miranda, MySQL Query Browser, Outlook Express, Winamp).
+Když jsem pro ně před lety v Linuxu hledal náhradu, dopadlo to takto:
+
+* NetBeans/Eclipse jsou v Javě, krom potíží s fonty jedou bezvadně.
+* Pro Total Commander měla být náhrada Krusader, který ovšem v době, kdy jsem ho zkoušel poprvé, těžce zklamal, a tak jsem našel náhradu v něčem psaném v Javě - dost slušný prográmek, bohužel už si nepamatuju jméno.
+* Místo MySQL QB nyní používám //SQuirrel SQL//, což je velmi schopný nástroj, který se připojuje přes rozhraní JDBC, které už je k dispozici snad pro všechny databáze na světě, a disponuje mnoha dalšími skvělými vlastnostmi, jako je podpora mapování Hibernate atd.
+
+Z těchto tří příkladů je myslím jasné, že Java pro Linux hraje důležitou roli,
+byť je většinou Linuxáků opovrhovaná (obvykle z jejich vlastní hlouposti).
+Dříve či později se Javovské projekty budou prosazovat čím dál více,
+a to zejména v oblastech, kde je třeba na vývoj technologií reagovat velice rychle,
+což jsou momentálně právě IDE, ale do budoucna může jít například i o prohlížeče.
+
+Nyní tedy krátce k dojmům z Javy na linuxu.
+
+Pokud jde o rychlost, žádný výrazný rozdíl oproti Windows jsem nezaznamenal.
+Trochu potíže jsem měl pouze s výchozí instalací OpenJDK (či jak se to jmenuje),
+kterou jsem chtěl nahradit JDK od SUNu, ovšem po odinstalaci se po ní 
+například NetBeans vehementně sháněly, a musel jsem přepisovat konfigurační soubor
+(což jakožto původem nelinuxák samozřejmě považuji za nehorázný opruz :-)
+
+Dále jsem na Linuxu poprvé v životě viděl pád JVM - až doteď jsem si naivně myslel,
+že Javě se taková věc nemůže stát, a ani jsem o ní předtím nikdy neslyšel.
+Až zde, při spouštění Antu, mi Java prostě sletěla. To mě vážně rozhodilo
+a můj dlouhodobý dojem z Javy trochu poškodilo. Nicméně když jsem to samé testoval
+na Windows, vše bylo OK. Takže asi jde o nedostatek linuxové implementace JVM.
+Kromě toho, po vypnutí JIT((Just-in-Time compiler)) to prošlo i na Linuxu.
+
+Jinak se mi celkově v Javě na Linuxu dělá lépe, prostě je vidět, že je tu více "doma" -
+se všemi těmi konzolemi a parametry a konfiguračními skripty... :-)
+
+
+Miranda
+========
+
+Miranda je pro mě natolik důležitá, že jí věnuju samostatný podnadpis :-)
+Ve Wine chodí naprosto skvěle, až na jedinou drobnost - IRC plugin.
+Ten se prostě nepřipojí. A jelikož IRC je hlavní IM komunikační kanál mojí společnosti,
+Miranda letěla. Pidgin je sice proti Mirandě velký shit, 
+ale přeci jen mít na IRC Pidgin a vedle toho Mirandu na zbylých pět zpráv denně přes ICQ/Jabber... e-e.
+
+
+Tak nějak celkově...
+====================
+
+Jinak celkový dojem z Ubuntu, potažmo Linuxu, je dobrý. Žádné zásadní neřešitelné problémy,
+vše je docela intuitivní a funguje očekávatelně, není třeba nic moc konfigurovat,
+do konzole chodím jen za svou vlastní prací a nikoliv spravovat rozhašený systém...
+
+Myslím tedy, že tvůrcům Ubuntu se podařilo udělat velmi dobrou kompilaci,
+která v sobě snoubí dostatek svobody, kterou přináší svět Linuxu,
+ale zároveň dostatečně dobře zakrývá holá střeva Linuxu,
+která bych mohl nechtěně potrhat při snaze něco nainstalovat/poladit/nastavit...
+jak se mi to dříve stávalo s distribucemi Knoppix, Gentoo, Debian, Suse, Mandrake a Ubuntu 6 a 7.
+
+Pokud by se mě tedy nyní nějaký technicky netalentovaný kamarád zeptal, zda má zkusit "ten linux",
+poprvé bych mu s klidným srdcem podal právě instalační CD Ubuntu 8.04.
+
+
+"Canonical a komunita Ubuntu nepřispívají do upstreamu!"
+========================================================
+
+Ubuntu je občas terčem kritiky komunity Linuxu, že má sice nejvíce uživatelů,
+ale nijak nepřispívá rozvoji Linuxu. No ale co se divíte? Copak to není logické?
+Kdo z komunity přispívá? Jsou to jednak programátoři, které programování baví natolik,
+že ve volném čase programují pro Linuxovou komunitu, a jednak profesionálové ze 
+"společností vyvíjejících Linux distribuce":http://www.redhat.com/, jako je např Red Hat.
+
+A teď:
+
+a) **Jsou mezi uživateli Ubuntu** nadšení geekové, hardcore kernel programátoři a hackeři? Určitě ne.
+b) **Dokázala by firma Canonical((zastřešující vývoj Ubuntu)) vydělat na uživatelích Ubuntu dostatek prostředků na to, aby zaplatila profesionály, kteří by vyvíjeli pro Linux? Určitě ne.
+
+Výkřiky o tom, že z Ubuntu nejde komunitě žádný užitek, jsou tedy - podle mého - liché.
+Komunitě skutečně nejde žádný přímý užitek v podobě rozvoje software,
+ale - nemá snad komunita radost z nárůstu počtu uživatelů Linuxu?
+Nevolala snad komunita dlouhou dobu po řadových uživatelích?
+A teď, když se konečně našla distribuce, která "to konečně dala do pohybu",
+adoranti jiných distribucí zhrzeně a závistivě sledují statistiky
+"počtů instalací":http://distrowatch.com/stats.php?section=popularity,
+"sledovanosti":http://abhay-techzone.blogspot.com/2007/11/distribution-statistics-ubuntu-tops.html
+"diskutovanosti":http://www.google.com/trends?q=ubuntu%2Csuse%2Credhat%2Cfedora%2Cmandrake&ctab=1&geo=all&date=all
+ a "oblíbenosti":http://www.abclinuxu.cz/clanky/ruzne/vysledky-ankety-o-nejoblibenejsi-distribuci-2008
+instalací Ubuntu.
+
+Dále tím, jak díky Ubuntu roste počet uživatelů Linuxu až natolik, že již se dá hovořit o poměru spíše než o počtu,
+nastávají různé vedlejší efekty:
+
+* Roste počet potenciálních programátorů - přispěvatelů Linuxové komunitě.
+* Tím, jak roste všeobecné povědomí o Linuxu, může se v budoucnosti snáze dostat na státní instituce, školy nevyjímaje, a tím se roztočí velká spirála nových uživatelů.
+* Významná část uživatelů přejde k jiným distribucím.
+* Zavedení Linuxu ve státních institucích povede k růstu obratu Linuxového byznysu - a tím nemyslím trička a hrnečky, ale podporu od specializovaných firem, jako je "Red Hat":http://www.cz.redhat.com/ - pokud po té příležitostí sáhnou.
+
+Navíc, nehledě na to, jestli komunita Ubuntu přispívá do upstreamu, ve výsledku je celé Linuxové komunitě prospěšná -
+už jenom z této logiky věci: Pokud více jak cca. pětina všech uživatelů Linuxu používá právě Ubuntu, potom je jistě prospěšná minimálně pětině linuxové komunity.
+
+
+
+
+

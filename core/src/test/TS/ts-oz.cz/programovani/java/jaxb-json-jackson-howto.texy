@@ -1,0 +1,84 @@
+
+
+JSON with JAXB - Jackson
+************************
+
+I wondered how various RESTful implementations (like RESTeasy) use JAXB annotations to create JSON output.
+The Answer is Jackson - see "Using JAXB annotations with Jackson":http://wiki.fasterxml.com/JacksonJAXBAnnotations.
+
+In a short:
+===========
+
+Maven deps:
+-----------
+
+/--code xml .[brush:]
+    <!-- Jackson -->
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-lgpl</artifactId>
+      <version>1.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-lgpl</artifactId>
+      <version>1.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-xc</artifactId>
+      <version>1.3.0</version>
+    </dependency>
+\--
+
+
+And a simple test:
+------------------
+
+/--code java .[brush:]
+
+package cz.zizka.ondra.jacksontest;
+
+import java.io.IOException;
+import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.map.AnnotationIntrospector;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+
+
+
+/**
+ *
+ * @author Ondrej Zizka
+ */
+public class JacksonTest extends TtdTestBase {
+
+  public void testJackson() throws IOException
+  {
+    ObjectMapper mapper = new ObjectMapper();
+    AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+    // make deserializer use JAXB annotations (only)
+    mapper.getDeserializationConfig().setAnnotationIntrospector(introspector);
+    // make serializer use JAXB annotations (only)
+    mapper.getSerializationConfig().setAnnotationIntrospector(introspector);
+
+
+    mapper.writeValue( System.out, new Car("Red Devil") );
+  }
+
+}// class JacksonTest
+
+
+
+@XmlRootElement
+class Car {
+  public String name;
+
+  public Car( String name ) {
+    this.name = name;
+  }
+}
+\--
+
+
+Nice, simple, easy. Enjoy!

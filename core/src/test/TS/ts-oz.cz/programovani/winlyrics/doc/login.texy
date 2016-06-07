@@ -1,0 +1,130 @@
+Přihlašování - login
+********************
+
+Identifikace
+============
+
+User bude identifikovaný e-mailem.
+ U toho je jeden problém - celkem dost uživatelů má ve WinLyrics více účtů s jedním mailem,
+patrně pro více počítačů. Viz tento dotaz:
+
+/--code
+SELECT email, COUNT(*) AS cnt FROM wl2_users GROUP BY email HAVING cnt > 1 ORDER BY cnt DESC;
+\--
+
+Tak těm bychom asi vytvořili jeden účet, který by mogli používat kdekoliv, ne?
+
+Heslo
+=====
+
+Heslo bude uložené jako `MD5()`.
+
+**To je zatím vše, co je "jisté", ostatní záleží na chozém.**
+Já navrhuju to udělat přes challenge - response metodu.
+
+
+Challenge - response autentization
+==================================
+
+Pro testování... - nastavíme někomu heslo...
+
+/--code sql .[brush:]
+UPDATE wl2_users SET pass_md5 = MD5('') WHERE email='winlyrics@dark-sun.org';
+\--
+
+/--code
+>> http://localhost:81/winlyrics/real/authentize.php?action=create_session
+
+<< SESSION_ID f8675g1390s7dngloohqitsd74
+\--
+
+`sess_id == "f8675g1390s7dngloohqitsd74"`
+ `user pass == md5('') == "d41d8cd98f00b204e9800998ecf8427e"`
+ `hash = md5( "f8675g1390s7dngloohqitsd74" . "d41d8cd98f00b204e9800998ecf8427e" ) == "989bd8a84f9e42b314b3358bb263794e"`
+
+/--code
+>> http://localhost:81/winlyrics/real/authentize.php?action=verify&sess_id=f8675g1390s7dngloohqitsd74&user=winlyrics@dark-sun.org&hash=989bd8a84f9e42b314b3358bb263794e
+
+<< AUTH_OK
+\--
+
+
+/--code sql .[brush:]
+SELECT id, MD5( CONCAT('f8675g1390s7dngloohqitsd74', pass_md5)) = '989bd8a84f9e42b314b3358bb263794e' FROM wl2_users WHERE email = 'winlyrics@dark-sun.org';
+\--
+| id | matches
+|---------
+| 4 | 1
+
+
+/--code
+>> http://localhost:81/winlyrics/real/authentize.php?action=get_state&sess_id=f8675g1390s7dngloohqitsd74
+
+<< VERIFIED
+\--
+
+
+/--code
+print_r( $_SESSION );
+
+Array (
+    [valid] => 1
+    [verified] => 1
+    [user] => winlyrics@dark-sun.org
+    [user_id] => 1
+)
+\--
+
+
+
+
+`authentize.php`
+================
+
+
+**Autenthicates the user.**
+  
+  1) User requests a session ID.
+     New session is created and ID is sent to user.
+  2) User sends user name and MD5( sess_id . MD5( user_pass ) ).
+     Server constructs the same string and checks their equality.
+	 If they match, a "valid" flag is set to the session and from that moment,
+	 session ID can be used to perform user actions.
+	 
+Actions:
+--------
+	 
+**`create_session == true`:**
+
+Creates a session.
+ Returns: `"SESSION_ERROR"` on error or `"SESSION_ID <<sess_id>>"`.
+	   
+**`verify == true`:**
+
+Verifies the user for this session.
+ //Params:// sess_id, hash.
+* "sess_id" is the ID returned by "create_session" or "get_state".
+* "user"    is the user identifier (e-mail)
+* "hash"    is   MD5( sess_id . MD5( <<user pass>> ) ).
+//Returns// one of DB_ERROR, SQL_ERROR, AUTH_FAILED or AUTH_OK.
+	   
+**`get_state == true`:**
+
+//Params:// `sess_id`.
+ //Returns://
+* `"VERIFIED"` if the current session is verified (authentization passed).
+* `"NOT_VERIFIED"` if the current session is not verified.
+* `"BAD_PARAM sess_id"` when the given sess_id is not valid session.
+		
+		
+Session variables:
+------------------
+  
+* `valid`    - set to true when this session was created  using the "create_session" action.
+* `verified` - set to true after the client succeeded in "verify" action.
+* `user`     - after successful verification, contains user identifier.
+* `user_id`  -   -"-,  contains user ID.
+
+
+
+

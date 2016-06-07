@@ -1,0 +1,15 @@
+
+
+Filesystem Resource Adapter for an Application Server
+*****************************************************
+
+You see, accessing files from an enterprise app is baaad... IT WILL EAT YOUR BRANE!
+
+But anyway... I have built "Filera":http://sourceforge.net/projects/filera/
+against JBoss JCA API, for the case. Here it is:
+
+
+"filera.rar":download/filera.rar
+"filera-1.0.0-src.jar":download/filera-1.0.0-src.jar
+"jboss-jca-api-1.5.0.GA.jar":download/jboss-jca-api-1.5.0.GA.jar
+

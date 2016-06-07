@@ -1,0 +1,431 @@
+Tento soubor nenĂ­ aktuĂˇlnĂ­!
+***************************
+
+Texy! is sexy!
+**************
+
+Texy! je pĹ™evadÄ›ÄŤ textu do formĂˇtovanĂ©ho HTML kĂłdu. DĂ­ky nÄ›mu mĹŻĹľete
+psĂˇt strukturovanĂ© dokumenty i bez znalosti nebo pouĹľitĂ­ jazyka HTML.
+Dokument napĂ­Ĺˇete v pĹ™ehlednĂ©, ÄŤistÄ› textovĂ©, formÄ› a Texy! jej
+automaticky pĹ™evede do validnĂ­ho (X)HTML kĂłdu.
+
+Texy! je jednĂ­m z **nejkomplexnÄ›jĹˇĂ­ch** formĂˇtovaÄŤĹŻ. UmĂ­ zpracovĂˇvat
+obrĂˇzky, odkazy, vnoĹ™enĂ© seznamy, tabulky a mĂˇ takĂ© plnou
+podporu CSS((KaskĂˇdovĂ© styly)).
+
+
+
+Titulky
+=======
+
+=== Titulek niĹľĹˇĂ­ ĂşrovnÄ› ====
+
+
+
+
+Odstavce
+==========
+
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur turpis enim, placerat tincidunt, tincidunt ac, fringilla et, mauris.
+stĂˇle ten stejnĂ˝ odstavec
+ stĂˇle ten stejnĂ˝ odstavec, ale Ĺ™Ăˇdek je oddÄ›len elementem  `<br>`
+ a druhĂ˝ oddÄ›lenĂ˝ Ĺ™Ăˇdek
+
+VycentrovĂˇno modifikĂˇtorem  .<>
+
+Obarveno modifikĂˇtorem .{color:blue}
+
+
+
+
+
+HorizontĂˇlnĂ­ linky
+==================
+
+ÄŤtyĹ™i linky, ÄŤtyĹ™i zpĹŻsoby zĂˇpisu
+
+---
+
+***
+
+
+
+
+KĂłd
+===
+
+/---code php
+  function reImage($matches) {
+    $content = $matches[1];
+    $align = $matches[5];
+    $href = $matches[6];
+  }
+\---
+
+Syntax-highlighting lze zprovoznit pouĹľitĂ­m pĹ™Ă­danĂ©ho modulu
+
+
+
+
+VypnutĂ­ Texy
+============
+
+
+/---html
+  <em>pĹ™Ă­klad</em>: **this is not strong**
+\---
+
+
+/---text
+  <em>pĹ™Ă­klad</em>: **this is not strong**
+\---
+
+
+
+
+Div
+===
+
+/---div .[header]
+
+  content of div
+
+\---
+
+
+
+
+
+vnoĹ™enĂ­
+------
+
+/---div .[header]
+
+  ## This is a header.
+
+  /---div
+    vnoĹ™enĂ˝ div
+  \---
+
+  Texy! je sexy!
+
+\---
+
+
+
+
+
+
+
+Citace
+======
+
+> This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
+> consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
+> Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
+>
+> 640 K should be enough for everyone
+>:http://www.microsoft.com
+
+
+vnoĹ™enĂ­
+-------
+
+> ## Titulek
+>
+> > VnoĹ™enĂˇ citace
+>
+> a zpÄ›t do prvnĂ­ ĂşrovnÄ›
+
+
+
+
+Odkazy
+======
+
+- Look at "homepage":http://texy.info.
+- Do you know "La Trine":[http://www.latrine.cz/]?
+- This picture [* image.gif *]:www.texy.info is clickable
+
+
+uĹľitĂ­m referencĂ­
+----------------
+
+[homepage]:  http://texy.info/ Texy! .(this is homepage)
+[email]:     me@example.com
+
+
+- Look at [homepage]
+- My address is [email]
+- What about "this":[homepage] site?
+
+
+
+
+ObrĂˇzky
+=======
+
+[* image.gif *]
+
+v odstavĂ­ch
+-----------
+
+[* image.gif <] Left-aligned image. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur turpis enim, placerat tincidunt, tincidunt ac, fringilla et, mauris.
+
+[* image.gif >] Right-aligned image. Curabitur quam justo, hendrerit a, mattis ut, ultrices at, dui. In mollis. Ut pellentesque erat vehicula nunc. Ut ultricies. Nulla nunc velit, consequat vel, laoreet in, blandit et, eros.
+
+
+s udĂˇlostĂ­ on-mouse-over
+------------------------
+
+[* image.gif | image-over.gif *]
+
+
+s popiskou
+----------
+
+[* image.gif *] *** Toto je popiska pod obrĂˇzkem / fotkou
+
+
+uĹľitĂ­m referencĂ­
+----------------
+
+What a beautiful logo [*picture*] :-)
+
+[*picture*]: image.gif .(alternative text)
+
+
+s modifikĂˇtorem
+---------------
+
+[* image.gif .{width:100px} *]
+
+
+
+
+
+
+FrĂˇze
+=====
+
+UkĂˇzka: *zdĹŻraznÄ›nĂ©*, **silnÄ› zdĹŻraznÄ›nĂ©** and ***nejsilnÄ›ji zdĹŻraznÄ›nĂ©***
+
+KrĂˇtkĂ˝ citĂˇt: >>Lorem Ipsum Dolores<<:www.lipsum.com
+
+Zdroj, citovanĂˇ osoba: Jak ~~Frank Borland~~ Ĺ™Ă­kal, ...
+
+A dalĹˇĂ­: superscript m^2 vs. subscript O_2
+
+         ++pĹ™idanĂ˝ text++ vs. --odstranÄ›nĂ˝ text--
+
+KĂłd: `<br />`
+
+
+s modifikĂˇtory
+--------------
+
+**silnĂ˝ a zelenĂ˝ .{color:green}** jako Hulk
+
+
+
+
+PĹ™Ă­mĂ© HTML tagy
+===============
+
+This <strong>is strong</strong> text.
+
+
+
+
+
+Seznamy
+=======
+
+
+*   Red
+*   Green
+*   Blue
+
+or
+
+-   Red
+-   Green
+-   Blue
+
+
+
+ÄŤĂ­slovanĂ©
+---------
+
+1.  Bird
+2.  McHale
+3.  Parish
+
+1)  Bird
+2)  McHale
+3)  Parish
+
+a)  Bird
+b)  McHale
+c)  Parish
+
+A)  Bird
+B)  McHale
+C)  Parish
+
+I.  Bird
+II.  McHale
+III.  Parish
+
+
+
+vnoĹ™enĂ©
+-------
+
+
+a)  Bird
+  I.  Bird
+    +   Red
+    +   Green
+    +   Blue
+  II.  McHale
+  III.  Parish
+b)  McHale
+c)  Parish
+      1)  Bird
+      2)  McHale
+      3)  Parish
+
+
+
+
+definiÄŤnĂ­ seznam
+---------------
+
+Koncert DivokĂ˝ Bill:
+    - termĂ­n: 9. 12. 2004
+    - mĂ­sto: Hala VodovĂˇ, Brno
+    - Cena: 260 KÄŤ
+
+
+a s modifikĂˇtory:
+
+
+.{color:red}
+triangl:   .{color:blue}
+    - trojĂşhelnĂ­k      .{color:green}
+    - neladÄ›nĂ˝ bicĂ­ hudebnĂ­ nĂˇstroj
+    - tringulaÄŤnĂ­ vÄ›Ĺľ
+
+
+
+
+ModifikĂˇtory
+============
+
+Lze pouĹľĂ­t tyto druhy modifikĂˇtorĹŻ:
+- (titulek) popisnĂ©, pĹ™idajĂ­ objektu titulek (nebo alternativnĂ­ text obrĂˇzkĹŻm)
+- [class1 class2 #id] urÄŤujĂ­cĂ­ tĹ™Ă­du a/nebo ID
+- {class:blue} pĹ™Ă­mĂ˝ zĂˇpis stylu
+- horizontĂˇlnĂ­ zarovnĂˇnĂ­:
+  - doleva <
+  - doprava >
+  - vycentrovanĂ˝ <>
+  - do bloku =
+
+- vertikĂˇlnĂ­ zarovnĂˇnĂ­: (jen u tabulek)
+  - nahoru ^
+  - na stĹ™ed -
+  - dolĹŻ _
+
+
+
+
+
+Typografie
+==============
+
+- rozdÄ›lenĂ­ velmi dlouhĂ˝ch slov podle ÄŤeskĂ˝ch pravidel. PĹ™Ă­klad: nejneobhospodaĹ™ovĂˇvatelnÄ›jĹˇĂ­mi
+- klikatelnĂ© adresy www.davidgrudl.com, david@grudl.com (emaily jsou odolnĂ© vĹŻÄŤi spambotĹŻm)
+- "ÄŤeskĂ©" 'typografickĂ©' uvozovky
+- pomlÄŤka vs. spojovnĂ­k: 10-15 vs. ÄŤesko-slovenskĂ˝
+- pomlÄŤka: jedna -- dvÄ›
+- typografickĂ˝ kĹ™Ă­Ĺľek u rozmÄ›rĹŻ 10 x 20
+- nedÄ›litelnĂ© mezery u telefonnĂ­ch ÄŤĂ­sel +420 776 552 046
+- vklĂˇdĂˇnĂ­ nezalomitelnĂ˝ch mezer za jednopĂ­smennĂ© pĹ™edloĹľky
+- acronym NATO((North Atlantic Treaty Organisation))
+- abbr "et al."((a dalĹˇĂ­))
+- nĂˇhrady(TM) nebo(R) za pĹ™Ă­sluĹˇnĂ© entity(C)
+- Ĺˇipky <-- a --> a <--> ;
+- tĹ™i teÄŤky...
+- zachovĂˇnĂ­ HTML entit &amp;
+- a spousta dalĹˇĂ­ho :-)
+
+
+
+
+
+Tabulky
+=======
+
+| first col | second col | third col
+| Adam      | Eva        | Franta
+
+
+s hlaviÄŤkou
+-----------
+
+|-----------------------------
+| First Name | Last Name | Age
+|----------------------------
+| Jesus      | Christ    | 33
+| Cecilie    | Svobodova | 74
+
+
+nebo pouĹľitĂ­m *
+
+
+|* First Name | Jesus    | Cecilie
+|* Last Name  | Christ   | Svobodova
+|* Age        | 33       | 74
+
+
+slouÄŤenĂ­ sloupcĹŻ
+----------------
+
+vĹˇimÄ›te si zdvojenĂ©ho ||
+
+|-----------------------------
+| Name                  || Age
+|----------------------------
+| Jesus      | Christ    | 33
+| Cecilie    | Svobodova | 74
+
+
+slouÄŤenĂ­ Ĺ™ĂˇdkĹŻ
+--------------
+
+|-----------------------------
+| First Name | Last Name | Age
+|----------------------------
+| Bill       | Gates     | 50
+|^           | Clinton   | 52
+| Jim        | Beam      | 70
+
+
+modifikĂˇtory
+---------
+
+.{color:red}
+| .{color: green} first col | second col      .>| third col | .{font-style:italic}
+| Adam                      | Eva .{color: blue}| Franta    |
+
+
+
+
+
+
+Copyright
+=========
+
+Texy! (C) "David Grudl (dgx)":http://www.davidgrudl.com, 2004-2008

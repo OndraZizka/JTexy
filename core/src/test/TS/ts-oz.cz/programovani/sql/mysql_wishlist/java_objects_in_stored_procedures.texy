@@ -1,0 +1,31 @@
+Java objects in Stored Procedures (sci-fi)
+******************************************
+
+
+The notice of having possibility to call Java from stored procedures
+made me like looking forward to great future :-)
+The best thing I can imagine now is that I could have Java object references 
+in user variables, something like:
+
+/--code
+SET @jDate = java::new('java.util.Date');
+SET @sDate = @jDate.toString();
+\--
+
+Or, letting my imagination fly far away:
+
+/--code
+SET @jWebService = java::jndi('java:comp/env/ws/weather');
+SET @jResults = @jWebService.getWeatherIn('Brno');
+SET @jResIter = @jResults.getIterator();
+WHILE @jResIter.hasNext() DO
+  SET @jRes = @jResIter.next();
+  ...
+END WHILE;
+\--
+
+
+Concerning web services, there already is a solution:
+UDF (user defined functions).
+There are some already working, hopefully their authors will 
+release their source some day.

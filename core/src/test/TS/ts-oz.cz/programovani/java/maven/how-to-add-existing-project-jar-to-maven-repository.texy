@@ -1,0 +1,102 @@
+How to add existing project's `jar` to SVN-based Maven repository
+*****************************************************************
+
+//See also//: "Quick and dirty mavenization of an existing project":mavenize-quick-and-dirty.texy
+
+
+Bash script for the impatient
+=============================
+
+/--code bash .[brush:]
+#
+#  Creates two files:
+#
+#    1) A bash script with mvn install:install-file commands to push the .jar's to a repository.
+#    2) A POM file with dependencies pointing to .jar's in Maven repo, uploaded by the script.
+#
+
+if [ -z "$1" ] ; then
+  echo "Usage:  mavenize.sh <path-to-dir-with-jars> [<groupId:'fake'>]"
+  exit
+fi
+
+
+LIB_PATH=$1
+GROUP=${2:-fake}
+
+
+echo '' > stuffTheRepo.sh
+echo '<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+' > pomWithDeps.xml
+echo "
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>$GROUP</groupId>
+  <artifactId>deps</artifactId>
+  <packaging>pom</packaging>
+  <version>0.0-SNAPSHOT</version>
+  <name>Fake Maven deps from JARs</name>
+  
+  <dependencies>
+" >> pomWithDeps.xml
+
+
+for JAR_PATH in $LIB_PATH/*.jar ; do
+  JAR=`basename $JAR_PATH`
+  ARTIFACT=${JAR%.jar}
+  echo "mvn install:install-file -Dpackaging=jar -DgeneratePom=true -DgroupId=$GROUP -Dfile=$JAR_PATH -DartifactId=$ARTIFACT -Dversion=0.0" >> stuffTheRepo.sh
+  echo "    <dependency><groupId>$GROUP</groupId><artifactId>$ARTIFACT</artifactId><version>0.0</version></dependency>" >> pomWithDeps.xml
+done
+
+echo "  
+  </dependencies>
+
+</project>" >> pomWithDeps.xml
+
+chmod u+x stuffTheRepo.sh
+\--
+
+
+
+How-to for the rest
+===================
+
+
+//Copied from Sardine project's README.txt.//
+
+This is a maven repository of the Sardine project.
+
+To add a new version, do the following:
+ **Note:** This is not a copy-paste code - edit it according to your situation.
+ **Note:** The preferred way is to use the Wagon-SCM Maven plugin, as described on "JBoss wiki":http://community.jboss.org/wiki/MavenReleaseRepository.
+
+/--code bash .[brush:]
+  # First, create the sources and javadoc jar's.
+  zip -9 -b sardine-XX/javadoc/* > sardine-XX/javadoc.jar
+  zip -9 -b sardine-XX/src/* > sardine-XX/sources.jar
+
+  # Let Maven create the directory structure and all the metadata files in the local repository.
+  mvn install:install-file -DpomFile=sardine-pom.xml -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true -DgroupId=com.googlecode.sardine -Dfile=sardine-XX/sardine.jar -Djavadoc=sardine-XX/javadoc.jar -Dsources=sardine-XX/sources.jar -DartifactId=sardine -Dversion=XX
+
+  # Check out remote SVN-based Maven repository. -N means non-recursive.
+  svn co -N https://sardine.googlecode.com/svn/maven sardine-mvn --username you@gmail.com
+
+  # Download the dir you're going to modify (if it exists).
+  svn update com/googlecode/sardine/sardine
+
+  # Copy the new artifacts to the working copy of the repository.
+  cp -r ~/.m2/repository/com/googlecode/sardine/sardine sardine-mvn/com/googlecode/sardine/sardine
+  # Rename the metadata file holding versions info.
+  mv ~/.m2/repository/com/googlecode/sardine/sardine/maven-metadata-local.xml ~/.m2/repository/com/googlecode/sardine/sardine/maven-metadata.xml
+
+  # Add everything new and commit.
+  svn add --force *
+  svn commit -m "Maven repo: Added version XX"
+\--
+
+
+* `~/.m2/repository/` is your local Maven repository. 
+   On windows it is usually `c:\Documents and Settings\user\.m2\repository\`.
+* The `pom.xml` is there because it contains dependency definitions.
+

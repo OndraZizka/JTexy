@@ -1,0 +1,172 @@
+
+
+Clustering with JBoss AS: Simple test
+*************************************
+
+
+1) Have two servers:
+====================
+
+/--code bash .[brush:]
+cp jbossas/server/all jbossas/server/all2`
+\--
+
+
+2) Start both servers
+=====================
+
+/--code bash .[brush:]
+# Server 1
+bin/run.sh -u 224.13.15.5 -c all  -b 0.0.0.0 -Djboss.messaging.ServerPeerID=1
+# Server 2
+bin/run.sh -u 224.13.15.5 -c all2 -b 0.0.0.0 -Djboss.messaging.ServerPeerID=2
+\--
+
+`-Djboss.messaging.ServerPeerID=1` is there to set the cluster node ID for messaging & JGroups,
+being used in `jbossas/server/<profile>/deploy/messaging/messaging-service.xml`:
+
+/--code xml .[brush:]
+<server>
+
+   <!-- ServerPeer MBean configuration
+        ============================== -->
+
+   <mbean code="org.jboss.jms.server.ServerPeer"
+      name="jboss.messaging:service=ServerPeer"
+      xmbean-dd="xmdesc/ServerPeer-xmbean.xml">
+
+      <!-- The unique id of the server peer - in a cluster each node MUST have a unique value - must be an integer -->
+      <attribute name="ServerPeerID">${jboss.messaging.ServerPeerID:0}</attribute>
+      ...
+   </mbean>
+</server>
+\--
+
+If you don't set it, you'll see:
+
+/--code plain .[brush:]
+2009-05-02 19:58:56,116 DEBUG [org.jboss.messaging.core.jmx.MessagingPostOfficeService] Starting failed jboss.messaging:service=PostOffice
+java.lang.IllegalArgumentException: Cannot start post office since there is already a post office in the cluster with the same node id (0).
+Are you sure you have given each node a unique node id during installation?
+\--
+
+
+5) Then create an application which sets some session data.
+============
+
+`app.war/WEB-INF/web.xml`:
+
+/--code xml .[brush:]
+<?xml version="1.0"?>   
+<web-app  xmlns="http://java.sun.com/xml/ns/j2ee"  
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+          version="2.4">
+  <distributable/>
+</web-app>
+\--
+
+
+`app.war/index.jsp`:  (Sorry for the poor JSP code :)
+
+/--code html .[brush:]
+<html>
+  <body>
+<%
+	String host;
+	try {
+	java.net.InetAddress localMachine = java.net.InetAddress.getLocalHost();
+	host = localMachine.getHostName();
+	}
+	catch( java.net.UnknownHostException ex ) {
+	host = ex.getMessage();
+	}
+%>
+	<b>Session ID: </b><%= session.getId() %><br>
+   <b>Hostname: </b><%= host %><br>
+
+   <pre>
+     Current name in session:  <%= session.getAttribute( "theName" ) %>
+<%
+   String name = request.getParameter( "username" );
+   session.setAttribute( "theName", name );
+%>
+      Setting name in session:  <%= name %>
+   </pre>
+
+  </body>
+</html>
+\--
+
+
+
+6) Copy the `app.war` to both profiles to `app/deploy` and `app2/deploy`.
+===============
+
+**Server 1:**
+
+/--code plain .[xbrush:]
+06:16:46,246 INFO  [PlatformMBeanServerRegistration] JBossCache MBeans were successfully registered to the platform mbean server.
+06:16:46,527 INFO  [STDOUT]
+---------------------------------------------------------
+GMS: address is 10.34.33.46:38534 (cluster=DefaultPartition-SessionCache)
+---------------------------------------------------------
+06:16:48,563 INFO  [RPCManagerImpl] Received new cluster view: [10.34.33.46:38534|0] [10.34.33.46:38534]
+06:16:48,579 INFO  [RPCManagerImpl] Cache local address is 10.34.33.46:38534
+06:16:48,582 INFO  [RPCManagerImpl] state was retrieved successfully (in 2.05 seconds)
+06:16:48,612 INFO  [ComponentRegistry] JBoss Cache version: JBossCache 'Malagueta' 3.2.1.GA
+06:18:29,503 INFO  [RPCManagerImpl] Received new cluster view: [10.34.33.46:38534|1] [10.34.33.46:38534, 10.34.33.50:42679]
+\--
+
+**Server 2:**  (Note the `LegacyStateTransferIntegrator`.)
+
+/--code plain .[xbrush:]
+06:18:28,968 INFO  [TomcatDeployment] deploy, ctxPath=/app
+06:18:29,283 INFO  [PlatformMBeanServerRegistration] JBossCache MBeans were successfully registered to the platform mbean server.
+06:18:29,319 INFO  [STDOUT]
+---------------------------------------------------------
+GMS: address is 10.34.33.50:42679 (cluster=DefaultPartition-SessionCache)
+---------------------------------------------------------
+06:18:29,508 INFO  [RPCManagerImpl] Received new cluster view: [10.34.33.46:38534|1] [10.34.33.46:38534, 10.34.33.50:42679]
+06:18:29,557 INFO  [LegacyStateTransferIntegrator] Using version 4096
+06:18:29,578 INFO  [RPCManagerImpl] Cache local address is 10.34.33.50:42679
+06:18:29,578 INFO  [RPCManagerImpl] state was retrieved successfully (in 260 milliseconds)
+06:18:29,593 INFO  [ComponentRegistry] JBoss Cache version: JBossCache 'Malagueta' 3.2.1.GA
+\--
+
+
+7) "Load balancing"
+==============
+
+Now you have to use the same session ID for both servers.
+Your browser will consider the servers as distinct and use different cookie for each.
+So you can either use the `jsessionid=...` or set up some hi-tech load-balancing:
+
+/--code plain .[brush:]
+ssh -D 9090 -Nf jawa15.englab.brq.redhat.com
+
+# Or, if your server is at :8080 as is by default:
+
+ssh -f ozizka@jawa15.englab.brq.redhat.com -L 9091:jawa15.englab.brq.redhat.com:8080 -N
+\--
+
+8) Check if the session data replicates
+=======================================
+
+Go to `http://localhost:9091/app/?username=OndraZizka`.
+
+
+Then switch the proxy to the other server:
+
+/--code plain .[brush:]
+ps aux | grep 'L 9091:jawa17'
+ ...
+kill 1234
+ssh -f ozizka@jawa17.englab.brq.redhat.com -L 9091:jawa17.englab.brq.redhat.com:8080 -N
+\--
+
+Then again go to `http://localhost:9091/app/?username=EdWoods`.
+
+You should see that the original user name "OndraZizka" was replicated to the other server.
+
+**That's it :)**

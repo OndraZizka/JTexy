@@ -1,0 +1,64 @@
+
+Wicket
+******
+
+
+
+Tutorials, examples, tips
+=========================
+
+"Wicket: A Little Bit About Wicket":http://www.javalobby.org/java/forums/t60786.html (A tutorial at DZone)
+
+"Wicket i18n":http://day-to-day-stuff.blogspot.com/2008/05/wicket-internationalization.html
+
+"Wicket by Example":http://wicketbyexample.com/
+
+
+Links:
+======
+
+"Wicket-Library":http://www.wicket-library.com/
+
+"Wicket Extensions":http://www.wicketframework.org/wicket-extensions/index.html
+
+"Wicket Stuff":http://wicketstuff.org/confluence/display/STUFFWEB/Home
+
+
+Bits
+====
+
+"Wicket and Ajax I: Basic Wicket Form validation":http://www.jroller.com/karthikg/entry/wicket_and_ajax
+
+"Filesystem-path-based UrlCodingStrategy":wicket-path-based-url-coding-strategy.texy
+
+"Wicket's UrlCodingStrategy's":wicket-url-coding-strategy.texy
+
+"Wicket servlet and filter in an embedded Jetty":wicket-servlet-filter-jetty-embedded.texy
+
+"Wicket IPageStore implementation with Infinispan (formerly JBoss Cache)":wicket-pagestore-jbosscache-infinispan-integration.texy
+
+
+
+Debugging Wicket in Maven
+=========================
+
+/--code bash .[brush:]
+MAVEN_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,address=4000,server=y,suspend=y" mvn clean install jetty:run-exploded
+\--
+
+
+Daniel Ĺ imko
+============
+
+Who is Daniel Ĺ imko and why did he rent the "wicket.cz domain":http://www.nic.cz/whois/?d=wicket.cz ?
+Is he a domain speculator?
+
+
+
+TODO
+====
+
+* Write "javadoc":http://wicket.apache.org/docs/1.4.7/org/apache/wicket/PageMap.html,
+  use "this":http://www.developer.com/java/other/article.php/10936_3673576_6/Wicket-The-First-Steps.htm
+
+

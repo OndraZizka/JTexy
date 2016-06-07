@@ -1,0 +1,19 @@
+
+
+JBoss WebServices (JBossWS) notes
+*********************************
+
+
+WARNING: Unable to process deployment descriptor
+================================================
+
+/--code
+17:27:55,019 INFO  [TomcatDeployment] deploy, ctxPath=/HelloWS
+17:27:55,048 WARNING [config] Unable to process deployment descriptor for context '/HelloWS'
+17:27:55,049 INFO  [config] Initializing Mojarra (1.2_13-b01-FCS) for context '/HelloWS'
+\--
+
+(...)you need to customise the default WebRoot/WEB-INF/web.xml.
+This is what tells JBoss where to find the entry point for the web service - the deployment descriptor.
+By default it points to a .jsp. If you forget and try to deploy it anyway, the deployment will work,
+a warning message: unable to process deployment descriptor for context null appears in the log(...)

@@ -1,0 +1,55 @@
+
+
+Groovy classloader bug with DOMBuilder
+**************************************
+
+
+I've encountered buggy behavior with Groovy 1.6.6:
+
+
+/--code groovy .[brush:]
+import groovy.xml.DOMBuilder
+
+def filePath = "MestaXml.log";
+def doc  = DOMBuilder.parse(new FileReader(filePath));
+def docElm = doc.documentElement;
+\--
+
+
+/--code
+$ groovy SaveTransformer.groovy
+Caught: java.lang.LinkageError: loader constraint violation: loader (instance of <bootloader>) 
+previously initiated loading for a different type with name "org/w3c/dom/NodeList"
+        at SaveTransformer.run(SaveTransformer.groovy:5)
+\--
+
+
+However, if I compile the class and run with `java`, it's fine:
+
+
+/--code
+$ groovyc SaveTransformer.groovy
+
+$ java -cp .;groovy-all-1.6.6.jar SaveTransformer
+
+$
+\--
+
+
+
+The same with Groovy 1.7-rc-1:
+
+/--code
+$ groovy -v
+Groovy Version: 1.7-rc-1 JVM: 1.6.0_16
+
+$ groovy SaveTransformer.groovy
+Caught: java.lang.LinkageError: loader constraint violation: loader (instance of <bootloader>) previously initiated loading for a different type with name "org/w3c/dom/NodeList
+"
+        at SaveTransformer.run(SaveTransformer.groovy:5)
+\--
+
+
+For the case the XML file was needed: "MestaXml.zip":download/MestaXml.zip
+
+Filled a bug: http://jira.codehaus.org/browse/GROOVY-3914

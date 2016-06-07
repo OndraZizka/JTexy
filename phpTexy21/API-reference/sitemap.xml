@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+	<loc>http://api.nette.org/2.0/ArrayAccess.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/IteratorAggregate.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/Texy.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyBlockParser.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyConfigurator.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyHandlerInvocation.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyHtml.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyLineParser.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyModifier.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyModule.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyObject.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyParser.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/TexyUtf.html</loc>
+</url>
+<url>
+	<loc>http://api.nette.org/2.0/Traversable.html</loc>
+</url>
+</urlset>

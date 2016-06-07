@@ -1,0 +1,135 @@
+Výsledek nasazení PHP v praxi aneb navrch huj, uvnitř fuj.
+==========================================================
+
+[*  elePHPant_Right_Tiny_jde_pryc.png  >]
+
+Abych nezůstal u "teorie a subjektivních hodnocení PHP((Personal Home Page Tools))":vyhody_a_nevyhody_php.texy,
+přidám ukázku z jednoho webu napsaného v PHP - a to hned web zabývající se programováním.
+Jaký jiný web by měl být technicky dokonalý, ne-li web dávající rady, jak dobře programovat?
+
+
+Jedná se o portál --`*****.com`-- ++to je jedno++. Celkem lákavá doména, hezký design
+(až na hnusný a otravný banner banan.cz, hned jsem ho přidal do AdBlocku),
+ale navrch huj, uvnitř fuj - a to právě kvůli PHP.
+
+1) `magic_quotes`
+-----------------
+
+Původcem první chyby je královna "super fičur" PHP a vrcholná zástupkyně filozofie PHP
+(tedy předpoklad, že programátor je blbec, a místo dobrého návrhu API to fixovat nahodilými obezličkami) - `magic_quotes_gpc`.
+Jenže na tuhle obezličku je nutné opět udělat obezličku, a to vede 
+k "takovýmhle komediím":http://php.vrana.cz/vypnuti-magic_quotes_gpc.php,
+které nijak nesouvisejí s cílenou aplikací.
+Přesně to sedí na můj slogan pro PHP: //PHP - the Work-around Language//.
+
+
+Při zobrazení náhledu vidím \"php_sucsks\", ale po odeslání komentáře je zobrazen správně.
+
+Autor webu `************.com` se na tedy tuto fičuru buďto vědomě spolehl,
+a potom má silné nedostatky ve schopnostech návrhu webových aplikací,
+nebo ještě hůř, použil výchozí nastavení PHP a ani neví, že to jde změnit.
+
+Jestliže se při práci s databází kdokoliv spoléhá na `magic_quotes`,
+pak mu doporučuji nezmiňovat to při pohovorech o zaměstnání a data často zálohovat.
+A pokud se jedná o druhou možnost, tak potom zapracovala výše uvedená filozofie PHP.
+
+
+2) zpracování chybových stavů
+-----------------------------
+
+Za druhou chybu může celkově špatný koncept PHP pro práci s chybovými stavy.
+Kudy chodím, tudy říkám, že PHP by mělo veškeré chyby převést na výjimky, a tento případ to potvrzuje.
+Při přidání komentáře se zobrazuje Warning:
+
+/--code
+Warning: Cannot modify header information - headers already sent by 
+(output started at /mnt/data/accounts/p/programujte/data/www/www/pridej_kom.php:6) 
+in /mnt/data/accounts/p/programujte/data/www/www/pridej_kom.php on line 62
+\--
+
+Jenže autor použil klasický work-around z PHP pro zamezení opakovaného odeslání formuláře,
+tedy přesměrování požadavku po zpracování komentáře.
+Na localhostu tedy pravděpodobně při testování tento warning ani nezahlédl.
+
+Toto by se při vyhození výjimky nikdy stát nemohlo:
+Nastala by `Exception` a autor by přinejhorším viděl zastavený požadavek a výpis exception.
+V lepším případě by viděl warning aspoň v logu při debugu aplikace -
+to by ovšem musely být ladící nástroje pro PHP trochu dostupnější,
+a v ideálním případě by jeho aplikace neprošla unit-testy - 
+to by ale ve světě PHP napřed muselo být testování zvykem a nikoli výjimkou.
+
+Řekněme tedy, že by PHP skriptař viděl místo své stránky takovouto děsivou nestvůru:
+
+/--code
+500 Internal Server Error
+java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+        at java.lang.String.substring(String.java:1444)
+        at org.apache.axis2.builder.XFormURLEncodedBuilder.extractParametersFromRequest(XFormURLEncodedBuilder.java:155)
+        at org.apache.axis2.builder.XFormURLEncodedBuilder.processDocument(XFormURLEncodedBuilder.java:112)
+        at org.apache.axis2.transport.TransportUtils.createDocumentElement(TransportUtils.java:160)
+        at org.apache.axis2.transport.TransportUtils.createSOAPMessage(TransportUtils.java:111)
+        at org.apache.axis2.transport.http.util.RESTUtil.processXMLRequest(RESTUtil.java:60)
+        at org.apache.axis2.transport.http.AxisServlet$RestRequestProcessor.processXMLRequest(AxisServlet.java:788)
+        at org.apache.axis2.transport.http.AxisServlet.doPost(AxisServlet.java:193)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:760)
+        at javax.servlet.http.HttpServlet.service(HttpServlet.java:853)
+        at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.ServletRequestDispatcher.invoke(ServletRequestDispatcher.java:824)
+        at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.ServletRequestDispatcher.forwardInternal(ServletRequestDispatcher.java:330)
+        at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.HttpRequestHandler.processRequest(HttpRequestHandler.java:830)
+        at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.AJPRequestHandler.run(AJPRequestHandler.java:224)
+        at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.AJPRequestHandler.run(AJPRequestHandler.java:133)
+        at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].util.ReleasableResourcePooledExecutor$MyWorker.run(ReleasableResourcePooledExecutor.java:192)
+        at java.lang.Thread.run(Thread.java:534)
+\--
+
+Zástupy rádoby-programátorů z řad čistých PHPčkářů se při takovém výpisu zděsí
+a utečou k mamince, která jim (pokud je rozumná) vysvětlí, že se nemusí bát,
+že to je vlastně to samé, jako onen warning, akorát se spoustou užitečných informací navíc
+a musí s ní počítat a vzniklou situaci ošetřit (nikoliv ji ignorovat operátorem `@`, jak je v PHP standardem).
+
+
+//Poznámka: Věk je zde myšlen pouze obrazně ve smyslu programátorského vývoje,
+nemluvím o skutečném věku, jak je na internetu hloupým zvykem.
+Znám i pár skvělých náctiletých programátorů.//
+
+
+Ti, kteří již dospívají ve velké programátory, přestanou plakat a začnou se dožadovat,
+aby takové výjimky mohli lovit všude, aby se jim žádná nepřevlekla za kus HTML kódu
+brutálně vloženého do výstupu bez ohledu na to, kde se zrovna ve výsledném dokumentu nacházíme!
+
+Kdepak, primitivní PHP vám třeba ještě před XML prologem vystřihne svoje:
+
+/--code
+<br />
+<b>Warning</b>:  Cannot add header information - headers already sent by (output started at /var/www/html/lavoro/downloadIt.php:21 in <b>/var/www/html/lavoro/downloadIt.php</b> on line <b>21</b><br />
+\--
+
+a bez povšimnutí může proletět dále ke klientovi, ačkoliv chybějící hlavičky HTTP 
+mohou zcela zásadně změnit chování webové aplikace.
+Ale jak by řekli tvůrci PHP - <a href="http://www.php.net/~derick/meeting-notes.html">"That's the PHP way."</a>
+
+
+Reakce zástupce PHP komunity - redaktora serveru o programování
+---------------------------------------------------------------
+
+Ještě lepší jsou reakce reakce autora článku, kde jsem chybu objevil:
+
+> Reagoval na komentář od uživatele Ondra [#19281]:
+> Mnohem jednoduší než se načit Javu bylo pro mne napast si vlastní framework, 
+> kde sem opravdu žádné magic ještě nikdy neřešil - framework řeší za mě. 
+
+Áááha... "vlastní framework", říkáte... však o tom píšu ve článku "Výhody a nevýhody PHP":vyhody_a_nevyhody_php.texy :-)
+
+Naučit se Javu není tak těžké, věřte mi... u PHP je lehčí jen "začít generovat výstup",
+ale postupem času se stejně musíte naučit zhruba stejné množství věcí jako v Javě - 
+akorát jsou jejich řešení méně elegantní, nesystémová a nezapadají do konceptu všeho okolo.
+
+> Ano, tyhle chyby mi nevadí :) Nejsem za ně zodpovědný.
+
+Přijde mi typické pro PHP komunitu, když web o programování vykazuje takovéto zásadní nedostatky, 
+a nevadí to ani čtenářům, ani autorům článků, ani programátorovi webu. 
+Ten má jistě také "svůj framework" - a pak to podle toho vypadá.
+
+
+
+//Klíčové slovo: **PHP sucks**.//

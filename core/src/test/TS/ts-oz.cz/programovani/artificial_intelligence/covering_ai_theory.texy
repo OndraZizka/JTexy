@@ -1,0 +1,125 @@
+Zastřešující teorie umělé inteligence
+*************************************
+
+
+Poznámkový papír.
+
+
+Proces rozvoje myšlení u člověka
+========================
+
+Nejprve se vyvine mozek. Do porodu dostává minimum vstupů a žádnou odezvu pro učení. Může tedy vstupy nanejvýš klasifikovat / shlukovat.
+
+Po porodu se učí:
+
+* Rozpoznávat objekty ze zrakových vjemů
+* Rozpoznávat zvuky, hlasy, intonaci, slova
+* Základní zákonitosti světa - princip akce a reakce, příčiny a důsledku.
+* Vlastní interakce se světem: minimální - pouze vytvoří vědomí vazby mezi pláčem a přivolání pozornosti k sobě.
+
+V další fázi se učí:
+
+* Základní interakce se světem - primitivní kombinace objektů.
+* Jazyk: opakuje slova, pojmenovává již známé objekty
+
+Další:
+
+* Jazyk: Opakuje více slov. Chápe smysl?
+
+Další:
+
+* Ptá se na souvislosti mezi pojmy. Zkoumá složitější zákonitosti.
+
+
+
+Zastřešující teorie umělé inteligence?
+======================================
+
+
+Hello,
+
+I am a student of IT science caught by the AI and willing for more knowledge. I hope I'll find some soulmates here.
+
+I have learned about most types of neural networks, fuzzy systems, prolog & lisp, functional programming, genetic algorithms, evolutionary programming, etc.
+
+But all of it seems to be just "inspired" by the nature, and is based on mathematical models. Most of them has very narrow spectrum of problems it can solve, compared to what AI is going to achieve as it's final goal (?) - universal pondering, cogitating system.
+
+I'm not going to ask dumb questions like "how big the NN should be to learn it think" and such. My question is:
+
+Is there some AI theory ( or idea / area of research aiming to create a theory) which would cover most currently known concepts and use them together?
+What about some fuzzy graph-like database of n-tuples holding all knowledge of an intelligent system, perhaps using neural networks to create the fuzzy relations and to perform tranformations of both short-term knowledge (aka. cogitation) and long-term knowledge (learning, memorizing, creating memories) ?
+
+Is there some such research?
+
+I accept any references; I have a partial access to Springer, IEEE, and such.
+It may be a frequent question, but in the flood of information trash all over the internet, I was not able to find something valuable.
+
+Thanks,
+Ondra Zizka
+
+
+
+Nápad
+======================================
+
+
+- Á-la "Prolog".
+- Prolog? Pravidlo nemůže být termem. Term se jen může jmenovat stejně, ale znalost vyjádřenou pravidlem nelze použít jako term.
+- Dlouhodobá paměť - fuzzy "graf" trojic, obecné i konkrétní dlouhodobé poznatky o světě.
+  - Musí to být trojice? Co n-tice, kde n >= 2?
+- Krátkodobá paměť - fuzzy "graf" trojic, aktuální fakta o prostředí a dění kolem "mě"
+- Cíl: Vyjádřený dalším grafem trojic.
+- "Výpočet", uspokojení cíle: Hledání takové cesty / transformací trojic, které povedou z aktuálního stavu do cíle, za použití dlouhodobé paměti k "úvahám".
+- Jak na transformace?
+  - Přístup pomocí pravidel jako v prologu se mi intuitivně jeví jako nevhodný. Mozek asi nepracuje na principu transformace pojmů pomocí pravidel.
+
+- I/O složka (transformace z / do jazyka) - ???
+
+Příklady transformace
+---------------------
+
+Je to sice divný příklad, ale už jsem se ho ve svých úvahách chytil a rozvedl ho :-)
+
+Vstup: Děkujeme, že zhasínáte světlo na WC.
+-> Jsme vděční, když návštěvnící zhasínají světlo na WC.
+-> "Oni" jsou vděční
+  -> Kdo jsou oni? Z krátkodobé paměti a z aktuálního dění (složitým procesem) odvodíme , že "oni" jsou provozovatelé hospody.
+-> Vy zhasínáte světlo
+  -> Kdo jsou vy? -> Odvodíme, že vy jsou návštěvníci.
+
+-> ... dlouhý proces dospěje k myšlence:
+
+-> Provozovatelé hospody jsou spokojeni (je jejich cílem), aby když na WC nikdo není, bylo zhasnuté světlo.
+
+-> Cíl: Je mojím cílem, aby provozovatelé byli spokojeni?
+   -> Kombinace dlouhodobé a krátkodobé paměti:  Kdo jsou provozovatelé? "Mám je rád?" Máme společné cíle?
+     -> Řekněme, že: Ano, mojím cílem je, aby byli spokojeni.
+       -> Uložíme do krátkodobé až střednědobé paměti.
+-> Na WC tento fakt při zhodnocování situace na pozadí započítáme do úvah:
+  - Jsem na WC.
+  - WC náleží hospodě
+  - Hospodu vlastní provozovatelé.
+  - Cílem provozovatelů je mít zhasnuté světlo na WC, pokud tam nikdo není.
+  - S provozovateli máme společné cíle (resp. částečně se překrývají), tj. je mým cílem pomoci jim dosáhnout jejich cíle.
+  - Na WC nikdo není.
+  - Chci tedy, aby bylo zhasnuté světlo. NOVÝ CÍL (krátkodobý)
+  - Dalším uvažováním (inferencí s dlouhodobými znalostmi) dojdu k tomu, že je třeba najít vypínač (obecný).
+  - Inferencí s krátkodobými znalostmi (támhle tudy jsem přišel, tudy také odejdu; poblíž východu bývá vypínač)
+    a s receptory (vidím něco, co vypadá tak, jak často vypadá vypínač) najdu vypínač.
+  - Zkusím stisknout / otočit (akce vybraná podle typu vypínače + inference s dlouhodobou pamětí) vypínač.
+  - Receptory zaznamenají změnu osvětlení. Úvaha: Takto to obvykle vypadá, když světlo nesvítí.
+---> Cíl splněn, uspokojen
+---> Cíl provozovatelů uspokojen
+
+
+
+
+
+
+
+
+
+
+
+  
+

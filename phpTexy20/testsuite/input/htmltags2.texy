@@ -1,0 +1,11 @@
+This <strong>example</strong> shows how <a href=http://www.texy.info title='Texy! excellent text-to-html converter & formatter'>Texy!</a> handle HTML tags.
+
+Dangerous <strong onmouseover="alert('onmouseover')">span</strong>
+
+<div id="page">
+  Hello!  
+</div>
+
+<span />..</span>
+
+<span title="pokus">...</span title="pokus">

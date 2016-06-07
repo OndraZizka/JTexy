@@ -1,0 +1,120 @@
+Odkazy
+------
+
+- 1. odkaz <a href="http://creativecommons.org/license/">pokus</a>
+- 2. odkaz <a href=[*obrazek3*] title="ahoj" >pokus</a>
+- 3. odkaz <a href='aa'></a> prázdný
+- 4. odkaz <a>test</a> prázdný
+
+- 5. Klasický odkaz "La Trine":http://www.dgx.cz/trine/?
+- 6. Klasický odkaz "La Trine":[/trine/]x
+- 7. Klasický odkaz "La Trine .{color:blue}":[./trine/]x
+- 8. Klasický odkaz "La Trine":[dave@dgx.cz]x
+- 9. Klasický odkaz "La Trine":dave@dgx.cz
+
+- 10. Referenèní odkaz "La Trine":[la trine1]
+- 11. Referenèní odkaz "La Trine":[la trine2]
+- 12. Referenèní odkaz "La Trine":[la trine3]
+- 13. Referenèní odkaz "La Trine":[email]
+- 14. Referenèní odkaz "La Trine .(title2)[bb]":[la trine1]?
+- 15. Referenèní odkaz "La Trine .(title2)":[la trine2]?
+- 16. Referenèní odkaz "La Trine":[la trine1#12]?
+- 17. Referenèní odkaz "La Trine":[la trine2?a=45]?
+
+- 18. Èistì referenèní odkaz [la trine1]
+- 19. Èistì referenèní odkaz [la trine2]
+- 20. Èistì referenèní odkaz [la trine3]
+- 21. Èistì referenèní odkaz [email]
+
+Obrázkové odkazy:
+-----------------
+
+- 22. Klasický odkaz "obrazek":[* texy-big.jpg *]
+- 23. Klasický odkaz "obrazek":[* texy-big.jpg >]
+- 24. Klasický odkaz "obrazek":[*texy-big.jpg | 2 |3*]
+
+- 25. Referenèní odkaz "obrazek":[xobrazek1]
+- 26. Referenèní odkaz "obrazek":[*obrazek1*]
+- 27. Referenèní odkaz "obrazek":[*obrazek3*]
+
+- 28. Èistì referenèní odkaz [xobrazek1]
+- 29. Èistì referenèní odkaz [xobrazek2]
+- 30. Èistì referenèní odkaz [xobrazek3]
+- 31. Èistì referenèní odkaz [xobrazek4]
+
+
+Odkazující obrázky:
+-------------------
+
+- 32. Klasický odkaz [*texy.jpg*]:http://www.dgx.cz/trine/?
+- 33. Klasický odkaz [* texy.jpg 8x3 | texy-over.jpg .(title)*]:[/trine/]x
+- 34. Klasický odkaz [*texy.jpg | texy-over.jpg | texy-big.jpg .(title)[class] <]:[dave@dgx.cz]x
+
+- 35. Referenèní odkaz [xobrazek1]:[la trine1]
+- 36. Referenèní odkaz "La Trine":[*obrazek2*]
+- 37. Referenèní odkaz "La Trine":[*obrazek3*]
+- 38. Referenèní odkaz [*obrazek2*]:[email]
+- 39. Referenèní odkaz "La Trine .(title2)[bb]":[*obrazek2*]?
+- 40. Referenèní odkaz "La Trine .(title2)":[*obrazek3*]?
+
+- 41. Referenèní odkaz [*obrazek1*]:[la trine2]
+- 42. Referenèní odkaz [*obrazek2*]:[/trine/]x
+- 43. Referenèní odkaz [*obrazek3<]::
+- 44. Referenèní odkaz [*obrazek2>]::
+- 45. Referenèní odkaz [*obrazek4*]:[*obrazek1*]
+
+- 46. Èistì referenèní obrázek [*obrazek1*]
+- 47. Èistì referenèní obrázek [*obrazek2*]
+- 48. Èistì referenèní obrázek [*obrazek3*]
+- 49. Èistì referenèní obrázek [*obrazek4*]
+
+
+Obrázek s popiskou
+------------------
+
+[* texy.gif *]:[home] * popiska s plným formátováním
+
+
+Rel nofollow
+------------
+
+- 50. relnofollow odkaz "La Trine .[nofollow]":http://www.dgx.cz/trine/?
+- 51. relnofollow odkaz "La Trine .[noFollow]":[/trine/]x
+- 52. relnofollow odkaz "La Trine .{color:blue}":[./trine/]x
+- 53. relnofollow odkaz "La Trine .[nofollow test]":[dave@dgx.cz]x
+- 54. relnofollow odkaz "La Trine .[#nofollow]":dave@dgx.cz
+- 55. relnofollow odkaz <a href="/test">test1</a>
+- 56. relnofollow odkaz <a href="mailto:test@text.cz">test2</a>
+- 57. relnofollow odkaz <a href="//server/path">test3</a>
+- 58. relnofollow odkaz <a href="http://server/path">test4</a>
+- 59. relnofollow odkaz <a href="http://server/path" rel="my">test5</a>
+
+
+Specialni
+---------
+
+- 60. "text1":www.text.cz
+- 61. "text2":hxxp://test/
+- 62. "text3":javascript:alert('')
+- 63. "text4":mailto:dave@dgx.cz
+- 64. <a href="www.text.cz">test5</a>
+- 65. <a href="hxxp://test/">test6</a>
+- 66. <a href="javascript:alert('')">test7</a>
+- 67. <a href="mailto:dave@dgx.cz">test8</a>
+
+
+[la trine1]: http://www.dgx.cz/trine/ text *o*dkazu .(title)[aa]
+[la trine2]: /trine/ .(title)
+[la trine3]: ./trine/
+[email]: dave@example.com .(title)
+
+[xobrazek1]: [*texy-big.jpg | texy-big2.jpg*] text .(title)
+[xobrazek2]: [* texy-big.jpg *] text 
+[xobrazek3]: [*texy-big.jpg*] 
+[*obrazek1*]: texy.jpg | texy-over.jpg | texy-big.jpg .(altX)
+[*obrazek2*]: texy.jpg 10x13 |  | texy-big.jpg
+[*obrazek3*]: texy.jpg | texy-over.jpg
+[*obrazek4*]: texy-big.jpg
+
+[xobrazek4]: [*obrazek3*] [*obrazek1*] .(test)
+

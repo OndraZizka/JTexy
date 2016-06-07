@@ -1,0 +1,54 @@
+
+Jabber (XMPP) Plugin for Maven
+******************************
+
+I've created a simple plugin for Maven2, which can send a message from the Maven build process.
+
+
+//Update:// Plugin's page moved.
+For actual page and download links, see 
+"Plugin's page at the Insolvenční rejstřík site":http://www.pohlidame.cz/insolvencni-rejstrik/maven-jabber-plugin.html.
+
+
+
+This is how I use it in the "Insolvenční rejstřík":http://www.pohlidame.cz/ project:
+
+
+/--code xml .[brush:]
+<build>
+    <plugins>
+
+      <plugin>
+        <groupId>cz.dynawest.maven</groupId>
+        <artifactId>jabber-maven-plugin</artifactId>
+        <version>1.0</version>
+
+        <executions>
+          <execution><phase>initialize</phase><goals><goal>sendmessage</goal></goals></execution>
+        </executions>
+
+	<configuration>
+          <!-- Format: user@server/password -->
+          <loginData>pohlidame.cz@jabber.cz/${jabber-pohlidamecz-jabber.cz-pass}</loginData>
+          <receiver>ondra.zizka@jabber.cz</receiver>
+          <message>Project was built.</message>
+          <runInThread>false</runInThread>
+        </configuration>
+
+      </plugin>
+
+    </plugins>
+  </build>
+\--
+
+
+Documentation of respective configuration items are in the source and in the POJO.
+
+<!-- Download "here":http:./download/maven-jabber-plugin.zip. -->
+I'll put it here for download soon. Come back in a week.
+
+It depends on the "Smack library":http://www.igniterealtime.org/projects/smack/index.jsp
+(perhaps best Jabber/XMPP library for Java, from the creators of the OpenFire XMPP server).
+However, to make it work for the server we use - "Jabber.cz":http://www.jabber.cz/ - I had to
+patch the sources, otherwise I was getting a NullPointerException during SaSL authentication.
+"More about the patch here":http://www.igniterealtime.org/community/message/186935/.

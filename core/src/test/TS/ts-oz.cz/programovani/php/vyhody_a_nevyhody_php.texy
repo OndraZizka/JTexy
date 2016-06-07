@@ -1,0 +1,340 @@
+Výhody a nevýhody PHP
+*********************
+
+
+
+//Update: V návaznosti na tento článek vznikl další - "Je Java jako Linux nebo jako Windows?":/stranky/programovani/java/je_java_jako_linux_nebo_jako_windows.texy//
+
+//Update: 
+Abych nezůstal u teorie a subjektivních hodnocení PHP((Personal Home Page Tools)),
+přidám ukázku jednoho webu napsaného v PHP - a to hned 
+"web zabývající se programováním":vysledek_nasazeni_php_aneb_navrch_huj_uvnitr_fuj.texy.//
+
+
+//Update: V posledním (aspoň doufám) článku na toto téma 
+"vysvětluji jednotlivé body ze seznamu nevýhod":nevyhody_php_v_praktickych_prikladech.texy.//
+
+<!-- "Srovnání Java a PHP":srovnani_php_a_javy.texy. -->
+
+
+----------------------------------------------
+
+
+
+[* ElePHPant_with_Tiger.jpg >]
+
+Na webu je mnoho flejmů, zda je PHP lepší / horší než Java a .NET atd.
+Ostatně, nejjednodušší způsob, jak rozpoutat flejm,
+je zajít na hodně čtený blog nějakého PHPčkáře a zeptat se místních,
+že jste nováček a jestli je PHP lepší než Java.
+Mimojiné se na tom otestuje složení čtenářů - tj. nakolik jsou zastoupeni
+čistokrevní PHPčkáři s klapkami na očích, kteří nemají šajna o MVC, O/R
+a kolikrát ani pořádném OOP návrhu.
+
+Nicméně nenašel jsem (pravda, zas tolik jsem nehledal) nějakou
+pořádnou moderovanou diskusi, případně článek, o výhodách a nevýhodách PHP.
+
+
+//Update:// Našel jsem celkem dobrý článek na http://spyced.blogspot.com/2005/06/why-php-sucks.html.
+Sice je poněkud  starší, ale jádro pudla zůstává.
+Je o dost ostřejší a než tento můj článek, takže PHPčkáři - bacha! :-)
+A všimněte si, že J2EE autor označuje za neelegantní stejně jako PHP.
+
+
+Trochu se porozhlížím, kamže půjdu pracovat na fulltime.
+Do toho mě oslovil bývalý spolužák, že prý si mě všimnul na přednáškách Seznam.cz
+a že jejich firma naléhavě hledá programátory PHP a jestli bych k nim nešel.
+Já na to, jestli dělají v Javě, a že prý ano, ale hledají PHP programátory.
+Slíbil jsem, že se tedy ozvu jeho šéfovi a pokecáme.
+Pak jsem na to ale pozapomněl a šéf se ozval sám (asi hledají opravdu naléhavě :-)
+
+Popravdě jsem mu vyložil, že PHP umím dobře, prakticky do detailů, no což to budu opisovat - zde je má odpověď:
+
+<blockquote>
+
+Dobrý den,
+ 
+Vaše nabídka mě zaujala. Shrnu svoji situaci:
+ 
+V PHP vyvíjím (komerčně) už několik let.
+Možná právě proto mě to ale velice silně táhne k Javě a J2EE [...].
+Dále mám zkušenosti s [... ... ...] .
+ 
+Kolega XY mi už také psal, zvažoval jsem, že se ozvu, ale říkal, že váš J2EE tým je asi spíše plný.
+ 
+Mohl bych tedy pracovat jak jako vývojář PHP, tak J2EE, nicméne druhé o mnoho raději [...].
+Nabídku pracovního místa už mám, proto by mě zajímaly další podmínky - můžeme je případně probrat po telefonu.
+ 
+V příloze posílám své CV, pokud by bylo třeba.
+ 
+S pozdravem
+Ing. Ondřej Žižka
+
+</blockquote>
+
+Asi půl hodinu na to se mi šéfík ozval po telefonu a domluvili jsme si schůzku.
+Na té jsem se dozvěděl, že získali kontrakt od firmy ABC, jíž dělají pokladní systém v J2EE a registrační web v PHP.
+A že na PHPkové weby mají svůj PHP framework (a v tu chvíli jsem si říkal - ajejej, další "svůj PHP framework...")
+a že jej chtějí rozvinout. Ptal jsem se, co umí, jak funguje a oč jej chtějí rozvinout. A dozvěděl jsem se, že:
+* začali jej vyvíjet jako redakční systém
+* přesto to ale nyní není něco jako Joomla, naopak, něco diametrálně odlišného (jestli jo, tak jedině dobře)
+* umí trochu MVC ve stylu Struts
+* zkoušeli dělat O/R mapování, ale je to moc složité
+* chtějí framework refaktorovat (oddělit moduly, zmenšit velikost a snížit počet styčných ploch, redesign)
+* chtějí zapracovat na Ajaxové části
+* chtějí zabudovat podporu webových služeb
+* chtějí zabudovat mechanismus šablon
+* atd atd.
+
+Potom se stočila řeč na to, jestli bych mohl dělat Java juniora, a později, proč bych nemohl,
+respektive proč chtějí vyvíjet v PHP a poč vyvíjet framework pro PHP, který:
+* který bude pokrývat 2% funkčnosti existujících (Java a J2EE) frameworků
+* který budou vyvíjet jejich vlastní programátoři za v součtu slušnou částku
+* který nehodlají uvolnit jako opensource ani prodávat (vyplynulo)
+* který bude po dlouhou dobu neodladěný a bude mít "dětské nemoci"
+a nakonec - a to především -
+* proč vůbec vyvíjet v PHP.
+
+No diskuse to byla těžká, protože šéfík (nic proti němu, zdál se jako moc fajn chlap)
+je programátor - teoretik z Masarykovy univerzity, který zná PHP i J2EE "z manažerského pohledu",
+a třetí účastník - jejich PHP senior - neví o Javě a J2EE nic (také nic proti němu, fajn kluk :-)
+
+Zkrátka jejich postoj je takový, že PHP je skvělá technologie na jednodušší věci,
+jako je frontend pro Javovský backend, resp. nad databází.
+Inu dobrá, já jim to neberu, ale během celého rozhovoru mi hlavou běhaly vzpomínky
+na nejrůznější veselé příhody (dalo by se přeložit jako "gay incidents" :) s PHP:
+
+Proč neprogramovat v PHP
+========================
+
+* Záhadné chyby mezi minor verzemi
+* Nutnost překopat celý systém při přechodu na novou major verzi
+* "Krása" procesu deployování uploadem na FTP či obdobným
+* Dlouhé hodiny hledání obezliček a work-aroundů, jak obejít tu kterou vlastnost PHP
+* Vytváření OOP wrapperů pro procedurální PHP funkce typu `mysql_*`
+* Přepisování stohů zdrojáků při refaktoringu, protože PHP je "bordelářský jazyk":http://www.php.net/ a programátora vyloženě svádí programovat jak prase
+* Stovky případů hledání chyby, kdy se ukázalo, že za vším stojí přepis v názvu proměnné
+* Ošetřování rozdílnosti implementace ve Windows a na Linuxu
+* Desítky zbytečných řádek kódu pro převod z/do UNICODE při práci s UNICODE stringy
+* AAAAAAAAAAAAAAAAAAAAAA!!!!!!! Už nééééééé!
+
+Prostě při pomyšlení, že bych měl jít vyvíjet framework v PHP, se mě jímaly úzkostné pocity.
+Jasně, potenciální PHP-fanatik mi bude oponovat, že kdybych psal rovnou dobrý kód, tak jsem v pohodě.
+Ale //není to pravda//, a to hned několikrát:
+* PHP dobrý OOP kód nedovoluje, protože všechny core funkce jsou procedurální a mixovat je s OOP je hnus.
+* PHP hezký kód nedovoluje, protože core funkce nevyhazují výjimky, a `if`y jen kvůli ošetření chyby je pravěká metoda táhnoucí se snad ještě z dob Alana Turinga.
+* "Nekvalitní zpracování OOP v PHP":http://latrine.dgx.cz/jsem-zdesen-z-php5 zásadně podkopává možnost používat zcela základní OOP principy.
+* PHP vás přímo tlačí do kouta s imperativem "Delej hnusný kód!", když zcela ignoruje možnost naprogramovat kolekce objektově a v návaznosti na teoretický rozbor věci, a místo toho naprosto vše cpe do Array: pole, hash, frontu, zásobník, množinu... což ještě někteří vydávají za výhodu.
+* I kdybych psal krásný kód, nikde není žádná záruka, že v příští verzi budu muset vše opět přepisovat - neexistuje norma PHP ani oficiální plán vývoje! PHP prostě jen bude vykrádat Javu, takže v PHP 7 nabeton budou anotace.
+
+
+Srovnání s Javou
+================
+
+Naproti tomu, když programuji v Javě, dobrý kód vzniká skoro sám (už se neubráním srovnání):
+* Vyplatí se pro sebemenší blbinu vytvořit třídu.
+* Pokud dělám třídu pro potřebu jiné, dám ji do souboru k ní a zůstane tedy skrytá a nezabordelim si adresář (balíček).
+* Pokud ji ale potřebuju jinde, přesunu ji do zvláštního souboru a už je k dispozici.
+* Samotné JRE je vzorem dobrého návrhu, a čistě jeho používáním se podvědomě naučíte návrhu:
+  * Abstrahovat problémy (úlohy) a tvořit jim rozhraní - viz `interface List` a implementaci `ArrayList`
+  * Rozdělovat svoji aplikaci do namespace (balíčků) - viz např. `java.util` a `java.lang`
+  * Využívat výjimky tam, kde je to vhodné, a zjednodušovat jimi API jednotlivých modulů
+* Co naprogramujete s jedním JDK, je skoro na 100% jisté, že přeložíte i v další verzi
+  * JRE má totiž narozdíl od PHP promyšlený návrh a nemusí se zásadní věci měnit každou major verzi
+  * Pokud už se stane, že cosi nevyhovuje, je to označeno za "deprecated", ale ponecháno a nová verze je v jiném namespace;
+  * Přesto však nová verze využívá maximum ze staré verze, a vy tak při dalším vývoji můžete snáze navázat a začít používat nové možnosti (viz //AWT// a //Swing//) místo totálního přepsání (viz `mysql_*` a `PDO`)
+  * Když už by se náhodou stalo, že byste něco nepřeložili (jako se mi stalo v případě //MySQL Connector/J//), můžete aspoň používat binárky a vesele psát pro novou verzi.
+* Nové verze různých projektů (knihoven a frameworků) využívají anotace, takže kód je ještě čistší a zářivější
+* S využitím "injection" (např. ze Springu) vám navíc ještě odpadají desítky jednotlivých řádků kódu, které jsou jaksi samozřejmé, ale přesto musí být (získání spojení, otevření transakce, ověření přístupových práv...)
+
+Prostě při prvním komerčním projektu v Javě moje srdénko jen zaplesalo nad tím, jak neuvěřitelně hladce to jde od ruky.
+
+
+Složitost programování v J2EE
+=============================
+
+A ještě ke složitosti J2EE.
+ Když srovnám PHP a JSP, tak to jsou zhruba srovnatelné technologie:
+* nějaká core knihovna funkcí,
+* a nějaký jazyk vkládaný do HTML.
+
+Jenže tam, kde PHP končí, tam J2EE teprve začíná.
+Pokud skutečně rezignujete na leta vývoje a nechcete se učit tagy ze Struts nebo anotace z JPA / Hibernate, prosím -
+můžete vše poctivě datlovat jako v PHP, psát si SQL dotazy
+(jednoduchost přístupu k výsledkům dotazu v PHP přes pole zajistí iBatis)
+a třeba si i prasit kód rovnou do HTML souborů.
+
+Jenže v J2EE máte **možnost** jít dál. Co máte v PHP?
+Ano, je zde pár povedených věcí... Smarty, Zend Framework, CakePHP.
+Ale ty stejně jedou nad shnilým jádrem.
+
+Pokud někdo říká, že PHP se naučíte rychleji než J2EE, tak já říkám
+ano, protože v PHP skoro není co se učit.
+
+Když jsem s J2EE začínal, také jsem se zalekl té neuvěřitelné haldy
+nových pojmů, specifikací, zkratek, XML konfiguračních souborů a postupů;
+dále nutnosti použít IDE nebo aspoň buildovací nástroj (Ant), naučit se spravovat něco jiného než Apache HTTPD...
+
+Ono totiž PHP je jen taková lehká nadstavba nad CGI - nad něj dává jen 
+relativně jednoduchou syntaxi a spoustu knihoven použitelných z této syntaxe.
+Jenže když jde do tuhého a úroveň vašich projektů se vznese nad příklady 
+z manuálu PHP, stejně musite začít řešit (hodně na přeskáčku):
+
+* Fyzickou strukturu webové aplikace - aneb adresáře, kam co dát
+* Zjednodušení správy obsahu v databázi
+* Verzování záznamů v databázi
+* Konfiguraci chování a struktury webu nad úrovní kódu
+* Abstrakci nad různými databázemi
+* Interakci s backendem, případně sjednocení API s GUI částí enterprise aplikace
+* Možnosti pokročilé konfigurace aplikace
+* Centrální repozitář objektů poskytujících nějaké služby
+* Clusterování
+
+atd.
+
+A zatímco J2EE vás těmito "nesmysly" zavalí hned zpočátku,
+protože postupy jsou standardizované a často se věci rovnou řeší "složitě" s výhledem na budoucí rozvoj,
+PHP vás nechá, ať si děláte co chcete - 
+zlepšující se programátoři 
+časem začnou vytvářet "vlastní framework",
+vlastní normu pro strukturu aplikace,
+vlastní knihovnu pro automatické ukládání objektů do DB, a tak dále,
+zatímco "naprostí začátečníci - neprogramátoři mohou třeba takto":http://blog.maxell-cz.cz/item/zaklady-pouziti-smarty-sablon (viz část "Přiřazení prvků v šabloně"):
+
+<blockquote>
+
+Často potřebujeme vybrat data z databáze a následně je předat šabloně. Na začátku je tedy SQL dotaz:
+
+/--code php .[brush:]
+$result = mysql_query("SELECT nazev, titulek, text, cena FROM tabulka WHERE id='$id'"); 
+\--
+
+Jak nyní předat data šabloně?
+
+Nejjednodušší řešení je předat rovnou pole:
+
+/--code php .[brush:]
+$smarty->assign('data',mysql_fetch_assoc($result));
+\--
+
+</blockquote>
+
+
+
+---------------------------
+
+Nyní se pokusím oprostit od Javy a zaměřit se čistě na PHP.
+Kdyby se někde v dalším textu vyskytlo slovo "Java", klidně mi dejte virtuální facku :)
+
+Zkusím tedy shrnout, jaké má PHP výhody a jaké nevýhody.
+Zkusím při tom zaujmout pokud možno nezaujatý postoj,
+i když případného čtenáře o tom po přečtení předchozí kritiky asi nepřesvědčím.
+
+Komentáře nevedu, ale jestli se vám něco v následujícím výčtu nezdá,
+napište mi "mail":ondra@dynawest.cz a já zde provedu veřejné pokání a omluvu sloníkovi elePHPantovi :)
+
+
+//Výhoda// a //nevýhoda// jsou relativní pojmy. Proto navrhuji jako "baseline" 
+pro srovnání použít ostatní technologie použitelné na podobné účely jako PHP, 
+tedy: ASP.NET, ColdFusion, Java EE, Perl, Python, Ruby (on Rails). 
+Naopak neuvažoval bych kombinace typu C + CGI (příliš složité programování), 
+Apache SSI (příliš omezená funkčnost), Caché Server Pages (příliš nesmyslná technologie), 
+XML + XSLT + JavaScript (principiálně příliš jinde), ASP (zastaralé) a podobně.
+
+
+Takže - posuďte sami:
+
+
+
+Výhody PHP
+==========
+
+[* elePHPant_Front_Tiny.png >]
+
+Technologie PHP má spoustu výhod, díky které se rychle stalo populárním. Mezi ně patří např.:
+* Velká rozsáhlost funkcí k dispozici přímo v základní instalaci
+* Další nativně implementované funkční celky snadno instalovatelné z repozitáře PEAR
+* Další knihovny instalovatelné z repozitáře PECL
+* Nativní podpora mnoha databázových systémů
+* Zpočátku strmá křivka učení
+* --Je multiplaforní-- S tou multiplatformností to není tak žhavé. Zkuste si třeba PHP na Novellu. Spíše bych řekl: Jede víceméně stejně na Linuxu a na Windows.
+* Časem vznikla velká celosvětová komunita vývojářů a mnoho dobrých svobodných projektů, zejména publikační systémy a "Texy!":http://www.texy.info/ :-)
+* Velmi široká nabídka hostingu, levné ceny díky konkurenci
+* Dobrý, aktuální a úplný manuál s příklady
+* Někdy se hodí stručný model zpracování nedefinovaných hodnot a `null`
+* Stručný přístup k prvkům hash-mapy přes operátor `[]`
+
+
+
+Nevýhody PHP
+============
+
+[* elePHPant_RightFront_Tiny.png >]
+
+Na druhou stranu, PHP má také značné nevýhody, pro které jej mnozí kritizují a někdy i opouštějí; mimo jiné tyto:
+* Až do verze PHP 4 nepříliš povedená podpora objektově orientovaného programování s mnoha záludnostmi
+* Verze 5 již podporuje OOP lépe (i když stále "velmi mizerně":http://latrine.dgx.cz/jsem-zdesen-z-php5), ale nativní knihovna funkcí nadále používá procedurální paradigma
+* Nativní funkce nejen nepoužívají objektový přístup, ale ani nepodporují výjimky (`set_error_handler()` je pouze slabá náplast)
+* Některé rysy jazyka svádějí ke špatným stylům programování (např. přílišné užívání polí a hash-map)
+* Nekonzistentní pojmenování nativních funkcí a nejednotnost v logice pořadí parametrů
+* Nativně nepodporuje UNICODE (připravuje se pro verzi 6 - už skoro tři roky)
+* Dosud neexistuje formální specifikace syntaxe jazyka a jeho chování (jedinou úplnou definicí je interpreter)
+* Tím pádem existuje jediný interpreter
+* Způsob, jakým PHP funguje, principiálně brání efektivnímu řešení mnoha úloh (např. objektově-relační mapování)
+[* elePHPant_LeftFront_Tiny_sad.png >]
+* PHP nemá danou politiku vývoje, místo toho nadále jen kopíruje prvky jiných jazyků
+* Je značně zatížené svým vlastním historickým vývojem
+* Oficiálně není zaručena zpětná kompatibilita
+* Programátor nemá zaručené cílové prostředí, mnoho věcí přímo ovlivňujících chování PHP lze změnit pouze mimo soubory projektu (v konfiguračním souboru php.ini)
+<!-- * Pro PHP není mnoho kvalitních vývojových prostředí (IDE) s podporou vlasností běžných pro jiné jazyky (generování a refaktorizace kódu, automatické dokončování, on-line nápověda, automatizované testování a validace, automatické nasazení na server, a další) -->
+* Nepodporuje paralelní výpočet a synchronizaci (vlákna)
+* Nepodporuje škálování pomocí prostředí sdíleného na více serverech
+* Ve standardní sadě nástrojů není nástroj pro tvorbu dokumentace
+* --Nedostatek-- Nemnoho kvalitních frameworků (Pozor! Drupal, Joomla, WordPress a spol. nejsou frameworky, ale publikační systémy / CMS).
+* Nelze snadno integrovat s jinými technologiemi (znovupoužití knihoven napsaných v PHP v jiném jazyce)
+* Ve standardní distribuci chybí ladící (debugovací) nástroj
+* Relativně složitá syntaxe oproti jiným technologiím použitelným na stejný účel
+* Po zpracování požadavku se "ztrácí" kontext aplikace a při příštím je vytvářen jiný
+* Mimo jiné z toho plyne relativně slabý výkon 
+* Velký počet zásadních chyb v počátcích nových verzí
+* Nepodporuje jmenné prostory (Skutečně, stále ještě mohou existovat obrovské projekty, kde se knihovny rozlišují prefixem.)
+* Podivné fungování referencí - asi nejzrádnější askept PHP
+* Donedávna chybělo rozumné jednotné rozhraní pro práci s databázemi, nyní `PDO`
+[* elePHPant_RightFront_Tiny_lezi_oci_v_sloup.png >]
+* Chybí anotace a aspektově orientované programování
+* Chybí možnost vynutit deklaraci proměnných, takže se dá omylem zapsat něco do jiné (nové) proměnné. Taková chyba se hledá VELMI těžko.
+* Nedostatečná sebereflexe - datové typy "Třída"/"Funce", místo toho se na ně odkazujete přes stringy
+* Nemožnost odkazovat se na metody objektů jinak než neohrabanou konstrukcí s `Array()`
+* Kvůli slabé typovosti neobratné přetěžování funkcí a metod a jejich překrytí při dědění
+* Projekty se musí šířit výhradně formou zdrojových kódů
+* Neexistuje přímá podpora pro webové služby a pro vzdálené volání procedur obecně
+* Chybí solidní knihovna / nástroj pro logování
+
+<!--
+[*  elePHPant_Right_Tiny_jde_pryc.png  >]
+-->
+
+
+Jak je vidět, seznam výhod a nevýhod je trochu nevyvážený.
+Nyní čekám polemiku :-)  ondra@dynawest.cz
+
+//PS:// Ale pořád ještě to není tak strašné, jako s Caché - kdo zkoušel, ví :-)
+
+
+Další články s podobnou tématikou:
+----------------------------------
+
+* "Kam kráčíš, PHP?":http://www.abclinuxu.cz/blog/miloslavponkrac/2006/2/3/119608 (2006, doporučuji přečíst i komentáře)
+
+* "David Grudl o PHP":http://www.pestujemeweb.cz/clanky-rozhovory/text-27-david-grudl-rozhovor.html
+   > 4. Jaká je perspektiva PHP z Vašeho pohledu?
+   >    Jsem PHP skeptik. PHP jakožto jazyk ztratil koncepci, rozšiřování se děje chaoticky. PHP jakožto knihovna se nehodí na tvorbu webových aplikací. Frameworky se to snaží suplovat.
+
+
+
+
+<em>Obrázky přejaty z http://www.nexen.net/elephpant/index.php a http://shop.yourphppro.com/elePHPant.html.</em>
+
+
+//(PS: Kdyby někoho zajímalo, proč je tento web v PHP, tak je to kvůli Texy! ;-)//
+ //PS pro Jana Škráška: Porty Texy? Ruby nemám rád, python neumím, .NET nechci a pro Javu ještě port není.//

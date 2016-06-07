@@ -1,0 +1,23 @@
+Programming humor
+#################
+
+
+   1. public void filter(String input) {  
+   2.     if (obscenities.contains(input)) {  
+   3.         throw new IllegalArgumentException("Obscenities such as '" + input + "' will not be tolerated!");  
+   4.     }  
+   5. }  
+
+---------------------------
+
+
+
+"PHP se hodí u aplikací, které vývojář napíše dříve, než by mu naběhlo Visual Studio." -- pan Brabec
+
+---------------------------
+
+
+"My ochotní, vedení nevědomými, děláme nemožné pro nevděčné."
+
+
+

@@ -1,0 +1,217 @@
+
+Quartz Java timer intro
+***********************
+
+Maven dependencies
+==================
+
+`pom.xml`:
+
+/--code xml .[brush:]
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+      <version>1.8.0</version>
+    </dependency>
+
+		<!-- LOGGING DEPENDENCIES - LOG4J -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+		</dependency>
+\--
+
+Quartz configuration
+====================
+
+(taken from http://www.quartz-scheduler.org/docs/quick_start_guide.html )
+
+Should end up on classpath in `org/quartz/quartz.properties`.
+
+/--code properties .[brush:]
+org.quartz.scheduler.instanceName = MyScheduler
+org.quartz.scheduler.instanceId = 1
+org.quartz.scheduler.rmi.export = false
+org.quartz.scheduler.rmi.proxy = false
+
+org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool
+org.quartz.threadPool.threadCount = 3
+
+org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore
+\--
+
+
+Java code
+=========
+
+/--code java .[brush:]
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.quartz.impl.StdSchedulerFactory;
+
+/**
+ *  Quartz example.
+ */
+public class App 
+{
+  public static void main( String[] args ) throws InterruptedException
+  {
+    try {
+      // Grab the Scheduler instance from the Factory.
+      Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+      scheduler.start();
+
+      // Define job metadata.
+      JobDetail job = new JobDetail("job1", "group1", MyJobClass.class);
+
+      // Define a Trigger that will fire "now"
+      //Trigger trigger = new SimpleTrigger("trigger1", "group1", new Date());
+      // Or this one will repeat 10 times after 100 ms.
+      Trigger trigger = new SimpleTrigger("trigger1", "group1", 10, 100);
+
+      // Schedule the job with the trigger
+      scheduler.scheduleJob(job, trigger);
+
+      Thread.sleep( 5000 );
+
+      // Shutdown
+      scheduler.shutdown();
+
+    } catch( SchedulerException se ) {
+        se.printStackTrace();
+    }
+  }
+}
+\--
+
+And yet the code of the job class.
+Note that this is instantiated for each run, i.e. 11 times in our example.
+
+/--code java .[brush:]
+package cz.dynawest.quartztry.quartztry;
+
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+
+/**
+ *   Quartz job class.
+ */
+public class MyJobClass implements Job {
+
+  private static int counter = 0;
+  private static int inst = 0;
+
+  public MyJobClass() {
+    System.out.println( "INSTANTIATED "+ ++inst +" times!" );
+  }
+
+  public void execute( JobExecutionContext context ) throws JobExecutionException {
+    System.out.println( "EXECUTED "+ ++counter +" times!" );
+    //throw new UnsupportedOperationException("WTF.");
+  }
+}
+\--
+
+
+Logging configuration
+=====================
+
+Since 1.7.0, Quartz uses SLF4j, so you can use e.g. with log4j.
+
+If you decide so, put this on classpath to `log4.properties`.
+
+/--code properties .[brush:]
+log4j.rootLogger=DEBUG, stdout, file
+
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d %-5r %-5p [%c] (%t:%x) %m%n
+
+log4j.appender.file=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.file.File=app.log
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.file.layout.ConversionPattern=%d %-5r %-5p [%c] (%t:%x) %m%n
+\--
+
+
+Output
+======
+
+/--code plain .[brush:]
+2010-05-02 17:47:37,281 0     INFO  [org.quartz.core.SchedulerSignalerImpl] (main:) Initialized Scheduler Signaller of type: class org.quartz.core.SchedulerSignalerImpl
+2010-05-02 17:47:37,281 0     INFO  [org.quartz.core.QuartzScheduler] (main:) Quartz Scheduler v.1.8.0 created.
+2010-05-02 17:47:37,281 0     INFO  [org.quartz.simpl.RAMJobStore] (main:) RAMJobStore initialized.
+2010-05-02 17:47:37,281 0     INFO  [org.quartz.core.QuartzScheduler] (main:) Scheduler meta-data: Quartz Scheduler (v1.8.0) 'MyScheduler' with instanceId '1'
+  Scheduler class: 'org.quartz.core.QuartzScheduler' - running locally.
+  NOT STARTED.
+  Currently in standby mode.
+  Number of jobs executed: 0
+  Using thread pool 'org.quartz.simpl.SimpleThreadPool' - with 3 threads.
+  Using job-store 'org.quartz.simpl.RAMJobStore' - which does not support persistence. and is not clustered.
+
+2010-05-02 17:47:37,281 0     INFO  [org.quartz.impl.StdSchedulerFactory] (main:) Quartz scheduler 'MyScheduler' initialized from default resource file in Quartz package: 'quartz.properties'
+2010-05-02 17:47:37,281 0     INFO  [org.quartz.impl.StdSchedulerFactory] (main:) Quartz scheduler version: 1.8.0
+2010-05-02 17:47:37,281 0     INFO  [org.quartz.core.QuartzScheduler] (main:) Scheduler MyScheduler_$_1 started.
+2010-05-02 17:47:37,281 0     DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 1 times!
+2010-05-02 17:47:37,296 15    DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-1:) Calling execute on job group1.job1
+EXECUTED 1 times!
+2010-05-02 17:47:37,390 109   DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 2 times!
+2010-05-02 17:47:37,390 109   DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-2:) Calling execute on job group1.job1
+EXECUTED 2 times!
+2010-05-02 17:47:37,484 203   DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 3 times!
+2010-05-02 17:47:37,781 500   DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-3:) Calling execute on job group1.job1
+EXECUTED 3 times!
+2010-05-02 17:47:37,781 500   DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 4 times!
+2010-05-02 17:47:37,781 500   DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-1:) Calling execute on job group1.job1
+EXECUTED 4 times!
+2010-05-02 17:47:37,781 500   DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 5 times!
+2010-05-02 17:47:37,781 500   DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-2:) Calling execute on job group1.job1
+EXECUTED 5 times!
+2010-05-02 17:47:38,281 1000  DEBUG [org.quartz.utils.UpdateChecker] (Timer-0:) Checking for available updated version of Quartz...
+2010-05-02 17:47:37,781 500   DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 6 times!
+2010-05-02 17:47:38,281 1000  DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 7 times!
+2010-05-02 17:47:38,281 1000  DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 8 times!
+2010-05-02 17:47:38,281 1000  DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-2:) Calling execute on job group1.job1
+EXECUTED 6 times!
+2010-05-02 17:47:38,281 1000  DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 9 times!
+2010-05-02 17:47:38,281 1000  DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-1:) Calling execute on job group1.job1
+EXECUTED 7 times!
+2010-05-02 17:47:38,281 1000  DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-3:) Calling execute on job group1.job1
+EXECUTED 8 times!
+2010-05-02 17:47:38,796 1515  DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-2:) Calling execute on job group1.job1
+2010-05-02 17:47:38,812 1531  DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 10 times!
+2010-05-02 17:47:38,812 1531  DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-1:) Calling execute on job group1.job1
+EXECUTED 9 times!
+EXECUTED 10 times!
+2010-05-02 17:47:38,812 1531  DEBUG [org.quartz.simpl.SimpleJobFactory] (MyScheduler_QuartzSchedulerThread:) Producing instance of Job 'group1.job1', class=cz.dynawest.quartztry.quartztry.MyJobClass
+INSTANTIATED 11 times!
+2010-05-02 17:47:38,812 1531  DEBUG [org.quartz.core.JobRunShell] (MyScheduler_Worker-3:) Calling execute on job group1.job1
+EXECUTED 11 times!
+2010-05-02 17:47:42,281 5000  INFO  [org.quartz.core.QuartzScheduler] (main:) Scheduler MyScheduler_$_1 shutting down.
+2010-05-02 17:47:42,281 5000  INFO  [org.quartz.core.QuartzScheduler] (main:) Scheduler MyScheduler_$_1 paused.
+2010-05-02 17:47:42,281 5000  INFO  [org.quartz.core.QuartzScheduler] (main:) Scheduler MyScheduler_$_1 shutdown complete.
+2010-05-02 17:47:42,312 5031  DEBUG [org.quartz.simpl.SimpleThreadPool] (MyScheduler_Worker-1:) WorkerThread is shut down.
+2010-05-02 17:47:42,312 5031  DEBUG [org.quartz.simpl.SimpleThreadPool] (MyScheduler_Worker-2:) WorkerThread is shut down.
+2010-05-02 17:47:42,312 5031  DEBUG [org.quartz.simpl.SimpleThreadPool]
+\--
+

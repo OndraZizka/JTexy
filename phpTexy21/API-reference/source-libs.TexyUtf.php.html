@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="Nette Framework Apigen" />	<meta name="robots" content="noindex" />
+
+	<title>libs\TexyUtf.php</title>
+
+	<script type="text/javascript" src="media/jquery.min.js"></script>
+	<script type="text/javascript" src="media/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="media/jquery.sortElements.js"></script>
+	<script type="text/javascript" src="allclasses.js"></script>
+	<script type="text/javascript" src="media/main.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="media/style.css?v=2010100721" />
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+</head>
+
+<body>
+<div id="left">
+	<a href="allclasses.html">All Classes</a>
+
+	<h3>Namespaces</h3>
+	<ul>
+		<li><a href="namespace-internal.html">internal</a></li>
+		<li>Texy</li>
+	</ul>
+
+	<h3>Classes</h3>
+
+	<ul>
+		<li><a href="Texy.html">Texy</a></li>
+		<li><a href="TexyBlockParser.html">TexyBlockParser</a></li>
+		<li><a href="TexyConfigurator.html">TexyConfigurator</a></li>
+		<li><a href="TexyHandlerInvocation.html">TexyHandlerInvocation</a></li>
+		<li><a href="TexyHtml.html">TexyHtml</a></li>
+		<li><a href="TexyLineParser.html">TexyLineParser</a></li>
+		<li><a href="TexyModifier.html">TexyModifier</a></li>
+		<li><a href="TexyModule.html">TexyModule</a></li>
+		<li><a href="TexyObject.html">TexyObject</a></li>
+		<li><a href="TexyParser.html">TexyParser</a></li>
+		<li>TexyUtf</li>
+	</ul>
+
+	<h3>Interfaces</h3>
+
+	<ul>
+	</ul>
+</div>
+
+<div id="right">
+	<form action="http://www.google.com/cse" id="search" onsubmit="if(this.q.value.indexOf('more:')==-1)this.q.value+=' more:api'">
+		<input type="hidden" name="cx" value="011549293477758430224:vxofa9ufnhc" /><input type="hidden" name="ie" value="UTF-8" /><input type="text" name="q" class="text" /><input type="submit" value="Search" />
+	</form>
+
+<div id="navigation">
+	<ul>
+		<li><a href="overview.html" title="Summary of all namespaces">Overview</a></li>
+		<li><a href="elements.html">Elements</a></li>
+	</ul>
+</div>
+
+<pre><code><a href="#L1" id="L1" class="l">  1: </a><span class="xlang">&lt;?php</span>
+<a href="#L2" id="L2" class="l">  2: </a>
+<a href="#L3" id="L3" class="l">  3: </a><span class="php-comment">/**
+</span><a href="#L4" id="L4" class="l">  4: </a><span class="php-comment"> * Texy! - human-readable text to HTML converter.
+</span><a href="#L5" id="L5" class="l">  5: </a><span class="php-comment"> *
+</span><a href="#L6" id="L6" class="l">  6: </a><span class="php-comment"> * @copyright  Copyright (c) 2004, 2010 David Grudl
+</span><a href="#L7" id="L7" class="l">  7: </a><span class="php-comment"> * @license    GNU GENERAL PUBLIC LICENSE version 2 or 3
+</span><a href="#L8" id="L8" class="l">  8: </a><span class="php-comment"> * @link       http://texy.info
+</span><a href="#L9" id="L9" class="l">  9: </a><span class="php-comment"> * @package    Texy
+</span><a href="#L10" id="L10" class="l"> 10: </a><span class="php-comment"> */</span>
+<a href="#L11" id="L11" class="l"> 11: </a>
+<a href="#L12" id="L12" class="l"> 12: </a>
+<a href="#L13" id="L13" class="l"> 13: </a>
+<a href="#L14" id="L14" class="l"> 14: </a><span class="php-comment">/**
+</span><a href="#L15" id="L15" class="l"> 15: </a><span class="php-comment"> * UTF-8 helper.
+</span><a href="#L16" id="L16" class="l"> 16: </a><span class="php-comment"> *
+</span><a href="#L17" id="L17" class="l"> 17: </a><span class="php-comment"> * @copyright  Copyright (c) 2004, 2010 David Grudl
+</span><a href="#L18" id="L18" class="l"> 18: </a><span class="php-comment"> * @package    Texy
+</span><a href="#L19" id="L19" class="l"> 19: </a><span class="php-comment"> */</span>
+<a href="#L20" id="L20" class="l"> 20: </a><span class="php-keyword1">class</span> TexyUtf
+<a href="#L21" id="L21" class="l"> 21: </a>{
+<a href="#L22" id="L22" class="l"> 22: </a>    <span class="php-comment">/** @var array */</span>
+<a href="#L23" id="L23" class="l"> 23: </a>    <span class="php-keyword1">private</span> <span class="php-keyword1">static</span> <span class="php-var">$xlat</span>;
+<a href="#L24" id="L24" class="l"> 24: </a>
+<a href="#L25" id="L25" class="l"> 25: </a>    <span class="php-comment">/** @var array */</span>
+<a href="#L26" id="L26" class="l"> 26: </a>    <span class="php-keyword1">private</span> <span class="php-keyword1">static</span> <span class="php-var">$xlatCache</span>;
+<a href="#L27" id="L27" class="l"> 27: </a>
+<a href="#L28" id="L28" class="l"> 28: </a>
+<a href="#L29" id="L29" class="l"> 29: </a>
+<a href="#L30" id="L30" class="l"> 30: </a>    <span class="php-comment">/**
+</span><a href="#L31" id="L31" class="l"> 31: </a><span class="php-comment">     * static class.
+</span><a href="#L32" id="L32" class="l"> 32: </a><span class="php-comment">     */</span>
+<a href="#L33" id="L33" class="l"> 33: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> __construct()
+<a href="#L34" id="L34" class="l"> 34: </a>    {
+<a href="#L35" id="L35" class="l"> 35: </a>        <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> LogicException(<span class="php-quote">&quot;Cannot instantiate static class &quot;</span> . <span class="php-keyword2">get_class</span>(<span class="php-var">$this</span>));
+<a href="#L36" id="L36" class="l"> 36: </a>    }
+<a href="#L37" id="L37" class="l"> 37: </a>
+<a href="#L38" id="L38" class="l"> 38: </a>
+<a href="#L39" id="L39" class="l"> 39: </a>
+<a href="#L40" id="L40" class="l"> 40: </a>    <span class="php-comment">/**
+</span><a href="#L41" id="L41" class="l"> 41: </a><span class="php-comment">     * Converts from source encoding to UTF-8.
+</span><a href="#L42" id="L42" class="l"> 42: </a><span class="php-comment">     */</span>
+<a href="#L43" id="L43" class="l"> 43: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> toUtf(<span class="php-var">$s</span>, <span class="php-var">$encoding</span>)
+<a href="#L44" id="L44" class="l"> 44: </a>    {
+<a href="#L45" id="L45" class="l"> 45: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">iconv</span>(<span class="php-var">$encoding</span>, <span class="php-quote">'UTF-8'</span>, <span class="php-var">$s</span>);
+<a href="#L46" id="L46" class="l"> 46: </a>    }
+<a href="#L47" id="L47" class="l"> 47: </a>
+<a href="#L48" id="L48" class="l"> 48: </a>
+<a href="#L49" id="L49" class="l"> 49: </a>
+<a href="#L50" id="L50" class="l"> 50: </a>    <span class="php-comment">/**
+</span><a href="#L51" id="L51" class="l"> 51: </a><span class="php-comment">     * Converts from UTF-8 to dest encoding.
+</span><a href="#L52" id="L52" class="l"> 52: </a><span class="php-comment">     */</span>
+<a href="#L53" id="L53" class="l"> 53: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> utfTo(<span class="php-var">$s</span>, <span class="php-var">$encoding</span>)
+<a href="#L54" id="L54" class="l"> 54: </a>    {
+<a href="#L55" id="L55" class="l"> 55: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">iconv</span>(<span class="php-quote">'utf-8'</span>, <span class="php-var">$encoding</span>.<span class="php-quote">'//TRANSLIT'</span>, <span class="php-var">$s</span>);
+<a href="#L56" id="L56" class="l"> 56: </a>    }
+<a href="#L57" id="L57" class="l"> 57: </a>
+<a href="#L58" id="L58" class="l"> 58: </a>
+<a href="#L59" id="L59" class="l"> 59: </a>
+<a href="#L60" id="L60" class="l"> 60: </a>    <span class="php-comment">/**
+</span><a href="#L61" id="L61" class="l"> 61: </a><span class="php-comment">     * StrToLower in UTF-8.
+</span><a href="#L62" id="L62" class="l"> 62: </a><span class="php-comment">     */</span>
+<a href="#L63" id="L63" class="l"> 63: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> <span class="php-keyword2">strtolower</span>(<span class="php-var">$s</span>)
+<a href="#L64" id="L64" class="l"> 64: </a>    {
+<a href="#L65" id="L65" class="l"> 65: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">function_exists</span>(<span class="php-quote">'mb_strtolower'</span>))
+<a href="#L66" id="L66" class="l"> 66: </a>            <span class="php-keyword1">return</span> <span class="php-keyword2">mb_strtolower</span>(<span class="php-var">$s</span>, <span class="php-quote">'UTF-8'</span>);
+<a href="#L67" id="L67" class="l"> 67: </a>
+<a href="#L68" id="L68" class="l"> 68: </a>        <span class="php-keyword1">return</span> @<span class="php-keyword2">iconv</span>(<span class="php-quote">'WINDOWS-1250'</span>, <span class="php-quote">'UTF-8'</span>, <span class="php-keyword2">strtr</span>( <span class="php-comment">// intentionally @
+</span><a href="#L69" id="L69" class="l"> 69: </a>            <span class="php-keyword2">iconv</span>(<span class="php-quote">'UTF-8'</span>, <span class="php-quote">'WINDOWS-1250//IGNORE'</span>, <span class="php-var">$s</span>),
+<a href="#L70" id="L70" class="l"> 70: </a>            <span class="php-quote">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ\x8a\x8c\x8d\x8e\x8f\xa3\xa5\xaa\xaf\xbc\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2\xd3\xd4\xd5\xd6\xd8\xd9\xda\xdb\xdc\xdd\xde&quot;</span>,
+<a href="#L71" id="L71" class="l"> 71: </a>            <span class="php-quote">&quot;abcdefghijklmnopqrstuvwxyz\x9a\x9c\x9d\x9e\x9f\xb3\xb9\xba\xbf\xbe\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf8\xf9\xfa\xfb\xfc\xfd\xfe&quot;</span>
+<a href="#L72" id="L72" class="l"> 72: </a>        ));
+<a href="#L73" id="L73" class="l"> 73: </a>    }
+<a href="#L74" id="L74" class="l"> 74: </a>
+<a href="#L75" id="L75" class="l"> 75: </a>
+<a href="#L76" id="L76" class="l"> 76: </a>
+<a href="#L77" id="L77" class="l"> 77: </a>    <span class="php-comment">/**
+</span><a href="#L78" id="L78" class="l"> 78: </a><span class="php-comment">     * Converts UTF-8 to ASCII.
+</span><a href="#L79" id="L79" class="l"> 79: </a><span class="php-comment">     * iconv('UTF-8', 'ASCII//TRANSLIT', ...) has problem with glibc!
+</span><a href="#L80" id="L80" class="l"> 80: </a><span class="php-comment">     */</span>
+<a href="#L81" id="L81" class="l"> 81: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> utf2ascii(<span class="php-var">$s</span>)
+<a href="#L82" id="L82" class="l"> 82: </a>    {
+<a href="#L83" id="L83" class="l"> 83: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">strtr</span>(<span class="php-var">$s</span>, <span class="php-quote">'`\'&quot;^~'</span>, <span class="php-quote">'-----'</span>);
+<a href="#L84" id="L84" class="l"> 84: </a>        <span class="php-keyword1">if</span> (ICONV_IMPL === <span class="php-quote">'glibc'</span>) {
+<a href="#L85" id="L85" class="l"> 85: </a>            <span class="php-var">$s</span> = @<span class="php-keyword2">iconv</span>(<span class="php-quote">'UTF-8'</span>, <span class="php-quote">'WINDOWS-1250//TRANSLIT'</span>, <span class="php-var">$s</span>); <span class="php-comment">// intentionally @
+</span><a href="#L86" id="L86" class="l"> 86: </a>            <span class="php-var">$s</span> = <span class="php-keyword2">strtr</span>(<span class="php-var">$s</span>, <span class="php-quote">&quot;\xa5\xa3\xbc\x8c\xa7\x8a\xaa\x8d\x8f\x8e\xaf\xb9\xb3\xbe\x9c\x9a\xba\x9d\x9f\x9e\xbf\xc0\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0\xd1\xd2&quot;</span>
+<a href="#L87" id="L87" class="l"> 87: </a>                .<span class="php-quote">&quot;\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0\xf1\xf2\xf3\xf4\xf5\xf6\xf8\xf9\xfa\xfb\xfc\xfd\xfe&quot;</span>,
+<a href="#L88" id="L88" class="l"> 88: </a>                <span class="php-quote">&quot;ALLSSSSTZZZallssstzzzRAAAALCCCEEEEIIDDNNOOOOxRUUUUYTsraaaalccceeeeiiddnnooooruuuuyt&quot;</span>);
+<a href="#L89" id="L89" class="l"> 89: </a>        } <span class="php-keyword1">else</span> {
+<a href="#L90" id="L90" class="l"> 90: </a>            <span class="php-var">$s</span> = @<span class="php-keyword2">iconv</span>(<span class="php-quote">'UTF-8'</span>, <span class="php-quote">'ASCII//TRANSLIT'</span>, <span class="php-var">$s</span>); <span class="php-comment">// intentionally @
+</span><a href="#L91" id="L91" class="l"> 91: </a>        }
+<a href="#L92" id="L92" class="l"> 92: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">str_replace</span>(<span class="php-keyword1">array</span>(<span class="php-quote">'`'</span>, <span class="php-quote">&quot;'&quot;</span>, <span class="php-quote">'&quot;'</span>, <span class="php-quote">'^'</span>, <span class="php-quote">'~'</span>), <span class="php-quote">''</span>, <span class="php-var">$s</span>);
+<a href="#L93" id="L93" class="l"> 93: </a>        <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L94" id="L94" class="l"> 94: </a>    }
+<a href="#L95" id="L95" class="l"> 95: </a>
+<a href="#L96" id="L96" class="l"> 96: </a>
+<a href="#L97" id="L97" class="l"> 97: </a>
+<a href="#L98" id="L98" class="l"> 98: </a>    <span class="php-comment">/**
+</span><a href="#L99" id="L99" class="l"> 99: </a><span class="php-comment">     * Converts UTF-8 to dest encoding + html entities.
+</span><a href="#L100" id="L100" class="l">100: </a><span class="php-comment">     */</span>
+<a href="#L101" id="L101" class="l">101: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> utf2html(<span class="php-var">$s</span>, <span class="php-var">$encoding</span>)
+<a href="#L102" id="L102" class="l">102: </a>    {
+<a href="#L103" id="L103" class="l">103: </a>        <span class="php-comment">// convert from UTF-8
+</span><a href="#L104" id="L104" class="l">104: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">strcasecmp</span>(<span class="php-var">$encoding</span>, <span class="php-quote">'utf-8'</span>) === <span class="php-num">0</span>) <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L105" id="L105" class="l">105: </a>
+<a href="#L106" id="L106" class="l">106: </a>        <span class="php-comment">// prepare UTF-8 -&gt; charset table
+</span><a href="#L107" id="L107" class="l">107: </a>        self::<span class="php-var">$xlat</span> = &amp; self::<span class="php-var">$xlatCache</span>[<span class="php-keyword2">strtolower</span>(<span class="php-var">$encoding</span>)];
+<a href="#L108" id="L108" class="l">108: </a>        <span class="php-keyword1">if</span> (!self::<span class="php-var">$xlat</span>) {
+<a href="#L109" id="L109" class="l">109: </a>            <span class="php-keyword1">for</span> (<span class="php-var">$i</span> = <span class="php-num">128</span>; <span class="php-var">$i</span>&lt;<span class="php-num">256</span>; <span class="php-var">$i</span>++) {
+<a href="#L110" id="L110" class="l">110: </a>                <span class="php-var">$ch</span> = @<span class="php-keyword2">iconv</span>(<span class="php-var">$encoding</span>, <span class="php-quote">'UTF-8//IGNORE'</span>, <span class="php-keyword2">chr</span>(<span class="php-var">$i</span>)); <span class="php-comment">// intentionally @
+</span><a href="#L111" id="L111" class="l">111: </a>                <span class="php-keyword1">if</span> (<span class="php-var">$ch</span>) self::<span class="php-var">$xlat</span>[<span class="php-var">$ch</span>] = <span class="php-keyword2">chr</span>(<span class="php-var">$i</span>);
+<a href="#L112" id="L112" class="l">112: </a>            }
+<a href="#L113" id="L113" class="l">113: </a>        }
+<a href="#L114" id="L114" class="l">114: </a>
+<a href="#L115" id="L115" class="l">115: </a>        <span class="php-comment">// convert
+</span><a href="#L116" id="L116" class="l">116: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">preg_replace_callback</span>(<span class="php-quote">'#[\x80-\x{FFFF}]#u'</span>, <span class="php-keyword1">array</span>(__CLASS__, <span class="php-quote">'cb'</span>), <span class="php-var">$s</span>);
+<a href="#L117" id="L117" class="l">117: </a>    }
+<a href="#L118" id="L118" class="l">118: </a>
+<a href="#L119" id="L119" class="l">119: </a>
+<a href="#L120" id="L120" class="l">120: </a>
+<a href="#L121" id="L121" class="l">121: </a>    <span class="php-comment">/**
+</span><a href="#L122" id="L122" class="l">122: </a><span class="php-comment">     * Callback; converts UTF-8 to HTML entity OR character in dest encoding.
+</span><a href="#L123" id="L123" class="l">123: </a><span class="php-comment">     */</span>
+<a href="#L124" id="L124" class="l">124: </a>    <span class="php-keyword1">private</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> cb(<span class="php-var">$m</span>)
+<a href="#L125" id="L125" class="l">125: </a>    {
+<a href="#L126" id="L126" class="l">126: </a>        <span class="php-var">$m</span> = <span class="php-var">$m</span>[<span class="php-num">0</span>];
+<a href="#L127" id="L127" class="l">127: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword1">isset</span>(self::<span class="php-var">$xlat</span>[<span class="php-var">$m</span>])) <span class="php-keyword1">return</span> self::<span class="php-var">$xlat</span>[<span class="php-var">$m</span>];
+<a href="#L128" id="L128" class="l">128: </a>
+<a href="#L129" id="L129" class="l">129: </a>        <span class="php-var">$ch1</span> = <span class="php-keyword2">ord</span>(<span class="php-var">$m</span>[<span class="php-num">0</span>]);
+<a href="#L130" id="L130" class="l">130: </a>        <span class="php-var">$ch2</span> = <span class="php-keyword2">ord</span>(<span class="php-var">$m</span>[<span class="php-num">1</span>]);
+<a href="#L131" id="L131" class="l">131: </a>        <span class="php-keyword1">if</span> ((<span class="php-var">$ch2</span> &gt;&gt; <span class="php-num">6</span>) !== <span class="php-num">2</span>) <span class="php-keyword1">return</span> <span class="php-quote">''</span>;
+<a href="#L132" id="L132" class="l">132: </a>
+<a href="#L133" id="L133" class="l">133: </a>        <span class="php-keyword1">if</span> ((<span class="php-var">$ch1</span> &amp; <span class="php-num">0xE0</span>) === <span class="php-num">0xC0</span>)
+<a href="#L134" id="L134" class="l">134: </a>            <span class="php-keyword1">return</span> <span class="php-quote">'&amp;#'</span> . (((<span class="php-var">$ch1</span> &amp; <span class="php-num">0x1F</span>) &lt;&lt; <span class="php-num">6</span>) + (<span class="php-var">$ch2</span> &amp; <span class="php-num">0x3F</span>)) . <span class="php-quote">';'</span>;
+<a href="#L135" id="L135" class="l">135: </a>
+<a href="#L136" id="L136" class="l">136: </a>        <span class="php-keyword1">if</span> ((<span class="php-var">$ch1</span> &amp; <span class="php-num">0xF0</span>) === <span class="php-num">0xE0</span>) {
+<a href="#L137" id="L137" class="l">137: </a>            <span class="php-var">$ch3</span> = <span class="php-keyword2">ord</span>(<span class="php-var">$m</span>[<span class="php-num">2</span>]);
+<a href="#L138" id="L138" class="l">138: </a>            <span class="php-keyword1">if</span> ((<span class="php-var">$ch3</span> &gt;&gt; <span class="php-num">6</span>) !== <span class="php-num">2</span>) <span class="php-keyword1">return</span> <span class="php-quote">''</span>;
+<a href="#L139" id="L139" class="l">139: </a>            <span class="php-keyword1">return</span> <span class="php-quote">'&amp;#'</span> . (((<span class="php-var">$ch1</span> &amp; <span class="php-num">0xF</span>) &lt;&lt; <span class="php-num">12</span>) + ((<span class="php-var">$ch2</span> &amp; <span class="php-num">0x3F</span>) &lt;&lt; <span class="php-num">06</span>) + ((<span class="php-var">$ch3</span> &amp; <span class="php-num">0x3F</span>))) . <span class="php-quote">';'</span>;
+<a href="#L140" id="L140" class="l">140: </a>        }
+<a href="#L141" id="L141" class="l">141: </a>
+<a href="#L142" id="L142" class="l">142: </a>        <span class="php-keyword1">return</span> <span class="php-quote">''</span>;
+<a href="#L143" id="L143" class="l">143: </a>    }
+<a href="#L144" id="L144" class="l">144: </a>
+<a href="#L145" id="L145" class="l">145: </a>}
+<a href="#L146" id="L146" class="l">146: </a></code></pre>
+
+	<div id="footer">
+		Texy2 API documentation generated by <a href="http://github.com/nette/apigen">Apigen</a>
+	</div>
+</div>
+</body>
+</html>

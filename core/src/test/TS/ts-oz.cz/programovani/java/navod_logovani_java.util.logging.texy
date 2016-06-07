@@ -1,0 +1,163 @@
+
+Logování v Javě - `log4j` a `java.util.logging`
+###############################################
+
+
+Pro logování v Javě se již dlouho používá především "*log4j*":http://logging.apache.org/log4j/,
+dříve součást projektu "//Jakarta Commons//":http://commons.apache.org/.
+Postupem času se z log4j stal //de facto// standard.
+
+Ovšem pravým standardem se později stalo až API z balíčku `java.util.logging` v JRE (tuším) 1.4.
+
+
+
+log4j
+=====
+
+
+**log4j** je komplexnější a dá se podrobněji konfigurovat pomocí konf. souboru (standardně log4j.properties někde v classpath).
+
+Zde je ukázka konfiguračního souboru pro log4j:
+
+/--code java.properties
+log4j.rootLogger=WARN, stdout, file
+
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d %-5r %-5p [%c] (%t:%x) %m%n
+
+log4j.appender.file=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.file.File=WS_klient.log
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.file.layout.ConversionPattern=%d %-5r %-5p [%c] (%t:%x) %m%n
+\--
+
+Z hlediska Java kódu je logování s log4j podobné jako s `java.util.logging` -
+ukázu tedy viz níže.
+
+
+
+`java.util.logging`
+===================
+
+
+**`java.util.logging`** je zobecnění log4j, je tedy méně komplexní a v konf. souboru lze nastavit jen dost omezeně.
+Pokud chce širší možnosti (např. Memory Handler), musíte je (v aktuální verzi) nastavit programově.
+
+Osobně toto API používám víceméně proto, že má v API 6 úrovní logování - `SEVERE`, `WARN`, `INFO`, `FINE`, `FINER`, `FINEST`.
+Dost mi totiž na log4j vadilo, že má jen jeden `DEBUG`, ale i debug informací chci vidět různě - někdy jen základní hlášky o průběhu,
+jindy celé výpisy obsahů objektů.
+
+
+Ukázka konfiguračního souboru pro `java.util.logging`:
+/--code java.properties
+# Handlers
+handlers = java.util.logging.ConsoleHandler java.util.logging.FileHandler
+
+
+# Console
+java.util.logging.ConsoleHandler.formatter = cz.dynawest.logging.SimplestFormatter
+java.util.logging.ConsoleHandler.level = ALL
+
+
+# File
+java.util.logging.FileHandler.level = ALL
+java.util.logging.FileHandler.pattern = WS_klient.log
+java.util.logging.FileHandler.formatter = cz.dynawest.logging.SingleLineFormatter
+java.util.logging.FileHandler.limit = 0
+java.util.logging.FileHandler.append = true
+
+
+# Default global logging level.
+.formatter = cz.dynawest.logging.SimplestFormatter
+.level = INFO
+\--
+
+Standardně bere `java.util.logging` nastavení odkudsi z `$JAVA_HOME/lib/logging.properties`,
+což je programátorovi samozřejmě k ničemu. Nastavit vlastní konfigurační soubor lze dvěma způsoby:
+
+1) Nastavením cesty k souboru do JVM proměnné `java.util.logging.config.file`:
+
+/--code
+java -Djava.util.logging.config.file=logging.properties
+\--
+
+2) Programově:
+
+/--code java .[brush:]
+LogManager.getLogManager().readConfiguration(new FileInputStream("logging.properties"));
+\--
+
+V obou případech se pak čte z `logging.properties` na //classpath//, tj. např. z vašeho JAR souboru.
+
+Pro zjednodušení používám zhruba takovýto kód, který respektuje onu proměnnou, ale defaultně bere `logging.properties`.
+Uznávám, v log4j takovéto opičárny dělat nemusíte.
+
+
+/--code java .[brush:]
+public class LoggingUtils
+{
+  private static final Logger log = Logger.getLogger( LoggingUtils.class.getName() );
+
+  
+  /** Sets up logging. Uses "#/logging.properties" as default path. */
+  public static void initLogging() {
+    initLogging("#/logging.properties");
+  }
+
+
+  /** Sets up logging. */
+  public static void initLogging( String filePath ) {
+    String logConfigFile = System.getProperty("java.util.logging.config.file", filePath);
+    try {
+      InputStream is;
+      if( logConfigFile.startsWith("#") )
+        is = Game.class.getResourceAsStream( logConfigFile.substring(1) );
+        // "Use getClass().getClassLoader().findResource("path") instead."
+      else
+        is = new FileInputStream(logConfigFile);
+
+			log.info("Načítám konfiguraci logování ze souboru: "+logConfigFile+" (nastaveno v systémové proměnné java.util.logging.config.file)");
+      LogManager.getLogManager().readConfiguration( is );
+    }catch(IOException ex){
+      System.err.println("Chyba při načítání nastavení logování ze souboru ["+logConfigFile+"]. Bude použito výchozí.");
+    }
+  }
+
+}
+\--
+
+
+Samotné logování potom provedete takto:
+
+/--code java .[brush:]
+class LoggingTest {
+
+  // Získáte logger s nějakým jménem - obvykle se jménem aktuální třídy.
+  // Uložíte si ho do privátní statické proměnné - logování je thread-safe.
+  private static Logger log = Logger.getLogger("cz.dynawest.test.log.LoggingTest");
+
+  // Někdy se můžete vidět:
+  //private Logger log = Logger.getLogger(LoggingTest.class.getName());
+  // To se používá kvůli budoucímu refaktoringu; někdy je to i kratší na zápis.
+
+  
+  // V metodách už potom jednoduše logujete:
+  public void testLogging(){
+
+    log.info("Testujeme logování.");
+    
+  }
+}
+\--
+
+
+
+
+
+
+Dokumentaci k `java.util.logging` najdete standardně
+v "JavaDoc":[http://java.sun.com/j2se/1.4.2/docs/api/java/util/logging/package-summary.html]u
+a v dokumentu "Java Logging Overview":http://java.sun.com/j2se/1.4.2/docs/guide/util/logging/overview.html.
+
+

@@ -1,0 +1,337 @@
+JTexy! - Texy! Java Implementation project
+******************************************
+
+I am about to port "Texy!":http://www.texy.info/ to Java.
+
+But that's a long-term plan, therefore this page is here as a placeholder.
+
+Texy! author, David Grudl, created a test suite of several Texy! formatted files,
+which can be used to validate the implementation.
+
+Available at http://download.texy.info/refs.zip .
+
+
+
+Notes...
+===============
+
+
+
+Oh no - JDK6's regular expressions do not support recursion :(
+---------------------------------------------------------------
+
+I am looking for a Java regexp lib with support for recursion, like: `<a+(?0)>`.
+See http://www.php.net/manual/en/regexp.reference.recursive.php.
+I need it for this expression:
+
+/--code
+`(?:mUi)^/--++ *+(.*)(?: *(?<= |^)\\.((?:\\([^)\\n]+\\)|\\[[^\\]\\n]+\\]|\\{[^}\\n]+\\}|<>|>|=|<){1,4}?))?$((?:\\n.*+)*)(?:\\n(?0)|\\n\\\\--.*$|\\z)`
+\--
+
+JDK does not support it, ORO does neither, nor Stevesoft Pat does.
+
+
+
+
+
+`dev.java.net` is sooooo slooow....
+-----------------------------------
+
+Gone to Google Code: http://code.google.com/p/jtexy/
+
+
+
+What's the relation  between ORO and Jakarta Regexp?
+----------------------------------------------------
+
+ORO developement stalled in 2004?
+Is Jakarta Regexp a successor?
+Is Jakarta Regexp PERL compatible? ORO claims so, Regexp does not.
+
+
+Parsing core: TexyParser.php @ 152
+----------------------------------
+
+"PHP's preg_match_all":http://php.net/manual/en/function.preg-match-all.php
+
+/--code php .[brush:]
+		// parse loop
+		$matches = array();
+		$priority = 0;
+		foreach ($this->patterns as $name => $pattern)
+		{
+			preg_match_all(
+				$pattern['pattern'],
+				$text,
+				$ms,
+				PREG_OFFSET_CAPTURE | PREG_SET_ORDER
+			);
+
+			foreach ($ms as $m) {
+				$offset = $m[0][1];
+				foreach ($m as $k => $v) $m[$k] = $v[0];
+				$matches[] = array($offset, $name, $m, $priority);
+			}
+			$priority++;
+		}
+\--
+
+`PREG_OFFSET_CAPTURE` - makes the returned multidimensional array even more multidimensional - stores the string at [0] and the offset at [1] (well, PHP is really that shitty).
+
+`PREG_SET_ORDER` - the matches are ordered so that sub-group is next to it's parent group or it's sibling (depth-first instead of breadth-first).
+
+`|...|U` makes all quantifiers ungreedy:
+
+> You could also make ALL the quantifiers in a regular expression "ungreedy" by using the U modifier.
+> http://www.skdevelopment.com/php-regular-expressions.php
+
+**AAAAaaaaaa!**
+---------------
+
+No Java library supports global ungreediness! :-((
+ * "StackOverflow post:":http://stackoverflow.com/questions/1552198/java-regexp-ungreedy-flag
+ * "Java forums post:":http://forums.sun.com/thread.jspa?threadID=730126
+ * "Java forums archive:":http://forums.sun.com/thread.jspa?messageID=10836887&#10836887
+ * Ales Novak - ales A netbeans.com
+ * java.util.regex JavaDoc: http://java.sun.com/javase/7/docs/api/java/util/regex/Pattern.html
+ * java.util.regex tester: http://www.regexplanet.com/simple/index.html
+
+
+Promising clues:
+----------------
+
+ * OpenJDK should support LAZY
+ * There's a PHP port to Java: http://www.java2s.com/Open-Source/Java-Document/EJB-Server-resin-3.1.5/quercus/com/caucho/quercus/lib/regexp/JavaRegexpModule.java.java-doc.htm
+ * I could hack the JDK code: http://hg.openjdk.java.net/jdk7/2d/jdk/file/3b6d7e15ccd9/src/share/classes/java/util/regex/Pattern.java
+   * http://hg.openjdk.java.net/jdk7/2d/jdk/file/3b6d7e15ccd9/src/share/classes/java/util/regex/Pattern.java
+   *  2721     private void addFlag(),   2760     private void subFlag()
+
+
+
+`preg_match_all()`:
+-------------------
+
+Is this the same as multiple calls to `preg_match()`?
+ --> `preg_match()` returns the number of times pattern  matches. 
+That will be either 0 times (no match) or 1 time because 
+`preg_match()` will stop searching after the first match. 
+`preg_match_all()`  on the contrary will continue until it reaches the end of subject.
+
+Is there similar in Java, or do I have to iterate?
+
+
+
+Need to re-design...
+--------------------
+
+Original design is, despite of author's credits,... not perfect.
+ * The way modules are registered
+ * and whole callback system
+
+
+Questions
+---------
+
+`RegExp.Patterns.php` - slash hell - do the slashes belong to RE or to PHP?
+
+protect() - will I preserve it?  //Yes.//
+
+Is dom4j or jDOM enough for #JTexy? //Yet seems so.//
+
+modifier.decorate( elmRet ) dosn't need texy reference - it should keep it from it's creation.
+
+Why Texy doesn't keep `$handler`, `$pattern`, `$name` together in a `class`? `function registerLinePattern($handler, $pattern, $name)`
+
+WTF, `list(, $mParam, $mMod, $mContent) = $matches;` everywhere? Again, why not put it in a `class`?
+
+`$pattern . 'Am', // anchored & multiline` --> #JTexy: Is it the same as prepended `^` ?
+
+TexyParser.php @ 169: `$priority++;` - later patterns have higher priority? //No, the other way.//
+
+What is `TexyLineParser.again` good for? Never set to `true`?
+
+
+
+
+Texy Refactoring
+================
+
+<blockquote>
+
+Zdravím,
+
+mám pár návrhů na mírný refactoring parseru:
+
+ **1) Zavést třídu pro patterny; handlery uložit k patternům rovnou jako referenci funkce.**
+
+/--code php .[brush:]
+public class RegexpInfo {
+
+	public String name;
+	public String perlRegexp;
+	public String regexp;
+	public String flags;
+	public String mode;
+	public String htmlElement;
+
+	// Handler of this pattern - a "callback".
+	public PatternHandler handler;
+
+	public enum Type { LINE, BLOCK };
+	public Type type = Type.LINE;
+}
+\--
+
+ **2) V parseru: Výsledky `preg_match_all()` převést na pole objektů, místo pole polí (... polí polí, jak je zvykem v PHP).**
+
+/--code php    
+class ParserMatchInfo implements Comparable<ParserMatchInfo>
+{
+	public final RegexpInfo pattern;
+	public final List<MatchWithOffset> groups;
+	public final int offset;
+	public final int priority;
+}
+\--
+
+Taková třída je taky přirozeným místem pro funkci `cmp()`.
+
+ **3) Při vytváření objektu s informacemi o matchnutí rovnou uložit referenci na použitý patten, místo jeho jména.**
+    Zaprvé se tak ušetří jeden lookup, zadruhé to zpřehlední kód.
+
+ **4) V názvech proměnných zavést pojem `group` pro skupiny matchnutí reg. výrazu. "Match" ponechat pro celý match.**
+    Aneb: 
+
+/--code php .[brush:]
+preg_match_all( $pattern['pattern'],  $text,  $ms,  PREG_SET_ORDER );
+$matches[0];    // --> First match
+$matches[0][0]; // --> Group - matched text of the whole first match.
+$matches[0][1]; // --> First sub-group of the first match.
+\--
+
+Tak nebude nutné pojmenovávat proměnné $ms, $matches, $m, $mMatches, ...
+
+
+ **5) Přesunout TexyParagraphModule.process() do TexyBlockParser
+
+ **6) Zavést třídu ParserEvent, dědit od ní a tyto používat pro model událostí.
+
+
+
+----
+
+Jsou to všechno interní věci, takže to nikoho moc netrápí, ale když už je to ten opensource a někdo by to mohl chtít časem hackovat... ;-)
+
+Ondra
+
+PS: Kódy jsou v Javě; nápady na refaktorizaci totiž pocházejí ze vznikajícího JTexy.
+
+
+</blockquote>
+
+
+
+Sun feature request
+===================
+
+Synopsis
+--------
+
+Regex: Support for UNGREEDY or (?U) flag
+
+Description
+-----------
+
+Perl regular expressions have "/.../U" and "(?U)".
+Many of text processing tools based on regexp use this extensively (e.g. Texy).
+
+These tools are done in a way that makes quite hard to add the ungreedy (reluctant) mode, using `.*?`,  to all closures - they have many regular expressions (few dozens to hundreds), and many of them change with each release.
+
+Justification
+-------------
+
+1) This would make porting such text tools easier to port to Java, and thus would contribute to spread
+
+2) None of other Java regexp libs (including ORO and Jakarta Regexp) has support for this feature.
+
+3) I believe it wouldn't be hard to implement since there already is support for in-place reluctant closures. Checking for a flag when processing a closure shouldn't be complicated.
+
+
+
+Expected Behavior:
+------------------
+
+Regex: ".*foo" with UNGREEDY flag or "(?U).*foo"
+String:  "AAAfooBBBfoo"
+
+Desired result:
+  group(1): AAAfoo
+  group(2): BBBfoo
+
+
+Actual Behavior:
+----------------
+
+Current result:
+  group(1): AAAfooBBBfoo
+
+
+Source code for an executable test case:
+----------------------------------------
+
+String inputStr = "AAAfooBBBfoo";
+String patternStr = ".*foo";
+ 
+Pattern pattern = Pattern.compile(patternStr);
+Matcher matcher = pattern.matcher(inputStr);
+
+... etc.
+
+
+Workaround
+----------
+
+Well, changing all closures to be reluctant. *sigh*
+
+
+User Info
+---------
+ozizka@redhat.com
+
+
+
+
+
+Java implementace překladače Texy!
+==================================
+
+Texy je bezesporu jeden z pokladů českého opensource.
+Je škoda, že je zatím jen pro PHP.
+
+<blockquote>
+Zdravím,
+
+nechtěl by někdo čirou náhodou implementovat překladač Texy v Javě?
+
+www.texy.info
+
+Mohlo by to být dobré téma projektu / bakalářky...
+Formální specifikace není, jen podle popisu syntaxe a ukázek použití...
+
+Java komunita by vás jistě oslavovala :-)
+
+Ondra
+</blockquote>
+
+-------------------
+
+<blockquote>
+
+Autor Texy David Grudl sestavil sadu testovacích souborů, na kterých lze ověřit implementaci překladače.
+K dispozici na   http://download.texy.info/refs.zip
+
+Algou a omegou původní PHP imiplementace jsou PCRE. Knihovna pro Javu, která zvládá PCRE podle Perl 5, je na http://jakarta.apache.org/oro/  .
+
+Ondra Žižka
+
+</blockquote>

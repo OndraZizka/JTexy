@@ -1,0 +1,40 @@
+ALTER TABLE ... RENAME [OVERWRITE] [TO] to overwrite existing table
+************************
+
+**This is a MySQL feature request submitted as "bug report #36271":http://bugs.mysql.com/bug.php?id=36271.**
+
+Since MySQL does not support passing result sets in stored procedures, common practice is
+to use TEMPORARY TABES when working with larger data sets. (From what did I see,
+this is the most frequently discussed topic at 
+"Stored Procedures forum":http://forums.mysql.com/list.php?98.
+
+To create generally usable API, one needs to define the names of temp tables with input
+and output data. Thus, passing temp tables between different procedures needs to rename
+them. To make it safely, one has to try the drop before altering:
+
+
+/--code
+CALL PrepareSomeData(...);  -- This creates TEMP TABLE prepared_data
+DROP TEMPORARY TABLE IF EXISTS input_data;
+ALTER TABLE prepared_data RENAME TO input_data;
+CALL ProcessData(...);      -- This procedure looks for the input_data table.
+\--
+
+And this has to be done many times.
+
+
+
+My suggestion is to introduce the `OVERWRITE` option to the `ALTER TABLE` statement:
+
+/--code
+CALL PrepareSomeData(...);  -- This creates TEMP TABLE prepared_data
+ALTER TABLE prepared_data RENAME OVERWRITE TO input_data;
+CALL ProcessData(...);      -- This procedure looks for the input_data table.
+\--
+
+The alter with OVERWRITE would check whether a table with such name exists, and if  so, it
+would drop it first.
+
+(Of course, better solution of the problem itself would be a possibility to pass result
+sets in variables, but as I got to know, that is planned in far future.)
+

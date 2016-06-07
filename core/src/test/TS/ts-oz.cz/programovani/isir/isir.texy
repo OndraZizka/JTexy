@@ -1,0 +1,187 @@
+Aplikace pro kontrolu výskytů subjektů v insolvenčním rejstříku
+###############################################################
+
+//Průvodní dopis/dokumentace k testovací konzolové verzi.//
+ //Určeno výhradně pro Markétu Vojtíkovou.//
+
+
+1. Účel aplikace
+****************
+
+Aplikace momentálne provádí tyto operace:
+
+- Aktualizace místní kopie archivu událostí webové služby ISIR
+- Import seznamu dlužníků z Excel souboru v předem dohodnutém formátu
+- Kontrola výskytu dlužníků z tohoto seznamu mezi subjekty vedenými v ISIR
+
+Bližší popis těchto operací následuje níže.
+
+2. Konzolová verze
+******************
+
+Konzolová verze aplikace znamená, že má textové rozhraní.
+Při vývoji testovací verze jsem se soustředil hlavně na funkčnost;
+výroba grafického ("okenního") rozhraní by oddálila datum vzniku správně fungující aplikace.
+
+3. Budoucí plány
+****************
+
+Funkční hledisko (co aplikace dovede)
+-------------------------------------
+
+Postupně mířím k aplikaci, která bude fungovat podle požadavků v mailech, které jsme si dosud vyměnili.
+Část z nich již funguje, např. posílání mailem při nové události ve sledovaném spisu,
+ignorování starých událostí vybraného spisu atd.
+Po návratu z dovolené tyto požadavky stručně shrnu, či spíše přednesu ucelený návrh, jak by aplikace mohla fungovat.
+
+Uživatelské rozhraní
+--------------------
+
+Současná konzolová verze je jen provizorium pro vás, a zároveň ji lze použít pro větší společnosti,
+které by chtěli pouze rozklad archivu ISIR do vlastní databáze.
+
+V zásadě jsou dvě možnosti dalšího vývoje uživatelského rozhraní aplikace(které se navzájem nevylučují):
+- vytvoření grafické uživatelské rozhraní, to by pravděpodobně žádalo poměrně dlouhý vývoj (cca do ledna 2009);
+- vytvoření webového rozhraní, což by znamenalo, že by se aplikace ovládala v prohlížeči; vývoj webové aplikace je rychlejší.
+
+Jak už jsem psal v mailu, ohledně tohoto bych si s vámi rád povyprávěl po telefonu -
+zeptám se vás, zda a proč byste preferovala tu kterou možnost,
+případně vysvětlil rozdíly mezi nimi - obě mají svá pro a proti. Shrnu nejdůležitější:
+
+**Webová aplikace:**
+//Výhody//
+* Běží neustále, tedy i hlídá neustále, a může spolehlivě poslat mail / SMS při výskytu některého subjektu v ISIR.
+* Dostanete se na ni odkudkoliv, kde je připojení k internetu a prohlížeč.
+//Nevýhody//
+* Je nutné odesílat seznam klientů na server.
+
+**Program do vlastního počítače:**
+V podstatě vše naopak, než je to u webové verze:
+* Nemohu (z principu) zaručit, že program poběží neustále; a když už ho spustíte, je zbytečné posílat maily, protože výsledek budete mít rovnou před sebou.
+* Není nutné posílat seznam sledovaných subjektů na web.
+
+
+
+4. Systémové požadavky
+***************************************
+
+Pro spuštění konzolové a grafické verze aplikace je nutné mít nainstalovanou platformu Java verze 1.6.0 a vyšší.
+(U webové verze tento požadavek odpadá.)
+
+Co je Java?
+===========
+
+Java je programovací jazyk a sada nástrojů, který jsem zvolil pro vývoj tohoto programu.
+Asi Javu znáte ve spojitosti s mobilními telefony.
+Jednou z nevýhod z Javy je, že pro spuštění programů  vytvořených pomocí Javy 
+je třeba mít nainstalovaný podpůrný program.
+
+Kontrola, zda je Java již instalovaná
+=====================================
+
+Pro kontrolu verze Javy nainstalované v počítači vyberte v nabídce Start položku //Spustit...//
+a zde zadejte:
+
+/--code
+cmd /K java -version
+\--
+
+Pokud se objeví zpráva ve smyslu "java není název souboru ani známého příkazu", Java není pravděpodobně není nainstalovaná.
+Jinak můžete přeskočit následující krok "Instalace Javy".
+
+
+5. Instalace Javy
+******************
+
+Ke stažení na adrese http://www.java.com/en/download/windows_xpi.jsp?locale=en&host=www.java.com:80 .
+Pokud se po stisknutí tlačítka //Free Java Download// této stránce objeví informace o tom,
+že již máte nejnovější verzi Javy, potom je vše vpořádku a krok instalace Javy lze přeskočit.
+
+Po spuštění instalace naskočí postupně několik oken a zastaví se to u dotazu na souhlas s licenčními podmínkami:
+Zde je nutno označit možnost "I accept the terms in the license agreement" a potom pokračovat tlačítkem "Next".
+Na dalším dialogovém okně je doporučeno zanechat "Typical" a pokračovat opět tlačítkem "Next".
+V posledním okně je informace o dokončení instalace, kterou potvrdíte stiskem tlačítka "Finish".
+
+Pokud by se při instalaci Javy vyskytl problém, budeme muset vyřešit podrobněji.
+Pomoci by mohl i návod na adrese http://www.kiv.zcu.cz/~netrvalo/vyuka/ppa1-06/cviceni/materialy/instalace-javy/instalace_javy.html -
+ale nevím, nakolik jste technicky zdatná; kdyžtak vám poradím po telefonu.
+
+
+6. Operace, které je možné provádět s touto verzí
+*************************************************
+
+a) Aktualizace místní kopie archivu událostí webové služby ISIR
+===============================================================
+
+Aktualizace se provádí spuštěním souboru `aktualizace.bat` (spouští se jako jiné programy - poklepáním).
+Program vypisuje zprávy z dění aktualizace - obvykle je možné je ignorovat.
+Pokud by se ve výpisu objevila chyba, potom je to samozřejmě špatně a tento výpis bude předmětem mého dalšího zkoumání.
+
+Tato akce sestává ze dvou - stažení nových událostí z webové služby, a jejich "rozšifrování" do normální databáze.
+
+b) Import seznamu dlužníků z Excel souboru v předem dohodnutém formátu
+======================================================================
+
+Před spuštěním importu umístěte Excelový soubor se subjekty do adresáře s aplikací.
+Soubor pojmenujte jako `subjekty.xls`.
+Data v souboru musí být podle dohodnutého formátu. Popis formátu následuje:
+
+- Jednotlivé listy představují skupiny zákazníků. Ve výpisu vyhledaných dlužníků uvidíte číslo skupiny (listu), na kterém se příslušný sledovaný subjekt nachází.
+- Na prvním řádku každého listu jsou nadpisy sloupců. Tento řádek se ignoruje. Údaje subjektů jsou od druhého řádku dále.
+- Sloupce s údaji subjektů počínají na prvním sloupci ("A") a jsou v následujícím pořadí:
+  1) příjmení/název
+  2) případné křestní jméno
+  3) datum narození ve formátu den.měsíc.rok (např. 31.1.2008)
+  4) IČ
+
+Při každém importu z Excel souboru se nejprve vymažou všechna stará pravidla, poté jsou načtena nová.
+
+Import se provádí spuštěním souboru `import.bat`.
+
+c) Kontrola výskytu dlužníků z tohoto seznamu mezi subjekty vedenými v ISIR
+===========================================================================
+
+Kontrolu provedete spuštěním souboru `kontrola.bat`.
+ V adresáři aplikace vznikne soubor "vypis.txt".
+ Ten otevřete (třeba v Poznámkovém bloku).
+ V souboru je výpis subjektů, které se shodují se zadanými pravidly. Princip shody popíšu později.
+ 
+Formát výpisu:
+--------------
+
+- Nejprve se vypíše seznam nalezených subjektů s jejich údaji a s číslem pravidla, kterým byli zachyceni.
+- Ke každému nalezenému subjektu se vypíše seznam událostí v jeho spisu, řazeno od nejstarší k nejnovější.
+- Následuje seznam všech pravidel v databázi, která se načetla při importu.
+
+Jak jsme si psali, toto je provizorium.
+Jedná se o první verzi funkční natolik, že si troufám vám ji poslat :-)
+Proto prosím o trochu shovívavosti k neohrabanosti tohoto "textového" ovládání programu;
+ale jinak byste musela čekat ještě na vyvinutí pohodlnějšího uživatelského rozhraní.
+
+Nakonec ještě doporučení:
+*************************
+
+Vývoj programu, jak už to bohužel bývá, jde pomaleji, než jsem předpokládal.
+Na druhou stranu jej ovšem nevyvíjím horkou jehlou a pečlivě promýšlím,
+jakým způsobem zajistit, aby vám neunikla jakákoliv podstatná informace z ISIR,
+ale na druhou stranu abyste nebyla zahlcena lavinou falešných poplachů.
+
+Přesto doporučuji provádět zatím nadále ruční kontrolu spolu s kontrolou programem
+a sledovat, zda se ve výpisu vyskytuje vše, co byste očekávala.
+Pokud ne, můžeme to řešit rovnou - protože sice později program oblečeme
+do pěkného barevného grafického kabátku, ale jádro zůstane stejné.
+Pochopitelně jej bude možné měnit i později, ale raději bych se napřed zaměřil
+na vysokou spolehlivost a kvalitu dodávaných informací,
+a až poté se vrhnu na uživatelské ovládání. Věřím, že i vy jako uživatelka to oceníte.
+
+--------------------------------
+Zdraví
+ Ondřej Žižka
+
+
+
+
+
+
+
+

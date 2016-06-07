@@ -1,0 +1,82 @@
+
+	<h2>How use clone in PHP4</h2>
+
+	<p>This example show how to implement PHP5 <code>clone</code> construction in older PHP4</p>
+
+	<pre class="php" style="color: #000066; border: 1px solid #d0d0d0; background-color: #f0f0f0;"><span class="kw1">if</span> <span class="br0">&#40;</span><span
+	class="br0">&#40;</span><span class="br0">&#40;</span>int<span class="br0">&#41;</span> <a href="http://www.php.net/phpversion"><span class="kw3">phpversion</span></a><span
+	class="br0">&#40;</span><span class="br0">&#41;</span> &lt; <span class="nu0">5</span><span class="br0">&#41;</span> &amp;&amp; <span class="br0">&#40;</span>!<a
+	href="http://www.php.net/function_exists"><span class="kw3">function_exists</span></a><span class="br0">&#40;</span><span class="st0">'clone'</span><span
+	class="br0">&#41;</span><span class="br0">&#41;</span><span class="br0">&#41;</span>
+ <a href="http://www.php.net/eval"><span class="kw3">eval</span></a><span
+	class="br0">&#40;</span><span class="st0">'function &amp;clone($obj) { return $obj; }'</span><span class="br0">&#41;</span>;
+&nbsp;
+<span class="re0">$obj</span> = <span
+	class="kw2">new</span> Object<span class="br0">&#40;</span><span class="br0">&#41;</span>;
+<span class="re0">$dolly</span> = clone <span class="br0">&#40;</span><span
+	class="re0">$obj</span><span class="br0">&#41;</span>;</pre>
+
+	<p>And Now for Something Completely Different:</p>
+
+	<pre class="javascript" style="color: #000066; border: 1px solid #d0d0d0; background-color: #f0f0f0;"><span class="kw2">function</span> trim<span class="br0">&#40;</span>s<span
+	class="br0">&#41;</span> <span class="br0">&#123;</span>
+  <span class="kw1">while</span> <span class="br0">&#40;</span>s.<span class="me1">substr</span><span
+	class="br0">&#40;</span><span class="nu0">0</span>, <span class="nu0">1</span><span class="br0">&#41;</span> == <span class="st0">' '</span><span
+	class="br0">&#41;</span> s = s.<span class="me1">substr</span><span class="br0">&#40;</span><span class="nu0">1</span><span class="br0">&#41;</span>;
+  <span
+	class="kw1">while</span> <span class="br0">&#40;</span>s.<span class="me1">substr</span><span class="br0">&#40;</span>s.<span class="me1">length</span><span
+	class="nu0">-1</span>, <span class="nu0">1</span><span class="br0">&#41;</span> == <span class="st0">' '</span><span class="br0">&#41;</span> s = s.<span
+	class="me1">substr</span><span class="br0">&#40;</span><span class="nu0">0</span>, s.<span class="me1">length</span><span class="nu0">-2</span><span
+	class="br0">&#41;</span>;
+  <span class="kw1">return</span> s;
+<span class="br0">&#125;</span></pre>
+
+
+################
+
+
+	How use clone in PHP4
+
+	This example show how to implement PHP5 clone construction in older PHP4
+
+	if (((int) phpversion() < 5) && (!function_exists('clone')))
+ eval('function &clone($obj) { return $obj; }');
+ 
+$obj = new Object();
+$dolly = clone ($obj);
+
+	And Now for Something Completely Different:
+
+	function trim(s) {
+  while (s.substr(0, 1) == ' ') s = s.substr(1);
+  while (s.substr(s.length-1, 1) == ' ') s = s.substr(0, s.length-2);
+  return s;
+}
+
+
+################
+
+How use clone in PHP4
+---------------------
+
+This example show how to implement PHP5 `clone` construction in older PHP4
+
+/---code php
+if (((int) phpversion() < 5) && (!function_exists('clone')))
+ eval('function &clone($obj) { return $obj; }');
+
+$obj = new Object();
+$dolly = clone ($obj);
+\---
+
+And Now for Something Completely Different:
+
+/---code javascript
+   function trim(s) {
+     while (s.substr(0, 1) == ' ') s = s.substr(1);
+     while (s.substr(s.length-1, 1) == ' ') s = s.substr(0, s.length-2);
+     return s;
+   }
+\---
+
+

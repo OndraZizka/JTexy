@@ -1,0 +1,76 @@
+Uzávěry v jazyce Java - přes místní vnitřní třídu
+#################################################
+
+Uzávěry jsou fajn věc - kolikrát programátorovi ušetří psaní metody nebo třídy,
+kterou by použil jen na jednom místě. Využívá se jich zejména při tvorbě GUI((grafických uživatelských rozhraní)).
+
+Mým nejoblíbenějším jazykem (když pomineme vlastnosti některých implementací)
+je JavaScript, mimojiné pro jeho elegantní řešení uzávěrů.
+
+Jaké máme možnosti uzávěrů v Javě? Já jsem našel jen tento:
+
+/--code java .[brush:]
+  /** Creates new form HlavniOkno */
+  public HlavniOkno() {
+
+    initComponents();
+    
+    // Import Button action
+    class ImportButtonListener implements ActionListener {
+      public ImportButtonListener( HlavniOkno okno ) {  this.okno = okno; }
+      private HlavniOkno okno;
+      public void actionPerformed( ActionEvent evt ) {
+        okno.notifyImportButtonPressed();
+      }
+    }    
+    tabsPanel.getImportPanel().jbtnImportovat.addActionListener( new ImportButtonListener( this ) );
+    
+  }
+\--
+
+Jde o to, že při použití anonymní vnitřní třídy nemůžete použít pojmenovaný konstruktor,
+nelze tedy objektu předat nějakou hodnotu (což je podle mě škoda, ale asi tomu něco brání).
+Jinak by se dalo provést toto:
+
+/--code java .[brush:]
+  /** Creates new form HlavniOkno */
+  public HlavniOkno() {
+
+    initComponents();
+    
+    // Import Button action
+    tabsPanel.getImportPanel().jbtnImportovat.addActionListener( new ActionListener {
+
+      private HlavniOkno okno;
+      public ActionListener( HlavniOkno okno ) {  this.okno = okno; }
+      public void actionPerformed( ActionEvent evt ) {
+        okno.notifyImportButtonPressed();
+      }
+    } );
+    
+  }
+\--
+
+
+
+Nelze použít ani `this`, protože u anonymních vnitřních tříd `this` ukazuje pouze na onu vnitřní třídu.
+Jinak by se dalo použít toto:
+
+
+/--code java .[brush:]
+  /** Creates new form HlavniOkno */
+  public HlavniOkno() {
+
+    initComponents();
+    
+    // Import Button action
+    tabsPanel.getImportPanel().jbtnImportovat.addActionListener( new ActionListener() {
+      public void actionPerformed( ActionEvent evt ) {
+        this.notifyImportButtonPressed();
+      }
+    } );    
+  }
+\--
+
+Neznáte nějaké jednodušší řešení? Kdyžtak napište na ondra@dynawest.cz, díky.
+

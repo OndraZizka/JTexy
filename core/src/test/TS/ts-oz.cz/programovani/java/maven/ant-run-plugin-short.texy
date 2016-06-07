@@ -1,0 +1,16 @@
+
+
+Short code for Antrun Maven plugin
+**********************************
+
+/--code xml .[brush:]
+         <build>
+           <plugins>
+             <plugin> <artifactId>maven-antrun-plugin</artifactId>
+               <executions> <execution> <phase>initialize</phase>  <goals><goal>run</goal></goals> <configuration> <tasks>
+                 <echo>  *** Hello from Ant! ***  </echo>
+               </tasks> </configuration> </execution> </executions>
+             </plugin>
+           </plugins>
+         </build>
+\--

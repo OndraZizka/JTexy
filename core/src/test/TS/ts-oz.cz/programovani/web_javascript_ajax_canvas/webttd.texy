@@ -1,0 +1,258 @@
+
+
+WebTTD - A Browser-based Transport Tycoon Derivate
+************************************************
+
+
+I've a fixed idea of creating a web version of Transport Tycoon.
+
+Imagine how wonderful it would be if you could build your company for several weeks or months,
+on a vast landscape.
+No hush-hush game like classical TTD, but rather slow progress, more business cooperation amongst players...
+
+
+Game concept
+============
+
+Web game concepts are different from those of desktop games.
+If you ever have played Travian, you know how such web game works.
+
+ 1) First, the game progress must be //veeery sloooow//. Why?
+Because web games are played occassionally -
+during a boring meetings, during launch break, before bed...
+People want to spend few minutes daily on such game.
+What can you do in that time? Build a track or two, buy a train and set their orders.
+Then you leave it until the next day. The train should do no more than few turns in that time.
+
+
+ 2) Second, there are many many players, which join the game at different times.
+By the time you have been playing for several weeks, someone other joins the game;
+so you have your logistic imperium with dozens of tracks, and the other player has nothing but a loan.
+I've been thinking about this a lot, and came up with a solution similar to Travian's one.
+
+ 3) Third, web games are not fun because of fancy graphics; But even not because of complicated game logic.
+The best part of MMO games are - the other players! Yes, it's the social part of the game which
+keeps people playing: The feel of being a part of gang.
+
+This aspect would have to be carefully applied in the game design. Again, I have ideas about how to achieve that:
+In classical TTD, you always found point A, point B and built a track between them.
+Sometimes you found out that it's impossible because some area is being blocked by other player.
+
+Well, in MMO-TTD, this would inevitably happen all the time, so it's not a good concept at all.
+Better would be to let people deal at which price can one player use other's track.
+
+There are other things to think about, but these three are the main to focus at.
+
+
+
+Technology
+==========
+
+It would be programmed using technologies:
+
+ * HTML + CSS, eventually Canvas
+ * JavaScript for client logic
+ * J2EE backend with JBoss Cache,
+ * or perhaps thin PHP layer with stored procedures in PostgreSQL or MySQL
+
+So far, I gave it about two days of work and have some poor proofs-of-concept:
+
+ 1) TTD-like dialogs made in HTML. Currently only layout + some DoJo code to make them move.
+    This part would need a lot of work: many dialog types + data binding.
+    See "the demo":/samostatne/ttd/HtmlGUI/TTDdialog.html .
+    (Note that the dialogs are not images, but only HTML+CSS - see the page code.)
+
+    [* /samostatne/ttd/HtmlGUI/screenshots/screenshot01.png .(WebTTD - dialogs) *]
+
+
+
+ 2) Isometric landscape drawing and editing, plus client/server communication (AJAX).
+    I'll add URL of this drawing as soon as I put the database on the server.
+    Works quite fine, but there's one big problem: When you click somewhere,
+    it's almost impossible to compute which cell has been clicked, so it's needed to store it somewhere.
+    And since current technologies, including canvas, do not provide such functionality,
+    the only solution seems to use only flat landscape, which is kinda boring...
+
+    Or, the other option - create the client in .NET or Java or Flash.
+    Since I don't like Flash and .NET is bound to Microsoft, it would be Java's WebStart.
+
+    [* /samostatne/ttd/landscape/screenshots/webttd-landscape-01.png .(WebTTD - landscape) *]
+    [* /samostatne/ttd/landscape/screenshots/webttd-landscape-02.png .(WebTTD - landscape) *]
+
+
+Next I'd move to drawing of vehicles. That should be quite easy,
+provided we had waypoints of their movement together with their times.
+
+These data have to be computed on the server side.
+So next stage would be J2EE or PL/SQL programming <del>(I'm SQL fan, so it's likely to be PL/SQL :)</del>
+//Decision changed:// Due to performance requirements, reading everything to and from the DB is not a good idea. Let it be Java.
+
+Then the data are needed to be send to the client somehow, so some AJAX-Push would be necessary.
+
+Of course the client will not load all the updates, only those which currently affect him - that means:
+* Only cells in his viewport
+* Only messages he configured to get
+* Vehicles positions are only send when it departs onto a track
+* No metrics of stations, towns, industries, companies - that's only on-demand in a dialog.
+Estimated data transfer amounts is hundreds of bytes per second, at most.
+
+
+Current code structure
+======================
+
+Client side
+-----------
+
+* `Xcom` - the main class / namespace (yeah, originally it should have been UFO ;)
+  * `Xcom.Land` - the class which manages the map data.
+  * `Xcom.data: {`
+    * `cities: []`
+    * `industries: []`
+    * `roadTracks: []`
+    * `roadVehicles: []`
+    * `companies: []`
+    * `stations: []`
+  * `}`
+* `eMap` - manages the DHTML representation of the land.
+  * `eMap.TransformFieldXYtoCoords( x, y, level )` - computes mapbox coords of the given cell, taking the map offset into account.
+  * `eMap.TransformCoordsToFieldXY( x, y )` - computes position of the cell on the given coordinates, taking the map offset into account.
+  * `eMap.DrawArea( x1, y1, x2, y2 );`
+* z-indexes:
+  * #map:
+  * #mapbox:
+  * #overlay:
+  * individual cells:
+
+
+
+Server side
+-----------
+
+* `Game game`
+  * `TtdGrid land` - auto-expanding grid of cells.
+    * Currently organized to tiles with 10x10 cells - for optimization.
+    * `Cell get( x, y )`
+    * `init()`, `run()`, `pause()`, `stop()`
+    * `persist()` - persists the game (to a DB?)
+  * `TtdData data` - holds all game data other than the land.
+  * `GameTickerThread tickerThread` - runs a ticker in regular interval (1 s?).
+    * `GameTicker ticker` - modifies the world:
+      * Waiting transportables in stations
+      * Towns growth
+      * Industry production adjustments
+      * Failures, disasters...
+      * Subsidies
+* TtdDataJsonServlet - provides data to the client.
+  * request:  area info (`x1`,`y1`,`x2`,`y2`), `changedSince` [timestamp]
+  * JSON response: all information about the given area which changed since `changedSince`
+    * cells
+    * stations
+    * ...
+    
+
+OpenTTD Save/Load
+=================
+
+http://svn.openttd.org/trunk/
+
+`src/saveload/map_sl.cpp`
+
+
+`src/saveload/saveload.cpp`
+
+/--code cpp .[xbrush:]
+/**
+ * Save/Load an array.
+ * @param array The array being manipulated
+ * @param length The length of the array in elements
+ * @param conv VarType type of the atomic array (int, byte, uint64, etc.)
+ */
+void SlArray(void *array, size_t length, VarType conv){ ... }
+\--
+
+
+`src/map.cpp`
+
+
+/--code cpp
+uint _map_log_x;     ///< 2^_map_log_x == _map_size_x
+uint _map_log_y;     ///< 2^_map_log_y == _map_size_y
+uint _map_size_x;    ///< Size of the map along the X
+uint _map_size_y;    ///< Size of the map along the Y
+uint _map_size;      ///< The number of tiles on the map
+uint _map_tile_mask; ///< _map_size - 1 (to mask the mapsize)
+
+Tile *_m = NULL;          ///< Tiles of the map
+TileExtended *_me = NULL; ///< Extended Tiles of the map
+\--
+
+
+
+`src/map_type.h`
+
+
+/--code cpp
+/**
+ * Data that is stored per tile. Also used TileExtended for this.
+ * Look at docs/landscape.html for the exact meaning of the members.
+ */
+struct Tile {
+	byte   type_height; ///< The type (bits 4..7) and height of the northern corner
+	byte   m1;          ///< Primarily used for ownership information
+	uint16 m2;          ///< Primarily used for indices to towns, industries and stations
+	byte   m3;          ///< General purpose
+	byte   m4;          ///< General purpose
+	byte   m5;          ///< General purpose
+	byte   m6;          ///< Primarily used for bridges and rainforest/desert
+};
+\--
+
+http://svn.openttd.org/trunk/docs/landscape.html
+ http://209.85.135.132/search?q=cache:rgpOtgW-8moJ:svn.openttd.org/branches/0.6/docs/landscape.html+openttd+landscape.html&cd=1&hl=cs&ct=clnk
+ http://209.85.135.132/search?q=cache:LyYGjBMLrogJ:svn.openttd.org/branches/custombridgeheads/docs/landscape_grid.html+site:svn.openttd.org&cd=2&hl=cs&ct=clnk
+
+"OpenTTD's docs: landscape":/samostatne/ttd/openttd-docs/landscape.html
+"OpenTTD's docs: landscape_externals":/samostatne/ttd/openttd-docs/landscape_externals.html
+"OpenTTD's docs: landscape_grid":/samostatne/ttd/openttd-docs/landscape_grid.html
+
+"OpenTTD save file transformer":SaveTransformer.rar
+
+TODOs
+=====
+
+* Construction toolbars
+* Track and plan editation
+* Building functions
+  * First, road construction
+* AJAX push
+* Complete basic subset of tables to make the game run
+* Data model in Java
+* Vehicle path movement animation
+  * Will follow the "track"
+  * Track consists of arcs - parts of the track with the same direction.
+  * Each direction change is a waypoint of the animation
+  * Y axis movement slower than X
+* Get pictures from the OpenTTD project
+* City growth algorithm
+
+
+Links
+=====
+
+"Simutrans history":http://www.simugraph.com/simutrans-web/en/history/index.html
+
+"Tycoonez":http://www.tycoonez.com/
+
+"Geogre Zernebok":http://george.zernebok.net/ (Very interesting page :)
+
+"OpenTTD forums":http://www.tt-forums.net/viewtopic.php?f=33&t=45809 - link to my request for OpenTTD map export
+
+
+A bit of realism
+================
+
+But of course, for one man, this is work for years.
+
+For now, it will just be my humble dream :)
+
+

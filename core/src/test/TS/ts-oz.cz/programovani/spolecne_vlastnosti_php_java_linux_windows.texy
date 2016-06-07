@@ -1,0 +1,10 @@
+Společné obecné vlastnosti PHP, Javy, Linuxu a Windows
+######################################################
+
+
+|           |   původ             |   otevřenost kódu   |  otevřenost komunity |  komerčnost technologie |  akademičnost 
+|---------------------------------------------------------------------------------------------------------------------
+|* Windows  |  Microsoft          | closed source       |  Nepříliš otevřená komunita - spíše komerční | Placený OS                             | Windows slouží většinou jen na desktopy.
+|* PHP      |  Rasmus Lerdorf     | částečně opensource |  Enterprise projekty nejsou volně dispozici  | Pokročilé nástroje komerční            | PHP na akademickou půdu stěží někdo vezme 
+|* Java     |  SUN / Green Team   | open-source         |  Mnoho enterprise projektů volně k dispozici | Pokročilé nástroje zdarma k dispozici  | Java je na akademické půdě velmi oblíbená
+|* Linux    |  Linus Torvalds     | 100% open-source    |  Většina masových projektů Open-source       | Celý OS a související sw zdarma        | Linux (a UNIX) je na akademické půdě velmi oblíbený.

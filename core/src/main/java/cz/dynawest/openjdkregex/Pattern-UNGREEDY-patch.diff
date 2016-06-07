@@ -1,0 +1,76 @@
+26c26
+< package cz.dynawest.openjdkregex;
+---
+> package java.util.regex;
+27a28,30
+> import java.security.AccessController;
+> import java.security.PrivilegedAction;
+> import java.text.CharacterIterator;
+314c317
+<  * <tr><td valign="top" headers="construct special"><tt>(?idmsuxU-idmsuxU)&nbsp;</tt></td>
+---
+>  * <tr><td valign="top" headers="construct special"><tt>(?idmsux-idmsux)&nbsp;</tt></td>
+317,318c320,321
+<  * <a href="#UNICODE_CASE">u</a> <a href="#COMMENTS">x</a> <a href="#UNGREEDY">U</a> on - off</td></tr>
+<  * <tr><td valign="top" headers="construct special"><tt>(?idmsuxU-idmsuxU:</tt><i>X</i><tt>)</tt>&nbsp;&nbsp;</td>
+---
+>  * <a href="#UNICODE_CASE">u</a> <a href="#COMMENTS">x</a> on - off</td></tr>
+>  * <tr><td valign="top" headers="construct special"><tt>(?idmsux-idmsux:</tt><i>X</i><tt>)</tt>&nbsp;&nbsp;</td>
+322c325
+<  * <a href="#COMMENTS">x</a> <a href="#UNGREEDY">U</a> on - off</td></tr>
+---
+>  * <a href="#COMMENTS">x</a> on - off</td></tr>
+446,450d448
+<  * <a name"clo">
+<  * <h4> Closure greediness </h4>
+<  *
+<  * <p> Closures are greedy by default. If {@link #UNGREEDY} flag is set, closures are lazy by default.</p>
+<  *
+748,759c746
+< 
+< 
+< 		/**
+< 		 * Makes the closures ungreedy (a.k.a. lazy a.k.a. reluctant).
+< 		 */
+<     public static final int UNGREEDY = 0x100;
+< 
+< 
+< 
+< 
+< 
+< 		/* Pattern has only two serialized components: The pattern string
+---
+>     /* Pattern has only two serialized components: The pattern string
+867c854
+<      *         {@link #LITERAL}, {@link #UNGREEDY} and {@link #COMMENTS}
+---
+>      *         {@link #LITERAL} and {@link #COMMENTS}
+2652,2654d2638
+<             case 'U':
+<                 flags |= UNGREEDY;
+<                 break;
+2694,2696d2677
+<             case 'U':
+<                 flags &= ~UNGREEDY;
+<                 break;
+2741d2721
+< 
+2744,2745d2723
+< 				final int defaultGreediness = ( (this.flags & Pattern.UNGREEDY) == 0) ? GREEDY : LAZY;
+< 
+2756c2734
+<             return new Ques(prev, defaultGreediness);
+---
+>             return new Ques(prev, GREEDY);
+2766c2744
+<             return new Curly(prev, 0, MAX_REPS, defaultGreediness);
+---
+>             return new Curly(prev, 0, MAX_REPS, GREEDY);
+2776c2754
+<             return new Curly(prev, 1, MAX_REPS, defaultGreediness);
+---
+>             return new Curly(prev, 1, MAX_REPS, GREEDY);
+2810c2788
+<                     curly = new Curly(prev, cmin, cmax, defaultGreediness);
+---
+>                     curly = new Curly(prev, cmin, cmax, GREEDY);

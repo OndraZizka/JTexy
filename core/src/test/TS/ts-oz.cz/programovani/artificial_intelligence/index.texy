@@ -1,0 +1,103 @@
+Artificial Intelligence
+*********************
+
+My efforts on the fields of artificial intelligence include:
+
+* Genetic algorithms
+* Neural Networks with supervisor
+* Ant theory
+* Triples theory
+* Bussines Social algorithm
+
+
+So far, I've made the following implementations on that subjects.
+
+
+
+Implementations
+===============
+
+Since I hate doing ad-hoc single-purpose implementations,
+I always try to do as much generalization as possible or reasonable.
+Java and JavaScript implementations are fully object-oriented.
+SQL implementation is currently limited to feed-forward due to optimizations,
+but can be easily tweaked to be generally usable for any type of network.
+I've implemented most of other AI's paradigms, but those are just proofs of concept.
+
+
+Neural Networks and Backpropagation in JavaScript
+=================================================
+
+My first implementation of neural networks.
+Started as a proof of concept, later it became a solid OOP model of neural networks
+and teaching methods.
+
+Here you can download the files.
+I didn't write any documentation for the JavaScript implementation,
+but since the model is the same as in Java, you can see the concept
+in Javadoc documentation (see and download below).
+
+"DOWNLOAD":neural_networks/download/Ondra_Zizka-Neural_Networks_JavaScript_implementation.zip
+
+
+Neural Networks and Backpropagation in Java
+=================================================
+
+JavaScript implementation re-written to Java. Thus, much faster.
+Otherwise it keeps  the original idea of maximum independence of 
+distinct parts of the model (e.g., computing versus teaching).
+
+What's implemented? Not much, actually:
+* General neural networks stuff like Neurons, Synapses, Transfer functions etc.
+* A perceptron networks generator, which creates perceptrons based on layers definition.
+* A Teacher, or "Supervisor", which teaches the neural net using backpropagation.
+
+I didn't have time to lead the project to a state when anyone
+could use it as easily as "Joone":http://www.jooneworld.com/
+or "OpenAI's implementation":http://openai.sourceforge.net/,
+but this can be very appropriate when your needs are simple,
+as for school projects and simple web applets.
+
+This implementation was made as a part of a school AI project.
+ It's description can be found "here":neural_networks/pongai_doc/package.html.
+ It's JavaDoc documentation can be found "here":/projekty/neural/pong/doc/index.html.
+
+
+"DOWNLOAD":neural_networks/download/Ondra_Zizka-Neural_Networks_Java_implementation.zip
+
+Anyone is welcome to implement more concepts - like recurent networks,
+Kohonen maps, Hopfield network etc. The existing model is suitable for this.
+
+
+
+
+Neural Networks and Backpropagation in SQL Stored Procedures
+=================================================
+
+My last work in fields of artifical intelligence is 
+an implementation of neural networks and in SQL.
+Using a library of Stored Procedures, you can create neural networks,
+teach them using backpropagation algorithm, and then use them,
+all just by calling very simple Stored Procedures API.
+
+Further info about 
+"SQL implementation of neural networks":../neural_networks_in_sql_stored_procedures/index.texy
+on a dedicated page.
+
+
+
+Other stuff
+===========
+
+These are just some humble ideas.
+
+"Plan to develop artificial cognition - what has to be done":developement_plan_of_artificial_cognition.texy
+ "Covering Artificial Intelligence Theory":covering_ai_theory.texy
+ "Business Society Algorithm":business_society_algorithm.texy
+
+
+
+
+
+
+

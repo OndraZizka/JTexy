@@ -1,0 +1,148 @@
+Caché ObjectScript - nejhorší jazyk na světě
+############################################
+
+
+Setkali jste se někdy s postrelačním databázovým systémem Caché?
+Pokud ano, nejspíše to bylo na škole, a nebo na nějakém školení.
+Pokud vás to postihlo způsobem,  že jste v Caché opravdu museli něco vytvořit,
+tak vás upřímně lituji.
+
+
+Česká pobočka InterSystems zvládá kolem Caché dělat poměrně
+slušný humbuk, takže se tu a tam objeví zmínka na leckterém
+českém webu typu Živě, Root, a co já vim kde ještě.
+
+Asi i právě proto jsem se s Caché za svůj krátký život
+setkal celkem třikrát, z čehož dvakrát sám od sebe,
+potřetí již nedobrovolně, skoro by se dalo říct nátlakem.
+
+
+Moje zkušenosti s Caché
+=======================
+
+Nějak se ke mě dostaly materiály o Caché, možná někde na Invexu...
+V podstatě se jednalo archy křídového papíru s velmi nevkusnými kresbami,
+které velkými písmeny vychvalovaly Caché do nebe.
+Zcela však chyběly jakékoliv věcné ukázky,
+například kódu bylo na cca. patnácti A4-kách asi pět řádků.
+A v marketingu InterSystems asi vědí proč.
+Já se to dozvěděl až při třetím setkání s Caché.
+
+Poprvé po instalaci server vždy hned po spuštění havaroval.
+
+Podruhé server běžel stabilně, ale nic nedělal, protože vždy 
+havarovala aplikace, pomocí které se kompilovaly  třídy 
+objektového modelu, bez kterých je objektová databáze k ničemu.
+
+Potřetí jsem se k Caché dostal při studiích:
+Měli jsme v tom za úkol udělat jakoukoliv smysluplnou webovou aplikaci.
+Zdálo by se to jako celkem jednoduchý cíl,
+vždyť to byste zvládli řekněme i pomocí CGI a jazyka C.
+
+Ale ouha! Zatímco PHP zpočátku leckdo zbožňuje
+a k uvědomění si jeho značných nedostatků musí programátor vyspět,
+Caché je technologie, se kterou dokáží zápasit jen ti 
+naprosto nejotrlejší programátoři, kterým Perl přišel jako příliš výřečný a srozumitelný,
+a hledají něco podobou bližšího zazipovanému strojovému kódu.
+
+
+Caché ObjectScript (čtěte nalačno)
+==================================
+
+Myslím, že za všechno mluví následující ukázka kódu (jazyk se ironicky jmenuje ObjectScript):
+
+[* img/cache_code_example.png *]
+
+Upozorňuji, že tento kód jsem nesestavil synteticky, abych dal dohromady 
+nějakou zcela absurdní sestavu nejhorších vlastností jazyka -
+obrázek je převzatý z jakési prezentace přímo z materiálů InterSystems!
+
+K tomu si ještě přimyslete chaotickou neúplnou dokumentaci bez příkladů,
+kde mnoho funkcí ani nemá popis (v podstatě jen vidíte, že existují),
+a která funguje jen v MSIE (kvůli závislosti na nestandardním JavaScriptu).
+
+
+Takže jestli se vám dělá značně nevolno při pohledu na konstrukce typu 
+/--code cache
+QUIT $Select(%sc'="":%sc,1:$$Error^%apiOBJ(5809))
+\--
+
+nebo
+
+/--code cache
+$ZObjVal(,1,0,3,1)>1 Lock +(^Common.F.FormD(id)#"S"):ZUtil(115,4...)
+\--
+
+a při představě, že byste měli sami něco takového plodit
+a na tom by byl závislý váš příjem, nejste sami - nás bylo v ročníku asi 100.
+
+Hrůza, hrůza, běs, rychle pryč!
+
+
+CSP - Caché Server Pages
+========================
+
+K Caché patří ještě Caché Server Pages, což je parodie na technologie jako ASP, JSP a podobně.
+Už to není TAK strašné, jako ObjectScript, nicméně jedná se o frontend k backendu psaném v ObjectScriptu,
+a výrazy jsou opět v ObjectScriptu, takže je jen hnus zředěný HTML kódem.
+
+Bohužel se nejedná jen o vkládání do HTML - CSP má jistá pravidla například i pro vkládání JavaScriptu,
+a proto nelze napsat normálně `<script ...>`, protože to vám Caché vezme a nějak zprasí -
+a nikdo ze sta lidí nepochopil, podle jakých pravidel. Nakonec jsme to řešili hacky typu `<scr#("")#ipt ...>`,
+kde `#("")#` je vložený kousek kódu ObjectScriptu.
+
+
+
+Integrované "vývojové prostředí"
+================================
+
+Caché rovněž disponuje čímsi, co nazývají IDE (nevím proč).
+Jedná se o chaotickou změť nástrojů chaoticky omotaných na dost mizerný textový editor.
+Zhruba bych to přirovnal k velmi ranným verzím PsPadu nebo k Visual Studio 1.0 (jestli jste měli možnost vidět).
+Je to přesně to, co mi ještě před pár lety nedokázalo bez pádu ani zkompilovat třídu.
+
+Je to asi nejméně zmršená část celého molochu, se kterou programátor přijde do styku,
+ale pořád je to taková hrůza, že kdybych si měl vybrat mezi tímto 
+a například editací asembleru přes braillův terminál, volil bych druhé.
+
+
+
+Nejrychlejší? No a co?
+======================
+
+Výrobce se pyšní, že se jedná o nejrychlejší databázi na světě.
+Budiž, já jim to neberu, možné to je - netestoval jsem a ani nebudu.
+Ale k čemu to je dobré, když do toho žádný programátor nebude chtít
+hrábnout ani pětimetrovou tyčí a při zmínce o Caché začne zvažovat změnu zaměstnavatele?
+
+
+Relační mapování? IBM??
+=======================
+
+Před nějakou dobou proběhla internetem zpráva o tom, že IBM použilo Caché na cosi,
+a že jim relační mapování trvalo 15 minut, zatímco jinak by jim trvalo několik měsíců.
+
+No budiž, věrohodnost takového plku se sice blíží nule, ale i kdyby - co to znamená?
+
+1) IBM použilo nejnižší úroveň Caché jako databázi mapovanou technologií Jalapeňo.
+2) Pravděpodobně v jazyce Caché programovali nezbytné minimum kódu - tolik, kolik někdo stihl napsat za 15 minut.
+3) Ve chvíli, kdy se vývojáři daného projektu kousli na prvním problému a chtěli jej řešit v Caché, jistě již je nadšení z rychlosti opustilo.
+
+Ostatně, nebylo by to poprvé, co nějaká (na poměry, podle kontextu) velká společnost
+zcela překvapivě sáhne po technologii, o které když znalí uslyší, "nevěřicně kroutí hlavou":http://www.novinky.cz/clanek/67691-seznam-cz-koketuje-s-technologii-php.html,
+v případě Caché se otřesou odporem.
+
+
+Verdikt
+=======
+
+Firma InterSystems existuje již dlouhou dobu a stále zvládá pravidelně vydávat pamflety na křídovém papíře s nevkusnými malbami.
+Z toho usuzuji, že se jí daří (včetně české pobočky) a že přeci jen se tu a tam najde zákazník.
+
+Já se k myšlenkám o Caché dostal opět až nyní, kdy hledám práci, a v personální agentuře mi položili otázku,
+zda existuje technologie, kterou bych ani za značně nadstandardní plat rozhodně nikdy nechtěl používat.
+
+Je to Caché.
+
+S tímto na vědomí jdu ještě rád oprášit Oracle PL/SQL.
+

@@ -1,0 +1,142 @@
+Začátky se Spring AOP - návod
+#############################
+
+Právě jsem úspěšně rozběhal Spring AOP ve stand-alone (newebové) aplikaci,
+takže si opět postup a poznatky zapíšu na web.
+Jako vždy si vyhrazuju právo mýlit se, ale snad jsem vše pochopil správně.
+
+
+Co je AOP
+*********
+
+AOP je zkratka za Aspect Oriented Programming neboli "aspektově orientované programování".
+
+AOP zajišťuje ulehčení práce programátora v případech, kdy se při volání metod různých tříd
+volá vždy stejný nebo podobný kód - typickým příkladem je otevírání a uzavírání transakce,
+kontrola práv k provedení operace (autorizace), trasování běhu aplikace atd.
+
+Co je aspekt
+************
+
+Aspekt je (společná) vlastnost či spíše potřeba některých metod - například právě
+potřeba otevřít a uzavřít transakci nebo ověřit práva.
+
+Co je Spring AOP
+****************
+
+Spring AOP je jedna z implementací AOP. Dále existují ještě AOP frameworky //JBoss AOP//
+(s tím se dostanu brzy do potyčky :-), AspectJ (ten to všechno začal a Spring AOP jej využívá)
+a //AspectWerkz// (nic moc).
+
+Spring jde svojí obvyklou cestou co nejjednodušší konfigurace a co nejstručnějšího zápisu.
+Můžete využít buď @Anotace ve stylu AspectJ (`@Aspect`, `@Before`, `@Pointcut` atd.),
+nebo konfiguraci v XML souboru. Ukázka XML následuje.
+
+
+Konfigurace Spring AOP v XML
+****************************
+
+Dříve (před verzí Spring 2.0) se konfigurace AOP prováděla poněkud neohrabaně
+nastavováním Beans (což popisuji v návodu "Úplné začátky se Spring framework":[navod-spring-framework-zacatky.texy]).
+
+V současnosti se AOP nastavuje pomocí elementů z namespace `<aop:*>`.
+Tento jmenný prostor je třeba v XML souboru zmínit, proto se místo DTD použije definice přes `xmlns:aop`.
+
+
+/--code xml .[brush:]
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xmlns:aop="http://www.springframework.org/schema/aop"
+     xsi:schemaLocation="
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd"
+>
+
+  <!-- Před spuštěním metod tříd z balíku "aoptest" zavoláme metodu test() z beany s ID aopTestAdviceBean. -->  
+  <aop:config>
+    <aop:pointcut id="aopTestPointcut" expression="execution(* aoptest.*.*(..))"/>
+    <aop:aspect ref="aopTestAdviceBean">
+      <aop:before pointcut-ref="aopTestPointcut" method="test"/>
+    </aop:aspect>    
+  </aop:config>
+
+  <!-- Metoda této beany (objektu) se bude volat podle výše uvedeného pravidla. -->
+  <bean id="aopTestAdviceBean" class="aoptest.AopTestAdviceBean">
+    <property name="foo" value="foo value"/>
+  </bean>
+  
+  <!-- Automatické volání metod funguje jen pro objekty vytvořené Springem. -->
+  <bean id="nejakaTrida" class="aoptest.NejakaTrida">
+    <property name="bar" value="bar value"/>
+  </bean>
+
+
+</beans>
+\--
+
+
+K tomu ještě pár poznámek:
+
+* Automatické volání metod funguje jen pro objekty vytvořené Springem. Následující tedy **nebude fungovat**:
+
+/--code java .[brush:]
+aoptest.NejakaTrida objekt = new aoptest.NejakaTrida();
+objekt.metoda();  // <--- ZDE AOP NEZAFUNGUJE!
+\--
+
+* Aby Spring zpracovával jiné jmenné prostory nez výchozí, je třeba místo `XMLBeanFactory` použít "full verzi", tedy třídu `ApplicationContext`.
+
+Celý kód pro rozjetí AOP tedy vypadá takto:
+
+/--code java .[brush:]
+ApplicationContext ac = new ClassPathXmlApplicationContext("properties/SpringBeans.xml");
+aoptest.NejakaTrida objekt = (aoptest.NejakaTrida) new aoptest.NejakaTrida();
+objekt.metoda();  // <--- zde AOP zavolá napřed metodu aoptest.AopTestAdviceBean::test().
+\--
+
+A k tomu samozřejmě definice příslušných tříd, myslím, že nemá cenu je zde vypisovat, jsou zcela obyčejné.
+
+
+Potřebné knihovny
+*****************
+
+Použil jsem:
+* Spring 2.5.5
+* AspectJ 1.6.1
+
+Konkrétně tyto .JAR soubory:
+* Z distribuce Spring:
+  * **dist/spring.jar**
+  * **dist/modules/spring-aop.jar**
+  * dist/weaving/spring-aspects.jar
+  * dist/weaving/spring-agent.jar
+  * **lib/jakarta-commons/commons-logging.jar**
+  * **lib/cglib/cglib-nodep-2.1-3.jar**
+* Z distribuce AspectJ (stažené .jar je instalátor - spusťte a rozbalí se):
+  * **lib/aspectjtools.jar**
+
+Tučně zvýrazněné jsou nutné (rozuměj "bez nich mi to nešlo").
+U ostatních nevím - je možné, že některé jsou navíc, ale takto mi to funguje a tak neřeším.
+
+
+Závěr, literatura, zdroje
+*************************
+
+Tolik tedy ke Spring AOP. Snad jsem na nic nezapomněl, ale v podstatě je to dost jednoduché.
+
+Cokoliv dalšího nastudujete z velmi obsáhlého 
+"referenčního manuálu Springu":http://static.springframework.org/spring/docs/2.5.x/reference/,
+zejména oblasti:
+* Nejprve "Chapter 6. Aspect Oriented Programming with Spring":http://static.springframework.org/spring/docs/2.5.x/reference/aop.html#aop-aj-configure
+* Odtud budete možná odbíhat do "Chapter 7. Spring AOP APIs":http://static.springframework.org/spring/docs/2.5.x/reference/aop-api.html
+* Namespaces atd. jsou vysvětlené v "Appendix A. XML Schema-based configuration":http://static.springframework.org/spring/docs/2.5.x/reference/xsd-config.html - stačí zběžně prolétnout.
+* A až dojdete k nejběžnějšímu použití AOP, pročtěte si: "Chapter 9. Transaction management":http://static.springframework.org/spring/docs/2.5.x/reference/transaction.html
+
+Další použité či použitelné zdroje:
+===================================
+
+* IBM: "AOP@Work: AOP myths and realities":http://www.ibm.com/developerworks/java/library/j-aopwork15/
+* Dustin's: "Spring and JMX: BeanFactory Versus ApplicationContext":http://marxsoftware.blogspot.com/2008/01/spring-and-jmx-beanfactory-versus.html
+
+

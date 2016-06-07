@@ -1,0 +1,30 @@
+
+Další nesmysl v PHP
+###################
+
+
+O kvalitě čehokoliv v PHP si nedělám iluze,
+a tak mě ani nepřekvapil následující feature/bug:
+
+/--code php .[brush:]
+<?php//4
+
+do{
+\--
+
+/--code php .[brush:]
+Parse error: syntax error, unexpected T_DO in D:\web\babesia.cz\real\code\inc.akce.form_vyskyt.php on line 3
+\--
+
+
+Když před komentář dáme mezeru, vše je OK:
+
+/--code php .[brush:]
+<?php //4
+
+do{
+\--
+
+Ať už je špatně lexer, definice syntaxe nebo cokoliv jiného,
+opět to ukazuje na chaotičnost PHP.
+

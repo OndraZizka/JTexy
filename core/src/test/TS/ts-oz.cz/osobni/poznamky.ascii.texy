@@ -1,0 +1,293 @@
+Poznámky a postřehy
+*******************
+
+Neil Armstrong na Měsíci vyvěsil Bílou vlajku proti radaru
+==========================================================
+
+Hnutí Nenásilí informovalo o podpoře amerického astronauta
+v boji proti radaru v Brdech.
+NASA údajně uskutečníla mimořádný neplánovaný let na Měsíc,
+aby zde Neil Armstrong s dvěma členy vesmírného výboru hnutí Nenásilí mohli vyvěsit Bílou vlajku,
+symbolizující odpor proti imperialismu a proti závodům ve zbrojení se strany států pod vedením pitomců
+a v budování obranných systémů na straně zemí řídících se zdravým rozumem.
+
+Více informací najdete na adrese
+"http://www.nenasili.cz/1457_Neil-Armstrong-vyjadril-podporu-proti-radaru.html":[http://ondra.zizka.cz/samostatne/nechciradar.cz/1457_Neil-Armstrong-vyjadril-podporu-proti-radaru.html].
+
+
+
+Proč nikdo nepoužívá prohlížeč Opera
+====================================
+
+Prvně, omlouvám se několika promile lidí, kteří operu používají,
+například **Zdeněk Roule** a jeho přizpůsobivé okolí
+(konečně jsem Zdenka dostal na internet :-) )
+
+Nicméně, z perspektivy
+"tohoto grafu":http://marketshare.hitslink.com/report.aspx?qprid=1&qpdt=1&qpct=4&qptimeframe=M&qpsp=102&qpnp=11
+Operu skutečně nikdo nepoužívá.
+
+Velmi krátce jsem se zamyslel, proč jsem ji kdysi nezačal používat i já,
+ještě v době, kdy Mozilla suite nebyla tak dokonalá, a Opera již byla zadarmo.
+
+1) **Kvůli bannerům.** Být je pěkná vlastnost,
+ ale aby se mi několik hodin denně vypalovaly do sítnice barevné blikající věci,
+ na to já nejsem. Pravda, byly různé cracky, ale kdo by se s tim mořil -
+ zas tak špatná ta Mozilla Suite nebyla.
+
+2) **Výchozí skin.**  Nemůžu si pomoci, výchozí skin Opery je hnusný (YMMV).
+ Hnusně šedivý s hnusnými hnusně zelenými ovládacími prvky - zkrátka,
+ nedá se na to koukat.
+ 
+3) **Pluginy.**  Pro Mozillu, potažmo Firefox, vzniklo již 
+  po krátké době existence (rozuměj od doby, kdy jsem ji začal já používat, 
+  tedy snad někdy ve verzi 0.7.x)
+  tolik moc skvělých rozšíření, že se takovému stavu nemůže titěrná komunita 
+  fanoušků Opery --nikdy-- ++v dohledné době++ přiblížit.
+  Pro webového vývojáře je tato stránka věci zásadní. 
+
+Takže, důvod 1) padl, důvod 2) se drží a možná padne, důvod 3) will probably prevail forever.
+Nicméně pokud má Opera aspoň nahradit MSIE (libovolnou existující verzi - všechny jsou špatné),
+potom jí držím palce. Snad se někdy dostane aspoň na rozlišovací úroveň onoho grafu :-)
+
+
+
+
+Výrazy, které na google nejsou
+==============================
+
+Je s podivem, že při vší té obsáhlosti webu, potažmo internetu,
+na Google stále nenajdete některé (zcela nezbytné) fráze.
+
+Již se mi stalo několikrát, že jsem zadal frázi, u které jsem se bál spíše velkého počtu odkazů,
+ale rozhodně by mě nenapadlo, že se v indexu Google (který má nejobsáhlejší index ze všech vyhledávačů) vůbec nevyskytují.
+
+Tak například:
+
+Proč "ředkvičky pálí":[http://www.google.cz/search?hl=cs&client=firefox-a&rls=org.mozilla%3Acs%3Aofficial&hs=4Pa&q=%22%C5%99edkvi%C4%8Dky+p%C3%A1l%C3%AD%22&btnG=Hledat&lr=]?
+----------------
+
+Zajímalo mě, proč ředkvičky pálí. Jediný trochu relevantní odkaz vede na otázku diskutérky -
+> "Proč pálí ředkvičky jak sviňa? Já myslela, že to pálí proto, že jsou nerovnoměrně zalité. ale to já nemám. Nuže?"
+Takže vím, že ředkvičky nepálí proto, že by Tigra neuměla zalévat zahradu.
+
+Napadlo mě, že by to mohlo být omezeností českého internetu, kde najdete gigabajty diskuzí o tom, jestli je Paroubek blbec nebo velký blbec, ale o ředkvičky se nezajímá.
+Zkusil jsem tedy do Google zadat
+"radish burns":http://www.google.cz/search?hl=cs&client=firefox-a&rls=org.mozilla%3Acs%3Aofficial&hs=sqF&q=radish+burns&btnG=Hledat&lr=,
+"radishes burn":http://www.google.cz/search?hl=cs&client=firefox-a&rls=org.mozilla%3Acs%3Aofficial&hs=sqF&q=radishes+burn&btnG=Hledat&lr=,
+"why radishes burn":http://www.google.cz/search?hl=cs&client=firefox-a&rls=org.mozilla%3Acs%3Aofficial&hs=sqF&q=why+radishes+burn&btnG=Hledat&lr=. Bez výsledku.
+
+Potom jsem si vzpomněl, že na otázky by se měl specializovat server Ask Jeeves. Zkusil jsem se ho tedy optat:
+"Please, Why radishes burn?":http://www.ask.com/web?qsrc=167&o=0&l=dir&q=Why+radishes+burn%3F
+A ejhle, pod zadávacím polem mám nápovědu - mám se zeptat, "Why Are Radishes Hot":http://www.ask.com/web?q=Why+Are+Radishes+Hot&qsrc=6&o=0&l=dir.
+Jenže na tento dotaz opět dostávám odkazy na stránky, které otázku stavějí takto:
+> Q. What causes my radishes to be "hot"?
+>  A. The "hotness" of radishes results from the length of time they have grown rather than from their size. The radishes either grew too slowly or are too old.
+"Nebo":[http://www.arhomeandgarden.org/_archive/askjanet/vegetables/radish.htm]:
+> Q: What makes radishes hot? My radishes this year are almost too hot to eat.
+>   A: Radishes get hot for a number of reasons. If they are too old they are hotter, and if they were grown under low fertility 
+> or if they got too dry, and their growth was not as fast as it should have been, then they turn hot.
+
+Takže jsme zase tam, kde jsme byli. Já chci vědět, která **látka** v ředkvičkách pálí. Vite někdo, proč ředkvičky pálí?
+
+
+Jaká je "výřevnost vosku":[http://www.google.cz/search?hl=cs&client=firefox-a&rls=org.mozilla:cs:official&hs=X7F&sa=X&oi=spell&resnum=0&ct=result&cd=1&q=v%C3%BDh%C5%99evnost+vosku&spell=1]?
+---------------
+
+Další věcí, která mě zajímala, je výhřevnost vosku. V domě nám už netopí, okna profukují, a tak se stane, že mám na pokoji 17 stupňů i při neustále puštěném počítači.
+Kamarád mi poradil, že když nechá na pokoji hořet čajovou svíčku, tak během zhruba čtyř hodin, po které svíčka vydrží, vzroste teplota v pokoji tak, že musí větrat.
+Jenže jeho pokoj má 16 m^2.
+Já jsem zapálil pole 6x6 čajových svíček, ale teplota vzrostla jen o půl stupně za hodinu. 
+Proto jsem si chtěl ověřit, jak by se měla teplota vyvíjet teoreticky. Bohužel, výhřevnost vosku jsem na internetu nenašel. Stačila by mi jen orientační... nevite? :-)
+
+
+Další nenalezené vyhledávané fráze možná přibudou časem.
+
+
+
+
+
+
+
+
+
+Analytik-programátor otročí za jídlo, šaty a vzduch
+===================================================
+
+Nabídka pracovního místa
+------------------------
+
+
+Ještěři z pekel hledají programátora na pozici analytik-programátor.
+
+**Hledáme:** Nekreativního otrockého programátora, nejlépe s čipem v těle.
+
+**Nabízíme:** Jídlo, šaty a vzduch.
+
+**Popis pozice:**
+
+[* img/analytik_prograátor.png *]
+
+Více informací na www.vesmirni-lide.cz.
+
+
+
+Vazba diplomové práce v Českých Budějovicích
+===================================================
+
+Opět se blíží doba, kdy si diplomanti musejí nechat svázat diplomovou práci.
+Chtěl bych tedy všechny studenty varovat:
+
+**Nedávejte si diplomku svázat k firmě ZDECO!**
+
+Nejsem sám, kdo měl s touto firmou, sídlíci Na Sadech, potíže. Vazbu jedné DP zkazili (nevložili zadání),
+druhou zase svázali tak, že papíry pár minut po převzetí vyjely z desek.
+Tím se pochopitelně papíry zmačkaly a diplomka zničila.
+Chtěl jsem tedy vrátit peníze a uhradit škodu. Byli proti, jediné jejich přípustné řešení bylo,
+že mi do stejných desek znovu secvaknou nové listy. Nefér firma, sdružení obrany spotřebitelů na ně.
+
+Klíčová slova: **svázání, vazba, diplomová práce, diplomka, České Budějovice, desky, Jihočeská univerzita, ZDECO, Na Sadech**.
+
+
+
+Vypouštění vnitřního draka
+===================================================
+
+Zajímavé. Spammeři procházejí literárním vývojem.
+
+Mnozí si pamatují, že na začátku spamu, kdy jsme ještě maily stíhali třídit ručně bez použití filtrů,
+chodily suché výzvy typu "Enlarge your penis". To nemohlo zaujmout snad nikoho kromě debilů,
+na které ale asi kampaň mířila, takže vpořádku.
+
+Později první nastala vlna obrany proti spamu, založená na primitivní metodě
+"předmět / odesilatel  / zpráva obsahuje slovo ..." -> letí do koše. Krásné, jednoduché,
+ale fungovalo nanejvýš pár měsíců.
+
+Protože poté začali spameři nahrazovat různé znaky kombinacemi jiných, které je připomínají.
+Nejprve blízce ("`EnIarge your penis`"), potom vzdáleně ("Buy cheap V|agra").
+Potom se spameři rozdělili na dvě větve - ti sofistikovanější, pro něž je spam výnosným obchodem,
+začali používat pokrokové metody. Ti méně pokrokoví zůstali u staré metody,
+jen ji dotahovali do krajností: `Bai C|-|34-p Uu|aaaaagg RRRaaa!`, `C|a L|S`, kde ještě tušíte,
+že si máte nutně koupit levnou ViiaaggRRuu nebo Cialis, ale když mi pak příjde výzva,
+`uh Buoy Cheap See - Alice`, už je to skoro jazykový hlavolam. Takový spam už přece není pro blbce :-)
+
+Ovšem i na takové se později bayesovské filtry a antispam algoritmy naučily, a tak těm lepším spammerům
+opět nezbylo, než sáhnout k jinému kroku: Omezit kvantitu a zvýšit kvalitu.
+
+A tak mi již denně nechodí dvacetkrát `Unrecognizable Rolex replica`, ale mám ve schránce první nesmělý náznak literárního útvaru:
+> Release your inner dragon with the help of bluepill!
+
+Mmm... představil jsem si sám sebe jako mužskou verzi té žluté ninja-holky z Kill Billa,
+jak ve stylu Jamese Bonda zachráním nějakou šikmookou kočku a pak na ni vypustím svého "vnitřního draka" :D
+Plný očekávání dalšího kvalitního obsahu jsem mail otevřel... ale zklamal mě. Nedočkal jsem se ničeho víc než 
+
+> If you cannot act the way you want, take some blue-coloured pills!
+
+Tak to je, pánové, trochu slabé. Až mi napíšete aspoň desetistránkovou motivační povídku,
+můžeme začít vyjednávat o nějaké té cheap částce - třeba dva centy za příběh.
+Do té doby vydělávejte nadále na blbcích, co koupí a sní "modré pilulky" z pochybných zdrojů.
+
+
+
+
+
+Tip na cestování hyperprostorem
+===================================================
+
+Problémem mezihvězdného cestování je nutnost těleso urychlit na rychlost přijatelnou k dostatečně rychlému přesunu, a potom jej zase zabrzdit.
+Co kdybychom ovšem využili princip kolotoče?
+
+Mohli bychom v jednom bodě (třeba i našeho prostoru) "upoutat" "lano", na konec lana připoutat těleso, které má cestovat, 
+přemístit jej (stále v našem prostoru) na vzdálenost lana, a potom ho začít roztáčet.
+To by znamenalo udělit mu takovou energii směrem do jiného prostoru,
+která by stačila k jeho přemístění do výchozího bodu opisované "kružnice".
+Po jeho opětovném objevení v našem prostoru ve výchozím místě bychom mu udělili další impulz,
+a takto jej postupně urychlovali.
+
+Po dosažení určité rychlosti oběhu by už byl problém jenom "nastoupit" a "vystoupit".
+Jsou dvě možnosti:
+ Jednak postavit obíhajícímu "dopravnímu prostředku" náklad do cesty.
+Vypadalo by to asi tak, jako kdyby bagr jel nadzvukovou rychlostí a někde cestou nabral písek.
+To  by jistě nákladu příliš neprospívalo.
+ Druhou možností je před nástupem náklad urychlit ve směru zbylého rozměru na rychlost dopravního prostředku.
+Energetická náročnost by ale byla asi stejná, jako na zrychlení a ubrždění nákladu při přímé cestě naším prostorem.
+Je celá tato teorie tedy k něčemu?
+
+"Dopravní prostředek" by naším prostorem procházel jen velmi krátkou dobu.
+Problém urychlení nájkadu by tedy bylo vyvinout dostatek energie v krátkém čase.
+Co ale udělat další takové kolečko, tentokrát menší, a jen za účelem naložení nákladu?
+Jako oběžný bod by mohla sloužit nějaká těžká hvězda.
+
+Celé to pochopitelně počítá s rozvinutým dalším rozměrem, nikoliv smrsknutým, jako teorie superstrun.
+
+A teď hlavní otázky:
+1) Jak vytvořit lano? Gravitací?
+2) Proč to neudělat ve známých rozměrech?
+3) Má vůbec náš vesmír více jak tři rozměry?
+
+//Motiv zápisu tohoto s největší pravděpodobností blábolu hledejte v teorii myšlenkonů Terryho Prachetta :-)//
+
+
+
+
+Hledám řešení úlohy
+===================================================
+Hledám řešení této otázky:
+
+> Máme N-rozměrný prostor. Kolik (N-1)-rozměrných prostorů rozdělí onen prostor na X N-rozměrných podprostorů?
+
+Nevím, kde hledat odpověď. Víte (ji) někdo?
+
+//Update:// Mám řešení. Dík patří Karlovi Kyrianovi za pomoc. Řešení jsem zpracoval ve svojí diplomce.
+
+V jednorozměrném prostoru dělí každá nadrovina (bod) prostor přímky tak, že přibude další
+jeden podprostor. Ve dvourozměrném prostoru vzniká s každou přidanou přímkou vždy o jeden
+prostor více než s předchozí. Ve trojrozměrném prostoru potom vzniká s //n//-tou přidanou rovinou
+o tolik více podprostorů, kolik podprostorů vzniklo ve dvourozměrném prostoru při přidání //n//-té
+přímky. Obecně potom pro //N//-rozměrný prostor platí, že přidáním //n//-té nerovnoběžné nadroviny
+přibude tolik podprostorů, kolik celkem jich přibylo rozdělením //N//-1-rozměrného prostoru
+//n// nerovnoběžnými nadrovinami. Rekurentní výpočet by potom mohl vypadat takto:
+
+Případně přímý výpočet vypadá takto:
+
+
+Potřebujeme ovšem znát opačný výpočet – známe dimenzionalitu prostoru, víme, kolik chceme
+výsledných podprostorů, a chceme vědět, kolik nadrovin jej takto rozdělí, resp. kolik máme použít
+neuronů na první vrstvě. Výpočtem se zde nebudeme podrobně zabývat, stačí nám jeho odhad. Výše
+uvedený výpočet se dá odhadnout jako //p//(//N// , //n//)  //n^N// / //N//!
+
+
+
+
+
+ICQ Hoax / phishing
+===================================================
+
+Chodí nový ICQ phishing:
+New ICQ phishing appeared:
+
+<blockquote>
+Hello,
+
+Your NEW ICQ password is:
+A4T4jXMh
+
+Remember - your ICQ password is case sensitive.
+
+After you login to your ICQ number, you might want to consider changing your 
+password to a more complex one.
+
+Your new password must contain 6-8 characters. It should include English upper 
+and lower case letters and numbers.
+
+Try to select a random password that will be hard for others to guess. 
+(Example: ...)
+
+Here's how you change your password:
+ In ICQ 5: Click the Main Menu button > Preferences and Security -> Password.
+ In ICQ Pro versions 2000a through 2003b: Click the ICQ/Main button->Security & Privacy Permissions->Password.
+ In ICQ 6: Click the Main menu button > select 'Options' > under 'Privacy & Security', select 'Privacy' > click 'Change my password'.
+</blockquote>
+
+Heslo si pochopitelně neměňte, buď je to kachna, nebo podvod.
+Of course, do not change the password - it's either a fraud or an hoax.

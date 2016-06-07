@@ -1,0 +1,51 @@
+
+Maven and Log4j: Missing JMX dependencies
+*****************************************
+
+Symptoms
+========
+
+You want to use Log4j, but when performing `mvn install`, you get:
+
+/--code plain .[brush:]
+Compilation failure
+
+error: error reading t:\data\.m2\repository\com\sun\jdmk\jmxtools\1.2.1\jmxtools-1.2.1.jar; error in opening zip file
+error: error reading t:\data\.m2\repository\com\sun\jmx\jmxri\1.2.1\jmxri-1.2.1.jar; error in opening zip file
+\--
+
+And when you check the file, you see it's a HTML page pointing humans, not Maven, to Sun Maven repository,
+but to a location from where JMX was removed:
+
+/--code html .[brush:]
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>301 Moved Permanently</title>
+</head><body>
+<h1>Moved Permanently</h1>
+<p>The document has moved <a href="http://download.java.net/maven/1/com.sun.jdmk/jars/jmxtools-1.2.1.jar">here</a>.</p>
+<hr>
+<address>Apache Server at maven-repository.dev.java.net Port 443</address>
+</body></html>
+\--
+
+
+Fixing JMXtools and JMXri
+=========================
+
+
+You have two options:
+
+A) Download them from "Sun JMX download page":http://java.sun.com/javase/technologies/core/mntr-mgmt/javamanagement/download.jsp,
+   extract the jar's and perform:
+
+   /--code bash .[brush:]
+   mvn install:install-file -DgroupId=com.sun.jmx -DartifactId=jmxri -Dversion=1.2.1 -Dpackaging=jar -Dfile=jmxri.jar
+   mvn install:install-file -DgroupId=com.sun.jdmk -DartifactId=jmxtools -Dversion=1.2.1 -Dpackaging=jar -Dfile=jmxtools.jar
+   \--
+
+B) Use "my Maven repository":http://code.google.com/p/ondrazizka/ at Google Code.
+
+
+I'd also add C), use "Sun Maven repository":http://download.java.net/maven/2/, 
+but "JMX was removed":http://download.java.net/maven/2/com/sun/ from there.

@@ -1,0 +1,187 @@
+
+
+Comparison of SSD vs. HDD disks
+*******************************
+
+
+**SSD disk:** Corsair Extreme Edition 32 GB (X32)
+
+**HDD:** Samsung HD403LJ 500 GB
+
+**JBoss AS:** 6.0 trunk - r96748
+
+JBoss AS compilation - Windows XP 64-bit
+========================================
+
+
+Average compilation times
+-------------------------
+
+ Everything on SSD, formated as NTFS: 2:20
+ Everything on the first half of HDD: 2:40
+
+**It's a draw.**
+
+Additional tests:
+ Working copy on SSD, formated as Ext3, used as Ext2 via //Ext2 IFS//: 3:47
+ Working copy on SSD, formated as NTFS: 2:16
+ Everything on HDD, WC on the end of the disk: 2:37
+
+
+//* Everything means JDK, Maven, Maven repository and the working copy.//
+/--code
+<localRepository>/mnt/x32/data/.m2/repository</localRepository>
+export JAVA_HOME=/mnt/x32/sw/java/jdk/1.6.0_14
+export M2_HOME=/mnt/x32/sw/tools/maven/2.2.1
+\--
+
+
+
+JBoss AS compilation - Linux 2.6 32-bit
+=======================================
+
+Completely on SSD: 3:14
+ Completely on HDD: 3:16
+
+**It's a draw.**
+
+
+Zip and Unzip - Linux 2.6 32-bit
+================================
+
+`$ date; zip -R -1 AS.zip AS-svn-trunk > /dev/null; date`
+
+|     | Zip* | Unzip |
+| SSD | 0:20 | 0:44  |
+| HDD | 3:55 | 1:47  |
+
+
+/--code .{display: none;}
+ondra@c2:/mnt/x32/_projekty$ date; zip -R -1 AS.zip AS-svn-trunk > /dev/null; date
+ondra@c2:~/temp$ date; zip -R -1 AS.zip AS-svn-trunk > /dev/null; date
+ondra@c2:/mnt/x32/_projekty$ date; unzip AS.zip -d test > /dev/null; date
+ondra@c2:~/temp$ date; unzip AS.zip -d test > /dev/null; date
+\--
+
+/--code .{display: none;}
+Po lis 30 01:11:01 CET 2009
+Po lis 30 01:11:21 CET 2009
+
+Po lis 30 01:11:49 CET 2009
+Po lis 30 01:15:44 CET 2009
+
+Po lis 30 01:18:28 CET 2009
+Po lis 30 01:19:12 CET 2009
+
+Po lis 30 01:19:51 CET 2009
+Po lis 30 01:21:38 CET 2009
+\--
+
+**SSD totally wins.**
+
+
+Zip and Unzip with WinRAR - Windows XP
+================================
+
+|     | Zip* | Unzip |
+| SSD | 0:40 | 1:30  |
+| HDD | 6:23 | 2:10  |
+
+**SSD totally wins.**
+
+//* Not counting the initial directory structure scan, which was quick on SSD and took ages on HDD anyway.//
+
+
+Machine specification
+=====================
+
+MBo: Asus P5N-E SLI - nForce 650i
+ CPU: Intel Core2 Duo
+ RAM: Kingmax 2x 2 GB DDR2, dual channel
+
+
+
+Reproduction steps
+==================
+
+Edit (or create) your `~/.m2/settings.xml` - add or edit `<localRepository>` under the root element:
+
+/--code
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+
+  <localRepository>/mnt/x32/data/.m2/repository</localRepository>
+
+</settings>
+\--
+
+Move Java and Maven binaries to the respective partition and edit your environment variables to point to them.
+If you build using `build.sh` or `build.bat`, Maven from `AS-trunk/tools/maven` is used.
+
+/--code
+export JAVA_HOME=/mnt/x32/sw/java/jdk/1.6.0_14
+export M2_HOME=/mnt/x32/sw/tools/maven/2.2.1
+export PATH=$JAVA_HOME/bin:$M2_HOME/bin:$PATH
+\--
+
+
+/--code bash
+svn co -r 96748 http://anonsvn.jboss.org/repos/jbossas/trunk AS-trunk
+cd AS-trunk
+build.sh
+date; build.sh clean; build.sh date
+\--
+
+/--code bash
+cd ..
+date; zip -R -1 AS.zip AS-svn-trunk > /dev/null; date
+date; unzip AS.zip -d test > /dev/null; date
+\--
+
+
+SiSoft Sandra 2003 score
+========================
+
+[* SSDntfs.png *] *** //NTFS.//
+
+[* SSDext2.png *] *** Ext2 via Ext2 IFS.
+
+[* HDDntfs.png *] *** HDD used for tests.
+
+
+Referential ramdisk benchmark
+=============================
+
+/--code
+ddr667, dualchan
+4x2,4G xeon
+
+$ build.sh
+real    1m36.857s
+user    1m22.204s
+sys     0m36.796s
+
+
+$ time tar cf ~/download/shm-jboss-test.tar *
+real    0m8.720s
+user    0m1.196s
+sys     0m2.893s
+\--
+
+Thanks to Daniel.
+
+----------------------
+Notes - old win values
+
+M2_HOME
+c:\sw\Java\apache-maven-2.0.9
+
+JAVA_HOME
+c:\sw\Java\jdk1.6.0_16-32bit
+
+JDK_HOME
+c:\sw\Java\jdk1.6.0_16-64bit
+

@@ -1,0 +1,69 @@
+
+
+Example of Wicket's markup inheritance - `wicket:child` and `wicket:extend`
+***************************************************************************
+
+This is the most clean way of composing the pages content in Wicket.
+
+
+Base page
+=========
+
+
+/--code html .[brush:]
+<html>
+  <body>
+    <h1>My Web</h1>
+
+    <div class="content">
+      <wicket:child />
+    </div>
+
+    <div>(c) 2010 Ondra.Zizka.cz</div>
+  </body>
+</html>
+\--
+
+/--code java .[brush:]
+public class BaseLayoutPage extends WebPage { ... }
+\--
+
+
+Child page
+==========
+
+
+/--code html .[brush:]
+<html>
+  <body>
+    <h1>Child page</h1>
+
+    DON'T get disturbed by this content, it's in examples only to confuse you.
+    *** Everything outside "wicket:extend" will be ignored. ***
+
+    <wicket:extend>
+      <h2>News</h2>
+      So this is the real content to be included into the base page.
+
+      Here we have some component container:
+
+      <div wicket:id="news">Works like usual, so this will be replaced by the component's stuff.</div>
+
+    <wicket:extend>
+
+    *** Again, everything outside the wicket:extend is ignored. ***
+
+    <div>(c) 2010 Ondra.Zizka.cz</div>
+  </body>
+</html>
+\--
+
+/--code java .[brush:]
+public class NewsPageContent extends BaseLayoutPage {
+  public NewsPageContent(){
+    add( new Label("news", "Good news everyone!" ) );
+  }
+}
+\--
+
+

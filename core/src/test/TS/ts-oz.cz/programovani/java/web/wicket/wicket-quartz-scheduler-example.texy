@@ -1,0 +1,72 @@
+
+
+Quartz Scheduler in Wicket - an example
+***************************************
+
+
+/--code java .[brush:]
+import org.apache.wicket.protocol.http.WebApplication;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
+import org.quartz.impl.StdSchedulerFactory;
+
+
+public class WicketApplication extends WebApplication
+{
+
+  Scheduler scheduler;
+
+  // Init
+  @Override protected void init() {
+    System.out.println( "---- init() ----" );
+    try{
+      this.scheduler = StdSchedulerFactory.getDefaultScheduler();
+      scheduler.start();
+      JobDetail job = new JobDetail("job1", "group1", MyJobClass.class);
+      Trigger trigger = new SimpleTrigger("trigger1", "group1", 10, 1000*2);
+      scheduler.scheduleJob(job, trigger);
+    } catch( SchedulerException se ) {
+        se.printStackTrace();
+    }
+  }
+
+
+  // Shutdown
+  @Override protected void onDestroy() {
+    System.out.println( "---- onDestroy() ----" );
+    try {
+      scheduler.shutdown();
+    }
+    catch( SchedulerException ex ) {
+      ex.printStackTrace();
+    }
+  }
+  // ...
+}
+\--
+
+
+/--code java .[brush:]
+/**
+ *
+ * @author Ondrej Zizka
+ */
+public class MyJobClass implements Job {
+
+  private static int counter = 0;
+  private static int inst = 0;
+
+  public MyJobClass() {
+    System.out.println( "INSTANTIATED "+ ++inst +" times!" );
+  }
+
+  public void execute( JobExecutionContext context ) throws JobExecutionException {
+    System.out.println( "EXECUTED "+ ++counter +" times!" );
+    //throw new UnsupportedOperationException("WTF.");
+  }
+}
+// class MyJobClass
+\--

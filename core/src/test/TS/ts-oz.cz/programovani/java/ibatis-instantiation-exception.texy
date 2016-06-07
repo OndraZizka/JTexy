@@ -1,0 +1,40 @@
+Ibasis instantiation exception: Missing default constructor
+===========================================================
+
+Ibatis needes default constructor, in some cases.
+
+
+/--code
+Caused by: com.ibatis.common.jdbc.exception.NestedSQLException:
+--- The error occurred in ibatis-maps/OsobyAdresy.xml.
+--- The error occurred while applying a result map.
+--- Check the getOsobaById-AutoResultMap.
+--- The error occured while instantiating the result object
+--- Cause: java.lang.RuntimeException: JavaBeansDataExchange could not instantiate result class.  Cause: java.lang.InstantiationException: cz.dynawest.isir.beans.Osoba
+ at com.ibatis.sqlmap.engine.mapping.statement.MappedStatement.executeQueryWithCallback(MappedStatement.java:204)
+ at com.ibatis.sqlmap.engine.mapping.statement.MappedStatement.executeQueryForObject(MappedStatement.java:120)
+ at com.ibatis.sqlmap.engine.impl.SqlMapExecutorDelegate.queryForObject(SqlMapExecutorDelegate.java:518)
+ at com.ibatis.sqlmap.engine.impl.SqlMapExecutorDelegate.queryForObject(SqlMapExecutorDelegate.java:493)
+ at com.ibatis.sqlmap.engine.impl.SqlMapSessionImpl.queryForObject(SqlMapSessionImpl.java:106)
+ at com.ibatis.sqlmap.engine.impl.SqlMapClientImpl.queryForObject(SqlMapClientImpl.java:82)
+ ... 9 more
+Caused by: java.lang.RuntimeException: JavaBeansDataExchange could not instantiate result class.  Cause: java.lang.InstantiationException: cz.dynawest.isir.beans.Osoba
+ at com.ibatis.sqlmap.engine.exchange.JavaBeanDataExchange.setData(JavaBeanDataExchange.java:108)
+ at com.ibatis.sqlmap.engine.mapping.result.ResultMap.setResultObjectValues(ResultMap.java:371)
+ at com.ibatis.sqlmap.engine.mapping.result.AutoResultMap.setResultObjectValues(AutoResultMap.java:57)
+ at com.ibatis.sqlmap.engine.mapping.statement.RowHandlerCallback.handleResultObject(RowHandlerCallback.java:64)
+ at com.ibatis.sqlmap.engine.execution.SqlExecutor.handleResults(SqlExecutor.java:385)
+ at com.ibatis.sqlmap.engine.execution.SqlExecutor.handleMultipleResults(SqlExecutor.java:300)
+ at com.ibatis.sqlmap.engine.execution.SqlExecutor.executeQuery(SqlExecutor.java:189)
+ at com.ibatis.sqlmap.engine.mapping.statement.MappedStatement.sqlExecuteQuery(MappedStatement.java:221)
+ at com.ibatis.sqlmap.engine.mapping.statement.MappedStatement.executeQueryWithCallback(MappedStatement.java:189)
+ ... 16 more
+Caused by: java.lang.InstantiationException: cz.dynawest.isir.beans.Osoba
+ at java.lang.Class.newInstance0(Unknown Source)
+ at java.lang.Class.newInstance(Unknown Source)
+ at com.ibatis.common.resources.Resources.instantiate(Resources.java:302)
+ at com.ibatis.sqlmap.engine.mapping.result.ResultObjectFactoryUtil.createObjectInternally(ResultObjectFactoryUtil.java:123)
+ at com.ibatis.sqlmap.engine.mapping.result.ResultObjectFactoryUtil.createObjectThroughFactory(ResultObjectFactoryUtil.java:91)
+ at com.ibatis.sqlmap.engine.exchange.JavaBeanDataExchange.setData(JavaBeanDataExchange.java:106)
+ ... 24 more
+\--

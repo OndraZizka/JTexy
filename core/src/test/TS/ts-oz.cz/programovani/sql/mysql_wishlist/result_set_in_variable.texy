@@ -1,0 +1,147 @@
+MySQL: Result set in a `@variable`
+**********************************
+
+A solution of passing a result set between stored routines is frequently asked question
+on the official MySQL's "Stored Procedures forum":http://forums.mysql.com/list.php?98
+(see e.g. 
+"Calling PROCEDURE on SELECT output":http://forums.mysql.com/read.php?98,205840,205840#msg-205840,
+"Use resultset from sproc in select statement or in another sproc":http://forums.mysql.com/read.php?98,203671,203671#msg-203671,
+and others).
+
+
+Since MySQL does not support passing result sets in stored procedures, 
+common practice is to use TEMPORARY TABLES when working with larger data sets.
+
+/--code sql .[brush:]
+CREATE PROCEDURE `lib_Explode`(sSepar VARCHAR(255), saVal TEXT)
+body: BEGIN
+
+  DROP TEMPORARY TABLE IF EXISTS lib_Explode;
+  CREATE TEMPORARY TABLE lib_Explode(
+    `pos` int unsigned NOT NULL PRIMARY KEY auto_increment,
+    `val` VARCHAR(255) NOT NULL
+  ) ENGINE=Memory COMMENT='Explode() results.';
+
+  SET @saTail = saVal, @iSeparLen = LENGTH( sSepar );
+
+  create_layers:
+  WHILE @saTail != '' DO
+    # Get the next value
+    SET @sHead = SUBSTRING_INDEX(@saTail, sSepar, 1);
+    SET @saTail = SUBSTRING( @saTail, LENGTH(@sHead)+1+@iSeparLen );
+    INSERT INTO lib_Explode SET val = @sHead;
+  END WHILE;
+
+END $$
+\--
+
+
+
+Although, this approach introduces a drawback - you have to care about table names.
+There are three options:
+
+* Keep track of the table names used. //Leads to total chaos in table names.//
+* Use dynamic prepared statements. //Leads to awful code.//
+* Use some naming conventions. //Leads to many table renamings.//
+
+(I personally prefer the last option.)
+
+
+The much more ellegant solution would be if a variable could hold a result set.
+Let's see what would be possible with such feature.
+
+
+Storing a result set into a `@variable`
+=====================================
+
+First, let's create a 3 x 2 table:
+
+/--code sql .[brush:]
+CREATE TABLE table1 ( a INT, b INT );
+INSERT INTO table1 VALUES (1,2), (3,4), (5,6);
+SELECT * FROM table1;
+\--
+
+The table now looks like this:
+
+|a|b
+|----
+|1|2
+|3|4
+|5|6
+
+Currently, we can select a single value into a variable:
+
+/--code sql .[brush:]
+SELECT a FROM table1 INTO @var LIMIT 1;
+\--
+
+But what much more cool would be if we could store a result set:
+
+
+/--code sql .[brush:]
+##  Create the result set and store it in a variable.
+SELECT * FROM table1 INTO @resultset;
+  -- or --
+SET @resultset = (SELECT * FROM table1);
+\--
+
+MySQL would recognize that we are assigning a result set.
+After executing, `@resultset` would be of special type `RESULTSET`.
+Then, we could pass it to a stored procedure.
+
+
+
+Passing a result set as a parameter of a stored procedure
+=========================================================
+
+/--code sql .[brush:]
+CREATE PROCEDURE StoredProcedure( rsData RESULTSET ) BEGIN
+  SELECT a + b FROM rsData;
+END $$
+
+##  Pass the result set into a stored procedure.
+CALL StoredProcedure( @resultset );
+\--
+
+In the stored procedure, a `RESULTSET` param could act exactly as a `TEMPORARY` table.
+
+
+
+Retrieving a result set from a stored procedure
+===============================================
+
+/--code sql .[brush:]
+##  Retrieving a result set from a stored procedure
+CALL StoredProcedure() INTO @result;
+
+-- or
+
+SET @result = (CALL StoredProcedure());
+\--
+
+After executing, `@result` would be of special type `RESULTSET` and contain the result
+of the first `SELECT` performed in a procedure.
+
+
+
+Retrieving multiple result sets from a stored procedure
+=======================================================
+
+Multiple results from a `CALL` could also be fetched:
+
+/--code sql .[brush:]
+CREATE PROCEDURE StoredProcedure( rsData RESULTSET ) BEGIN
+  SELECT a + b FROM rsData;
+  SELECT a * b FROM rsData;
+END $$
+
+##  Retrieving multiple result sets from a stored procedure
+CALL StoredProcedure() INTO @result1, @result2;
+\--
+
+
+So. This is my suggestion of how to deal with result sets in stored procedures.
+Hopefully I will see it in MySQL some day - it would reduce the code of my procedures near to half.
+
+

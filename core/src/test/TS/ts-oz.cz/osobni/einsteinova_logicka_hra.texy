@@ -1,0 +1,53 @@
+Einsteinova logická hra
+#######################
+
+Albert Einstein kdysi vymyslel takovou hádanku...
+
+Traduje se, že o ní prohlásil, že ji dokáží vyřešit dvě procenta populace, z toho procento jsou programátoři :-)
+
+
+Vedle sebe v řadě stojí pět domů. Každý má jinou barvu.
+V každém bydlí jeden člověk.
+Každý je jiné národnosti, pije jiný nápoj, 
+chová jiné zvíře a každý kouří jiné doutníky.
+
+------------------------------------------------------------
+
+A teď omezující podmínky (constraints):
+
+* Angličan bydlí v červeném domě.
+* Švéd chová psy.
+* Dán pije čaj.
+* Zelený dům je vedle a nalevo od bílého.
+* Obyvatel zeleného domu pije kávu.
+* Ten co kouří Pall Mall chová ptáky.
+* Obyvatel žlutého domu kouří Dunhill.
+* Obyvatel prostředního domu pije mléko.
+* V prvním domě bydlí Nor.
+* Ten co kouří Blend bydlí vedlo toho, co chová kočky.
+* Ten co má chov koní bydlí vedle toho, co kouří Dunhill.
+* Ten co kouří Blue Masters pije pivo.
+* Němec kouří Prince. (ach ty dvojsmysly)
+* Nor žije vedle modrého domu.
+* Ten co kouří Blend má souseda, co pije vodu.
+
+A ptáme se: //Kdo chová ryby?//
+
+------------------------------------------------------------
+
+
+To procento populace z řad programátorů si s hádankou poradí proto,
+že ji namodelují v Prologu, Lispu, XSLT nebo SQL
+(či obecně nějakém deklarativním programovacím jazyce)
+a nechají ji vyřešit počítač.
+
+Zbylému procentu populace prozradím (jestli nechcete, tak dál nečtěte!),
+
+že k vyřešení je nejlepší použít
+
+... 
+
+tabulky. Pro každou vlastnost si vytvořte tabulku.
+Do nich vepisujte možnosti, které připadají v úvahu.
+V podstatě je to stejné jako sudoku...
+Postupně vám vykrystalizuje řešení.

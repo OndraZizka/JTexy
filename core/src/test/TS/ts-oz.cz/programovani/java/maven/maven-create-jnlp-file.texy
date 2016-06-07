@@ -1,0 +1,65 @@
+
+How to create a JNPL file (for Java WebStart) with Maven
+************************************************************
+
+JFrog JNLP Maven plugin
+=======================
+
+/--code xml .[brush:]
+<project>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <mainClass>cz.dynawest.jtexy.sandbox.swing.SwingSandboxApp</mainClass>
+  </properties>
+
+  <profiles>
+    <!-- "Prepare for distribution" profile. -->
+    <profile>
+      <id>dist</id>
+      <build>
+        <plugins>
+
+          <!-- JNLP file (Java WebStart) -->
+          <!-- http://www.jfrog.org/sites/jfrog-jnlp-plugin/0.x/jnlp-mojo.html -->
+          <plugin>
+            <groupId>org.jfrog.maven.plugins</groupId>
+            <artifactId>jfrog-jnlp-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals> <goal>jnlp</goal> </goals>
+                <phase>generate-resources</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <project.Url>${project.url}</project.Url>
+              <mainClass>${mainClass}</mainClass>
+              <targetDirectory>${project.build.directory}</targetDirectory>
+              <additionalParameters>
+                <j2seVersion>1.6+</j2seVersion>
+              </additionalParameters>
+            </configuration>
+          </plugin>
+
+
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jfrog-plugins-dist</id>
+      <name>jfrog-plugins-dist</name>
+      <url>http://repo.jfrog.org/artifactory/plugins-releases-local</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+
+</project>
+\--

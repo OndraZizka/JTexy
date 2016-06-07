@@ -1,0 +1,101 @@
+
+Ondra Žižka - personal website
+******************************
+
+Welcome to my web page.
+
+This is not a blog - rather a "private publication" place.
+
+No comments here - I don't want to spend my time deleting dumb post and spam. If you have anything to say or ask, just send me an email.
+
+
+Ondra Žižka - osobní web
+************************
+
+Vítám vás na své webové nástěnce.
+
+Zas jednou jsem už nevydržel dávat věci dokola někam na FTP
+a rozhodl se pro potřeby zveřejňování lecčehos zřídit web.
+
+Nečekejte blog. Berte to jako moje soukromé "zveřejniště".
+
+
+Proč tu nejsou komentáře?
+=========================
+
+Za krátkou dobu obnovené existence webu už mi přišel pár mailů,
+kde se autor ptal, proč nemám u článků komentáře. Důvod je jednoduchý:
+
+a) Komentáře bych nečetl.
+b) Spam.
+c) Kvůli časové souslednosti.
+d) Buď na web nikdo chodit nebude, a pak budou komentáře zet prázdnotou, a to je trapné :-)
+e) nebo na něj lidé chodit budou, a pak se tu časem nutně objeví zástupy truhlíků s opravdu dementními komentáři.
+
+
+ad a)
+------
+Nemám ještě pořádný redakční systém, který by mi je někde pohodlně seštosoval,
+a možná ani mít nebudu, protože se pravděpodobně od webařiny přesunu k programování.
+
+ad c)
+------
+Jelikož toto není blog, ale prostor pro publikování, literární útvary se zde čas od času mění.
+Zakládat nový článek místo úpravy dokumentu podle mě není vhodné.
+Případné komentáře by tedy komentovaly staré verze,
+a zatímco dokument by se v čase vyvíjel a odrážel aktuální stav věcí,
+komentáře by se s ním táhly jako Gott a Vondráčková s hudebním průmyslem (fuj, to bylo ale politicky nekorektní).
+
+
+ad d), e)
+---------
+
+Zatímco na "blozích" se to řeší karmami, přihlašováním, hodnocením kvality, banováním a dalšími marnými technikami,
+já jednoduše komentáře nevedu.
+
+Pokud někdo chcete komentovat, napište mi mail na ondra@dynawest.cz.
+Efekt to bude mít stejný - nadávky mě hluboce urazí a půjdu trucovat do kouta,
+zajímavé a relevantní tipy do článků přidám. Akorát spam takto vyfiltruju lépe :-)
+
+
+
+Co zrovna dělám
+===============
+
+Pokud zrovna nepracuji pro JBoss, zkoumám různé technologie:
+
+* "JBoss AOP":stranky/programovani/java/jboss-aop-howto-example-standalone-app.texy
+* "`canvas`":stranky/programovani/web_javascript_ajax_canvas/canvas_element_selection_buffer.texy
+
+V mezičase se prokousávám webovými Java technologiemi (J2EE).
+
+
+
+/---html
+<!--
+Nedávno jsem dopřekládal IT knihu pro CPress,
+a dodělal CMS a systém správy práv pro "FSI VUT":www.fme.vutbr.cz,
+a dodělal proof-of-concept vyhledávání spojů v jízdních řádech.
+
+Momentálně pracuji na projektech:
+
+ * ISIR překladiště
+
+
+"**Vyhledávání spojů v jízdních řádech s využitím umělé inteligence k optimalizaci**":/projekty/diplomka/DiplomovaPrace-OndrejZizka.pdf
+-------------------
+ 
+Součástí je implementace neuronových sítí v SQL/SP,
+což dává vznik většině obsahu v sekci "Programování / SQL":stranky/programovani/sql/index.texy.
+
+-->
+\---
+
+
+
+Na co se chystám
+================
+
+* **Texy Java implementation**
+<!-- * **ISIR WS Relay** - překladiště insolvenčního rejstříku -->
+* **Gravity Road** - tajný projekt ;-)

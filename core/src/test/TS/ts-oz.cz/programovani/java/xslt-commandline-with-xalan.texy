@@ -1,0 +1,138 @@
+
+
+XSLT transformation in Java
+***************************
+
+
+Command-line XSLT transformation with Xalan
+===========================================
+
+Create a script:
+
+/--code bash .[brush]
+CURPATH=$(dirname $(which $0));
+CP=$(echo `ls $CURPATH/*.jar` | sed -e 's/ /:/g' )
+echo java -cp $CP org.apache.xalan.xslt.Process -IN $1 -XSL $2 -OUT $3
+java -cp $CP org.apache.xalan.xslt.Process -IN $1 -XSL $2 -OUT $3
+\--
+
+
+Then call it:
+
+/--code bash .[brush]
+~/scripts/xslt pom.xml test.xsl pom2.xml -PARAM grp net.sourceforge.htmlunit -PARAM art htmlunit -PARAM ver 666
+\--
+
+
+Sources: http://xml.apache.org/xalan-j/commandline.html
+
+
+
+Simple class for XSLT conversion using JDK's XSLT
+=================================================
+
+/--code java .[brush:]
+import javax.xml.transform.ErrorListener;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+public class Xslt {
+
+    static public void main(String[] arg) {
+        if(arg.length != 3) {
+            System.err.println("Usage: SimpleXMLTransform " +
+                "<input.xml> <input.xsl> <output>");
+            System.exit(1);
+        }
+        String inXML = arg[0];
+        String inXSL = arg[1];
+        String outTXT = arg[2];
+
+        Xslt st = new Xslt();
+        try {
+            st.transform(inXML,inXSL,outTXT);
+        } catch(TransformerConfigurationException e) {
+            System.err.println("Invalid factory configuration");
+            System.err.println(e);
+        } catch(TransformerException e) {
+            System.err.println("Error during transformation");
+            System.err.println(e);
+        }
+    }
+
+    public void transform(String inXML,String inXSL,String outTXT)
+                throws TransformerConfigurationException,
+                    TransformerException {
+
+        TransformerFactory factory = TransformerFactory.newInstance();
+
+        StreamSource xslStream = new StreamSource(inXSL);
+        Transformer transformer = factory.newTransformer(xslStream);
+        transformer.setErrorListener(new MyErrorListener());
+
+        StreamSource in = new StreamSource(inXML);
+        StreamResult out = new StreamResult(outTXT);
+        transformer.transform(in,out);
+    System.out.println("The generated HTML file is:" + outTXT);
+    }
+
+}// class
+
+
+class MyErrorListener implements ErrorListener {
+    public void warning(TransformerException e)
+                throws TransformerException {
+        show("Warning",e);
+        throw(e);
+    }
+    public void error(TransformerException e)
+                throws TransformerException {
+        show("Error",e);
+        throw(e);
+    }
+    public void fatalError(TransformerException e)
+                throws TransformerException {
+        show("Fatal Error",e);
+        throw(e);
+    }
+    private void show(String type,TransformerException e) {
+        System.out.println(type + ": " + e.getMessage());
+        if(e.getLocationAsString() != null)
+            System.out.println(e.getLocationAsString());
+    }
+}
+\--
+
+/--code bash
+javac Xslt.java
+java Xslt data.xml template.xslt output.xml
+\--
+
+
+Template which does some change and copies all other data
+=========================================================
+
+/--code xml .[brush:]
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:output method="xml" encoding="UTF-8" omit-xml-declaration="no" indent="yes"/>
+
+    <!-- Find the matching MBean and skip it, but put out a message -->
+    <xsl:template match="/myRoot/myElement">
+		All myElement elements were replaced with this text.
+    </xsl:template>
+
+    <!-- Copy all other data -->
+    <xsl:template match="@*|node()">
+        <xsl:copy>
+          <xsl:apply-templates select="@*|node()" />
+        </xsl:copy>
+    </xsl:template>
+
+</xsl:stylesheet>
+\--
+

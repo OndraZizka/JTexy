@@ -1,0 +1,309 @@
+
+JBoss Microcontainer with JBoss AOP - Howto with sample application
+*******************************************************************
+
+//A very brief intro to JBoss AOP.//
+
+
+Prerequisites
+=============
+
+This tutorial is a follow-up to the 
+"JBoss Microcontainer intro":jboss-microcontainer-howto-example-standalone-app.texy - 
+read that first if you haven't yet.
+
+
+What is AOP good for?
+=====================
+
+AOP (Aspect Oriented Programming) is a concept of moving a "programatic envelopes" away from the methods.
+What I call a programatic envelope is that kind of annoying code you have to repeat at the end or/and the beginning of many methods.
+
+Usual textbook examples of AOP usage are:
+* Opening and closing of a transaction
+* Locking and unlocking of synchronization locks
+* Logging of debug messages
+* Measuring the time of method execution
+
+However, AOP is particulary useful for frameworks for their need of generalization.
+It can help it to put the envelope code around method which it still does not know.
+
+
+
+How does AOP work?
+==================
+
+First, you mark some Java constructs (methods, fields, constructors, ...) to be AOP'ed (encapsulated with your envelope code).
+ Then you need so-called "aspect" - that is the official name for envelope code.
+ Then you need some tool which will bind the aspect to those methods. This is done
+by advanced techniques like byte-code instrumentation and class reflection.
+
+
+Why JBoss AOP (and not the others)?
+===================================
+
+JBoss AOP offers much more then the other AOP frameworks (like Spring AOP).
+
+* It can bind not only to methods, but also to constructors and fields.
+* As it's not proxy based, you don't need to treat objects only through interfaces.
+* You can weave any existing class without any code changes.
+* Annotation-based weaving - intercept Java constructs which are annotated by some anotation.
+* Weaving at compile time gives much better performance.
+* Configuration by annotations - if you don't like XML, you can set the aspects and bindings using annotations like `@Aspect`, `@Interceptor`, `@Bind` etc. See "Chapter 6. Annotation Bindings":http://www.jboss.org/jbossaop/docs/2.0.0.GA/docs/aspect-framework/reference/en/html_single/index.html#annotated.
+* Runtime weaving, called "HotSwap" - allows bytecode of your classes to be weaved in runtime.
+
+
+
+Terms
+=====
+
+Copied from "JBoss AOP reference docs":http://www.jboss.org/jbossaop/docs/2.0.0.GA/docs/aspect-framework/reference/en/html_single/index.html#base-terms.
+
+Joinpoint:
+    - A joinpoint is any point in your java program. The call of a method. The execution of a constructor the access of a field. All these are joinpoints. You could also think of a joinpoint as a particular Java event. Where an event is a method call, constructor call, field access etc... 
+
+Invocation:
+    - An Invocation is a JBoss AOP class that encapsulates what a joinpiont is at runtime. It could contain information like which method is being called, the arguments of the method, etc... 
+
+Advice:
+    - An advice is a method that is called when a particular joinpoint is executed, i.e., the behavior that is triggered when a method is called. It could also be thought of as the code that does the interception. Another analogy is that an advice is an "event handler". 
+
+Pointcut:
+    - Pointcuts are AOP's expression language. Just as a regular expression matches strings, a pointcut expression matches a particular joinpoint. 
+
+Introductions:
+    - An introduction modifies the type and structure of a Java class. It can be used to force an existing class to implement an interface or to add an annotation to anything. 
+
+Aspect:
+    - An Aspect is a plain Java class that encapsulates any number of advices, pointcut definitions, mixins, or any other JBoss AOP construct. 
+
+Interceptor:
+    - An interceptor is an Aspect with only one advice named "invoke". It is a specific interface that you can implement if you want your code to be checked by forcing your class to implement an interface. It also will be portable and can be reused in other JBoss environments like EJBs and JMX MBeans. 
+
+
+
+What we're willing to achieve?
+==============================
+
+We want to catch all calls to methods that affect the fuel in the `Car`.
+To make this easily achievable with AOP, let's follow a convention that all changing methods are setters
+and all fuel-related properties names end with "Fuel".
+
+For the purposes of this example, we've changed the `Car` class to have two fuel-related properties:
+
+/--code java .[brush:]
+public class Car {
+  public int litresOfFuel;
+  public int getLitresOfFuel() {    return litresOfFuel;  }
+  public void setLitresOfFuel( int litresOfFuel ) {    this.litresOfFuel = litresOfFuel;  }
+
+  public int reserveFuel;
+  public int getReserveFuel() {    return reserveFuel;  }
+  public void setReserveFuel( int reserveFuel ) {    this.reserveFuel = reserveFuel;  }
+
+  public String toString(){
+    return "Car \""+this.name+"\" with "+(this.litresOfFuel + this.reserveFuel)+" litres of fuel.";
+  }
+  ...
+}
+\--
+
+
+Creating an `Interceptor` ("envelope")
+======================================
+
+This is a simple interceptor that will just notify us when triggered.
+
+
+/--code java .[brush:]
+package cz.zizka.ondra.jbmctest;
+
+import java.util.logging.Logger;
+import org.jboss.aop.advice.Interceptor;
+import org.jboss.aop.instrument.Untransformable;
+import org.jboss.aop.joinpoint.Invocation;
+
+public class FuelInterceptor implements Interceptor, Untransformable {
+
+  private static final Logger log = Logger.getLogger( FuelInterceptor.class.getName() );
+
+  public Object invoke(Invocation invocation) throws Throwable
+  {
+    Object target = invocation.getTargetObject();
+    if( target instanceof Car ){
+      log.info("The fuel is being changed for the car '"+((Car)target).getName()+"'.");
+    }
+    return invocation.invokeNext();
+  }
+
+  public String getName() {
+    return FuelInterceptor.class.getName();
+  }
+}// class FuelInterceptor
+\--
+
+
+Binding the interceptor to the method calls
+===========================================
+
+For the syntax of AOP pointcuts, see 
+"JBoss AOP documentation":http://www.jboss.org/jbossaop/docs/2.0.0.GA/docs/aspect-framework/reference/en/html_single/index.html#pointcuts.
+
+The syntax for our purpose stated above would be:
+
+/--code text .[brush:]
+execution(* cz.zizka.ondra.jbmctest.Car->set*Fuel(..)
+\--
+
+
+
+The AOP settings go to a special XML file having `<aop>` as it's root element, and conforming to the JBoss AOP XSD.
+ From what I've found, this file must be either in `META-INF/jboss-aop.xml` of your `.jar`,
+or anywhere on the filesystem, but you'll have to point to it by the `-Djboss.aop.path` JVM argument - see 
+"10.2.1. Precompiled instrumentation":http://www.jboss.org/jbossaop/docs/2.0.0.GA/docs/aspect-framework/reference/en/html_single/index.html#standalone-compiletime and
+"5.2. Resolving XML":http://www.jboss.org/jbossaop/docs/2.0.0.GA/docs/aspect-framework/reference/en/html_single/index.html#xml-resolving.
+
+To let maven put this file to your `.jar`, store it in `src/main/resources` (the default path for resources), giving the resulting path `src/main/resources/META-INF/jboss-aop.xml`.
+
+
+So let's bind this interceptor to some method calls.
+In this case, we're binding it to all methods of the `Car` class whose name has the pattern `set*Fuel`.
+
+
+/--code xml .[brush:]
+<?xml version="1.0" encoding="UTF-8"?>
+<aop>
+   <bind pointcut="execution(* cz.zizka.ondra.*->set*Fuel(..))">
+       <interceptor class="cz.zizka.ondra.jbmctest.FuelInterceptor"/>
+   </bind>
+</aop>
+\--
+
+
+Alternatively, it should be possible to put the AOP settings to the JBoss Microcontainer XML (but I wasn't able to get it working):
+
+
+/--code xml .[brush:]
+<deployment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="urn:jboss:bean-deployer:2.0 bean-deployer_2_0.xsd"
+            xmlns="urn:jboss:bean-deployer:2.0"
+            xmlns:aop="urn:jboss:aop-beans:1.0">
+
+  <bean ... /> <!-- Car and garage beans -->
+
+  <aop:interceptor name="FuelInterceptor" class="cz.zizka.ondra.jbmctest.FuelInterceptor"/>
+
+  <aop:bind pointcut="execution(* cz.zizka.ondra.jbmctest.Car->set*Fuel(..)">
+    <aop:interceptor-ref name="FuelInterceptor"/>
+  </aop:bind>
+
+</deployment>
+\--
+
+
+
+Maven configuration
+===================
+
+After setting Maven to use JBoss repositories (see the "JBoss Microcontainer how-to":jboss-microcontainer-howto-example-standalone-app.texy),
+add these dependencies to your project:
+
+/--code xml .[brush:]
+<dependencies>
+  <dependency>
+    <groupId>org.jboss.microcontainer</groupId>
+    <artifactId>jboss-kernel</artifactId>
+    <version>2.0.9.GA</version>
+  </dependency>
+  <dependency>
+    <groupId>org.jboss.aop</groupId>
+    <artifactId>jboss-aop</artifactId>
+    <version>2.1.6.GA</version>
+  </dependency>
+  <dependency>
+    <groupId>org.jboss.microcontainer</groupId>
+    <artifactId>jboss-aop-mc-int</artifactId>
+    <version>2.0.9.GA</version>
+    <scope>runtime</scope>
+  </dependency>
+</dependencies>
+\--
+
+Also, add the JBoss AOP Maven plugin. It binds automatically to the `compile` phase.
+This will change the classes code to call your interceptors when a method is being called.
+
+/--code xml .[brush:]
+    <plugins>
+      <plugin>
+        <groupId>org.jboss.maven.plugins</groupId>
+        <artifactId>maven-jbossaop-plugin</artifactId>
+        <version>2.1.3.GA</version>
+        <executions>
+          <execution>
+            <id>compile</id>  <goals> <goal>compile</goal> </goals>
+            <configuration>
+              <includeProjectDependency>true</includeProjectDependency>
+              <aoppaths>
+                <aoppath>src/main/resources/META-INF/jboss-aop.xml</aoppath>
+              </aoppaths>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+\--
+
+
+
+Test code
+=========
+
+/--code java .[brush:]
+public class JBossAopSampleApp {
+
+  public static void main( String[] args ) throws Throwable
+  {
+    Car myCar = new Car("Red Devil");
+    System.out.println( "I have a garage: "+car);
+    
+    // Put some fuel in.
+    myCar.setLitresOfFuel( myCar.getLitresOfFuel() + 1 );
+    myCar.setReserveFuel( myCar.getReserveFuel() + 1 );
+
+    System.out.println( "I have a garage: "+car);
+  }
+
+}
+\--
+
+
+
+The result
+==========
+
+Now run the application, and you'll see that the interceptor is really being invoked.
+
+/--code text .[brush:]
+I have a garage: Garage with a car: Car "Red Devil" with 0 litres of fuel.
+16.11.2009 11:42:47 FuelInterceptor invoke INFO: The fuel is being changed for the car 'Red Devil'.
+16.11.2009 11:42:47 FuelInterceptor invoke INFO: The fuel is being changed for the car 'Red Devil'.
+I have a garage: Garage with a car: Car "Red Devil" with 2 litres of fuel.
+\--
+
+
+
+Sample application
+==================
+
+The application created in the examples above can be downloaded here: "JBossAOPsample.zip":download/JBossAOPsample.zip
+
+
+
+
+
+/--code xml .[brush:]
+
+\--
+
+/--code java .[brush:]
+\--

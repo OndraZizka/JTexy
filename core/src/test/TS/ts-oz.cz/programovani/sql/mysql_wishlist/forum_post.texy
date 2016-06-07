@@ -1,0 +1,39 @@
+Feature request discussion: Result sets stored in @variables
+************************************************************
+
+Hello,
+
+I got over several weeks of stored routines developement, and the most missed feature was a seamless mechanism for
+ - calling routines with a resultset in a parameter,
+ - retrieving a result set coming stored procedure,
+ - and eventually, for keeping a resultset somewhere without need to create a table.
+
+All of this would be possible if we could store a resultset in a variable.
+So I have stated a feature request, not yet submitted to a buglist.
+First I would like to know others' oppinions and suggestions, because I am not much familiar with other DBMS.
+
+I guess that such functionality would not be easy to implement and is not likely to appear soon.
+But it would be a giant leap for MySQL's stored procedures programming.
+
+
+Here is a brief overview:
+
+##  Create the result set and store it in a variable.
+SELECT * FROM table1 INTO @resultset;
+  -- or --
+SET @resultset = (SELECT * FROM table1);
+
+##  Pass the result set into a stored procedure.
+CALL StoredProcedure( @resultset );
+
+##  Retrieving a result set from a stored procedure
+CALL StoredProcedure() INTO @result;
+-- or --
+SET @result = (CALL StoredProcedure());
+
+More detailed formatted draft is here:
+http://ondra.zizka.cz/stranky/programovani/sql/mysql_wishlist/result_set_in_variable.texy
+
+Now - what do you think? Would this ease your SP developement? Is there some better concept?
+
+Thanks for comments.

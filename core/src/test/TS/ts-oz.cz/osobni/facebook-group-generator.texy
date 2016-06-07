@@ -1,0 +1,66 @@
+
+
+Facebook Group Generator
+************************
+
+/--div .{display: none;}
+<script type="text/javascript">
+
+function repeat(num, str){
+  ret = "";
+  for( i = 0; i < num; i++ )
+    ret += str;
+  return ret;
+}
+
+function rand(from, to){
+  return Math.random() % (to - from) + from;
+}
+
+function chooseRandom( values ){
+  return values[ rand( 0, values.length ) ];
+}
+
+
+var generators = [
+  function createHateGroup(){ return "Nesnáším "+google.findRandomNoun()+ repeat(rand(), "!")); },
+  function createWinGroup(){ return rand(5,20) + " členů této skupiny dostane každý "+chooseRandom("den","týden","měsíc")+" "+chooseRandom("iPhone","20.000 Kč","auto","hodinky","paroubka","rakovinu"); },
+];
+
+function generateGroup(){
+  return generators[rand(0,generators.length-1)]();
+}
+
+</script>
+\--
+
+
+Facebook group generator:
+
+/--code js .[brush]
+facebook.createGroup("Nesnáším "+google.findRandomNoun()+ repeat(rand(), "!"));
+\--
+
+
+Facebook group generator:
+
+/--code js .[brush]
+facebook.createGroup(
+  rand(5,20) + " členů této skupiny dostane každý "+chooseRandom("den","týden","měsíc")+" "+chooseRandom("iPhone","20.000 Kč","auto","hodinky","paroubka","rakovinu","přes držku")
+);
+\--
+
+Facebook group generator:
+
+/--code js .[brush]
+facebook.createGroup(
+  "Najde se na facebooků "+rand(5,50)+"0 000 " 
+  + chooseRandom("Čechů","Moraváků","skejtborďáků","neonacistů","emařů","skupin","feťáků","romů","lidí","lidišek")
+  + " co "
+  + chooseRandom("nesnáší","nenávidí","milujou")
+  + " "
+  + google.findRandomNounOrVerbInfinitive()
+  + "?")
+);
+\--
+

@@ -1,0 +1,86 @@
+
+
+JBoss AS Java system variables
+******************************
+
+`-D` variables for JBoss AS startup script - `bin/run.sh`
+
+
+/--code
+-Djboss.boot.server.log.level=DEBUG
+logger.level=${jboss.boot.server.log.level:DEBUG}
+\--
+
+
+
+
+Following is not a list of them... just a try with grep.
+Other are in XML files, some might even be in the code.
+
+
+/--code bash
+$ find . -name *.properties -exec grep $\{ {} \; > vars.txt
+
+javac.boot.classpath=${sun.boot.classpath}
+javac.classpath=${classpath}
+javadoc.classpath=${javac.classpath}
+javadoc.windowtitle=${module.Name} API
+javadoc.doctitle=${module.Name}
+rmic.base=${build.classes}
+junit.batchtest.fork=${junit.fork}
+junit.batchtest.haltonerror=${junit.haltonerror}
+junit.batchtest.haltonfailure=${junit.haltonfailure}
+#node0=${env.MYTESTIP_1}
+#node1=${env.MYTESTIP_2}
+#udpGroup=${env.MY_UDP_GROUP}
+node2=${env.MYTESTIP_3}
+node3=${env.MYTESTIP_4}
+#node0=${env.MYTESTIP_1}
+node1=${env.MYTESTIP_2}
+m2.jar.name=${m2.artifact-name}-${m2.version}-dep.jar
+m2.antlib.url=${m2.url}/org/apache/maven/${m2.artifact-name}/${m2.version}/${m2.jar.name}
+bsh-core.version=${bsh.version}
+commons-logging-api.version=${commons-logging.version}
+xercesImpl.version=${xerces.version}
+#xmlParserAPIs.version=${xerces.version}
+tcljava.version=${jacl.version}
+logger.level=${jboss.boot.server.log.level:DEBUG}
+handler.CONSOLE.level=${jboss.boot.server.log.console.level:INFO}
+handler.FILE.level=${jboss.boot.server.log.file.level:DEBUG}
+handler.FILE.fileName=${jboss.boot.server.log.dir}/boot.log
+logger.level=${jboss.boot.server.log.level:INFO}
+logger.org.jboss.system.server.ServerInfo.level=${jboss.boot.server.log.serverinfo.level:DEBUG}
+handler.CONSOLE.level=${jboss.boot.server.log.console.level:INFO}
+handler.FILE.level=${jboss.boot.server.log.file.level:DEBUG}
+handler.FILE.fileName=${jboss.boot.server.log.dir}/boot.log
+logger.level=${jboss.boot.server.log.level:INFO}
+logger.org.jboss.system.server.ServerInfo.level=${jboss.boot.server.log.serverinfo.level:DEBUG}
+handler.CONSOLE.level=${jboss.boot.server.log.console.level:INFO}
+handler.FILE.level=${jboss.boot.server.log.file.level:DEBUG}
+handler.FILE.fileName=${jboss.boot.server.log.dir}/boot.log
+version.major=${parsedVersion.majorVersion}
+version.minor=${parsedVersion.minorVersion}
+version.revision=${parsedVersion.incrementalVersion}
+version.tag=${parsedVersion.qualifier}
+version.name=${project.version.name}
+version.cvstag=JBoss_${project.version}
+build.number=r${buildNumber}
+build.id=r${buildNumber}
+build.date=${timestamp}
+build.time=${timestamp}
+build.day=${timestamp}
+java.version=${java.version}
+java.vendor=${java.vendor}
+java.vm.specification.version=${java.vm.specification.version}
+java.vm.version=${java.vm.version}
+java.vm.name=${java.vm.name}
+java.vm.info=${java.vm.info}
+java.specification.version=${java.specification.version}
+java.class.version=${java.class.version}
+os.name=${os.name}
+os.arch=${os.arch}
+os.version=${os.version}
+\--
+
+
+

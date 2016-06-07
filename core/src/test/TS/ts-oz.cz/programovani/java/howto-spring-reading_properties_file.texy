@@ -1,0 +1,50 @@
+
+How to read properties file in Spring Framework
+***********************************************
+
+I've had a problem with reading `.properties` file in Spring Framework.
+I needed to inject it into the iBatis' `SqlMapConfig.xml`:
+
+
+/--code
+  <!-- iBatis -->
+  <bean id="sqlMap" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+    <property name="sqlMapClientProperties" value="file:conf/${profile}/nastaveni.properties" />
+    <property name="configLocation" value="ibatis-maps/SqlMapConfig2.xml"/>
+  </bean>
+  <alias alias="iBatis" name="sqlMap"/>
+\--
+
+
+
+But iBatis kept complaining that the properties defined in the file were not resolved.
+Better said, it behaved like the actual value was the property name, thus the code
+
+/--code
+  <transactionManager type="JDBC">
+    <dataSource type="SIMPLE">
+      <property name="JDBC.Driver" value="${jdbc.driver}"/>
+\--
+
+
+gave me a `ClassNotFoundException` for the class `jdbc.driver`.
+
+What actually happened was clear when I made a test bean with a property of type `java.lang.Properties`.
+Spring takes the file path "file:conf/${profile}/nastaveni.properties" as a Properties string definition
+and provides iBatis a `Properties` object with a single property: `file = conf/release/nastaveni.properties`.
+
+The solution is to use the `SqlMapClientFactoryBean`:
+
+/--code
+  <!-- iBatis -->
+  <bean id="sqlMap" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+    <property name="sqlMapClientProperties">
+      <bean class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location" value="file:conf/${profile}/nastaveni.properties"/>
+      </bean>
+    </property>
+    <property name="configLocation" value="ibatis-maps/SqlMapConfig2.xml"/>
+  </bean>
+\--
+
+Of course, this is a trivial think, but not much well documented.

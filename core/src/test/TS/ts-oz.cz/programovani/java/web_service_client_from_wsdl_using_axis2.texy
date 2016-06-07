@@ -1,0 +1,56 @@
+
+
+Web Service Client from WSDL using Axis2
+########################################
+
+
+* Download Axis2 (tested with 1.4.1).
+* Follow the guide at http://ws.apache.org/axis2/1_4_1/userguide-creatingclients.html#adb :
+* Create the client stub with the following command:
+
+/--code
+%AXIS2_HOME%\bin\WSDL2Java -uri IsirPub001.wsdl -p cz.pohlidame.isir.client -d adb -s
+\--
+
+That will generate a single java file with a stub for that WSDL.
+
+* This code will use the stub to call the web service:
+
+/--code
+    try {
+
+      IsirPub001Stub stub = new IsirPub001Stub();
+      IsirPub001Stub.GetIsirPub0012E e = new IsirPub001Stub.GetIsirPub0012E();
+      IsirPub001Stub.GetIsirPub0012 param = new IsirPub001Stub.GetIsirPub0012();
+      param.setLong_1( 0 );
+      e.setGetIsirPub0012( param );
+
+      GetIsirPub0012ResponseE responseE = stub.getIsirPub0012( e );
+
+      GetIsirPub0012Response response = responseE.getGetIsirPub0012Response();
+      IsirPub001Data[] result = response.getResult();
+      System.out.println( "" + result[0].getTypText() );
+      
+    }
+    catch( RemoteException ex ) {
+      Logger.getLogger( Main.class.getName() ).log( Level.SEVERE, null, ex );
+    }
+
+\--
+
+* Run this code with libraries from `%AXIS2_HOME%\lib` at the classpath.
+These are necessary (but YMMV):
+
+* axiom-api-1.2.7.jar
+* axiom-impl-1.2.7.jar
+* axis2-adb-1.4.1.jar
+* axis2-kernel-1.4.1.jar
+* backport-util-concurrent-3.1.jar
+* commons-codec-1.3.jar
+* commons-httpclient-3.1.jar
+* commons-logging-1.1.1.jar
+* neethi-2.0.4.jar
+* wsdl4j-1.6.2.jar
+* XmlSchema-1.4.2.jar
+
+

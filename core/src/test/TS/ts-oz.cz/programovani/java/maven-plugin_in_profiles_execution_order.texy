@@ -1,0 +1,201 @@
+
+Maven: Order of execution of plugins in profiles
+************************************************
+
+I was curious in which order Maven executes the plugins:
+Whether it uses POM profile appearance order, or uses the ordering from the command line's `-P` param value.
+
+So I put this in a pom.xml:
+
+/--code
+<profiles>
+    <profile>
+      <id>test1</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>test1ex</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <echo>test1 ECHO.</echo>
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>test2</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>test2ex</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <tasks>
+                    <echo>test2 ECHO.</echo>
+                  </tasks>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+</profiles>
+\--
+
+
+Then I launched it using:
+
+/--code
+mvn initialize -P test2,test1
+\--
+
+And the result?
+
+
+/--code
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building pohlidame-backend
+[INFO]    task-segment: [install]
+[INFO] ------------------------------------------------------------------------
+[INFO] [antrun:run {execution: test1ex}]
+[INFO] Executing tasks
+     [echo] test1 ECHO.
+[INFO] Executed tasks
+[INFO] [antrun:run {execution: test2ex}]
+[INFO] Executing tasks
+     [echo] test2 ECHO.
+[INFO] Executed tasks
+...
+\--
+
+
+**Plugin execution order follows the order in `pom.xml`.**
+The only way to get `test2` run first is to swap them in `pom.xml`.
+
+
+
+
+Executed twice?
+===============
+
+Another interesting thing is what happens when when launched using:
+
+/--code
+mvn clean install -Dmaven.test.skip=true -P test1,test2
+\--
+
+In this case, the AntRun plugin is executed four times:
+
+
+/--code
+mvn install -Dmaven.test.skip=true -P test1,test2
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Building pohlidame-backend
+[INFO]    task-segment: [install]
+[INFO] ------------------------------------------------------------------------
+[INFO] [antrun:run {execution: test1ex}]
+[INFO] Executing tasks
+     [echo] test2 ECHO.
+[INFO] Executed tasks
+[INFO] [antrun:run {execution: test2ex}]
+[INFO] Executing tasks
+     [echo] test1 ECHO.
+[INFO] Executed tasks
+[INFO] [resources:resources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [compiler:compile]
+[INFO] Nothing to compile - all classes are up to date
+[INFO] [resources:testResources]
+[INFO] Using default encoding to copy filtered resources.
+[INFO] [compiler:testCompile]
+[INFO] Not compiling test sources
+[INFO] [surefire:test]
+[INFO] Tests are skipped.
+[INFO] [jar:jar]
+[INFO] Preparing source:jar
+[WARNING] Removing: jar from forked lifecycle, to prevent recursive invocation.
+[INFO] [antrun:run {execution: test1ex}]
+[INFO] Executing tasks
+     [echo] test2 ECHO.
+[INFO] Executed tasks
+[INFO] [antrun:run {execution: test2ex}]
+[INFO] Executing tasks
+     [echo] test1 ECHO.
+[INFO] Executed tasks
+[INFO] [source:jar {execution: attach-sources}]
+[INFO] Building jar: C:\...\target\isirbackend-sources.jar
+[INFO] [install:install]
+[INFO] Installing C:\...\target\isirbackend.jar to C:\...\.m2\repository\cz\...-1.6.03-SNAPSHOT.jar
+[INFO] Installing C:\...\target\isirbackend-sources.jar to C:\...\.m2\repository\cz\...-1.6.03-SNAPSHOT-sources.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 7 seconds
+[INFO] Finished at: Fri May 08 07:02:31 CEST 2009
+[INFO] Final Memory: 29M/247M
+[INFO] ------------------------------------------------------------------------
+\--
+
+Does that mean that the `initialize` phase is used before packaging the `.jar`?
+
+
+
+
+
+/--code
+\--
+
+
+
+
+/--code
+\--
+
+
+
+
+/--code
+\--
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

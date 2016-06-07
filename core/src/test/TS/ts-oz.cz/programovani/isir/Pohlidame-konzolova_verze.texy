@@ -1,0 +1,40 @@
+Aplikace pro kontrolu vĂ˝skytĹŻ subjektĹŻ v insolvenÄŤnĂ­m rejstĹ™Ă­ku
+###############################################################
+
+//Dokumentace k testovacĂ­ konzolovĂ© verzi.//
+ //UrÄŤeno vĂ˝hradnÄ› pro MarkĂ©tu VojtĂ­kovou.//
+
+
+1. ĂšÄŤel aplikace
+****************
+
+Aplikace momentĂˇlne provĂˇdĂ­ tyto operace:
+
+- Aktualizace mĂ­stnĂ­ kopie archivu udĂˇlostĂ­ webovĂ© sluĹľby ISIR
+- Import seznamu dluĹľnĂ­kĹŻ z Excel souboru v pĹ™edem dohodnutĂ©m formĂˇtu
+- Kontrola vĂ˝skytu dluĹľnĂ­kĹŻ z tohoto seznamu mezi subjekty vedenĂ˝mi v ISIR
+
+BliĹľĹˇĂ­ popis tÄ›chto operacĂ­ nĂˇsleduje nĂ­Ĺľe.
+
+2. KonzolovĂˇ verze
+******************
+
+KonzolovĂˇ verze aplikace znamenĂˇ, Ĺľe mĂˇ textovĂ© rozhranĂ­.
+PĹ™i vĂ˝voji testovacĂ­ verze jsem se soustĹ™edil hlavnÄ› na funkÄŤnost;
+vĂ˝roba grafickĂ©ho ("okennĂ­ho") rozhranĂ­ by oddĂˇlila datum vzniku sprĂˇvnÄ› fungujĂ­cĂ­ aplikace.
+
+3. BudoucĂ­ plĂˇny
+****************
+
+FunkÄŤnĂ­ hledisko (co aplikace dovede)
+-------------------------------------
+
+PostupnÄ› mĂ­Ĺ™Ă­m k aplikaci, kterĂˇ bude fungovat podle poĹľadavkĹŻ v mailech, kterĂ© jsme si dosud vymÄ›nili.
+ÄŚĂˇst z nich jiĹľ funguje, napĹ™. posĂ­lĂˇnĂ­ mailem pĹ™i novĂ© udĂˇlosti ve sledovanĂ©m spisu,
+ignorovĂˇnĂ­ starĂ˝ch udĂˇlostĂ­ vybranĂ©ho spisu atd.
+Po nĂˇvratu z dovolenĂ© tyto poĹľadavky struÄŤnÄ› shrnu, ÄŤi spĂ­Ĺˇe pĹ™ednesu ucelenĂ˝ nĂˇvrh, jak by aplikace mohla fungovat.
+
+UĹľivatelskĂ© rozhranĂ­
+--------------------
+
+SouÄŤasnĂˇ konzolovĂˇ verze je jen provizorium pro vĂˇs, a zĂˇroveĹ

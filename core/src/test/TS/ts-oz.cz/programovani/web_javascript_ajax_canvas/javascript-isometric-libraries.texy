@@ -1,0 +1,165 @@
+
+
+JavaScript isometric libraries and "game engines"
+*************************************************
+
+When you seach for "JavaScript isometric", you get few links, most of them useless. Let's see what we get:
+
+
+IsoGame
+=======
+
+[* isometric/IsoGame-screenshot.png <]
+
+Just a sprite moving over a generated grid. Somewhat buggy movement algorithm.
+PHP used to draw the tile sprite. Doesn't work with PHP 5.2.
+Here's the fixed version: "IsoGame.zip":isometric/IsoGame.zip
+
+**URL:** http://code.google.com/p/isogame/
+
+**Verdict:** //Not useful.//
+
+
+
+
+Clint's isometric game example, now with Yahoo!
+===============================================
+
+[* isometric/Clints-screenshot.png <]
+
+Another sprite moving, this time, only over a texture; grid is "virtual" (only computed).
+The movement is done quite nicely; However, this is not a library, only some poorly coded proof-of concept.
+
+**URL:** http://www.rickherron.com/clint/IsoTest9/IsoTest.html
+
+**Verdict:** //Not useful.//
+
+
+
+
+
+"the snowman that learned to program"'s JavaScript Isometric Game Engine
+========================================================================
+
+[* isometric/Snowman-hello_ninja_world.png <]
+
+"Example of an isometric tile environment with depth sorting and path finding", as the page says.
+
+ * Uses `<canvas>` to render the image.
+ * "Manually" drawn sprites, no rendering engine.
+ * Uses jQuery.
+ * A* pathfinding algorithm, Heap and Collection implementations.
+ 
+
+**URL:** The code is available at <a href="http://github.com/clindsey/cll_js_iso/tree/master">GitHub</a>. 
+
+**Demo:** http://greenmayo.com/dev/CarterHenry/
+
+**Verdict:** A bit useful.
+
+
+FreeVolution
+============
+
+[* isometric/FreeVolution-screenshot.png <]
+
+The "first full fledged DHTML isometric tile engine on the internet".
+As you scroll around, tiles are fetched and destroyed trough AJAX.
+PHP backend for AJAX calls.
+
+ * Uses really a LOT of `<img>` elements, all with in-line CSS. No wonder it's so slow (read, "unusably" slow).
+ * JavaScript (or, client side) Written in a PHP way, that means, no consistent JavaScript library.
+ * However, the math behind it could be quite good for inspiration.
+
+**Demo:** http://www.pc-gamers.com/webgamex/iso_js_coords.php
+
+**Projec page** not found.
+
+**Verdict:** Could be useful; have to study it more (really pity it's not coded better).
+
+
+Oasis - Flash Isometric Map Maker
+=================================
+
+For Flash... not useful. Perhaps the math, will have a look at the sources.
+
+**URL:** http://komirad.com/doc/12/flash-isometric-map-maker-oasis
+
+
+
+Isometric 'n' Hexagonal Maps (an article)
+=========================================
+
+**URL:** http://www.gamedev.net/reference/articles/article747.asp
+
+
+c# to javascript, actionscript
+==============================
+
+Really nice and functional isometric rendering.
+One of versions has even an attempt of interactivity, though doesn't work for me (FF3).
+
+The only, but fatal, drawback is that the JS code is generated from C#, and quite unreadable.
+
+
+**URL:** http://zproxy.wordpress.com/2007/12/25/new-example-isometric-threedstuff-javascript-tycoon/
+
+**Demo:** http://jsc.sourceforge.net/examples/web/ThreeDStuff/IsometricWithNatureBoy.htm
+
+**Verdict:** Would be useful if it was written in JavaScript.
+
+
+
+Axono.me
+========
+
+A library, not studied yet.
+
+"axono.me has been designed to render axonometric projections, though it works fine for any kind of grid.
+The library has been tested using Safari 4 and Firefox."
+
+**URL:** http://www.creativeapplications.net.php5-3.dfw1-2.websitetestlink.com/scripts/axono-me-scripts/
+
+**GitHub:** http://github.com/elbowdonkey/axonome
+
+
+
+Rhodesy Isometric
+=================
+
+Written in JavaScript. Seems to be fast, precise, and contains algorithm for distributing terrain level shift from one point.
+
+**URL:** http://forums.tigsource.com/index.php?topic=3031.0
+
+**Demo:** http://rhodesy.acsv.net/isometric/
+
+**Verdict:** Not studied yet, looks very good.
+
+
+
+
+Isometric drawings with jQuery
+==============================
+
+
+
+**URL:** http://www.tdupree.com/2008/05/19/isometric-drawings-with-jquery/
+
+**Demo:** http://www.themaninblue.com/experiment/Cubescape/new.php
+
+**Verdict:** Not studied yet, looks good.
+
+
+
+Other links
+===========
+
+"50 Useful JavaScript Tools":http://www.smashingmagazine.com/2009/02/08/50-extremely-useful-javascript-tools/
+
+"Isometric camera in javascript for Unity":http://x9productions.com/blog/?p=7 - I don't understand this much. Somehow linked to "Unity3D Dialog Engine", whatever that is.
+
+
+
+
+
+

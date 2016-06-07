@@ -1,0 +1,53 @@
+
+
+Wicket servlet and filter in an embedded Jetty
+**********************************************
+
+To get the effect of the following (from `WEB-INF/web.xml`) in an embedded Jetty server,
+
+/--code xml .[brush:]
+<filter>
+  <filter-name>wicket.wicket</filter-name>
+  <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
+  <init-param>
+    <param-name>applicationClassName</param-name>
+    <param-value>cz.dw.test.WicketApplication</param-value>
+  </init-param>
+</filter>
+\--
+
+you can use this code:
+
+/--code java .[brush:]
+public class RunInJetty {
+
+	public static void main( String[] args ){
+
+		Server server = new Server(8080);
+		Context root = new Context( server, "/", Context.SESSIONS );
+
+
+		ServletHolder servletHolder = new ServletHolder(new WicketServlet());
+		servletHolder.setInitParameter("applicationClassName", cz.dw.test.WicketApplication.class.getName() );
+		root.addServlet( servletHolder, "/*" );
+		/**/
+
+		/*/
+		FilterHolder filterHolder = new FilterHolder( new WicketFilter() );
+		filterHolder.setInitParameter("applicationClassName", cz.dw.test.WicketApplication.class.getName() );
+		root.addFilter( filterHolder, "/*" , Handler.ALL );
+		/**/
+		
+		try {
+			server.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
+}// class
+\--
+
+The filter does not work - I don't know why. Also note that 
+"this way to add filters is deprecated in Jetty 7":http://mirrors.ibiblio.org/pub/mirrors/eclipse/jetty/7.0.0.M2/apidocs/org/eclipse/jetty/servlet/ServletHandler.html#addFilter%28java.lang.String,%20java.lang.String,%20int%29.

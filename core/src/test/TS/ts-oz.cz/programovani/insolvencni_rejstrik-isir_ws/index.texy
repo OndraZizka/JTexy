@@ -1,0 +1,282 @@
+Webová služba Insolvenční rejstřík - ISIR WS
+********************************************
+
+1.1.2008 spustilo Ministerstvo spravedlnosti na svém serveru 
+"justice.cz":http://justice.cz/ 
+"webovou službu insolvenčního rejsříku":http://portal.justice.cz/ms/ms.aspx?o=1&j=1&k=170&d=209445 ,
+doplněk k informačnímu systému ISIR.
+S touto službou jsem měl tu čest pracovat a zde bych se rád podělil o zkušenosti
+v naději, že na tuto stránku narazí i tvůrce služby, firma CCA.
+
+
+
+//Update 18.7.2008:// Sepsal jsem "Popis dalších nedomyšleností webové služby Insolvenční rejstřík":nesmysly_v_isir.texy.
+
+//Update 25.7.2008:// Mám první funkční prototypy aplikace pro automatickou kontrolu subjektů v insolvenčním rejstříku.
+
+//Update 8.8.2008:// Přesun projektu: "insolvenční rejstřík":http://www.pohlidame.cz/.
+
+//Update 2.9.2008:// Betaverze aplikace pro automatickou kontrolu insolvenčního rejstříku.
+
+//Update 12.9.2008:// Alfaverze webového rozhraní.
+
+//Update 1.11.2008:// Alfaverze okamžitého upozorňování na události.
+
+
+
+
+WSDL
+====
+
+Asi jako každý jsem začal prohlédnutím definice webové služby
+WSDL:https://isir.justice.cz:8443/isir_ws/services/IsirPub001?wsdl.
+Už ta vás trošku zatahá za oči, protože hledáte nějaké názvy funkcí,
+které budete volat, a typů, se kterými budete pracovat,
+ale zde najdete názvy podobného ražení jako 
+`getIsirPub001`, `ns2:IsirPub001Data`, `IsirPub001SOAP12port_http`
+a `tns:IsirPub001SEI_getIsirPub001Response`:
+
+/--code xml .[brush:]
+  <wsdl:service name="IsirPub001">
+    <wsdl:port name="IsirPub001Httpport1" binding="tns:IsirPub001HttpBinding">
+      <http:address location="https://isir.justice.cz:8443/isir_ws/rest/IsirPub001"/>
+    </wsdl:port>
+    <wsdl:port name="IsirPub001SOAP12port_http" binding="tns:IsirPub001SOAP12Binding">
+      <soap12:address location="https://isir.justice.cz:8443/isir_ws/services/IsirPub001"/>
+    </wsdl:port>
+    <wsdl:port name="IsirPub001SOAP11port_http" binding="tns:IsirPub001SOAP11Binding">
+
+      <soap:address location="https://isir.justice.cz:8443/isir_ws/services/IsirPub001"/>
+    </wsdl:port>
+  </wsdl:service>
+\--
+
+Nádhera, že? Na první pohled autoři služby ponechali jména prostě taková,
+jaká jim generátor služby (nástroje z Axis) nabídl. Ale budiž, řeknete si,
+generátor vytvořil, generátor zpracuje. Ne tak v tomto případě.
+
+
+
+Generování klienta služby podle WSDL
+====================================
+
+Moje oblíbené IDE je NetBeans, vytvořil jsem tedy v NetBeans 6.0.1 projekt
+a v něm se pokusil vygenerovat klienta podle výše zmíněné WSDL definice.
+Bohužel WSDL pravděpodobně neodpovídá plně standardům, protože už validace WSDL
+selhává a hlásí, že někde nejsou uvedené atributy `address` a že vygenerované
+knihovny klienta služby budou asi nepoužitelné. Což je krásná hláška na začátek,
+ale pustil jsem se do toho i přesto.
+
+Knihovny pochopitelně nefungovaly. Vygenerovaný kód je celkem nanic. Nevím,
+jestli za to může WSDL nebo generátor klienta (dost možná že generátor),
+koneckonců - nejsem odborník na webové služby. Nicméně poté, co jsem kód přepsal,
+jak má být, opět klient nefungoval - vyhazoval výjimku `java.lang.ClassCastException`.
+Chyba byla ovšem v knihovně SAAJ. NetBeans 6.0.1 sice obsahují číselně (nominálně)
+nejnovější verzi 1.3, ta je ale přes dva roky stará. Je tedy nutné stáhnout nový build SAAJ
+z adresy https://saaj.dev.java.net/servlets/ProjectDocumentList?folderID=5117&expandFolder=5117&folderID=5116 ,
+v adresáři NetBeans najít JAR saaj-impl.jar a nahradit jej novým ze staženého JARka.
+
+Pak už tedy volání webové služby funguje. Jenom podotknu, že v zoufalosti
+během dvoudenního řešení nejen výše uvedených problémů jsem zkoušel volat
+webovou službu ISIR také z PHP. Výsledkem bylo toto:
+
+/--code
+500 Internal Server Error
+java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+	at java.lang.String.substring(String.java:1444)
+	at org.apache.axis2.builder.XFormURLEncodedBuilder.extractParametersFromRequest(XFormURLEncodedBuilder.java:155)
+	at org.apache.axis2.builder.XFormURLEncodedBuilder.processDocument(XFormURLEncodedBuilder.java:112)
+	at org.apache.axis2.transport.TransportUtils.createDocumentElement(TransportUtils.java:160)
+	at org.apache.axis2.transport.TransportUtils.createSOAPMessage(TransportUtils.java:111)
+	at org.apache.axis2.transport.http.util.RESTUtil.processXMLRequest(RESTUtil.java:60)
+	at org.apache.axis2.transport.http.AxisServlet$RestRequestProcessor.processXMLRequest(AxisServlet.java:788)
+	at org.apache.axis2.transport.http.AxisServlet.doPost(AxisServlet.java:193)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:760)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:853)
+	at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.ServletRequestDispatcher.invoke(ServletRequestDispatcher.java:824)
+	at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.ServletRequestDispatcher.forwardInternal(ServletRequestDispatcher.java:330)
+	at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.HttpRequestHandler.processRequest(HttpRequestHandler.java:830)
+	at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.AJPRequestHandler.run(AJPRequestHandler.java:224)
+	at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].server.http.AJPRequestHandler.run(AJPRequestHandler.java:133)
+	at com.evermind[Oracle Application Server Containers for J2EE 10g (10.1.2.0.2)].util.ReleasableResourcePooledExecutor$MyWorker.run(ReleasableResourcePooledExecutor.java:192)
+	at java.lang.Thread.run(Thread.java:534)
+\--
+
+Takže s PHP jsem to raději vzdal úplně.
+
+
+
+
+Princip využití webové služby
+=============================
+
+
+Vezměme si moji situaci. Klient chce zjistit, zda v daném okamžiku je nějaká fyzická osoba
+vedena jako dlužník či ne. Zdálo by se to velmi jednoduché, kdyby služba ISIR měla nějakou funkci
+(třeba s výstižným názvem "getIsirPub0012_2"), která by přebírala rodné číslo ve formátu RRMMDD/AAAA,
+a vracela true/false. Chápu že to je značně zůžená funkčnost, ale jak už jsem psal, je to asi to,
+k čemu službu využije polovina uživatelů. Další polovina ji využije stejně, ovšem pro IČ.
+
+Bohužel, to je komfort, o kterém si můžeme nechat zdát. Služba ISIR WS funguje úplně jinak.
+
+Představte si, že vám Ministerstvo životního prostředí zadá úkol vytvořit webovou službu,
+která umožní široké veřejnosti zjistit teplotu naměřenou v jakékoliv meteorologiké stanici v ČR.
+Firma CCA (tvůrce ISIR WS) by to nejspíš udělala tak, že by zpřístupnila záznamy změn teplot
+oproti předchozímu stavu za celou historii existence služby od jejího spuštění.
+Takže kdo by chtěl aktuální teplotu v Brně, stáhnul by si v dávkách po tisíci
+řekněme miliardu záznamů v logu včetně záznamů pro tisíce stanic, které ho vůbec nezajímají,
+aplikoval by změny od začátku zaznamenávání, a nakonec by odečetl aktuální stav stanice Brno
+ve vlastní databázi.
+
+Tak přesně totiž funguje webová služba insolvenčního rejstříku! Nejedná se o nic jiného než
+o replikaci databáze pomocí zpracování logu změn.  Pod záštitou "maximální dostupnosti služby"
+služba jenom zpřístupňuje statické záznamy z logu bez jakékoliv další bussines logiky!
+
+Což by ještě nebylo tak špatné, kdybyste jako programátor klienta věděli, co který úkon znamená.
+Já se přiznám - nemám právní vzdělání, a proto to nevím. Proto mi polovina záznamů ve výstupu webové služby
+nedává smysl a nechápu, proč tam jsou. Předveďme si ukázku.
+
+Když se podíváte na výstup webové služby, evidentně se jedná o zaznamenané operace
+uživatelů informačního systému insolvenčního rejstříku (ISIR).
+Pokud tedy nějaký soudce v Praze zakládá spis týkající se nějakého dlužníka,
+nejprve v systému klikne na tlačítko "Nový spis". Vyplní jeho značku a stiskne "Vytvořit".
+Tím se v logu ISIR vytvoří záznam a do výstupu webové služby přibyde:
+
+/--code
+ID: 2760
+Cas: 23.1.2008 9:11:46
+Spis: INS 132/2008 Odd: A  Poradi: 2, Typ: 185 (Vyhláška o zahájení insolvenčního řízení)
+
+Data:
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<tns:udalost ... >
+  <idOsobyPuvodce>MSPHAAB</idOsobyPuvodce>
+  <vec>
+    <druhStavRizeni>NEVYRIZENA</druhStavRizeni>
+  </vec>
+</tns:udalost>
+\--
+
+
+Tím zatím věc končí a soudce se na nějakou dobu odmlčí.
+Mezitím soudci a úředníci na ostatních soudech pilně pracují
+a klikají v informačním systému jako o život, takže vznikne dalších 100 záznamů.
+Zhruba po třech hodinách se pražský soudce opět probere a v informačním systému
+přejde do sekce "Návrh - přílohy", čímž nám vznikne tento velice **duchaplný** a **užitečný záznam**:
+
+/--code
+ID: 2853
+Cas: 23.1.2008 11:57:20
+Spis: INS 132/2008  Odd: A  Poradi: 3, Typ: 23 (Návrh - přílohy)
+
+Data:
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<tns:udalost ...>
+  <idOsobyPuvodce>MSPHAAB</idOsobyPuvodce>
+  <vec>
+    <druhStavRizeni>NEVYRIZENA</druhStavRizeni>
+  </vec>
+</tns:udalost>
+\--
+
+Po dalších pěti hodinách a další stovce záznamů z jiných soudů se soudce vrátí z oběda
+a v IS klikne na tlačítko "Nový pokyn insolvenčního soudu", a tím vzniká další **velmi užitečný záznam**:
+
+/--code
+ID: 2954
+Cas: 23.1.2008 16:48:44 
+Spis: INS 132/2008  Odd: A  Poradi: 4, Typ: 204 (Pokyn insolvenčního soudu)
+
+Data:
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<tns:udalost ...>
+  <idOsobyPuvodce>MSPHAAB</idOsobyPuvodce>
+  <vec>
+    <druhStavRizeni>NEVYRIZENA</druhStavRizeni>
+  </vec>
+</tns:udalost>
+\--
+
+Tím v této dávce tisíce záznamů informace o tomto spise končí a vy musíte stáhnout další tisícovku.
+
+
+Služba insolvenčního rejstříku byla spuštěna 1.1.2008. Od té doby do dneška (18.3.2008)
+log obsahuje CCA. 18 000 položek.
+Pokud si tedy v roce 2030 založíte firmu a budete chtít o svých klientech zjistit, zda
+nejsou vedeni jako dlužníci, budete si muset stáhnout odhadem (lineární interpolací)
+1 500 000 záznamů a podle nich zreplikovat databázi informačního systému insolvenčního rejstříku!
+
+Ruku na srdce - nezdá se vám nepřiměřené, aby si _každý_, kdo chce službu jakkoliv využívat,
+dělal lokální kopii celého logu za celou historii existence systému, 
+poté nastudoval pracovní postupy pracovníků soudů z nepřehledné "dokumentace" `Popis_WS.pdf`
+a na základě těchto znalostí aktualizoval svoji kopii databáze pro každou entitu,
+která v DB existuje, ačkoliv ho 99,999% z nich nezajímá a nikdy zajímat nebude,
+ale musí to dělat pro případ, že by náhodou někdy v budoucnu potřeboval s danou entitou pracovat?
+
+
+Formát přijímaných dat
+======================
+
+Další krásou, kterou jsem objevil až s tímto projektem, je vkládání XML do XML.
+Cituji:
+
+> Aby byla webová služba co nejobecnější a přitom odolná proti častým změnám rozhraní,
+> obsahuje samotné volání pouze základní údaje pro identifikaci události, které se akce týká.
+> Samotná přenášená data obsahuje poznámka. Data jsou v poznámce strukturována formou XML dokumentu.
+
+Budiž - uznávám, že generovat nové knihovny klienta webové služby při každé změně struktury dat
+by nebylo příjemné. Jak často a proč se ale má jejich struktura měnit? Je to proto,
+že webová služba obsahuje data, která vás nezajímají o subjektech, které vás nezajímají.
+Pokud by Ministerstvo spravedlnosti bylo natolik soudné, aby požadovalo normálně fungující službu,
+byl by vstupem pro službu nějaký identifikátor a typ subjektu, a vracela by AKTUÁLNÍ data, která se ho týkají.
+Myslím, že u takové WS by se nutnost změny WSDL omezila na minimum.
+
+Odezva služby
+=============
+
+"Služba je koncipovaná jako veřejná a je zdarma." Z toho také plyne, že tvůrci předem neví,
+kdy a kolik požadavků přijde. Ovšem že vrácení rovného tisíce položek ze STATICKÉ databáze,
+tedy logu, trvala až půl až **4 minuty** !!, a to v době, kdy službu ještě zdaleka nevyužívá tolik
+klientů, to je opravdu velmi zarážející. Už jsem se setkal se systémy s desítkami milionů záznamů,
+které ovšem reagují řádově v sekundách zhruba na dva požadavky za sekundu, a to se jedná
+o fulltextové vyhledávání. Na čem potom provozují webovou službu ISIR? Na vyřazených noteboocích?
+
+//Update:// Podle odpovědi tvůrců byly prodlevy způsobeny něčím jiným než nedostatečným hardware.
+Nyní se zdá, že služba již pravidelně odpoví do několika sekund.
+
+Souhrn
+======
+Takže, když shrnu svoje výtky vůči IRIS WS:
+* WSDL (pravděpodobně) neodpovídá normě, ale to mi momentálně vadí asi nejméně.
+* Názvy portů ve WSDL vůbec nevypovídají o účelu
+* <strike>Služba je nepochopitelně pomalá</strike>
+* A co mi vadí nejvíc - celý princip získávání dat z DB. Databáze obvykle slouží k získávání aktuálního stavu entity podle nějakého identifikátoru, ne ke zpřístupnění historie operací se všemi existujícími entitami.
+
+Odpověď tvůrců webové služby
+============================
+Na mé námitky vůči kvalitě zpracování služby odpověděla firma CCA Group takto:
+
+> Vámi připomínkovaný způsob fungování WS ISIR byl navržen, odsouhlasen a zpracován 
+> na základě požadavků MSp. Víme, že některé subjekty by radši používaly 
+> sofistikovanější WS s vlastnostmi, které popisujete. Dle sdělení zadavatele – MSp 
+> není takto koncipovaná WS ve shodě s jejich záměry dalšího rozvoje aplikace ISIR.
+
+Jinými slovy, ministerstvo (rozumějte - nejspíše laici, kteří ani netuší, co je webová služba)
+je spokojeno se stavem, kdy se data vůbec nějak mohou k někomu dostat, čímž splnilo požadavek
+zákona, myje si ruce a víc jej nezajímá.
+
+
+Překladiště údajů z webové služby insolvenčního rejstříku
+=========================================================
+
+Jak jsem uváděl výše, většina lidí si pod pojmem "Webová služba Insolvenční rejstřík",
+která má zveřejňovat údaje o insolvenčních řízeních, představí něco trochu inteligentnějšího
+než stahování kopie databáze ISIR. Proto jsem se rozhodl takovouto funkčnost zpřístupnit.
+
+Na adrese http://isir.dynawest.cz/ tedy bude
+"klient Webové služby Insolvenční rejtřík ISIR":http://isir.dynawest.cz/.
+Spuštění plánuji na konci července 2008.
+
+
+
+

@@ -1,0 +1,16 @@
+
+What to use as a base for an enterprise web application - JBoss or Spring?
+**************************************************************************
+
+
+That heavily depends on your needs, design choices, personal taste and the expected application load.
+
+Basically, if a "web application" is what you're going to create, you can achieve the same results with both: Spring 2.5 + some web framework + some ORM + some servlet container, or JBoss AS 5.1 (+ eventually a web framework and ORM if you don't like Seam or Hibernate). If you say "enterprise", perhaps you should really have a look at JBoss.
+
+For Spring Framework, bottom-to top approach is more typical, as it's an integration framework which basically glues various libs together (and right, does it well). Spring also adds few own tools like transaction manager, the MVC integrator (glues together some view framework, your controllers and some model) etc. - see the Spring Reference.
+
+JBoss AS is likely choice for developers who need a high-performance (cluster of a) Java EE containers, with a fine-tuned well-tested set of the best of open-source.
+
+In fact, JBoss AS is built in a similar way like you would build your app using Spring - a tiny IoC as a core, weaving together the cooperating libs and modules - have look at the XML configs inside the server/default/conf directory and you'll see. Because of this, JBoss AS is great when you need a customizable container. The difference from Spring is that you already have this gluing work done by someone else.
+
+Have a look at various JBoss tutorials, the upcoming Java EE 6, Weld, and Seam, and you'll see that developing for JBoss is quite comfortable.

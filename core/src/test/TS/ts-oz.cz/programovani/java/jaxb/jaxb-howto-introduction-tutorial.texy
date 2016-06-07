@@ -1,0 +1,162 @@
+
+JAXB example
+************
+
+You should get a point of how to use JAXB after reading through this code.
+
+
+XML content to read
+===================
+
+/--code xml .[brush:]
+<jawabotConfig>
+
+   <settings
+      verbose = "true"
+      unsecuredShutdown = "false"
+      acceptInvitation = "true"
+      messageDelay = "1000"
+      leaveOnAsk = "true"
+      adminUser = "ozizka"
+      smtpHost = "smtp.somewhere.com"
+      announceEmailTo = "announce@somewhere.com"
+      announceEmailFrom = "jawabot-no-reply@somewhere.com"
+      announceDefaultChannel = "#jboss"
+      debugChannel = "#some"
+   />
+
+   <irc>
+      <defaultNick>JawaBot-beta</defaultNick>
+      <defaultNick2>JawaBot-beta_</defaultNick2>
+      <server host="irc.freenode.net">
+         <autoJoinChannels>
+            #richfaces
+            #jboss
+         </autoJoinChannels>
+      </server>
+   </irc>
+
+   <resources>
+      <resource name="jawa01" note="EAP"/>
+      <resource name="jawa02" note="EAP"/>
+   </resources>
+
+   <resourceGroups>
+      <group name="brno" channel="#brno" mail="jboss@somewhere.com"> jawa01 jawa02 ...</group>
+      <group name="openjdk">jawa16 jawa28 jawa29</group>
+   </resourceGroups>
+
+   <userGroups>
+      <group name="eap">ozizka rhusar pslavice istudens</group>
+      <group name="openjdk">ptisnovs</group>
+   </userGroups>
+
+</jawabotConfig>
+\--
+
+
+
+Root JAXB bean
+==============
+
+/--code java .[brush:]
+@XmlRootElement(name="jawabotConfig")
+public class ConfigBean {
+
+   @XmlElement
+   public SettingsBean settings;
+
+   @XmlElement
+   public IrcBean irc;
+
+   @XmlElementWrapper(name="resources")
+   @XmlElement(name="resource")
+   public List<Resource> resources;
+   public List<Resource> getResources() {      return resources;   }
+
+
+   @XmlElement
+   public ResourceGroupsBean resourceGroups;
+   
+   @XmlElement
+   public UserGroupsBean userGroups;
+   
+}// class
+\--
+
+
+
+Sub-beans for `<settings>`, `<irc>`, `<resourceGroups>`
+=======================================================
+
+/--code java .[brush:]
+public class SettingsBean {
+
+   @XmlAttribute public boolean verbose = true;
+   @XmlAttribute public boolean acceptInvitation = true;
+   @XmlAttribute public int messageDelay = 666;
+   @XmlAttribute public boolean leaveOnAsk = true;
+   @XmlAttribute public String adminUser = "ozizka";
+   @XmlAttribute public String smtpHost = "...";
+   @XmlAttribute public String announceEmailTo = "...";
+   @XmlAttribute public String announceEmailFrom = "...";
+   @XmlAttribute public String announceDefaultChannel = "#jboss";
+   @XmlAttribute public String debugChannel = "#some";
+   @XmlAttribute public boolean unsecuredShutdown = false;
+
+}// class
+\--
+
+
+/--code java .[brush:]
+public class IrcBean implements Serializable {
+
+   @XmlElement public String defaultNick;
+
+   @XmlElement(name="server") public List<ServerBean> servers;
+
+}// class
+\--
+
+/--code java .[brush:]
+public class ServerBean {
+
+   @XmlAttribute public String host;
+   @XmlAttribute public Integer port;
+
+   @XmlElement
+   @XmlList public List<String> autoJoinChannels;
+
+}// class
+\--
+
+/--code java .[brush:]
+public class ResourceGroupsBean implements Serializable {
+
+   /*
+   <resourceGroups>
+      <group name="soa">jawa01 jawa02 jawa03</group>
+      <group name="embjopr">jawa18</group>
+   </resourceGroups>
+   */
+
+   @XmlElement(name="group")
+   List<ResourceGroupBean> groups;
+
+}// class
+\--
+
+
+
+Code which reads the XML into the bean
+======================================
+
+/--code java .[brush:]
+         String filePath = "myFile.xml"
+         InputStream is = JawaBot.class.getClassLoader().getResourceAsStream(filePath);
+         InputStreamReader reader = new InputStreamReader( is );
+
+         JAXBContext jc = JAXBContext.newInstance( ConfigBean.class );
+         Unmarshaller mc = jc.createUnmarshaller();
+         ConfigBean config = (ConfigBean) mc.unmarshal(reader);
+\--

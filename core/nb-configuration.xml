@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-shared-configuration>
+    <!--
+This file contains additional configuration written by modules in the NetBeans IDE.
+The configuration is intended to be shared among all the users of project and
+therefore it is assumed to be part of version control checkout.
+Without this configuration present, some functionality in the IDE may be limited or fail altogether.
+-->
+    <config-data xmlns="http://www.netbeans.org/ns/maven-config-data/1">
+        <configurations>
+            <configuration id="smoke-test" profiles="">
+                <property name="jtexyTest">*smoke.link*</property>
+            </configuration>
+        </configurations>
+    </config-data>
+    <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+        <word>backreference</word>
+        <word>class'es</word>
+        <word>classloader</word>
+        <word>clazz's</word>
+        <word>Emoticon</word>
+        <word>emoticons</word>
+        <word>foo</word>
+        <word>image's</word>
+        <word>init</word>
+        <word>metainfo</word>
+        <word>regex</word>
+        <word>regexps</word>
+        <word>testsuite</word>
+        <word>Texy</word>
+        <word>Unicode</word>
+        <word>Unprotects</word>
+    </spellchecker-wordlist>
+</project-shared-configuration>

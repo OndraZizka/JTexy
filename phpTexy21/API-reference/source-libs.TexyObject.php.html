@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="Nette Framework Apigen" />	<meta name="robots" content="noindex" />
+
+	<title>libs\TexyObject.php</title>
+
+	<script type="text/javascript" src="media/jquery.min.js"></script>
+	<script type="text/javascript" src="media/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="media/jquery.sortElements.js"></script>
+	<script type="text/javascript" src="allclasses.js"></script>
+	<script type="text/javascript" src="media/main.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="media/style.css?v=2010100721" />
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+</head>
+
+<body>
+<div id="left">
+	<a href="allclasses.html">All Classes</a>
+
+	<h3>Namespaces</h3>
+	<ul>
+		<li><a href="namespace-internal.html">internal</a></li>
+		<li>Texy</li>
+	</ul>
+
+	<h3>Classes</h3>
+
+	<ul>
+		<li><a href="Texy.html">Texy</a></li>
+		<li><a href="TexyBlockParser.html">TexyBlockParser</a></li>
+		<li><a href="TexyConfigurator.html">TexyConfigurator</a></li>
+		<li><a href="TexyHandlerInvocation.html">TexyHandlerInvocation</a></li>
+		<li><a href="TexyHtml.html">TexyHtml</a></li>
+		<li><a href="TexyLineParser.html">TexyLineParser</a></li>
+		<li><a href="TexyModifier.html">TexyModifier</a></li>
+		<li><a href="TexyModule.html">TexyModule</a></li>
+		<li>TexyObject</li>
+		<li><a href="TexyParser.html">TexyParser</a></li>
+		<li><a href="TexyUtf.html">TexyUtf</a></li>
+	</ul>
+
+	<h3>Interfaces</h3>
+
+	<ul>
+	</ul>
+</div>
+
+<div id="right">
+	<form action="http://www.google.com/cse" id="search" onsubmit="if(this.q.value.indexOf('more:')==-1)this.q.value+=' more:api'">
+		<input type="hidden" name="cx" value="011549293477758430224:vxofa9ufnhc" /><input type="hidden" name="ie" value="UTF-8" /><input type="text" name="q" class="text" /><input type="submit" value="Search" />
+	</form>
+
+<div id="navigation">
+	<ul>
+		<li><a href="overview.html" title="Summary of all namespaces">Overview</a></li>
+		<li><a href="elements.html">Elements</a></li>
+	</ul>
+</div>
+
+<pre><code><a href="#L1" id="L1" class="l">  1: </a><span class="xlang">&lt;?php</span>
+<a href="#L2" id="L2" class="l">  2: </a>
+<a href="#L3" id="L3" class="l">  3: </a><span class="php-comment">/**
+</span><a href="#L4" id="L4" class="l">  4: </a><span class="php-comment"> * Texy! - human-readable text to HTML converter.
+</span><a href="#L5" id="L5" class="l">  5: </a><span class="php-comment"> *
+</span><a href="#L6" id="L6" class="l">  6: </a><span class="php-comment"> * @copyright  Copyright (c) 2004, 2010 David Grudl
+</span><a href="#L7" id="L7" class="l">  7: </a><span class="php-comment"> * @license    GNU GENERAL PUBLIC LICENSE version 2 or 3
+</span><a href="#L8" id="L8" class="l">  8: </a><span class="php-comment"> * @link       http://texy.info
+</span><a href="#L9" id="L9" class="l">  9: </a><span class="php-comment"> * @package    Texy
+</span><a href="#L10" id="L10" class="l"> 10: </a><span class="php-comment"> */</span>
+<a href="#L11" id="L11" class="l"> 11: </a>
+<a href="#L12" id="L12" class="l"> 12: </a>
+<a href="#L13" id="L13" class="l"> 13: </a>
+<a href="#L14" id="L14" class="l"> 14: </a><span class="php-comment">/**
+</span><a href="#L15" id="L15" class="l"> 15: </a><span class="php-comment"> * TexyObject is the ultimate ancestor of all instantiable classes.
+</span><a href="#L16" id="L16" class="l"> 16: </a><span class="php-comment"> *
+</span><a href="#L17" id="L17" class="l"> 17: </a><span class="php-comment"> * TexyObject is copy of Nette\Object from Nette Framework (http://nettephp.com).
+</span><a href="#L18" id="L18" class="l"> 18: </a><span class="php-comment"> *
+</span><a href="#L19" id="L19" class="l"> 19: </a><span class="php-comment"> * It defines some handful methods and enhances object core of PHP:
+</span><a href="#L20" id="L20" class="l"> 20: </a><span class="php-comment"> *   - access to undeclared members throws exceptions
+</span><a href="#L21" id="L21" class="l"> 21: </a><span class="php-comment"> *   - support for conventional properties with getters and setters
+</span><a href="#L22" id="L22" class="l"> 22: </a><span class="php-comment"> *   - support for event raising functionality
+</span><a href="#L23" id="L23" class="l"> 23: </a><span class="php-comment"> *   - ability to add new methods to class (extension methods)
+</span><a href="#L24" id="L24" class="l"> 24: </a><span class="php-comment"> *
+</span><a href="#L25" id="L25" class="l"> 25: </a><span class="php-comment"> * Properties is a syntactic sugar which allows access public getter and setter
+</span><a href="#L26" id="L26" class="l"> 26: </a><span class="php-comment"> * methods as normal object variables. A property is defined by a getter method
+</span><a href="#L27" id="L27" class="l"> 27: </a><span class="php-comment"> * and optional setter method (no setter method means read-only property).
+</span><a href="#L28" id="L28" class="l"> 28: </a><span class="php-comment"> * &lt;code&gt;
+</span><a href="#L29" id="L29" class="l"> 29: </a><span class="php-comment"> * $val = $obj-&gt;label;     // equivalent to $val = $obj-&gt;getLabel();
+</span><a href="#L30" id="L30" class="l"> 30: </a><span class="php-comment"> * $obj-&gt;label = 'Nette';  // equivalent to $obj-&gt;setLabel('Nette');
+</span><a href="#L31" id="L31" class="l"> 31: </a><span class="php-comment"> * &lt;/code&gt;
+</span><a href="#L32" id="L32" class="l"> 32: </a><span class="php-comment"> * Property names are case-sensitive, and they are written in the camelCaps
+</span><a href="#L33" id="L33" class="l"> 33: </a><span class="php-comment"> * or PascalCaps.
+</span><a href="#L34" id="L34" class="l"> 34: </a><span class="php-comment"> *
+</span><a href="#L35" id="L35" class="l"> 35: </a><span class="php-comment"> * Event functionality is provided by declaration of property named 'on{Something}'
+</span><a href="#L36" id="L36" class="l"> 36: </a><span class="php-comment"> * Multiple handlers are allowed.
+</span><a href="#L37" id="L37" class="l"> 37: </a><span class="php-comment"> * &lt;code&gt;
+</span><a href="#L38" id="L38" class="l"> 38: </a><span class="php-comment"> * public $onClick;                // declaration in class
+</span><a href="#L39" id="L39" class="l"> 39: </a><span class="php-comment"> * $this-&gt;onClick[] = 'callback';  // attaching event handler
+</span><a href="#L40" id="L40" class="l"> 40: </a><span class="php-comment"> * if (!empty($this-&gt;onClick)) ... // are there any handlers?
+</span><a href="#L41" id="L41" class="l"> 41: </a><span class="php-comment"> * $this-&gt;onClick($sender, $arg);  // raises the event with arguments
+</span><a href="#L42" id="L42" class="l"> 42: </a><span class="php-comment"> * &lt;/code&gt;
+</span><a href="#L43" id="L43" class="l"> 43: </a><span class="php-comment"> *
+</span><a href="#L44" id="L44" class="l"> 44: </a><span class="php-comment"> * Adding method to class (i.e. to all instances) works similar to JavaScript
+</span><a href="#L45" id="L45" class="l"> 45: </a><span class="php-comment"> * prototype property. The syntax for adding a new method is:
+</span><a href="#L46" id="L46" class="l"> 46: </a><span class="php-comment"> * &lt;code&gt;
+</span><a href="#L47" id="L47" class="l"> 47: </a><span class="php-comment"> * MyClass::extensionMethod('newMethod', function(MyClass $obj, $arg, ...) { ... });
+</span><a href="#L48" id="L48" class="l"> 48: </a><span class="php-comment"> * $obj = new MyClass;
+</span><a href="#L49" id="L49" class="l"> 49: </a><span class="php-comment"> * $obj-&gt;newMethod($x);
+</span><a href="#L50" id="L50" class="l"> 50: </a><span class="php-comment"> * &lt;/code&gt;
+</span><a href="#L51" id="L51" class="l"> 51: </a><span class="php-comment"> *
+</span><a href="#L52" id="L52" class="l"> 52: </a><span class="php-comment"> * @copyright  Copyright (c) 2004, 2010 David Grudl
+</span><a href="#L53" id="L53" class="l"> 53: </a><span class="php-comment"> * @package    Texy
+</span><a href="#L54" id="L54" class="l"> 54: </a><span class="php-comment"> */</span>
+<a href="#L55" id="L55" class="l"> 55: </a><span class="php-keyword1">abstract</span> <span class="php-keyword1">class</span> TexyObject
+<a href="#L56" id="L56" class="l"> 56: </a>{
+<a href="#L57" id="L57" class="l"> 57: </a>    <span class="php-comment">/** @var array (method =&gt; array(type =&gt; callback)) */</span>
+<a href="#L58" id="L58" class="l"> 58: </a>    <span class="php-keyword1">private</span> <span class="php-keyword1">static</span> <span class="php-var">$extMethods</span>;
+<a href="#L59" id="L59" class="l"> 59: </a>
+<a href="#L60" id="L60" class="l"> 60: </a>
+<a href="#L61" id="L61" class="l"> 61: </a>
+<a href="#L62" id="L62" class="l"> 62: </a>    <span class="php-comment">/**
+</span><a href="#L63" id="L63" class="l"> 63: </a><span class="php-comment">     * Returns the name of the class of this object.
+</span><a href="#L64" id="L64" class="l"> 64: </a><span class="php-comment">     *
+</span><a href="#L65" id="L65" class="l"> 65: </a><span class="php-comment">     * @return string
+</span><a href="#L66" id="L66" class="l"> 66: </a><span class="php-comment">     */</span>
+<a href="#L67" id="L67" class="l"> 67: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-comment">/*static*/</span> <span class="php-keyword1">function</span> getClass()
+<a href="#L68" id="L68" class="l"> 68: </a>    {
+<a href="#L69" id="L69" class="l"> 69: </a>        <span class="php-keyword1">return</span> <span class="php-comment">/*get_called_class()*/</span> <span class="php-comment">/**/</span><span class="php-keyword2">get_class</span>(<span class="php-var">$this</span>)<span class="php-comment">/**/</span>;
+<a href="#L70" id="L70" class="l"> 70: </a>    }
+<a href="#L71" id="L71" class="l"> 71: </a>
+<a href="#L72" id="L72" class="l"> 72: </a>
+<a href="#L73" id="L73" class="l"> 73: </a>
+<a href="#L74" id="L74" class="l"> 74: </a>    <span class="php-comment">/**
+</span><a href="#L75" id="L75" class="l"> 75: </a><span class="php-comment">     * Access to reflection.
+</span><a href="#L76" id="L76" class="l"> 76: </a><span class="php-comment">     *
+</span><a href="#L77" id="L77" class="l"> 77: </a><span class="php-comment">     * @return ReflectionObject
+</span><a href="#L78" id="L78" class="l"> 78: </a><span class="php-comment">     */</span>
+<a href="#L79" id="L79" class="l"> 79: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getReflection()
+<a href="#L80" id="L80" class="l"> 80: </a>    {
+<a href="#L81" id="L81" class="l"> 81: </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">new</span> ReflectionObject(<span class="php-var">$this</span>);
+<a href="#L82" id="L82" class="l"> 82: </a>    }
+<a href="#L83" id="L83" class="l"> 83: </a>
+<a href="#L84" id="L84" class="l"> 84: </a>
+<a href="#L85" id="L85" class="l"> 85: </a>
+<a href="#L86" id="L86" class="l"> 86: </a>    <span class="php-comment">/**
+</span><a href="#L87" id="L87" class="l"> 87: </a><span class="php-comment">     * Call to undefined method.
+</span><a href="#L88" id="L88" class="l"> 88: </a><span class="php-comment">     *
+</span><a href="#L89" id="L89" class="l"> 89: </a><span class="php-comment">     * @param  string  method name
+</span><a href="#L90" id="L90" class="l"> 90: </a><span class="php-comment">     * @param  array   arguments
+</span><a href="#L91" id="L91" class="l"> 91: </a><span class="php-comment">     * @return mixed
+</span><a href="#L92" id="L92" class="l"> 92: </a><span class="php-comment">     * @throws MemberAccessException
+</span><a href="#L93" id="L93" class="l"> 93: </a><span class="php-comment">     */</span>
+<a href="#L94" id="L94" class="l"> 94: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> __call(<span class="php-var">$name</span>, <span class="php-var">$args</span>)
+<a href="#L95" id="L95" class="l"> 95: </a>    {
+<a href="#L96" id="L96" class="l"> 96: </a>        <span class="php-var">$class</span> = <span class="php-keyword2">get_class</span>(<span class="php-var">$this</span>);
+<a href="#L97" id="L97" class="l"> 97: </a>
+<a href="#L98" id="L98" class="l"> 98: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$name</span> === <span class="php-quote">''</span>) {
+<a href="#L99" id="L99" class="l"> 99: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> MemberAccessException(<span class="php-quote">&quot;Call to class '</span><span class="php-var">$class</span><span class="php-quote">' method without name.&quot;</span>);
+<a href="#L100" id="L100" class="l">100: </a>        }
+<a href="#L101" id="L101" class="l">101: </a>
+<a href="#L102" id="L102" class="l">102: </a>        <span class="php-comment">// event functionality
+</span><a href="#L103" id="L103" class="l">103: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">preg_match</span>(<span class="php-quote">'#^on[A-Z]#'</span>, <span class="php-var">$name</span>)) {
+<a href="#L104" id="L104" class="l">104: </a>            <span class="php-var">$rp</span> = <span class="php-keyword1">new</span> ReflectionProperty(<span class="php-var">$class</span>, <span class="php-var">$name</span>);
+<a href="#L105" id="L105" class="l">105: </a>            <span class="php-keyword1">if</span> (<span class="php-var">$rp</span>-&gt;isPublic() &amp;&amp; !<span class="php-var">$rp</span>-&gt;isStatic()) {
+<a href="#L106" id="L106" class="l">106: </a>                <span class="php-var">$list</span> = <span class="php-var">$this</span>-&gt;<span class="php-var">$name</span>;
+<a href="#L107" id="L107" class="l">107: </a>                <span class="php-keyword1">if</span> (<span class="php-keyword2">is_array</span>(<span class="php-var">$list</span>) || <span class="php-var">$list</span> <span class="php-keyword1">instanceof</span> Traversable) {
+<a href="#L108" id="L108" class="l">108: </a>                    <span class="php-keyword1">foreach</span> (<span class="php-var">$list</span> as <span class="php-var">$handler</span>) {
+<a href="#L109" id="L109" class="l">109: </a>                        <span class="php-comment">/**/</span><span class="php-keyword1">if</span> (<span class="php-keyword2">is_object</span>(<span class="php-var">$handler</span>)) {
+<a href="#L110" id="L110" class="l">110: </a>                            <span class="php-keyword2">call_user_func_array</span>(<span class="php-keyword1">array</span>(<span class="php-var">$handler</span>, <span class="php-quote">'__invoke'</span>), <span class="php-var">$args</span>);
+<a href="#L111" id="L111" class="l">111: </a>
+<a href="#L112" id="L112" class="l">112: </a>                        } <span class="php-keyword1">else</span> <span class="php-comment">/**/</span>{
+<a href="#L113" id="L113" class="l">113: </a>                            <span class="php-keyword2">call_user_func_array</span>(<span class="php-var">$handler</span>, <span class="php-var">$args</span>);
+<a href="#L114" id="L114" class="l">114: </a>                        }
+<a href="#L115" id="L115" class="l">115: </a>                    }
+<a href="#L116" id="L116" class="l">116: </a>                }
+<a href="#L117" id="L117" class="l">117: </a>                <span class="php-keyword1">return</span> <span class="php-keyword1">NULL</span>;
+<a href="#L118" id="L118" class="l">118: </a>            }
+<a href="#L119" id="L119" class="l">119: </a>        }
+<a href="#L120" id="L120" class="l">120: </a>
+<a href="#L121" id="L121" class="l">121: </a>        <span class="php-comment">// extension methods
+</span><a href="#L122" id="L122" class="l">122: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$cb</span> = self::extensionMethod(<span class="php-quote">&quot;</span><span class="php-var">$class</span><span class="php-quote">::</span><span class="php-var">$name</span><span class="php-quote">&quot;</span>)) {
+<a href="#L123" id="L123" class="l">123: </a>            <span class="php-keyword2">array_unshift</span>(<span class="php-var">$args</span>, <span class="php-var">$this</span>);
+<a href="#L124" id="L124" class="l">124: </a>            <span class="php-keyword1">return</span> <span class="php-keyword2">call_user_func_array</span>(<span class="php-var">$cb</span>, <span class="php-var">$args</span>);
+<a href="#L125" id="L125" class="l">125: </a>        }
+<a href="#L126" id="L126" class="l">126: </a>
+<a href="#L127" id="L127" class="l">127: </a>        <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> MemberAccessException(<span class="php-quote">&quot;Call to undefined method </span><span class="php-var">$class</span><span class="php-quote">::</span><span class="php-var">$name</span><span class="php-quote">().&quot;</span>);
+<a href="#L128" id="L128" class="l">128: </a>    }
+<a href="#L129" id="L129" class="l">129: </a>
+<a href="#L130" id="L130" class="l">130: </a>
+<a href="#L131" id="L131" class="l">131: </a>
+<a href="#L132" id="L132" class="l">132: </a>    <span class="php-comment">/**
+</span><a href="#L133" id="L133" class="l">133: </a><span class="php-comment">     * Call to undefined static method.
+</span><a href="#L134" id="L134" class="l">134: </a><span class="php-comment">     *
+</span><a href="#L135" id="L135" class="l">135: </a><span class="php-comment">     * @param  string  method name (in lower case!)
+</span><a href="#L136" id="L136" class="l">136: </a><span class="php-comment">     * @param  array   arguments
+</span><a href="#L137" id="L137" class="l">137: </a><span class="php-comment">     * @return mixed
+</span><a href="#L138" id="L138" class="l">138: </a><span class="php-comment">     * @throws MemberAccessException
+</span><a href="#L139" id="L139" class="l">139: </a><span class="php-comment">     */</span>
+<a href="#L140" id="L140" class="l">140: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> __callStatic(<span class="php-var">$name</span>, <span class="php-var">$args</span>)
+<a href="#L141" id="L141" class="l">141: </a>    {
+<a href="#L142" id="L142" class="l">142: </a>        <span class="php-var">$class</span> = <span class="php-keyword2">get_called_class</span>();
+<a href="#L143" id="L143" class="l">143: </a>        <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> MemberAccessException(<span class="php-quote">&quot;Call to undefined static method </span><span class="php-var">$class</span><span class="php-quote">::</span><span class="php-var">$name</span><span class="php-quote">().&quot;</span>);
+<a href="#L144" id="L144" class="l">144: </a>    }
+<a href="#L145" id="L145" class="l">145: </a>
+<a href="#L146" id="L146" class="l">146: </a>
+<a href="#L147" id="L147" class="l">147: </a>
+<a href="#L148" id="L148" class="l">148: </a>    <span class="php-comment">/**
+</span><a href="#L149" id="L149" class="l">149: </a><span class="php-comment">     * Adding method to class.
+</span><a href="#L150" id="L150" class="l">150: </a><span class="php-comment">     *
+</span><a href="#L151" id="L151" class="l">151: </a><span class="php-comment">     * @param  string  method name
+</span><a href="#L152" id="L152" class="l">152: </a><span class="php-comment">     * @param  mixed   callback or closure
+</span><a href="#L153" id="L153" class="l">153: </a><span class="php-comment">     * @return mixed
+</span><a href="#L154" id="L154" class="l">154: </a><span class="php-comment">     */</span>
+<a href="#L155" id="L155" class="l">155: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> extensionMethod(<span class="php-var">$name</span>, <span class="php-var">$callback</span> = <span class="php-keyword1">NULL</span>)
+<a href="#L156" id="L156" class="l">156: </a>    {
+<a href="#L157" id="L157" class="l">157: </a>        <span class="php-keyword1">if</span> (self::<span class="php-var">$extMethods</span> === <span class="php-keyword1">NULL</span> || <span class="php-var">$name</span> === <span class="php-keyword1">NULL</span>) { <span class="php-comment">// for backwards compatibility
+</span><a href="#L158" id="L158" class="l">158: </a>            <span class="php-var">$list</span> = <span class="php-keyword2">get_defined_functions</span>();
+<a href="#L159" id="L159" class="l">159: </a>            <span class="php-keyword1">foreach</span> (<span class="php-var">$list</span>[<span class="php-quote">'user'</span>] as <span class="php-var">$fce</span>) {
+<a href="#L160" id="L160" class="l">160: </a>                <span class="php-var">$pair</span> = <span class="php-keyword2">explode</span>(<span class="php-quote">'_prototype_'</span>, <span class="php-var">$fce</span>);
+<a href="#L161" id="L161" class="l">161: </a>                <span class="php-keyword1">if</span> (<span class="php-keyword2">count</span>(<span class="php-var">$pair</span>) === <span class="php-num">2</span>) {
+<a href="#L162" id="L162" class="l">162: </a>                    self::<span class="php-var">$extMethods</span>[<span class="php-var">$pair</span>[<span class="php-num">1</span>]][<span class="php-var">$pair</span>[<span class="php-num">0</span>]] = <span class="php-var">$fce</span>;
+<a href="#L163" id="L163" class="l">163: </a>                    self::<span class="php-var">$extMethods</span>[<span class="php-var">$pair</span>[<span class="php-num">1</span>]][<span class="php-quote">''</span>] = <span class="php-keyword1">NULL</span>;
+<a href="#L164" id="L164" class="l">164: </a>                }
+<a href="#L165" id="L165" class="l">165: </a>            }
+<a href="#L166" id="L166" class="l">166: </a>            <span class="php-keyword1">if</span> (<span class="php-var">$name</span> === <span class="php-keyword1">NULL</span>) <span class="php-keyword1">return</span> <span class="php-keyword1">NULL</span>;
+<a href="#L167" id="L167" class="l">167: </a>        }
+<a href="#L168" id="L168" class="l">168: </a>
+<a href="#L169" id="L169" class="l">169: </a>        <span class="php-var">$name</span> = <span class="php-keyword2">strtolower</span>(<span class="php-var">$name</span>);
+<a href="#L170" id="L170" class="l">170: </a>        <span class="php-var">$a</span> = <span class="php-keyword2">strrpos</span>(<span class="php-var">$name</span>, <span class="php-quote">':'</span>); <span class="php-comment">// search ::
+</span><a href="#L171" id="L171" class="l">171: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$a</span> === <span class="php-keyword1">FALSE</span>) {
+<a href="#L172" id="L172" class="l">172: </a>            <span class="php-var">$class</span> = <span class="php-keyword2">strtolower</span>(<span class="php-keyword2">get_called_class</span>());
+<a href="#L173" id="L173" class="l">173: </a>            <span class="php-var">$l</span> = &amp; self::<span class="php-var">$extMethods</span>[<span class="php-var">$name</span>];
+<a href="#L174" id="L174" class="l">174: </a>        } <span class="php-keyword1">else</span> {
+<a href="#L175" id="L175" class="l">175: </a>            <span class="php-var">$class</span> = <span class="php-keyword2">substr</span>(<span class="php-var">$name</span>, <span class="php-num">0</span>, <span class="php-var">$a</span> - <span class="php-num">1</span>);
+<a href="#L176" id="L176" class="l">176: </a>            <span class="php-var">$l</span> = &amp; self::<span class="php-var">$extMethods</span>[<span class="php-keyword2">substr</span>(<span class="php-var">$name</span>, <span class="php-var">$a</span> + <span class="php-num">1</span>)];
+<a href="#L177" id="L177" class="l">177: </a>        }
+<a href="#L178" id="L178" class="l">178: </a>
+<a href="#L179" id="L179" class="l">179: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$callback</span> !== <span class="php-keyword1">NULL</span>) { <span class="php-comment">// works as setter
+</span><a href="#L180" id="L180" class="l">180: </a>            <span class="php-var">$l</span>[<span class="php-var">$class</span>] = <span class="php-var">$callback</span>;
+<a href="#L181" id="L181" class="l">181: </a>            <span class="php-var">$l</span>[<span class="php-quote">''</span>] = <span class="php-keyword1">NULL</span>;
+<a href="#L182" id="L182" class="l">182: </a>            <span class="php-keyword1">return</span> <span class="php-keyword1">NULL</span>;
+<a href="#L183" id="L183" class="l">183: </a>        }
+<a href="#L184" id="L184" class="l">184: </a>
+<a href="#L185" id="L185" class="l">185: </a>        <span class="php-comment">// works as getter
+</span><a href="#L186" id="L186" class="l">186: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword1">empty</span>(<span class="php-var">$l</span>)) {
+<a href="#L187" id="L187" class="l">187: </a>            <span class="php-keyword1">return</span> <span class="php-keyword1">FALSE</span>;
+<a href="#L188" id="L188" class="l">188: </a>
+<a href="#L189" id="L189" class="l">189: </a>        } <span class="php-keyword1">elseif</span> (<span class="php-keyword1">isset</span>(<span class="php-var">$l</span>[<span class="php-quote">''</span>][<span class="php-var">$class</span>])) { <span class="php-comment">// cached value
+</span><a href="#L190" id="L190" class="l">190: </a>            <span class="php-keyword1">return</span> <span class="php-var">$l</span>[<span class="php-quote">''</span>][<span class="php-var">$class</span>];
+<a href="#L191" id="L191" class="l">191: </a>        }
+<a href="#L192" id="L192" class="l">192: </a>        <span class="php-var">$cl</span> = <span class="php-var">$class</span>;
+<a href="#L193" id="L193" class="l">193: </a>        <span class="php-keyword1">do</span> {
+<a href="#L194" id="L194" class="l">194: </a>            <span class="php-var">$cl</span> = <span class="php-keyword2">strtolower</span>(<span class="php-var">$cl</span>);
+<a href="#L195" id="L195" class="l">195: </a>            <span class="php-keyword1">if</span> (<span class="php-keyword1">isset</span>(<span class="php-var">$l</span>[<span class="php-var">$cl</span>])) {
+<a href="#L196" id="L196" class="l">196: </a>                <span class="php-keyword1">return</span> <span class="php-var">$l</span>[<span class="php-quote">''</span>][<span class="php-var">$class</span>] = <span class="php-var">$l</span>[<span class="php-var">$cl</span>];
+<a href="#L197" id="L197" class="l">197: </a>            }
+<a href="#L198" id="L198" class="l">198: </a>        } <span class="php-keyword1">while</span> ((<span class="php-var">$cl</span> = <span class="php-keyword2">get_parent_class</span>(<span class="php-var">$cl</span>)) !== <span class="php-keyword1">FALSE</span>);
+<a href="#L199" id="L199" class="l">199: </a>
+<a href="#L200" id="L200" class="l">200: </a>        <span class="php-keyword1">foreach</span> (<span class="php-keyword2">class_implements</span>(<span class="php-var">$class</span>) as <span class="php-var">$cl</span>) {
+<a href="#L201" id="L201" class="l">201: </a>            <span class="php-var">$cl</span> = <span class="php-keyword2">strtolower</span>(<span class="php-var">$cl</span>);
+<a href="#L202" id="L202" class="l">202: </a>            <span class="php-keyword1">if</span> (<span class="php-keyword1">isset</span>(<span class="php-var">$l</span>[<span class="php-var">$cl</span>])) {
+<a href="#L203" id="L203" class="l">203: </a>                <span class="php-keyword1">return</span> <span class="php-var">$l</span>[<span class="php-quote">''</span>][<span class="php-var">$class</span>] = <span class="php-var">$l</span>[<span class="php-var">$cl</span>];
+<a href="#L204" id="L204" class="l">204: </a>            }
+<a href="#L205" id="L205" class="l">205: </a>        }
+<a href="#L206" id="L206" class="l">206: </a>        <span class="php-keyword1">return</span> <span class="php-var">$l</span>[<span class="php-quote">''</span>][<span class="php-var">$class</span>] = <span class="php-keyword1">FALSE</span>;
+<a href="#L207" id="L207" class="l">207: </a>    }
+<a href="#L208" id="L208" class="l">208: </a>
+<a href="#L209" id="L209" class="l">209: </a>
+<a href="#L210" id="L210" class="l">210: </a>
+<a href="#L211" id="L211" class="l">211: </a>    <span class="php-comment">/**
+</span><a href="#L212" id="L212" class="l">212: </a><span class="php-comment">     * Returns property value. Do not call directly.
+</span><a href="#L213" id="L213" class="l">213: </a><span class="php-comment">     *
+</span><a href="#L214" id="L214" class="l">214: </a><span class="php-comment">     * @param  string  property name
+</span><a href="#L215" id="L215" class="l">215: </a><span class="php-comment">     * @return mixed   property value
+</span><a href="#L216" id="L216" class="l">216: </a><span class="php-comment">     * @throws MemberAccessException if the property is not defined.
+</span><a href="#L217" id="L217" class="l">217: </a><span class="php-comment">     */</span>
+<a href="#L218" id="L218" class="l">218: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> &amp;__get(<span class="php-var">$name</span>)
+<a href="#L219" id="L219" class="l">219: </a>    {
+<a href="#L220" id="L220" class="l">220: </a>        <span class="php-var">$class</span> = <span class="php-keyword2">get_class</span>(<span class="php-var">$this</span>);
+<a href="#L221" id="L221" class="l">221: </a>
+<a href="#L222" id="L222" class="l">222: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$name</span> === <span class="php-quote">''</span>) {
+<a href="#L223" id="L223" class="l">223: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> MemberAccessException(<span class="php-quote">&quot;Cannot read a class '</span><span class="php-var">$class</span><span class="php-quote">' property without name.&quot;</span>);
+<a href="#L224" id="L224" class="l">224: </a>        }
+<a href="#L225" id="L225" class="l">225: </a>
+<a href="#L226" id="L226" class="l">226: </a>        <span class="php-comment">// property getter support
+</span><a href="#L227" id="L227" class="l">227: </a>        <span class="php-var">$name</span>[<span class="php-num">0</span>] = <span class="php-var">$name</span>[<span class="php-num">0</span>] &amp; <span class="php-quote">&quot;\xDF&quot;</span>; <span class="php-comment">// case-sensitive checking, capitalize first character
+</span><a href="#L228" id="L228" class="l">228: </a>        <span class="php-var">$m</span> = <span class="php-quote">'get'</span> . <span class="php-var">$name</span>;
+<a href="#L229" id="L229" class="l">229: </a>        <span class="php-keyword1">if</span> (self::hasAccessor(<span class="php-var">$class</span>, <span class="php-var">$m</span>)) {
+<a href="#L230" id="L230" class="l">230: </a>            <span class="php-comment">// ampersands:
+</span><a href="#L231" id="L231" class="l">231: </a>            <span class="php-comment">// - uses &amp;__get() because declaration should be forward compatible (e.g. with Nette\Web\Html)
+</span><a href="#L232" id="L232" class="l">232: </a>            <span class="php-comment">// - doesn't call &amp;$this-&gt;$m because user could bypass property setter by: $x = &amp; $obj-&gt;property; $x = 'new value';
+</span><a href="#L233" id="L233" class="l">233: </a>            <span class="php-var">$val</span> = <span class="php-var">$this</span>-&gt;<span class="php-var">$m</span>();
+<a href="#L234" id="L234" class="l">234: </a>            <span class="php-keyword1">return</span> <span class="php-var">$val</span>;
+<a href="#L235" id="L235" class="l">235: </a>        }
+<a href="#L236" id="L236" class="l">236: </a>
+<a href="#L237" id="L237" class="l">237: </a>        <span class="php-var">$m</span> = <span class="php-quote">'is'</span> . <span class="php-var">$name</span>;
+<a href="#L238" id="L238" class="l">238: </a>        <span class="php-keyword1">if</span> (self::hasAccessor(<span class="php-var">$class</span>, <span class="php-var">$m</span>)) {
+<a href="#L239" id="L239" class="l">239: </a>            <span class="php-var">$val</span> = <span class="php-var">$this</span>-&gt;<span class="php-var">$m</span>();
+<a href="#L240" id="L240" class="l">240: </a>            <span class="php-keyword1">return</span> <span class="php-var">$val</span>;
+<a href="#L241" id="L241" class="l">241: </a>        }
+<a href="#L242" id="L242" class="l">242: </a>
+<a href="#L243" id="L243" class="l">243: </a>        <span class="php-var">$name</span> = <span class="php-keyword2">func_get_arg</span>(<span class="php-num">0</span>);
+<a href="#L244" id="L244" class="l">244: </a>        <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> MemberAccessException(<span class="php-quote">&quot;Cannot read an undeclared property </span><span class="php-var">$class</span><span class="php-quote">::\</span><span class="php-var">$$name</span><span class="php-quote">.&quot;</span>);
+<a href="#L245" id="L245" class="l">245: </a>    }
+<a href="#L246" id="L246" class="l">246: </a>
+<a href="#L247" id="L247" class="l">247: </a>
+<a href="#L248" id="L248" class="l">248: </a>
+<a href="#L249" id="L249" class="l">249: </a>    <span class="php-comment">/**
+</span><a href="#L250" id="L250" class="l">250: </a><span class="php-comment">     * Sets value of a property. Do not call directly.
+</span><a href="#L251" id="L251" class="l">251: </a><span class="php-comment">     *
+</span><a href="#L252" id="L252" class="l">252: </a><span class="php-comment">     * @param  string  property name
+</span><a href="#L253" id="L253" class="l">253: </a><span class="php-comment">     * @param  mixed   property value
+</span><a href="#L254" id="L254" class="l">254: </a><span class="php-comment">     * @return void
+</span><a href="#L255" id="L255" class="l">255: </a><span class="php-comment">     * @throws MemberAccessException if the property is not defined or is read-only
+</span><a href="#L256" id="L256" class="l">256: </a><span class="php-comment">     */</span>
+<a href="#L257" id="L257" class="l">257: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> __set(<span class="php-var">$name</span>, <span class="php-var">$value</span>)
+<a href="#L258" id="L258" class="l">258: </a>    {
+<a href="#L259" id="L259" class="l">259: </a>        <span class="php-var">$class</span> = <span class="php-keyword2">get_class</span>(<span class="php-var">$this</span>);
+<a href="#L260" id="L260" class="l">260: </a>
+<a href="#L261" id="L261" class="l">261: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$name</span> === <span class="php-quote">''</span>) {
+<a href="#L262" id="L262" class="l">262: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> MemberAccessException(<span class="php-quote">&quot;Cannot assign to a class '</span><span class="php-var">$class</span><span class="php-quote">' property without name.&quot;</span>);
+<a href="#L263" id="L263" class="l">263: </a>        }
+<a href="#L264" id="L264" class="l">264: </a>
+<a href="#L265" id="L265" class="l">265: </a>        <span class="php-comment">// property setter support
+</span><a href="#L266" id="L266" class="l">266: </a>        <span class="php-var">$name</span>[<span class="php-num">0</span>] = <span class="php-var">$name</span>[<span class="php-num">0</span>] &amp; <span class="php-quote">&quot;\xDF&quot;</span>; <span class="php-comment">// case-sensitive checking, capitalize first character
+</span><a href="#L267" id="L267" class="l">267: </a>        <span class="php-keyword1">if</span> (self::hasAccessor(<span class="php-var">$class</span>, <span class="php-quote">'get'</span> . <span class="php-var">$name</span>) || self::hasAccessor(<span class="php-var">$class</span>, <span class="php-quote">'is'</span> . <span class="php-var">$name</span>)) {
+<a href="#L268" id="L268" class="l">268: </a>            <span class="php-var">$m</span> = <span class="php-quote">'set'</span> . <span class="php-var">$name</span>;
+<a href="#L269" id="L269" class="l">269: </a>            <span class="php-keyword1">if</span> (self::hasAccessor(<span class="php-var">$class</span>, <span class="php-var">$m</span>)) {
+<a href="#L270" id="L270" class="l">270: </a>                <span class="php-var">$this</span>-&gt;<span class="php-var">$m</span>(<span class="php-var">$value</span>);
+<a href="#L271" id="L271" class="l">271: </a>                <span class="php-keyword1">return</span>;
+<a href="#L272" id="L272" class="l">272: </a>
+<a href="#L273" id="L273" class="l">273: </a>            } <span class="php-keyword1">else</span> {
+<a href="#L274" id="L274" class="l">274: </a>                <span class="php-var">$name</span> = <span class="php-keyword2">func_get_arg</span>(<span class="php-num">0</span>);
+<a href="#L275" id="L275" class="l">275: </a>                <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> MemberAccessException(<span class="php-quote">&quot;Cannot assign to a read-only property </span><span class="php-var">$class</span><span class="php-quote">::\</span><span class="php-var">$$name</span><span class="php-quote">.&quot;</span>);
+<a href="#L276" id="L276" class="l">276: </a>            }
+<a href="#L277" id="L277" class="l">277: </a>        }
+<a href="#L278" id="L278" class="l">278: </a>
+<a href="#L279" id="L279" class="l">279: </a>        <span class="php-var">$name</span> = <span class="php-keyword2">func_get_arg</span>(<span class="php-num">0</span>);
+<a href="#L280" id="L280" class="l">280: </a>        <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> MemberAccessException(<span class="php-quote">&quot;Cannot assign to an undeclared property </span><span class="php-var">$class</span><span class="php-quote">::\</span><span class="php-var">$$name</span><span class="php-quote">.&quot;</span>);
+<a href="#L281" id="L281" class="l">281: </a>    }
+<a href="#L282" id="L282" class="l">282: </a>
+<a href="#L283" id="L283" class="l">283: </a>
+<a href="#L284" id="L284" class="l">284: </a>
+<a href="#L285" id="L285" class="l">285: </a>    <span class="php-comment">/**
+</span><a href="#L286" id="L286" class="l">286: </a><span class="php-comment">     * Is property defined?
+</span><a href="#L287" id="L287" class="l">287: </a><span class="php-comment">     *
+</span><a href="#L288" id="L288" class="l">288: </a><span class="php-comment">     * @param  string  property name
+</span><a href="#L289" id="L289" class="l">289: </a><span class="php-comment">     * @return bool
+</span><a href="#L290" id="L290" class="l">290: </a><span class="php-comment">     */</span>
+<a href="#L291" id="L291" class="l">291: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> __<span class="php-keyword1">isset</span>(<span class="php-var">$name</span>)
+<a href="#L292" id="L292" class="l">292: </a>    {
+<a href="#L293" id="L293" class="l">293: </a>        <span class="php-var">$name</span>[<span class="php-num">0</span>] = <span class="php-var">$name</span>[<span class="php-num">0</span>] &amp; <span class="php-quote">&quot;\xDF&quot;</span>;
+<a href="#L294" id="L294" class="l">294: </a>        <span class="php-keyword1">return</span> <span class="php-var">$name</span> !== <span class="php-quote">''</span> &amp;&amp; self::hasAccessor(<span class="php-keyword2">get_class</span>(<span class="php-var">$this</span>), <span class="php-quote">'get'</span> . <span class="php-var">$name</span>);
+<a href="#L295" id="L295" class="l">295: </a>    }
+<a href="#L296" id="L296" class="l">296: </a>
+<a href="#L297" id="L297" class="l">297: </a>
+<a href="#L298" id="L298" class="l">298: </a>
+<a href="#L299" id="L299" class="l">299: </a>    <span class="php-comment">/**
+</span><a href="#L300" id="L300" class="l">300: </a><span class="php-comment">     * Access to undeclared property.
+</span><a href="#L301" id="L301" class="l">301: </a><span class="php-comment">     *
+</span><a href="#L302" id="L302" class="l">302: </a><span class="php-comment">     * @param  string  property name
+</span><a href="#L303" id="L303" class="l">303: </a><span class="php-comment">     * @return void
+</span><a href="#L304" id="L304" class="l">304: </a><span class="php-comment">     * @throws MemberAccessException
+</span><a href="#L305" id="L305" class="l">305: </a><span class="php-comment">     */</span>
+<a href="#L306" id="L306" class="l">306: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> __<span class="php-keyword1">unset</span>(<span class="php-var">$name</span>)
+<a href="#L307" id="L307" class="l">307: </a>    {
+<a href="#L308" id="L308" class="l">308: </a>        <span class="php-var">$class</span> = <span class="php-keyword2">get_class</span>(<span class="php-var">$this</span>);
+<a href="#L309" id="L309" class="l">309: </a>        <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> MemberAccessException(<span class="php-quote">&quot;Cannot unset the property </span><span class="php-var">$class</span><span class="php-quote">::\</span><span class="php-var">$$name</span><span class="php-quote">.&quot;</span>);
+<a href="#L310" id="L310" class="l">310: </a>    }
+<a href="#L311" id="L311" class="l">311: </a>
+<a href="#L312" id="L312" class="l">312: </a>
+<a href="#L313" id="L313" class="l">313: </a>
+<a href="#L314" id="L314" class="l">314: </a>    <span class="php-comment">/**
+</span><a href="#L315" id="L315" class="l">315: </a><span class="php-comment">     * Has property an accessor?
+</span><a href="#L316" id="L316" class="l">316: </a><span class="php-comment">     *
+</span><a href="#L317" id="L317" class="l">317: </a><span class="php-comment">     * @param  string  class name
+</span><a href="#L318" id="L318" class="l">318: </a><span class="php-comment">     * @param  string  method name
+</span><a href="#L319" id="L319" class="l">319: </a><span class="php-comment">     * @return bool
+</span><a href="#L320" id="L320" class="l">320: </a><span class="php-comment">     */</span>
+<a href="#L321" id="L321" class="l">321: </a>    <span class="php-keyword1">private</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> hasAccessor(<span class="php-var">$c</span>, <span class="php-var">$m</span>)
+<a href="#L322" id="L322" class="l">322: </a>    {
+<a href="#L323" id="L323" class="l">323: </a>        <span class="php-keyword1">static</span> <span class="php-var">$cache</span>;
+<a href="#L324" id="L324" class="l">324: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">isset</span>(<span class="php-var">$cache</span>[<span class="php-var">$c</span>])) {
+<a href="#L325" id="L325" class="l">325: </a>            <span class="php-comment">// get_class_methods returns private, protected and public methods of Object (doesn't matter)
+</span><a href="#L326" id="L326" class="l">326: </a>            <span class="php-comment">// and ONLY PUBLIC methods of descendants (perfect!)
+</span><a href="#L327" id="L327" class="l">327: </a>            <span class="php-comment">// but returns static methods too (nothing doing...)
+</span><a href="#L328" id="L328" class="l">328: </a>            <span class="php-comment">// and is much faster than reflection
+</span><a href="#L329" id="L329" class="l">329: </a>            <span class="php-comment">// (works good since 5.0.4)
+</span><a href="#L330" id="L330" class="l">330: </a>            <span class="php-var">$cache</span>[<span class="php-var">$c</span>] = <span class="php-keyword2">array_flip</span>(<span class="php-keyword2">get_class_methods</span>(<span class="php-var">$c</span>));
+<a href="#L331" id="L331" class="l">331: </a>        }
+<a href="#L332" id="L332" class="l">332: </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">isset</span>(<span class="php-var">$cache</span>[<span class="php-var">$c</span>][<span class="php-var">$m</span>]);
+<a href="#L333" id="L333" class="l">333: </a>    }
+<a href="#L334" id="L334" class="l">334: </a>
+<a href="#L335" id="L335" class="l">335: </a>}
+<a href="#L336" id="L336" class="l">336: </a></code></pre>
+
+	<div id="footer">
+		Texy2 API documentation generated by <a href="http://github.com/nette/apigen">Apigen</a>
+	</div>
+</div>
+</body>
+</html>

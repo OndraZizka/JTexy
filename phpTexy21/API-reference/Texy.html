@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="Nette Framework Apigen" />
+	<title>Class Texy</title>
+
+	<script type="text/javascript" src="media/jquery.min.js"></script>
+	<script type="text/javascript" src="media/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="media/jquery.sortElements.js"></script>
+	<script type="text/javascript" src="allclasses.js"></script>
+	<script type="text/javascript" src="media/main.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="media/style.css?v=2010100721" />
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+</head>
+
+<body>
+<div id="left">
+	<a href="allclasses.html">All Classes</a>
+
+	<h3>Namespaces</h3>
+	<ul>
+		<li><a href="namespace-internal.html">internal</a></li>
+		<li>Texy</li>
+	</ul>
+
+	<h3>Classes</h3>
+
+	<ul>
+		<li>Texy</li>
+		<li><a href="TexyBlockParser.html">TexyBlockParser</a></li>
+		<li><a href="TexyConfigurator.html">TexyConfigurator</a></li>
+		<li><a href="TexyHandlerInvocation.html">TexyHandlerInvocation</a></li>
+		<li><a href="TexyHtml.html">TexyHtml</a></li>
+		<li><a href="TexyLineParser.html">TexyLineParser</a></li>
+		<li><a href="TexyModifier.html">TexyModifier</a></li>
+		<li><a href="TexyModule.html">TexyModule</a></li>
+		<li><a href="TexyObject.html">TexyObject</a></li>
+		<li><a href="TexyParser.html">TexyParser</a></li>
+		<li><a href="TexyUtf.html">TexyUtf</a></li>
+	</ul>
+
+	<h3>Interfaces</h3>
+
+	<ul>
+	</ul>
+</div>
+
+<div id="right">
+	<form action="http://www.google.com/cse" id="search" onsubmit="if(this.q.value.indexOf('more:')==-1)this.q.value+=' more:api'">
+		<input type="hidden" name="cx" value="011549293477758430224:vxofa9ufnhc" /><input type="hidden" name="ie" value="UTF-8" /><input type="text" name="q" class="text" /><input type="submit" value="Search" />
+	</form>
+
+<div id="navigation">
+	<ul>
+		<li><a href="overview.html" title="Summary of all namespaces">Overview</a></li>		<li class="active">Class</li>
+		<li><a href="elements.html">Elements</a></li>
+	</ul>
+</div>
+
+<div id="content">
+	<div id="classSummary">
+		<h1>Class Texy</h1>
+		<div class="classDescription">
+
+		
+<p>Texy! – Convert plain text to XHTML format using {@link process()}.</p>
+
+<pre><code>    <span class="php-var">$texy</span> = <span
+class="php-keyword1">new</span> Texy();
+    <span
+class="php-var">$html</span> = <span
+class="php-var">$texy</span>-&gt;process(<span
+class="php-var">$text</span>);</code></pre>
+
+		</div>
+		<dl class="tree">
+
+			<dd style="padding-left:0px">				<a href="TexyObject.html">TexyObject</a>
+				
+			</dd>
+			<dd style="padding-left:30px">				<img src="media/inherit.gif" alt="extended by " />
+<b>Texy</b>				
+			</dd>
+		</dl>
+
+		<div class="classInfo">
+			
+				<b>Link:</b> process()}.<br />
+				<b>Copyright:</b> Copyright (c) 2004, 2010 David Grudl<br />
+				<b>Package:</b> Texy<br />
+			<b>Located at</b> <a href="source-texy.php.html#L113">/texy.php</a><br />
+		</div>
+	</div>
+
+	<div id="methodSummary">
+
+		<table class="summary">
+		<caption>Method Summary</caption>
+		<tr data-order="1 __construct" id="__construct()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__construct()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L322" title="go to source code"><b>__construct</b></a>(
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 setOutputMode" id="setOutputMode()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#setOutputMode()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L353" title="go to source code"><b>setOutputMode</b></a>(
+					int
+					<var>$mode</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Set HTML/XHTML output mode (overwrites self::$allowedTags)</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Set HTML/XHTML output mode (overwrites self::$allowedTags)</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$mode</code> int<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getOutputMode" id="getOutputMode()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				int
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getOutputMode()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L383" title="go to source code"><b>getOutputMode</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Get HTML/XHTML output mode</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Get HTML/XHTML output mode</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 loadModules" id="loadModules()">
+			<td align="right" width="1%"><code class="nowrap">
+				 protected 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#loadModules()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L394" title="go to source code"><b>loadModules</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Create array of all used modules ($this-&gt;modules).</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Create array of all used modules ($this-&gt;modules). This array can be
+changed by overriding this method (by subclasses)</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 registerLinePattern" id="registerLinePattern()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#registerLinePattern()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L425" title="go to source code"><b>registerLinePattern</b></a>(
+					
+					<var>$handler</var>, 
+					
+					<var>$pattern</var>, 
+					
+					<var>$name</var>, 
+					
+					<var>$againTest</var> = <span class="php-keyword1">NULL</span>
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 registerBlockPattern" id="registerBlockPattern()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#registerBlockPattern()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L443" title="go to source code"><b>registerBlockPattern</b></a>(
+					
+					<var>$handler</var>, 
+					
+					<var>$pattern</var>, 
+					
+					<var>$name</var>
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 registerPostLine" id="registerPostLine()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#registerPostLine()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L461" title="go to source code"><b>registerPostLine</b></a>(
+					
+					<var>$handler</var>, 
+					
+					<var>$name</var>
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 process" id="process()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#process()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L476" title="go to source code"><b>process</b></a>(
+					string
+					<var>$text</var>, 
+					bool
+					<var>$singleLine</var> = <span class="php-keyword1">false</span>
+			)</code>
+
+			<div class="short">
+				
+<p>Converts document in Texy! to (X)HTML code.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Converts document in Texy! to (X)HTML code.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$text</code> string   input text<br />
+						<code>$singleLine</code> bool     is single line?<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">string   output HTML code</div>
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 processLine" id="processLine()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#processLine()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L558" title="go to source code"><b>processLine</b></a>(
+					string
+					<var>$text</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Converts single line in Texy! to (X)HTML code.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Converts single line in Texy! to (X)HTML code.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$text</code> string   input text<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">string   output HTML code</div>
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 processTypo" id="processTypo()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#processTypo()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L571" title="go to source code"><b>processTypo</b></a>(
+					string
+					<var>$text</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Makes only typographic corrections.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Makes only typographic corrections.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$text</code> string   input text (in encoding defined by Texy::$encoding)<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">string   output text (in UTF-8)</div>
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 toText" id="toText()">
+			<td align="right" width="1%"><code class="nowrap">
+				 public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#toText()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L596" title="go to source code"><b>toText</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>Converts DOM structure to pure text.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Converts DOM structure to pure text.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 stringToHtml" id="stringToHtml()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#stringToHtml()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L611" title="go to source code"><b>stringToHtml</b></a>(
+					
+					<var>$s</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Converts internal string representation to final HTML code in UTF-8.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Converts internal string representation to final HTML code in UTF-8.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 stringToText" id="stringToText()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#stringToText()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L649" title="go to source code"><b>stringToText</b></a>(
+					
+					<var>$s</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Converts internal string representation to final HTML code in UTF-8.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Converts internal string representation to final HTML code in UTF-8.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 addHandler" id="addHandler()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#addHandler()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L679" title="go to source code"><b>addHandler</b></a>(
+					string
+					<var>$event</var>, 
+					callback
+					<var>$callback</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Add new event handler.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Add new event handler.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$event</code> string   event name<br />
+						<code>$callback</code> callback<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 invokeAroundHandlers" id="invokeAroundHandlers()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				mixed
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#invokeAroundHandlers()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L698" title="go to source code"><b>invokeAroundHandlers</b></a>(
+					string
+					<var>$event</var>, 
+					<a href="TexyParser.html">TexyParser</a>
+					<var>$parser</var>, 
+					array
+					<var>$args</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Invoke registered around-handlers.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Invoke registered around-handlers.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$event</code> string   event name<br />
+						<code>$parser</code> TexyParser  actual parser object<br />
+						<code>$args</code> array    arguments passed into handler<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 invokeHandlers" id="invokeHandlers()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				void
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#invokeHandlers()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L718" title="go to source code"><b>invokeHandlers</b></a>(
+					string
+					<var>$event</var>, 
+					array
+					<var>$args</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Invoke registered after-handlers.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Invoke registered after-handlers.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$event</code> string   event name<br />
+						<code>$args</code> array    arguments passed into handler<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 freezeSpaces" id="freezeSpaces()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public static
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#freezeSpaces()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L736" title="go to source code"><b>freezeSpaces</b></a>(
+					string
+					<var>$s</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Translate all white spaces (\t \n \r space) to meta-spaces \x01-\x04.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Translate all white spaces (\t \n \r space) to meta-spaces \x01-\x04. which
+are ignored by TexyHtmlOutput­Module routine</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$s</code> string<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 unfreezeSpaces" id="unfreezeSpaces()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public static
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#unfreezeSpaces()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L749" title="go to source code"><b>unfreezeSpaces</b></a>(
+					string
+					<var>$s</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Reverts meta-spaces back to normal spaces.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Reverts meta-spaces back to normal spaces.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$s</code> string<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 normalize" id="normalize()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public static
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#normalize()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L761" title="go to source code"><b>normalize</b></a>(
+					string
+					<var>$s</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Removes special controls characters and normalizes line endings and
+spaces.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Removes special controls characters and normalizes line endings and
+spaces.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$s</code> string<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 webalize" id="webalize()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public static
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#webalize()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L786" title="go to source code"><b>webalize</b></a>(
+					string
+					<var>$s</var>, 
+					string
+					<var>$charlist</var> = <span class="php-keyword1">NULL</span>
+			)</code>
+
+			<div class="short">
+				
+<p>Converts to web safe characters [a-z0–9-] text.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Converts to web safe characters [a-z0–9-] text.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$s</code> string<br />
+						<code>$charlist</code> string<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 escapeHtml" id="escapeHtml()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public static
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#escapeHtml()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L803" title="go to source code"><b>escapeHtml</b></a>(
+					string
+					<var>$s</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Texy! version of htmlSpecialChars (much faster than htmlSpecialChars!).</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Texy! version of htmlSpecialChars (much faster than htmlSpecialChars!). note:
+" is not encoded!</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$s</code> string<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 unescapeHtml" id="unescapeHtml()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public static
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#unescapeHtml()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L816" title="go to source code"><b>unescapeHtml</b></a>(
+					string
+					<var>$s</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Texy! version of html_entity_decode (always UTF-8, much faster than
+original!).</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Texy! version of html_entity_decode (always UTF-8, much faster than
+original!).</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$s</code> string<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 outdent" id="outdent()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public static
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#outdent()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L829" title="go to source code"><b>outdent</b></a>(
+					string
+					<var>$s</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Outdents text block.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Outdents text block.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$s</code> string<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 protect" id="protect()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#protect()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L844" title="go to source code"><b>protect</b></a>(
+					string
+					<var>$child</var>, 
+					int
+					<var>$contentType</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Generate unique mark – useful for freezing (folding) some substrings.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Generate unique mark – useful for freezing (folding) some substrings.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$child</code> string   any string to froze<br />
+						<code>$contentType</code> int      Texy::CONTENT_* constant<br />
+					</div>
+
+					<h4>Returns</h4>
+					<div class="smallList">string  internal mark</div>
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 unProtect" id="unProtect()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#unProtect()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L864" title="go to source code"><b>unProtect</b></a>(
+					
+					<var>$html</var>
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 checkURL" id="checkURL()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				bool
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#checkURL()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L872" title="go to source code"><b>checkURL</b></a>(
+					string
+					<var>$URL</var>, 
+					string
+					<var>$type</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Filters bad URLs.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Filters bad URLs.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$URL</code> string   user URL<br />
+						<code>$type</code> string   type: a-anchor, i-image, c-cite<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 isRelative" id="isRelative()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public static
+				bool
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#isRelative()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L891" title="go to source code"><b>isRelative</b></a>(
+					string
+					<var>$URL</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Is given URL relative?</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Is given URL relative?</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$URL</code> string  URL<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="0 prependRoot" id="prependRoot()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public static
+				string
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#prependRoot()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L904" title="go to source code"><b>prependRoot</b></a>(
+					string
+					<var>$URL</var>, 
+					string
+					<var>$root</var>
+			)</code>
+
+			<div class="short">
+				
+<p>Prepends root to URL, if possible.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>Prepends root to URL, if possible.</p>
+
+
+
+					<h4>Parameters</h4>
+					<div class="smallList">
+						<code>$URL</code> string  URL<br />
+						<code>$root</code> string  root<br />
+					</div>
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getLinePatterns" id="getLinePatterns()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getLinePatterns()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L917" title="go to source code"><b>getLinePatterns</b></a>(
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getBlockPatterns" id="getBlockPatterns()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getBlockPatterns()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L924" title="go to source code"><b>getBlockPatterns</b></a>(
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 getDOM" id="getDOM()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#getDOM()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L931" title="go to source code"><b>getDOM</b></a>(
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 free" id="free()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#free()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L946" title="go to source code"><b>free</b></a>(
+			)</code>
+
+			<div class="short">
+				
+<p>PHP garbage collector helper.</p>
+
+			</div>
+
+			<div class="detailed">
+				
+<p>PHP garbage collector helper.</p>
+
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		<tr data-order="1 __clone" id="__clone()">
+			<td align="right" width="1%"><code class="nowrap">
+				final public 
+				
+				
+				</code>
+			</td>
+
+			<td>
+			<a class="anchor" href="#__clone()">#</a>
+			<code class="nowrap">
+				<a href="source-texy.php.html#L959" title="go to source code"><b>__clone</b></a>(
+			)</code>
+
+			<div class="short">
+				
+			</div>
+
+			<div class="detailed">
+				
+
+
+
+
+
+			</div>
+			</td>
+		</tr>
+		</table>
+	</div>
+
+
+	<h2>Methods Inherited From <a href="TexyObject.html#methodSummary">TexyObject</a></h2>
+	<div class="box"><code>
+		<a href="TexyObject.html#getClass()">getClass()</a>, <a href="TexyObject.html#getReflection()">getReflection()</a>, <a href="TexyObject.html#__call()">__call()</a>, <a href="TexyObject.html#__callStatic()">__callStatic()</a>, <a href="TexyObject.html#extensionMethod()">extensionMethod()</a>, <a href="TexyObject.html#__get()">__get()</a>, <a href="TexyObject.html#__set()">__set()</a>, <a href="TexyObject.html#__isset()">__isset()</a>, <a href="TexyObject.html#__unset()">__unset()</a>
+	</code></div>
+
+	<div id="constantSummary">
+
+		<table class="summary">
+		<caption>Constant Summary</caption>
+		<tr data-order="ALL" id="ALL">
+			<td align="right" width="1%"><code><b>ALL</b></code></td>
+			<td><code><span class="php-keyword1">true</span></code> <a href="#ALL" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="NONE" id="NONE">
+			<td align="right" width="1%"><code><b>NONE</b></code></td>
+			<td><code><span class="php-keyword1">false</span></code> <a href="#NONE" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="VERSION" id="VERSION">
+			<td align="right" width="1%"><code><b>VERSION</b></code></td>
+			<td><code><span class="php-quote">'2.1'</span></code> <a href="#VERSION" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="REVISION" id="REVISION">
+			<td align="right" width="1%"><code><b>REVISION</b></code></td>
+			<td><code><span class="php-quote">'9338a11 released on 2010-05-20'</span></code> <a href="#REVISION" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="CONTENT_MARKUP" id="CONTENT_MARKUP">
+			<td align="right" width="1%"><code><b>CONTENT_MARKUP</b></code></td>
+			<td><code><span class="php-quote">''</span></code> <a href="#CONTENT_MARKUP" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="CONTENT_REPLACED" id="CONTENT_REPLACED">
+			<td align="right" width="1%"><code><b>CONTENT_REPLACED</b></code></td>
+			<td><code><span class="php-quote">''</span></code> <a href="#CONTENT_REPLACED" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="CONTENT_TEXTUAL" id="CONTENT_TEXTUAL">
+			<td align="right" width="1%"><code><b>CONTENT_TEXTUAL</b></code></td>
+			<td><code><span class="php-quote">''</span></code> <a href="#CONTENT_TEXTUAL" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="CONTENT_BLOCK" id="CONTENT_BLOCK">
+			<td align="right" width="1%"><code><b>CONTENT_BLOCK</b></code></td>
+			<td><code><span class="php-quote">''</span></code> <a href="#CONTENT_BLOCK" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="FILTER_ANCHOR" id="FILTER_ANCHOR">
+			<td align="right" width="1%"><code><b>FILTER_ANCHOR</b></code></td>
+			<td><code><span class="php-quote">'anchor'</span></code> <a href="#FILTER_ANCHOR" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="FILTER_IMAGE" id="FILTER_IMAGE">
+			<td align="right" width="1%"><code><b>FILTER_IMAGE</b></code></td>
+			<td><code><span class="php-quote">'image'</span></code> <a href="#FILTER_IMAGE" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="XML" id="XML">
+			<td align="right" width="1%"><code><b>XML</b></code></td>
+			<td><code><span class="php-num">2</span></code> <a href="#XML" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="HTML4_TRANSITIONAL" id="HTML4_TRANSITIONAL">
+			<td align="right" width="1%"><code><b>HTML4_TRANSITIONAL</b></code></td>
+			<td><code><span class="php-num">0</span></code> <a href="#HTML4_TRANSITIONAL" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="HTML4_STRICT" id="HTML4_STRICT">
+			<td align="right" width="1%"><code><b>HTML4_STRICT</b></code></td>
+			<td><code><span class="php-num">1</span></code> <a href="#HTML4_STRICT" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="HTML5" id="HTML5">
+			<td align="right" width="1%"><code><b>HTML5</b></code></td>
+			<td><code><span class="php-num">4</span></code> <a href="#HTML5" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="XHTML1_TRANSITIONAL" id="XHTML1_TRANSITIONAL">
+			<td align="right" width="1%"><code><b>XHTML1_TRANSITIONAL</b></code></td>
+			<td><code><span class="php-num">2</span></code> <a href="#XHTML1_TRANSITIONAL" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="XHTML1_STRICT" id="XHTML1_STRICT">
+			<td align="right" width="1%"><code><b>XHTML1_STRICT</b></code></td>
+			<td><code><span class="php-num">3</span></code> <a href="#XHTML1_STRICT" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="XHTML5" id="XHTML5">
+			<td align="right" width="1%"><code><b>XHTML5</b></code></td>
+			<td><code><span class="php-num">6</span></code> <a href="#XHTML5" class="anchor">#</a></td>
+		</tr>
+		</table>
+	</div>
+
+
+	<div id="propertySummary">
+
+		<table class="summary">
+		<caption>Property Summary</caption>
+		<tr data-order="encoding" id="$encoding">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				string
+			</code></td>
+
+			<td width="1%"><var>$encoding</var></td>
+			<td><pre><span class="php-quote">'utf-8'</span></pre></td>
+			<td>input &amp; output text encoding <a href="#$encoding" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="allowed" id="$allowed">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				array
+			</code></td>
+
+			<td width="1%"><var>$allowed</var></td>
+			<td><pre><span class="php-keyword1">array</span> (
+)</pre></td>
+			<td>Texy! syntax configuration <a href="#$allowed" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="allowedTags" id="$allowedTags">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TRUE|FALSE|array
+			</code></td>
+
+			<td width="1%"><var>$allowedTags</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td>Allowed HTML tags <a href="#$allowedTags" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="allowedClasses" id="$allowedClasses">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TRUE|FALSE|array
+			</code></td>
+
+			<td width="1%"><var>$allowedClasses</var></td>
+			<td><pre><span class="php-keyword1">true</span></pre></td>
+			<td>Allowed classes <a href="#$allowedClasses" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="allowedStyles" id="$allowedStyles">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TRUE|FALSE|array
+			</code></td>
+
+			<td width="1%"><var>$allowedStyles</var></td>
+			<td><pre><span class="php-keyword1">true</span></pre></td>
+			<td>Allowed inline CSS style <a href="#$allowedStyles" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="tabWidth" id="$tabWidth">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				int
+			</code></td>
+
+			<td width="1%"><var>$tabWidth</var></td>
+			<td><pre><span class="php-num">8</span></pre></td>
+			<td>TAB width (for converting tabs to spaces) <a href="#$tabWidth" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="obfuscateEmail" id="$obfuscateEmail">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				boolean
+			</code></td>
+
+			<td width="1%"><var>$obfuscateEmail</var></td>
+			<td><pre><span class="php-keyword1">true</span></pre></td>
+			<td>Do obfuscate e-mail addresses? <a href="#$obfuscateEmail" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="urlSchemeFilters" id="$urlSchemeFilters">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				array
+			</code></td>
+
+			<td width="1%"><var>$urlSchemeFilters</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td>regexps to check URL schemes <a href="#$urlSchemeFilters" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="mergeLines" id="$mergeLines">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				bool
+			</code></td>
+
+			<td width="1%"><var>$mergeLines</var></td>
+			<td><pre><span class="php-keyword1">true</span></pre></td>
+			<td>Paragraph merging mode <a href="#$mergeLines" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="summary" id="$summary">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				array
+			</code></td>
+
+			<td width="1%"><var>$summary</var></td>
+			<td><pre><span class="php-keyword1">array</span> (
+  <span class="php-quote">'images'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+  ),
+  <span class="php-quote">'links'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+  ),
+  <span class="php-quote">'preload'</span> =&gt; 
+  <span class="php-keyword1">array</span> (
+  ),
+)</pre></td>
+			<td>Parsing summary <a href="#$summary" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="styleSheet" id="$styleSheet">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				string
+			</code></td>
+
+			<td width="1%"><var>$styleSheet</var></td>
+			<td><pre><span class="php-quote">''</span></pre></td>
+			<td>Generated stylesheet <a href="#$styleSheet" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="alignClasses" id="$alignClasses">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				array
+			</code></td>
+
+			<td width="1%"><var>$alignClasses</var></td>
+			<td><pre><span class="php-keyword1">array</span> (
+  <span class="php-quote">'left'</span> =&gt; <span class="php-keyword1">NULL</span>,
+  <span class="php-quote">'right'</span> =&gt; <span class="php-keyword1">NULL</span>,
+  <span class="php-quote">'center'</span> =&gt; <span class="php-keyword1">NULL</span>,
+  <span class="php-quote">'justify'</span> =&gt; <span class="php-keyword1">NULL</span>,
+  <span class="php-quote">'top'</span> =&gt; <span class="php-keyword1">NULL</span>,
+  <span class="php-quote">'middle'</span> =&gt; <span class="php-keyword1">NULL</span>,
+  <span class="php-quote">'bottom'</span> =&gt; <span class="php-keyword1">NULL</span>,
+)</pre></td>
+			<td>CSS classes for align modifiers <a href="#$alignClasses" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="removeSoftHyphens" id="$removeSoftHyphens">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				bool
+			</code></td>
+
+			<td width="1%"><var>$removeSoftHyphens</var></td>
+			<td><pre><span class="php-keyword1">true</span></pre></td>
+			<td>remove soft hyphens (SHY)? <a href="#$removeSoftHyphens" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="advertisingNotice" id="$advertisingNotice">
+			<td align="right" width="1%"><code class="nowrap">
+				 static
+				mixed
+			</code></td>
+
+			<td width="1%"><var>$advertisingNotice</var></td>
+			<td><pre><span class="php-quote">'once'</span></pre></td>
+			<td> <a href="#$advertisingNotice" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="nontextParagraph" id="$nontextParagraph">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				string
+			</code></td>
+
+			<td width="1%"><var>$nontextParagraph</var></td>
+			<td><pre><span class="php-quote">'div'</span></pre></td>
+			<td> <a href="#$nontextParagraph" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="scriptModule" id="$scriptModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyScriptModule
+			</code></td>
+
+			<td width="1%"><var>$scriptModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$scriptModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="paragraphModule" id="$paragraphModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyParagraphModule
+			</code></td>
+
+			<td width="1%"><var>$paragraphModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$paragraphModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="htmlModule" id="$htmlModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyHtmlModule
+			</code></td>
+
+			<td width="1%"><var>$htmlModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$htmlModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="imageModule" id="$imageModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyImageModule
+			</code></td>
+
+			<td width="1%"><var>$imageModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$imageModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="linkModule" id="$linkModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyLinkModule
+			</code></td>
+
+			<td width="1%"><var>$linkModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$linkModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="phraseModule" id="$phraseModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyPhraseModule
+			</code></td>
+
+			<td width="1%"><var>$phraseModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$phraseModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="emoticonModule" id="$emoticonModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyEmoticonModule
+			</code></td>
+
+			<td width="1%"><var>$emoticonModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$emoticonModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="blockModule" id="$blockModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyBlockModule
+			</code></td>
+
+			<td width="1%"><var>$blockModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$blockModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="headingModule" id="$headingModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyHeadingModule
+			</code></td>
+
+			<td width="1%"><var>$headingModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$headingModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="horizLineModule" id="$horizLineModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyHorizLineModule
+			</code></td>
+
+			<td width="1%"><var>$horizLineModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$horizLineModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="blockQuoteModule" id="$blockQuoteModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyBlockQuoteModule
+			</code></td>
+
+			<td width="1%"><var>$blockQuoteModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$blockQuoteModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="listModule" id="$listModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyListModule
+			</code></td>
+
+			<td width="1%"><var>$listModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$listModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="tableModule" id="$tableModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyTableModule
+			</code></td>
+
+			<td width="1%"><var>$tableModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$tableModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="figureModule" id="$figureModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyFigureModule
+			</code></td>
+
+			<td width="1%"><var>$figureModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$figureModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="typographyModule" id="$typographyModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyTypographyModule
+			</code></td>
+
+			<td width="1%"><var>$typographyModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$typographyModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="longWordsModule" id="$longWordsModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyLongWordsModule
+			</code></td>
+
+			<td width="1%"><var>$longWordsModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$longWordsModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="htmlOutputModule" id="$htmlOutputModule">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				TexyHtmlOutputModule
+			</code></td>
+
+			<td width="1%"><var>$htmlOutputModule</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$htmlOutputModule" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="_classes" id="$_classes">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				array
+			</code></td>
+
+			<td width="1%"><var>$_classes</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td>for internal usage <a href="#$_classes" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="_styles" id="$_styles">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				
+			</code></td>
+
+			<td width="1%"><var>$_styles</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$_styles" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="dtd" id="$dtd">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				array
+			</code></td>
+
+			<td width="1%"><var>$dtd</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td>DTD descriptor. <a href="#$dtd" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="strictDTD" id="$strictDTD">
+			<td align="right" width="1%"><code class="nowrap">
+				 static
+				
+			</code></td>
+
+			<td width="1%"><var>$strictDTD</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td>DEPRECATED <a href="#$strictDTD" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="cleaner" id="$cleaner">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				
+			</code></td>
+
+			<td width="1%"><var>$cleaner</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$cleaner" class="anchor">#</a></td>
+		</tr>
+		<tr data-order="xhtml" id="$xhtml">
+			<td align="right" width="1%"><code class="nowrap">
+				 
+				
+			</code></td>
+
+			<td width="1%"><var>$xhtml</var></td>
+			<td><pre><span class="php-keyword1">NULL</span></pre></td>
+			<td> <a href="#$xhtml" class="anchor">#</a></td>
+		</tr>
+		</table>
+	</div>
+
+
+</div>
+
+	<div id="footer">
+		Texy2 API documentation generated by <a href="http://github.com/nette/apigen">Apigen</a>
+	</div>
+</div>
+</body>
+</html>

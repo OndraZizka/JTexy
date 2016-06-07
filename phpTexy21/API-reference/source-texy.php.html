@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="generator" content="Nette Framework Apigen" />	<meta name="robots" content="noindex" />
+
+	<title>texy.php</title>
+
+	<script type="text/javascript" src="media/jquery.min.js"></script>
+	<script type="text/javascript" src="media/jquery.autocomplete.js"></script>
+	<script type="text/javascript" src="media/jquery.sortElements.js"></script>
+	<script type="text/javascript" src="allclasses.js"></script>
+	<script type="text/javascript" src="media/main.js"></script>
+	<link rel="stylesheet" type="text/css" media="all" href="media/style.css?v=2010100721" />
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+</head>
+
+<body>
+<div id="left">
+	<a href="allclasses.html">All Classes</a>
+
+	<h3>Namespaces</h3>
+	<ul>
+		<li><a href="namespace-internal.html">internal</a></li>
+		<li>Texy</li>
+	</ul>
+
+	<h3>Classes</h3>
+
+	<ul>
+		<li>Texy</li>
+		<li><a href="TexyBlockParser.html">TexyBlockParser</a></li>
+		<li><a href="TexyConfigurator.html">TexyConfigurator</a></li>
+		<li><a href="TexyHandlerInvocation.html">TexyHandlerInvocation</a></li>
+		<li><a href="TexyHtml.html">TexyHtml</a></li>
+		<li><a href="TexyLineParser.html">TexyLineParser</a></li>
+		<li><a href="TexyModifier.html">TexyModifier</a></li>
+		<li><a href="TexyModule.html">TexyModule</a></li>
+		<li><a href="TexyObject.html">TexyObject</a></li>
+		<li><a href="TexyParser.html">TexyParser</a></li>
+		<li><a href="TexyUtf.html">TexyUtf</a></li>
+	</ul>
+
+	<h3>Interfaces</h3>
+
+	<ul>
+	</ul>
+</div>
+
+<div id="right">
+	<form action="http://www.google.com/cse" id="search" onsubmit="if(this.q.value.indexOf('more:')==-1)this.q.value+=' more:api'">
+		<input type="hidden" name="cx" value="011549293477758430224:vxofa9ufnhc" /><input type="hidden" name="ie" value="UTF-8" /><input type="text" name="q" class="text" /><input type="submit" value="Search" />
+	</form>
+
+<div id="navigation">
+	<ul>
+		<li><a href="overview.html" title="Summary of all namespaces">Overview</a></li>
+		<li><a href="elements.html">Elements</a></li>
+	</ul>
+</div>
+
+<pre><code><a href="#L1" id="L1" class="l">  1: </a><span class="xlang">&lt;?php</span>
+<a href="#L2" id="L2" class="l">  2: </a>
+<a href="#L3" id="L3" class="l">  3: </a><span class="php-comment">/**
+</span><a href="#L4" id="L4" class="l">  4: </a><span class="php-comment"> * Texy! - human-readable text to HTML converter.
+</span><a href="#L5" id="L5" class="l">  5: </a><span class="php-comment"> *
+</span><a href="#L6" id="L6" class="l">  6: </a><span class="php-comment"> * @copyright  Copyright (c) 2004, 2010 David Grudl
+</span><a href="#L7" id="L7" class="l">  7: </a><span class="php-comment"> * @license    GNU GENERAL PUBLIC LICENSE version 2 or 3
+</span><a href="#L8" id="L8" class="l">  8: </a><span class="php-comment"> * @link       http://texy.info
+</span><a href="#L9" id="L9" class="l">  9: </a><span class="php-comment"> * @package    Texy
+</span><a href="#L10" id="L10" class="l"> 10: </a><span class="php-comment"> */</span>
+<a href="#L11" id="L11" class="l"> 11: </a>
+<a href="#L12" id="L12" class="l"> 12: </a>
+<a href="#L13" id="L13" class="l"> 13: </a><span class="php-keyword2">define</span>(<span class="php-quote">'TEXY_VERSION'</span>,  <span class="php-quote">'2.1'</span>);
+<a href="#L14" id="L14" class="l"> 14: </a>
+<a href="#L15" id="L15" class="l"> 15: </a>
+<a href="#L16" id="L16" class="l"> 16: </a><span class="php-comment">/**
+</span><a href="#L17" id="L17" class="l"> 17: </a><span class="php-comment"> * Check PHP configuration.
+</span><a href="#L18" id="L18" class="l"> 18: </a><span class="php-comment"> */</span>
+<a href="#L19" id="L19" class="l"> 19: </a><span class="php-keyword1">if</span> (<span class="php-keyword2">extension_loaded</span>(<span class="php-quote">'mbstring'</span>)) {
+<a href="#L20" id="L20" class="l"> 20: </a>    <span class="php-keyword1">if</span> (<span class="php-keyword2">mb_get_info</span>(<span class="php-quote">'func_overload'</span>) &amp; <span class="php-num">2</span> &amp;&amp; <span class="php-keyword2">substr</span>(<span class="php-keyword2">mb_get_info</span>(<span class="php-quote">'internal_encoding'</span>), <span class="php-num">0</span>, <span class="php-num">1</span>) === <span class="php-quote">'U'</span>) { <span class="php-comment">// U??
+</span><a href="#L21" id="L21" class="l"> 21: </a>        <span class="php-keyword2">mb_internal_encoding</span>(<span class="php-quote">'pass'</span>);
+<a href="#L22" id="L22" class="l"> 22: </a>        <span class="php-keyword2">trigger_error</span>(<span class="php-quote">&quot;Texy: mb_internal_encoding changed to 'pass'&quot;</span>, E_USER_WARNING);
+<a href="#L23" id="L23" class="l"> 23: </a>    }
+<a href="#L24" id="L24" class="l"> 24: </a>}
+<a href="#L25" id="L25" class="l"> 25: </a>
+<a href="#L26" id="L26" class="l"> 26: </a><span class="php-keyword1">if</span> (<span class="php-keyword2">ini_get</span>(<span class="php-quote">'zend.ze1_compatibility_mode'</span>) % <span class="php-num">256</span> ||
+<a href="#L27" id="L27" class="l"> 27: </a>    <span class="php-keyword2">preg_match</span>(<span class="php-quote">'#on$|true$|yes$#iA'</span>, <span class="php-keyword2">ini_get</span>(<span class="php-quote">'zend.ze1_compatibility_mode'</span>))) {
+<a href="#L28" id="L28" class="l"> 28: </a>    <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> RuntimeException(<span class="php-quote">&quot;Texy cannot run with zend.ze1_compatibility_mode enabled.&quot;</span>);
+<a href="#L29" id="L29" class="l"> 29: </a>}
+<a href="#L30" id="L30" class="l"> 30: </a>
+<a href="#L31" id="L31" class="l"> 31: </a>
+<a href="#L32" id="L32" class="l"> 32: </a><span class="php-comment">// Texy! libraries
+</span><a href="#L33" id="L33" class="l"> 33: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/RegExp.Patterns.php'</span>;
+<a href="#L34" id="L34" class="l"> 34: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/TexyObject.php'</span>;
+<a href="#L35" id="L35" class="l"> 35: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/TexyHtml.php'</span>;
+<a href="#L36" id="L36" class="l"> 36: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/TexyModifier.php'</span>;
+<a href="#L37" id="L37" class="l"> 37: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/TexyModule.php'</span>;
+<a href="#L38" id="L38" class="l"> 38: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/TexyParser.php'</span>;
+<a href="#L39" id="L39" class="l"> 39: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/TexyUtf.php'</span>;
+<a href="#L40" id="L40" class="l"> 40: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/TexyConfigurator.php'</span>;
+<a href="#L41" id="L41" class="l"> 41: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/TexyHandlerInvocation.php'</span>;
+<a href="#L42" id="L42" class="l"> 42: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyParagraphModule.php'</span>;
+<a href="#L43" id="L43" class="l"> 43: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyBlockModule.php'</span>;
+<a href="#L44" id="L44" class="l"> 44: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyHeadingModule.php'</span>;
+<a href="#L45" id="L45" class="l"> 45: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyHorizLineModule.php'</span>;
+<a href="#L46" id="L46" class="l"> 46: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyHtmlModule.php'</span>;
+<a href="#L47" id="L47" class="l"> 47: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyFigureModule.php'</span>;
+<a href="#L48" id="L48" class="l"> 48: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyImageModule.php'</span>;
+<a href="#L49" id="L49" class="l"> 49: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyLinkModule.php'</span>;
+<a href="#L50" id="L50" class="l"> 50: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyListModule.php'</span>;
+<a href="#L51" id="L51" class="l"> 51: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyLongWordsModule.php'</span>;
+<a href="#L52" id="L52" class="l"> 52: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyPhraseModule.php'</span>;
+<a href="#L53" id="L53" class="l"> 53: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyBlockQuoteModule.php'</span>;
+<a href="#L54" id="L54" class="l"> 54: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyScriptModule.php'</span>;
+<a href="#L55" id="L55" class="l"> 55: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyEmoticonModule.php'</span>;
+<a href="#L56" id="L56" class="l"> 56: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyTableModule.php'</span>;
+<a href="#L57" id="L57" class="l"> 57: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyTypographyModule.php'</span>;
+<a href="#L58" id="L58" class="l"> 58: </a><span class="php-keyword1">require_once</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/modules/TexyHtmlOutputModule.php'</span>;
+<a href="#L59" id="L59" class="l"> 59: </a>
+<a href="#L60" id="L60" class="l"> 60: </a>
+<a href="#L61" id="L61" class="l"> 61: </a>
+<a href="#L62" id="L62" class="l"> 62: </a><span class="php-comment">/**
+</span><a href="#L63" id="L63" class="l"> 63: </a><span class="php-comment"> * Compatibility with PHP &lt; 5.1.
+</span><a href="#L64" id="L64" class="l"> 64: </a><span class="php-comment"> */</span>
+<a href="#L65" id="L65" class="l"> 65: </a><span class="php-keyword1">if</span> (!<span class="php-keyword2">class_exists</span>(<span class="php-quote">'LogicException'</span>, <span class="php-keyword1">FALSE</span>)) {
+<a href="#L66" id="L66" class="l"> 66: </a>    <span class="php-keyword1">class</span> LogicException <span class="php-keyword1">extends</span> Exception {}
+<a href="#L67" id="L67" class="l"> 67: </a>}
+<a href="#L68" id="L68" class="l"> 68: </a>
+<a href="#L69" id="L69" class="l"> 69: </a><span class="php-keyword1">if</span> (!<span class="php-keyword2">class_exists</span>(<span class="php-quote">'InvalidArgumentException'</span>, <span class="php-keyword1">FALSE</span>)) {
+<a href="#L70" id="L70" class="l"> 70: </a>    <span class="php-keyword1">class</span> InvalidArgumentException <span class="php-keyword1">extends</span> LogicException {}
+<a href="#L71" id="L71" class="l"> 71: </a>}
+<a href="#L72" id="L72" class="l"> 72: </a>
+<a href="#L73" id="L73" class="l"> 73: </a><span class="php-keyword1">if</span> (!<span class="php-keyword2">class_exists</span>(<span class="php-quote">'RuntimeException'</span>, <span class="php-keyword1">FALSE</span>)) {
+<a href="#L74" id="L74" class="l"> 74: </a>    <span class="php-keyword1">class</span> RuntimeException <span class="php-keyword1">extends</span> Exception {}
+<a href="#L75" id="L75" class="l"> 75: </a>}
+<a href="#L76" id="L76" class="l"> 76: </a>
+<a href="#L77" id="L77" class="l"> 77: </a><span class="php-keyword1">if</span> (!<span class="php-keyword2">class_exists</span>(<span class="php-quote">'UnexpectedValueException'</span>, <span class="php-keyword1">FALSE</span>)) {
+<a href="#L78" id="L78" class="l"> 78: </a>    <span class="php-keyword1">class</span> UnexpectedValueException <span class="php-keyword1">extends</span> RuntimeException {}
+<a href="#L79" id="L79" class="l"> 79: </a>}
+<a href="#L80" id="L80" class="l"> 80: </a>
+<a href="#L81" id="L81" class="l"> 81: </a>
+<a href="#L82" id="L82" class="l"> 82: </a>
+<a href="#L83" id="L83" class="l"> 83: </a><span class="php-comment">/**
+</span><a href="#L84" id="L84" class="l"> 84: </a><span class="php-comment"> * Compatibility with Nette
+</span><a href="#L85" id="L85" class="l"> 85: </a><span class="php-comment"> */</span>
+<a href="#L86" id="L86" class="l"> 86: </a><span class="php-keyword1">if</span> (!<span class="php-keyword2">class_exists</span>(<span class="php-quote">'NotSupportedException'</span>, <span class="php-keyword1">FALSE</span>)) {
+<a href="#L87" id="L87" class="l"> 87: </a>    <span class="php-keyword1">class</span> NotSupportedException <span class="php-keyword1">extends</span> LogicException {}
+<a href="#L88" id="L88" class="l"> 88: </a>}
+<a href="#L89" id="L89" class="l"> 89: </a>
+<a href="#L90" id="L90" class="l"> 90: </a><span class="php-keyword1">if</span> (!<span class="php-keyword2">class_exists</span>(<span class="php-quote">'MemberAccessException'</span>, <span class="php-keyword1">FALSE</span>)) {
+<a href="#L91" id="L91" class="l"> 91: </a>    <span class="php-keyword1">class</span> MemberAccessException <span class="php-keyword1">extends</span> LogicException {}
+<a href="#L92" id="L92" class="l"> 92: </a>}
+<a href="#L93" id="L93" class="l"> 93: </a>
+<a href="#L94" id="L94" class="l"> 94: </a><span class="php-keyword1">if</span> (!<span class="php-keyword2">class_exists</span>(<span class="php-quote">'InvalidStateException'</span>, <span class="php-keyword1">FALSE</span>)) {
+<a href="#L95" id="L95" class="l"> 95: </a>    <span class="php-keyword1">class</span> InvalidStateException <span class="php-keyword1">extends</span> RuntimeException {}
+<a href="#L96" id="L96" class="l"> 96: </a>}
+<a href="#L97" id="L97" class="l"> 97: </a>
+<a href="#L98" id="L98" class="l"> 98: </a>
+<a href="#L99" id="L99" class="l"> 99: </a>
+<a href="#L100" id="L100" class="l">100: </a><span class="php-comment">/**
+</span><a href="#L101" id="L101" class="l">101: </a><span class="php-comment"> * For Texy 1 backward compatibility.
+</span><a href="#L102" id="L102" class="l">102: </a><span class="php-comment"> */</span>
+<a href="#L103" id="L103" class="l">103: </a><span class="php-keyword2">define</span>(<span class="php-quote">'TEXY_ALL'</span>,  <span class="php-keyword1">TRUE</span>);
+<a href="#L104" id="L104" class="l">104: </a><span class="php-keyword2">define</span>(<span class="php-quote">'TEXY_NONE'</span>,  <span class="php-keyword1">FALSE</span>);
+<a href="#L105" id="L105" class="l">105: </a><span class="php-keyword2">define</span>(<span class="php-quote">'TEXY_CONTENT_MARKUP'</span>,  <span class="php-quote">&quot;\x17&quot;</span>);
+<a href="#L106" id="L106" class="l">106: </a><span class="php-keyword2">define</span>(<span class="php-quote">'TEXY_CONTENT_REPLACED'</span>,  <span class="php-quote">&quot;\x16&quot;</span>);
+<a href="#L107" id="L107" class="l">107: </a><span class="php-keyword2">define</span>(<span class="php-quote">'TEXY_CONTENT_TEXTUAL'</span>,  <span class="php-quote">&quot;\x15&quot;</span>);
+<a href="#L108" id="L108" class="l">108: </a><span class="php-keyword2">define</span>(<span class="php-quote">'TEXY_CONTENT_BLOCK'</span>,  <span class="php-quote">&quot;\x14&quot;</span>);
+<a href="#L109" id="L109" class="l">109: </a>
+<a href="#L110" id="L110" class="l">110: </a>
+<a href="#L111" id="L111" class="l">111: </a>
+<a href="#L112" id="L112" class="l">112: </a>
+<a href="#L113" id="L113" class="l">113: </a><span class="php-comment">/**
+</span><a href="#L114" id="L114" class="l">114: </a><span class="php-comment"> * Texy! - Convert plain text to XHTML format using {@link process()}.
+</span><a href="#L115" id="L115" class="l">115: </a><span class="php-comment"> *
+</span><a href="#L116" id="L116" class="l">116: </a><span class="php-comment"> * &lt;code&gt;
+</span><a href="#L117" id="L117" class="l">117: </a><span class="php-comment"> *     $texy = new Texy();
+</span><a href="#L118" id="L118" class="l">118: </a><span class="php-comment"> *     $html = $texy-&gt;process($text);
+</span><a href="#L119" id="L119" class="l">119: </a><span class="php-comment"> * &lt;/code&gt;
+</span><a href="#L120" id="L120" class="l">120: </a><span class="php-comment"> *
+</span><a href="#L121" id="L121" class="l">121: </a><span class="php-comment"> * @copyright  Copyright (c) 2004, 2010 David Grudl
+</span><a href="#L122" id="L122" class="l">122: </a><span class="php-comment"> * @package    Texy
+</span><a href="#L123" id="L123" class="l">123: </a><span class="php-comment"> */</span>
+<a href="#L124" id="L124" class="l">124: </a><span class="php-keyword1">class</span> Texy <span class="php-keyword1">extends</span> TexyObject
+<a href="#L125" id="L125" class="l">125: </a>{
+<a href="#L126" id="L126" class="l">126: </a>    <span class="php-comment">// configuration directives
+</span><a href="#L127" id="L127" class="l">127: </a>    <span class="php-keyword1">const</span> ALL = <span class="php-keyword1">TRUE</span>;
+<a href="#L128" id="L128" class="l">128: </a>    <span class="php-keyword1">const</span> NONE = <span class="php-keyword1">FALSE</span>;
+<a href="#L129" id="L129" class="l">129: </a>
+<a href="#L130" id="L130" class="l">130: </a>    <span class="php-comment">// Texy version
+</span><a href="#L131" id="L131" class="l">131: </a>    <span class="php-keyword1">const</span> VERSION = TEXY_VERSION;
+<a href="#L132" id="L132" class="l">132: </a>    <span class="php-keyword1">const</span> REVISION = <span class="php-quote">'9338a11 released on 2010-05-20'</span>;
+<a href="#L133" id="L133" class="l">133: </a>
+<a href="#L134" id="L134" class="l">134: </a>    <span class="php-comment">// types of protection marks
+</span><a href="#L135" id="L135" class="l">135: </a>    <span class="php-keyword1">const</span> CONTENT_MARKUP = <span class="php-quote">&quot;\x17&quot;</span>;
+<a href="#L136" id="L136" class="l">136: </a>    <span class="php-keyword1">const</span> CONTENT_REPLACED = <span class="php-quote">&quot;\x16&quot;</span>;
+<a href="#L137" id="L137" class="l">137: </a>    <span class="php-keyword1">const</span> CONTENT_TEXTUAL = <span class="php-quote">&quot;\x15&quot;</span>;
+<a href="#L138" id="L138" class="l">138: </a>    <span class="php-keyword1">const</span> CONTENT_BLOCK = <span class="php-quote">&quot;\x14&quot;</span>;
+<a href="#L139" id="L139" class="l">139: </a>
+<a href="#L140" id="L140" class="l">140: </a>    <span class="php-comment">// url filters
+</span><a href="#L141" id="L141" class="l">141: </a>    <span class="php-keyword1">const</span> FILTER_ANCHOR = <span class="php-quote">'anchor'</span>;
+<a href="#L142" id="L142" class="l">142: </a>    <span class="php-keyword1">const</span> FILTER_IMAGE = <span class="php-quote">'image'</span>;
+<a href="#L143" id="L143" class="l">143: </a>
+<a href="#L144" id="L144" class="l">144: </a>    <span class="php-comment">// HTML minor-modes
+</span><a href="#L145" id="L145" class="l">145: </a>    <span class="php-keyword1">const</span> XML = <span class="php-num">2</span>;
+<a href="#L146" id="L146" class="l">146: </a>
+<a href="#L147" id="L147" class="l">147: </a>    <span class="php-comment">// HTML modes
+</span><a href="#L148" id="L148" class="l">148: </a>    <span class="php-keyword1">const</span> HTML4_TRANSITIONAL = <span class="php-num">0</span>;
+<a href="#L149" id="L149" class="l">149: </a>    <span class="php-keyword1">const</span> HTML4_STRICT = <span class="php-num">1</span>;
+<a href="#L150" id="L150" class="l">150: </a>    <span class="php-keyword1">const</span> HTML5 = <span class="php-num">4</span>;
+<a href="#L151" id="L151" class="l">151: </a>    <span class="php-keyword1">const</span> XHTML1_TRANSITIONAL = <span class="php-num">2</span>; <span class="php-comment">// Texy::HTML4_TRANSITIONAL | Texy::XML;
+</span><a href="#L152" id="L152" class="l">152: </a>    <span class="php-keyword1">const</span> XHTML1_STRICT = <span class="php-num">3</span>; <span class="php-comment">// Texy::HTML4_STRICT | Texy::XML;
+</span><a href="#L153" id="L153" class="l">153: </a>    <span class="php-keyword1">const</span> XHTML5 = <span class="php-num">6</span>; <span class="php-comment">// Texy::HTML5 | Texy::XML;
+</span><a href="#L154" id="L154" class="l">154: </a>
+<a href="#L155" id="L155" class="l">155: </a>    <span class="php-comment">/** @var string  input &amp; output text encoding */</span>
+<a href="#L156" id="L156" class="l">156: </a>    <span class="php-keyword1">public</span> <span class="php-var">$encoding</span> = <span class="php-quote">'utf-8'</span>;
+<a href="#L157" id="L157" class="l">157: </a>
+<a href="#L158" id="L158" class="l">158: </a>    <span class="php-comment">/** @var array  Texy! syntax configuration */</span>
+<a href="#L159" id="L159" class="l">159: </a>    <span class="php-keyword1">public</span> <span class="php-var">$allowed</span> = <span class="php-keyword1">array</span>();
+<a href="#L160" id="L160" class="l">160: </a>
+<a href="#L161" id="L161" class="l">161: </a>    <span class="php-comment">/** @var TRUE|FALSE|array  Allowed HTML tags */</span>
+<a href="#L162" id="L162" class="l">162: </a>    <span class="php-keyword1">public</span> <span class="php-var">$allowedTags</span>;
+<a href="#L163" id="L163" class="l">163: </a>
+<a href="#L164" id="L164" class="l">164: </a>    <span class="php-comment">/** @var TRUE|FALSE|array  Allowed classes */</span>
+<a href="#L165" id="L165" class="l">165: </a>    <span class="php-keyword1">public</span> <span class="php-var">$allowedClasses</span> = Texy::ALL; <span class="php-comment">// all classes and id are allowed
+</span><a href="#L166" id="L166" class="l">166: </a>
+<a href="#L167" id="L167" class="l">167: </a>    <span class="php-comment">/** @var TRUE|FALSE|array  Allowed inline CSS style */</span>
+<a href="#L168" id="L168" class="l">168: </a>    <span class="php-keyword1">public</span> <span class="php-var">$allowedStyles</span> = Texy::ALL;  <span class="php-comment">// all inline styles are allowed
+</span><a href="#L169" id="L169" class="l">169: </a>
+<a href="#L170" id="L170" class="l">170: </a>    <span class="php-comment">/** @var int  TAB width (for converting tabs to spaces) */</span>
+<a href="#L171" id="L171" class="l">171: </a>    <span class="php-keyword1">public</span> <span class="php-var">$tabWidth</span> = <span class="php-num">8</span>;
+<a href="#L172" id="L172" class="l">172: </a>
+<a href="#L173" id="L173" class="l">173: </a>    <span class="php-comment">/** @var boolean  Do obfuscate e-mail addresses? */</span>
+<a href="#L174" id="L174" class="l">174: </a>    <span class="php-keyword1">public</span> <span class="php-var">$obfuscateEmail</span> = <span class="php-keyword1">TRUE</span>;
+<a href="#L175" id="L175" class="l">175: </a>
+<a href="#L176" id="L176" class="l">176: </a>    <span class="php-comment">/** @var array  regexps to check URL schemes */</span>
+<a href="#L177" id="L177" class="l">177: </a>    <span class="php-keyword1">public</span> <span class="php-var">$urlSchemeFilters</span> = <span class="php-keyword1">NULL</span>; <span class="php-comment">// disable URL scheme filter
+</span><a href="#L178" id="L178" class="l">178: </a>
+<a href="#L179" id="L179" class="l">179: </a>    <span class="php-comment">/** @var bool  Paragraph merging mode */</span>
+<a href="#L180" id="L180" class="l">180: </a>    <span class="php-keyword1">public</span> <span class="php-var">$mergeLines</span> = <span class="php-keyword1">TRUE</span>;
+<a href="#L181" id="L181" class="l">181: </a>
+<a href="#L182" id="L182" class="l">182: </a>    <span class="php-comment">/** @var array  Parsing summary */</span>
+<a href="#L183" id="L183" class="l">183: </a>    <span class="php-keyword1">public</span> <span class="php-var">$summary</span> = <span class="php-keyword1">array</span>(
+<a href="#L184" id="L184" class="l">184: </a>        <span class="php-quote">'images'</span> =&gt; <span class="php-keyword1">array</span>(),
+<a href="#L185" id="L185" class="l">185: </a>        <span class="php-quote">'links'</span> =&gt; <span class="php-keyword1">array</span>(),
+<a href="#L186" id="L186" class="l">186: </a>        <span class="php-quote">'preload'</span> =&gt; <span class="php-keyword1">array</span>(),
+<a href="#L187" id="L187" class="l">187: </a>    );
+<a href="#L188" id="L188" class="l">188: </a>
+<a href="#L189" id="L189" class="l">189: </a>    <span class="php-comment">/** @var string  Generated stylesheet */</span>
+<a href="#L190" id="L190" class="l">190: </a>    <span class="php-keyword1">public</span> <span class="php-var">$styleSheet</span> = <span class="php-quote">''</span>;
+<a href="#L191" id="L191" class="l">191: </a>
+<a href="#L192" id="L192" class="l">192: </a>    <span class="php-comment">/** @var array  CSS classes for align modifiers */</span>
+<a href="#L193" id="L193" class="l">193: </a>    <span class="php-keyword1">public</span> <span class="php-var">$alignClasses</span> = <span class="php-keyword1">array</span>(
+<a href="#L194" id="L194" class="l">194: </a>        <span class="php-quote">'left'</span> =&gt; <span class="php-keyword1">NULL</span>,
+<a href="#L195" id="L195" class="l">195: </a>        <span class="php-quote">'right'</span> =&gt; <span class="php-keyword1">NULL</span>,
+<a href="#L196" id="L196" class="l">196: </a>        <span class="php-quote">'center'</span> =&gt; <span class="php-keyword1">NULL</span>,
+<a href="#L197" id="L197" class="l">197: </a>        <span class="php-quote">'justify'</span> =&gt; <span class="php-keyword1">NULL</span>,
+<a href="#L198" id="L198" class="l">198: </a>        <span class="php-quote">'top'</span> =&gt; <span class="php-keyword1">NULL</span>,
+<a href="#L199" id="L199" class="l">199: </a>        <span class="php-quote">'middle'</span> =&gt; <span class="php-keyword1">NULL</span>,
+<a href="#L200" id="L200" class="l">200: </a>        <span class="php-quote">'bottom'</span> =&gt; <span class="php-keyword1">NULL</span>,
+<a href="#L201" id="L201" class="l">201: </a>    );
+<a href="#L202" id="L202" class="l">202: </a>
+<a href="#L203" id="L203" class="l">203: </a>    <span class="php-comment">/** @var bool  remove soft hyphens (SHY)? */</span>
+<a href="#L204" id="L204" class="l">204: </a>    <span class="php-keyword1">public</span> <span class="php-var">$removeSoftHyphens</span> = <span class="php-keyword1">TRUE</span>;
+<a href="#L205" id="L205" class="l">205: </a>
+<a href="#L206" id="L206" class="l">206: </a>    <span class="php-comment">/** @var mixed */</span>
+<a href="#L207" id="L207" class="l">207: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-var">$advertisingNotice</span> = <span class="php-quote">'once'</span>;
+<a href="#L208" id="L208" class="l">208: </a>
+<a href="#L209" id="L209" class="l">209: </a>    <span class="php-comment">/** @var string */</span>
+<a href="#L210" id="L210" class="l">210: </a>    <span class="php-keyword1">public</span> <span class="php-var">$nontextParagraph</span> = <span class="php-quote">'div'</span>;
+<a href="#L211" id="L211" class="l">211: </a>
+<a href="#L212" id="L212" class="l">212: </a>    <span class="php-comment">/** @var TexyScriptModule */</span>
+<a href="#L213" id="L213" class="l">213: </a>    <span class="php-keyword1">public</span> <span class="php-var">$scriptModule</span>;
+<a href="#L214" id="L214" class="l">214: </a>
+<a href="#L215" id="L215" class="l">215: </a>    <span class="php-comment">/** @var TexyParagraphModule */</span>
+<a href="#L216" id="L216" class="l">216: </a>    <span class="php-keyword1">public</span> <span class="php-var">$paragraphModule</span>;
+<a href="#L217" id="L217" class="l">217: </a>
+<a href="#L218" id="L218" class="l">218: </a>    <span class="php-comment">/** @var TexyHtmlModule */</span>
+<a href="#L219" id="L219" class="l">219: </a>    <span class="php-keyword1">public</span> <span class="php-var">$htmlModule</span>;
+<a href="#L220" id="L220" class="l">220: </a>
+<a href="#L221" id="L221" class="l">221: </a>    <span class="php-comment">/** @var TexyImageModule */</span>
+<a href="#L222" id="L222" class="l">222: </a>    <span class="php-keyword1">public</span> <span class="php-var">$imageModule</span>;
+<a href="#L223" id="L223" class="l">223: </a>
+<a href="#L224" id="L224" class="l">224: </a>    <span class="php-comment">/** @var TexyLinkModule */</span>
+<a href="#L225" id="L225" class="l">225: </a>    <span class="php-keyword1">public</span> <span class="php-var">$linkModule</span>;
+<a href="#L226" id="L226" class="l">226: </a>
+<a href="#L227" id="L227" class="l">227: </a>    <span class="php-comment">/** @var TexyPhraseModule */</span>
+<a href="#L228" id="L228" class="l">228: </a>    <span class="php-keyword1">public</span> <span class="php-var">$phraseModule</span>;
+<a href="#L229" id="L229" class="l">229: </a>
+<a href="#L230" id="L230" class="l">230: </a>    <span class="php-comment">/** @var TexyEmoticonModule */</span>
+<a href="#L231" id="L231" class="l">231: </a>    <span class="php-keyword1">public</span> <span class="php-var">$emoticonModule</span>;
+<a href="#L232" id="L232" class="l">232: </a>
+<a href="#L233" id="L233" class="l">233: </a>    <span class="php-comment">/** @var TexyBlockModule */</span>
+<a href="#L234" id="L234" class="l">234: </a>    <span class="php-keyword1">public</span> <span class="php-var">$blockModule</span>;
+<a href="#L235" id="L235" class="l">235: </a>
+<a href="#L236" id="L236" class="l">236: </a>    <span class="php-comment">/** @var TexyHeadingModule */</span>
+<a href="#L237" id="L237" class="l">237: </a>    <span class="php-keyword1">public</span> <span class="php-var">$headingModule</span>;
+<a href="#L238" id="L238" class="l">238: </a>
+<a href="#L239" id="L239" class="l">239: </a>    <span class="php-comment">/** @var TexyHorizLineModule */</span>
+<a href="#L240" id="L240" class="l">240: </a>    <span class="php-keyword1">public</span> <span class="php-var">$horizLineModule</span>;
+<a href="#L241" id="L241" class="l">241: </a>
+<a href="#L242" id="L242" class="l">242: </a>    <span class="php-comment">/** @var TexyBlockQuoteModule */</span>
+<a href="#L243" id="L243" class="l">243: </a>    <span class="php-keyword1">public</span> <span class="php-var">$blockQuoteModule</span>;
+<a href="#L244" id="L244" class="l">244: </a>
+<a href="#L245" id="L245" class="l">245: </a>    <span class="php-comment">/** @var TexyListModule */</span>
+<a href="#L246" id="L246" class="l">246: </a>    <span class="php-keyword1">public</span> <span class="php-var">$listModule</span>;
+<a href="#L247" id="L247" class="l">247: </a>
+<a href="#L248" id="L248" class="l">248: </a>    <span class="php-comment">/** @var TexyTableModule */</span>
+<a href="#L249" id="L249" class="l">249: </a>    <span class="php-keyword1">public</span> <span class="php-var">$tableModule</span>;
+<a href="#L250" id="L250" class="l">250: </a>
+<a href="#L251" id="L251" class="l">251: </a>    <span class="php-comment">/** @var TexyFigureModule */</span>
+<a href="#L252" id="L252" class="l">252: </a>    <span class="php-keyword1">public</span> <span class="php-var">$figureModule</span>;
+<a href="#L253" id="L253" class="l">253: </a>
+<a href="#L254" id="L254" class="l">254: </a>    <span class="php-comment">/** @var TexyTypographyModule */</span>
+<a href="#L255" id="L255" class="l">255: </a>    <span class="php-keyword1">public</span> <span class="php-var">$typographyModule</span>;
+<a href="#L256" id="L256" class="l">256: </a>
+<a href="#L257" id="L257" class="l">257: </a>    <span class="php-comment">/** @var TexyLongWordsModule */</span>
+<a href="#L258" id="L258" class="l">258: </a>    <span class="php-keyword1">public</span> <span class="php-var">$longWordsModule</span>;
+<a href="#L259" id="L259" class="l">259: </a>
+<a href="#L260" id="L260" class="l">260: </a>    <span class="php-comment">/** @var TexyHtmlOutputModule */</span>
+<a href="#L261" id="L261" class="l">261: </a>    <span class="php-keyword1">public</span> <span class="php-var">$htmlOutputModule</span>;
+<a href="#L262" id="L262" class="l">262: </a>
+<a href="#L263" id="L263" class="l">263: </a>
+<a href="#L264" id="L264" class="l">264: </a>    <span class="php-comment">/**
+</span><a href="#L265" id="L265" class="l">265: </a><span class="php-comment">     * Registered regexps and associated handlers for inline parsing.
+</span><a href="#L266" id="L266" class="l">266: </a><span class="php-comment">     * @var array of ('handler' =&gt; callback
+</span><a href="#L267" id="L267" class="l">267: </a><span class="php-comment">     *                'pattern' =&gt; regular expression)
+</span><a href="#L268" id="L268" class="l">268: </a><span class="php-comment">     */</span>
+<a href="#L269" id="L269" class="l">269: </a>    <span class="php-keyword1">private</span> <span class="php-var">$linePatterns</span> = <span class="php-keyword1">array</span>();
+<a href="#L270" id="L270" class="l">270: </a>    <span class="php-keyword1">private</span> <span class="php-var">$_linePatterns</span>;
+<a href="#L271" id="L271" class="l">271: </a>
+<a href="#L272" id="L272" class="l">272: </a>    <span class="php-comment">/**
+</span><a href="#L273" id="L273" class="l">273: </a><span class="php-comment">     * Registered regexps and associated handlers for block parsing.
+</span><a href="#L274" id="L274" class="l">274: </a><span class="php-comment">     * @var array of ('handler' =&gt; callback
+</span><a href="#L275" id="L275" class="l">275: </a><span class="php-comment">     *                'pattern' =&gt; regular expression)
+</span><a href="#L276" id="L276" class="l">276: </a><span class="php-comment">     */</span>
+<a href="#L277" id="L277" class="l">277: </a>    <span class="php-keyword1">private</span> <span class="php-var">$blockPatterns</span> = <span class="php-keyword1">array</span>();
+<a href="#L278" id="L278" class="l">278: </a>    <span class="php-keyword1">private</span> <span class="php-var">$_blockPatterns</span>;
+<a href="#L279" id="L279" class="l">279: </a>
+<a href="#L280" id="L280" class="l">280: </a>    <span class="php-comment">/** @var array */</span>
+<a href="#L281" id="L281" class="l">281: </a>    <span class="php-keyword1">private</span> <span class="php-var">$postHandlers</span> = <span class="php-keyword1">array</span>();
+<a href="#L282" id="L282" class="l">282: </a>
+<a href="#L283" id="L283" class="l">283: </a>    <span class="php-comment">/** @var TexyHtml  DOM structure for parsed text */</span>
+<a href="#L284" id="L284" class="l">284: </a>    <span class="php-keyword1">private</span> <span class="php-var">$DOM</span>;
+<a href="#L285" id="L285" class="l">285: </a>
+<a href="#L286" id="L286" class="l">286: </a>    <span class="php-comment">/** @var array  Texy protect markup table */</span>
+<a href="#L287" id="L287" class="l">287: </a>    <span class="php-keyword1">private</span> <span class="php-var">$marks</span> = <span class="php-keyword1">array</span>();
+<a href="#L288" id="L288" class="l">288: </a>
+<a href="#L289" id="L289" class="l">289: </a>    <span class="php-comment">/** @var array  for internal usage */</span>
+<a href="#L290" id="L290" class="l">290: </a>    <span class="php-keyword1">public</span> <span class="php-var">$_classes</span>, <span class="php-var">$_styles</span>;
+<a href="#L291" id="L291" class="l">291: </a>
+<a href="#L292" id="L292" class="l">292: </a>    <span class="php-comment">/** @var bool */</span>
+<a href="#L293" id="L293" class="l">293: </a>    <span class="php-keyword1">private</span> <span class="php-var">$processing</span>;
+<a href="#L294" id="L294" class="l">294: </a>
+<a href="#L295" id="L295" class="l">295: </a>    <span class="php-comment">/** @var array of events and registered handlers */</span>
+<a href="#L296" id="L296" class="l">296: </a>    <span class="php-keyword1">private</span> <span class="php-var">$handlers</span> = <span class="php-keyword1">array</span>();
+<a href="#L297" id="L297" class="l">297: </a>
+<a href="#L298" id="L298" class="l">298: </a>    <span class="php-comment">/**
+</span><a href="#L299" id="L299" class="l">299: </a><span class="php-comment">     * DTD descriptor.
+</span><a href="#L300" id="L300" class="l">300: </a><span class="php-comment">     *   $dtd[element][0] - allowed attributes (as array keys)
+</span><a href="#L301" id="L301" class="l">301: </a><span class="php-comment">     *   $dtd[element][1] - allowed content for an element (content model) (as array keys)
+</span><a href="#L302" id="L302" class="l">302: </a><span class="php-comment">     *                    - array of allowed elements (as keys)
+</span><a href="#L303" id="L303" class="l">303: </a><span class="php-comment">     *                    - FALSE - empty element
+</span><a href="#L304" id="L304" class="l">304: </a><span class="php-comment">     *                    - 0 - special case for ins &amp; del
+</span><a href="#L305" id="L305" class="l">305: </a><span class="php-comment">     * @var array
+</span><a href="#L306" id="L306" class="l">306: </a><span class="php-comment">     */</span>
+<a href="#L307" id="L307" class="l">307: </a>    <span class="php-keyword1">public</span> <span class="php-var">$dtd</span>;
+<a href="#L308" id="L308" class="l">308: </a>
+<a href="#L309" id="L309" class="l">309: </a>    <span class="php-comment">/** @var array */</span>
+<a href="#L310" id="L310" class="l">310: </a>    <span class="php-keyword1">private</span> <span class="php-keyword1">static</span> <span class="php-var">$dtdCache</span>;
+<a href="#L311" id="L311" class="l">311: </a>
+<a href="#L312" id="L312" class="l">312: </a>    <span class="php-comment">/** @var int  HTML mode */</span>
+<a href="#L313" id="L313" class="l">313: </a>    <span class="php-keyword1">private</span> <span class="php-var">$mode</span>;
+<a href="#L314" id="L314" class="l">314: </a>
+<a href="#L315" id="L315" class="l">315: </a>
+<a href="#L316" id="L316" class="l">316: </a>    <span class="php-comment">/** DEPRECATED */</span>
+<a href="#L317" id="L317" class="l">317: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-var">$strictDTD</span>;
+<a href="#L318" id="L318" class="l">318: </a>    <span class="php-keyword1">public</span> <span class="php-var">$cleaner</span>;
+<a href="#L319" id="L319" class="l">319: </a>    <span class="php-keyword1">public</span> <span class="php-var">$xhtml</span>;
+<a href="#L320" id="L320" class="l">320: </a>
+<a href="#L321" id="L321" class="l">321: </a>
+<a href="#L322" id="L322" class="l">322: </a>
+<a href="#L323" id="L323" class="l">323: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> __construct()
+<a href="#L324" id="L324" class="l">324: </a>    {
+<a href="#L325" id="L325" class="l">325: </a>        <span class="php-comment">// load all modules
+</span><a href="#L326" id="L326" class="l">326: </a>        <span class="php-var">$this</span>-&gt;loadModules();
+<a href="#L327" id="L327" class="l">327: </a>
+<a href="#L328" id="L328" class="l">328: </a>        <span class="php-comment">// DEPRECATED
+</span><a href="#L329" id="L329" class="l">329: </a>        <span class="php-keyword1">if</span> (self::<span class="php-var">$strictDTD</span> !== <span class="php-keyword1">NULL</span>) {
+<a href="#L330" id="L330" class="l">330: </a>            <span class="php-var">$this</span>-&gt;setOutputMode(self::<span class="php-var">$strictDTD</span> ? self::XHTML1_STRICT : self::XHTML1_TRANSITIONAL);
+<a href="#L331" id="L331" class="l">331: </a>        } <span class="php-keyword1">else</span> {
+<a href="#L332" id="L332" class="l">332: </a>            <span class="php-var">$this</span>-&gt;setOutputMode(self::XHTML1_TRANSITIONAL);
+<a href="#L333" id="L333" class="l">333: </a>        }
+<a href="#L334" id="L334" class="l">334: </a>
+<a href="#L335" id="L335" class="l">335: </a>        <span class="php-comment">// DEPRECATED
+</span><a href="#L336" id="L336" class="l">336: </a>        <span class="php-var">$this</span>-&gt;cleaner = &amp; <span class="php-var">$this</span>-&gt;htmlOutputModule;
+<a href="#L337" id="L337" class="l">337: </a>
+<a href="#L338" id="L338" class="l">338: </a>        <span class="php-comment">// examples of link references ;-)
+</span><a href="#L339" id="L339" class="l">339: </a>        <span class="php-var">$link</span> = <span class="php-keyword1">new</span> TexyLink(<span class="php-quote">'http://texy.info/'</span>);
+<a href="#L340" id="L340" class="l">340: </a>        <span class="php-var">$link</span>-&gt;modifier-&gt;title = <span class="php-quote">'The best text -&gt; HTML converter and formatter'</span>;
+<a href="#L341" id="L341" class="l">341: </a>        <span class="php-var">$link</span>-&gt;label = <span class="php-quote">'Texy!'</span>;
+<a href="#L342" id="L342" class="l">342: </a>        <span class="php-var">$this</span>-&gt;linkModule-&gt;addReference(<span class="php-quote">'texy'</span>, <span class="php-var">$link</span>);
+<a href="#L343" id="L343" class="l">343: </a>
+<a href="#L344" id="L344" class="l">344: </a>        <span class="php-var">$link</span> = <span class="php-keyword1">new</span> TexyLink(<span class="php-quote">'http://www.google.com/search?q=%s'</span>);
+<a href="#L345" id="L345" class="l">345: </a>        <span class="php-var">$this</span>-&gt;linkModule-&gt;addReference(<span class="php-quote">'google'</span>, <span class="php-var">$link</span>);
+<a href="#L346" id="L346" class="l">346: </a>
+<a href="#L347" id="L347" class="l">347: </a>        <span class="php-var">$link</span> = <span class="php-keyword1">new</span> TexyLink(<span class="php-quote">'http://en.wikipedia.org/wiki/Special:Search?search=%s'</span>);
+<a href="#L348" id="L348" class="l">348: </a>        <span class="php-var">$this</span>-&gt;linkModule-&gt;addReference(<span class="php-quote">'wikipedia'</span>, <span class="php-var">$link</span>);
+<a href="#L349" id="L349" class="l">349: </a>    }
+<a href="#L350" id="L350" class="l">350: </a>
+<a href="#L351" id="L351" class="l">351: </a>
+<a href="#L352" id="L352" class="l">352: </a>
+<a href="#L353" id="L353" class="l">353: </a>    <span class="php-comment">/**
+</span><a href="#L354" id="L354" class="l">354: </a><span class="php-comment">     * Set HTML/XHTML output mode (overwrites self::$allowedTags)
+</span><a href="#L355" id="L355" class="l">355: </a><span class="php-comment">     * @param  int
+</span><a href="#L356" id="L356" class="l">356: </a><span class="php-comment">     * @return void
+</span><a href="#L357" id="L357" class="l">357: </a><span class="php-comment">     */</span>
+<a href="#L358" id="L358" class="l">358: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> setOutputMode(<span class="php-var">$mode</span>)
+<a href="#L359" id="L359" class="l">359: </a>    {
+<a href="#L360" id="L360" class="l">360: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword2">in_array</span>(<span class="php-var">$mode</span>, <span class="php-keyword1">array</span>(self::HTML4_TRANSITIONAL, self::HTML4_STRICT,
+<a href="#L361" id="L361" class="l">361: </a>            self::HTML5, self::XHTML1_TRANSITIONAL, self::XHTML1_STRICT, self::XHTML5), <span class="php-keyword1">TRUE</span>)) {
+<a href="#L362" id="L362" class="l">362: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> InvalidArgumentException(<span class="php-quote">&quot;Invalid mode.&quot;</span>);
+<a href="#L363" id="L363" class="l">363: </a>        }
+<a href="#L364" id="L364" class="l">364: </a>
+<a href="#L365" id="L365" class="l">365: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">isset</span>(self::<span class="php-var">$dtdCache</span>[<span class="php-var">$mode</span>])) {
+<a href="#L366" id="L366" class="l">366: </a>            <span class="php-keyword1">require</span> <span class="php-keyword2">dirname</span>(__FILE__) . <span class="php-quote">'/libs/DTD.php'</span>;
+<a href="#L367" id="L367" class="l">367: </a>            self::<span class="php-var">$dtdCache</span>[<span class="php-var">$mode</span>] = <span class="php-var">$dtd</span>;
+<a href="#L368" id="L368" class="l">368: </a>        }
+<a href="#L369" id="L369" class="l">369: </a>
+<a href="#L370" id="L370" class="l">370: </a>        <span class="php-var">$this</span>-&gt;mode = <span class="php-var">$mode</span>;
+<a href="#L371" id="L371" class="l">371: </a>        <span class="php-var">$this</span>-&gt;dtd = self::<span class="php-var">$dtdCache</span>[<span class="php-var">$mode</span>];
+<a href="#L372" id="L372" class="l">372: </a>        TexyHtml::<span class="php-var">$xhtml</span> = (bool) (<span class="php-var">$mode</span> &amp; self::XML); <span class="php-comment">// TODO: remove?
+</span><a href="#L373" id="L373" class="l">373: </a>
+<a href="#L374" id="L374" class="l">374: </a>        <span class="php-comment">// accept all valid HTML tags and attributes by default
+</span><a href="#L375" id="L375" class="l">375: </a>        <span class="php-var">$this</span>-&gt;allowedTags = <span class="php-keyword1">array</span>();
+<a href="#L376" id="L376" class="l">376: </a>        <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;dtd as <span class="php-var">$tag</span> =&gt; <span class="php-var">$dtd</span>) {
+<a href="#L377" id="L377" class="l">377: </a>            <span class="php-var">$this</span>-&gt;allowedTags[<span class="php-var">$tag</span>] = self::ALL;
+<a href="#L378" id="L378" class="l">378: </a>        }
+<a href="#L379" id="L379" class="l">379: </a>    }
+<a href="#L380" id="L380" class="l">380: </a>
+<a href="#L381" id="L381" class="l">381: </a>
+<a href="#L382" id="L382" class="l">382: </a>
+<a href="#L383" id="L383" class="l">383: </a>    <span class="php-comment">/**
+</span><a href="#L384" id="L384" class="l">384: </a><span class="php-comment">     * Get HTML/XHTML output mode
+</span><a href="#L385" id="L385" class="l">385: </a><span class="php-comment">     * @return int
+</span><a href="#L386" id="L386" class="l">386: </a><span class="php-comment">     */</span>
+<a href="#L387" id="L387" class="l">387: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getOutputMode()
+<a href="#L388" id="L388" class="l">388: </a>    {
+<a href="#L389" id="L389" class="l">389: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;mode;
+<a href="#L390" id="L390" class="l">390: </a>    }
+<a href="#L391" id="L391" class="l">391: </a>
+<a href="#L392" id="L392" class="l">392: </a>
+<a href="#L393" id="L393" class="l">393: </a>
+<a href="#L394" id="L394" class="l">394: </a>    <span class="php-comment">/**
+</span><a href="#L395" id="L395" class="l">395: </a><span class="php-comment">     * Create array of all used modules ($this-&gt;modules).
+</span><a href="#L396" id="L396" class="l">396: </a><span class="php-comment">     * This array can be changed by overriding this method (by subclasses)
+</span><a href="#L397" id="L397" class="l">397: </a><span class="php-comment">     */</span>
+<a href="#L398" id="L398" class="l">398: </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> loadModules()
+<a href="#L399" id="L399" class="l">399: </a>    {
+<a href="#L400" id="L400" class="l">400: </a>        <span class="php-comment">// line parsing
+</span><a href="#L401" id="L401" class="l">401: </a>        <span class="php-var">$this</span>-&gt;scriptModule = <span class="php-keyword1">new</span> TexyScriptModule(<span class="php-var">$this</span>);
+<a href="#L402" id="L402" class="l">402: </a>        <span class="php-var">$this</span>-&gt;htmlModule = <span class="php-keyword1">new</span> TexyHtmlModule(<span class="php-var">$this</span>);
+<a href="#L403" id="L403" class="l">403: </a>        <span class="php-var">$this</span>-&gt;imageModule = <span class="php-keyword1">new</span> TexyImageModule(<span class="php-var">$this</span>);
+<a href="#L404" id="L404" class="l">404: </a>        <span class="php-var">$this</span>-&gt;phraseModule = <span class="php-keyword1">new</span> TexyPhraseModule(<span class="php-var">$this</span>);
+<a href="#L405" id="L405" class="l">405: </a>        <span class="php-var">$this</span>-&gt;linkModule = <span class="php-keyword1">new</span> TexyLinkModule(<span class="php-var">$this</span>);
+<a href="#L406" id="L406" class="l">406: </a>        <span class="php-var">$this</span>-&gt;emoticonModule = <span class="php-keyword1">new</span> TexyEmoticonModule(<span class="php-var">$this</span>);
+<a href="#L407" id="L407" class="l">407: </a>
+<a href="#L408" id="L408" class="l">408: </a>        <span class="php-comment">// block parsing
+</span><a href="#L409" id="L409" class="l">409: </a>        <span class="php-var">$this</span>-&gt;paragraphModule = <span class="php-keyword1">new</span> TexyParagraphModule(<span class="php-var">$this</span>);
+<a href="#L410" id="L410" class="l">410: </a>        <span class="php-var">$this</span>-&gt;blockModule = <span class="php-keyword1">new</span> TexyBlockModule(<span class="php-var">$this</span>);
+<a href="#L411" id="L411" class="l">411: </a>        <span class="php-var">$this</span>-&gt;figureModule = <span class="php-keyword1">new</span> TexyFigureModule(<span class="php-var">$this</span>);
+<a href="#L412" id="L412" class="l">412: </a>        <span class="php-var">$this</span>-&gt;horizLineModule = <span class="php-keyword1">new</span> TexyHorizLineModule(<span class="php-var">$this</span>);
+<a href="#L413" id="L413" class="l">413: </a>        <span class="php-var">$this</span>-&gt;blockQuoteModule = <span class="php-keyword1">new</span> TexyBlockQuoteModule(<span class="php-var">$this</span>);
+<a href="#L414" id="L414" class="l">414: </a>        <span class="php-var">$this</span>-&gt;tableModule = <span class="php-keyword1">new</span> TexyTableModule(<span class="php-var">$this</span>);
+<a href="#L415" id="L415" class="l">415: </a>        <span class="php-var">$this</span>-&gt;headingModule = <span class="php-keyword1">new</span> TexyHeadingModule(<span class="php-var">$this</span>);
+<a href="#L416" id="L416" class="l">416: </a>        <span class="php-var">$this</span>-&gt;listModule = <span class="php-keyword1">new</span> TexyListModule(<span class="php-var">$this</span>);
+<a href="#L417" id="L417" class="l">417: </a>
+<a href="#L418" id="L418" class="l">418: </a>        <span class="php-comment">// post process
+</span><a href="#L419" id="L419" class="l">419: </a>        <span class="php-var">$this</span>-&gt;typographyModule = <span class="php-keyword1">new</span> TexyTypographyModule(<span class="php-var">$this</span>);
+<a href="#L420" id="L420" class="l">420: </a>        <span class="php-var">$this</span>-&gt;longWordsModule = <span class="php-keyword1">new</span> TexyLongWordsModule(<span class="php-var">$this</span>);
+<a href="#L421" id="L421" class="l">421: </a>        <span class="php-var">$this</span>-&gt;htmlOutputModule = <span class="php-keyword1">new</span> TexyHtmlOutputModule(<span class="php-var">$this</span>);
+<a href="#L422" id="L422" class="l">422: </a>    }
+<a href="#L423" id="L423" class="l">423: </a>
+<a href="#L424" id="L424" class="l">424: </a>
+<a href="#L425" id="L425" class="l">425: </a>
+<a href="#L426" id="L426" class="l">426: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> registerLinePattern(<span class="php-var">$handler</span>, <span class="php-var">$pattern</span>, <span class="php-var">$name</span>, <span class="php-var">$againTest</span> = <span class="php-keyword1">NULL</span>)
+<a href="#L427" id="L427" class="l">427: </a>    {
+<a href="#L428" id="L428" class="l">428: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword2">is_callable</span>(<span class="php-var">$handler</span>)) {
+<a href="#L429" id="L429" class="l">429: </a>            <span class="php-var">$able</span> = <span class="php-keyword2">is_callable</span>(<span class="php-var">$handler</span>, <span class="php-keyword1">TRUE</span>, <span class="php-var">$textual</span>);
+<a href="#L430" id="L430" class="l">430: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> InvalidArgumentException(<span class="php-quote">&quot;Handler '</span><span class="php-var">$textual</span><span class="php-quote">' is not &quot;</span> . (<span class="php-var">$able</span> ? <span class="php-quote">'callable.'</span> : <span class="php-quote">'valid PHP callback.'</span>));
+<a href="#L431" id="L431" class="l">431: </a>        }
+<a href="#L432" id="L432" class="l">432: </a>
+<a href="#L433" id="L433" class="l">433: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">isset</span>(<span class="php-var">$this</span>-&gt;allowed[<span class="php-var">$name</span>])) <span class="php-var">$this</span>-&gt;allowed[<span class="php-var">$name</span>] = <span class="php-keyword1">TRUE</span>;
+<a href="#L434" id="L434" class="l">434: </a>
+<a href="#L435" id="L435" class="l">435: </a>        <span class="php-var">$this</span>-&gt;linePatterns[<span class="php-var">$name</span>] = <span class="php-keyword1">array</span>(
+<a href="#L436" id="L436" class="l">436: </a>            <span class="php-quote">'handler'</span>     =&gt; <span class="php-var">$handler</span>,
+<a href="#L437" id="L437" class="l">437: </a>            <span class="php-quote">'pattern'</span>     =&gt; <span class="php-var">$pattern</span>,
+<a href="#L438" id="L438" class="l">438: </a>            <span class="php-quote">'again'</span>       =&gt; <span class="php-var">$againTest</span>,
+<a href="#L439" id="L439" class="l">439: </a>        );
+<a href="#L440" id="L440" class="l">440: </a>    }
+<a href="#L441" id="L441" class="l">441: </a>
+<a href="#L442" id="L442" class="l">442: </a>
+<a href="#L443" id="L443" class="l">443: </a>
+<a href="#L444" id="L444" class="l">444: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> registerBlockPattern(<span class="php-var">$handler</span>, <span class="php-var">$pattern</span>, <span class="php-var">$name</span>)
+<a href="#L445" id="L445" class="l">445: </a>    {
+<a href="#L446" id="L446" class="l">446: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword2">is_callable</span>(<span class="php-var">$handler</span>)) {
+<a href="#L447" id="L447" class="l">447: </a>            <span class="php-var">$able</span> = <span class="php-keyword2">is_callable</span>(<span class="php-var">$handler</span>, <span class="php-keyword1">TRUE</span>, <span class="php-var">$textual</span>);
+<a href="#L448" id="L448" class="l">448: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> InvalidArgumentException(<span class="php-quote">&quot;Handler '</span><span class="php-var">$textual</span><span class="php-quote">' is not &quot;</span> . (<span class="php-var">$able</span> ? <span class="php-quote">'callable.'</span> : <span class="php-quote">'valid PHP callback.'</span>));
+<a href="#L449" id="L449" class="l">449: </a>        }
+<a href="#L450" id="L450" class="l">450: </a>
+<a href="#L451" id="L451" class="l">451: </a>        <span class="php-comment">// if (!preg_match('#(.)\^.*\$\\1[a-z]*#is', $pattern)) die(&quot;Texy: Not a block pattern $name&quot;);
+</span><a href="#L452" id="L452" class="l">452: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">isset</span>(<span class="php-var">$this</span>-&gt;allowed[<span class="php-var">$name</span>])) <span class="php-var">$this</span>-&gt;allowed[<span class="php-var">$name</span>] = <span class="php-keyword1">TRUE</span>;
+<a href="#L453" id="L453" class="l">453: </a>
+<a href="#L454" id="L454" class="l">454: </a>        <span class="php-var">$this</span>-&gt;blockPatterns[<span class="php-var">$name</span>] = <span class="php-keyword1">array</span>(
+<a href="#L455" id="L455" class="l">455: </a>            <span class="php-quote">'handler'</span>     =&gt; <span class="php-var">$handler</span>,
+<a href="#L456" id="L456" class="l">456: </a>            <span class="php-quote">'pattern'</span>     =&gt; <span class="php-var">$pattern</span>  . <span class="php-quote">'m'</span>,  <span class="php-comment">// force multiline
+</span><a href="#L457" id="L457" class="l">457: </a>        );
+<a href="#L458" id="L458" class="l">458: </a>    }
+<a href="#L459" id="L459" class="l">459: </a>
+<a href="#L460" id="L460" class="l">460: </a>
+<a href="#L461" id="L461" class="l">461: </a>
+<a href="#L462" id="L462" class="l">462: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> registerPostLine(<span class="php-var">$handler</span>, <span class="php-var">$name</span>)
+<a href="#L463" id="L463" class="l">463: </a>    {
+<a href="#L464" id="L464" class="l">464: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword2">is_callable</span>(<span class="php-var">$handler</span>)) {
+<a href="#L465" id="L465" class="l">465: </a>            <span class="php-var">$able</span> = <span class="php-keyword2">is_callable</span>(<span class="php-var">$handler</span>, <span class="php-keyword1">TRUE</span>, <span class="php-var">$textual</span>);
+<a href="#L466" id="L466" class="l">466: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> InvalidArgumentException(<span class="php-quote">&quot;Handler '</span><span class="php-var">$textual</span><span class="php-quote">' is not &quot;</span> . (<span class="php-var">$able</span> ? <span class="php-quote">'callable.'</span> : <span class="php-quote">'valid PHP callback.'</span>));
+<a href="#L467" id="L467" class="l">467: </a>        }
+<a href="#L468" id="L468" class="l">468: </a>
+<a href="#L469" id="L469" class="l">469: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">isset</span>(<span class="php-var">$this</span>-&gt;allowed[<span class="php-var">$name</span>])) <span class="php-var">$this</span>-&gt;allowed[<span class="php-var">$name</span>] = <span class="php-keyword1">TRUE</span>;
+<a href="#L470" id="L470" class="l">470: </a>
+<a href="#L471" id="L471" class="l">471: </a>        <span class="php-var">$this</span>-&gt;postHandlers[<span class="php-var">$name</span>] = <span class="php-var">$handler</span>;
+<a href="#L472" id="L472" class="l">472: </a>    }
+<a href="#L473" id="L473" class="l">473: </a>
+<a href="#L474" id="L474" class="l">474: </a>
+<a href="#L475" id="L475" class="l">475: </a>
+<a href="#L476" id="L476" class="l">476: </a>    <span class="php-comment">/**
+</span><a href="#L477" id="L477" class="l">477: </a><span class="php-comment">     * Converts document in Texy! to (X)HTML code.
+</span><a href="#L478" id="L478" class="l">478: </a><span class="php-comment">     *
+</span><a href="#L479" id="L479" class="l">479: </a><span class="php-comment">     * @param  string   input text
+</span><a href="#L480" id="L480" class="l">480: </a><span class="php-comment">     * @param  bool     is single line?
+</span><a href="#L481" id="L481" class="l">481: </a><span class="php-comment">     * @return string   output HTML code
+</span><a href="#L482" id="L482" class="l">482: </a><span class="php-comment">     */</span>
+<a href="#L483" id="L483" class="l">483: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> process(<span class="php-var">$text</span>, <span class="php-var">$singleLine</span> = <span class="php-keyword1">FALSE</span>)
+<a href="#L484" id="L484" class="l">484: </a>    {
+<a href="#L485" id="L485" class="l">485: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$this</span>-&gt;processing) {
+<a href="#L486" id="L486" class="l">486: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> InvalidStateException(<span class="php-quote">'Processing is in progress yet.'</span>);
+<a href="#L487" id="L487" class="l">487: </a>        }
+<a href="#L488" id="L488" class="l">488: </a>
+<a href="#L489" id="L489" class="l">489: </a>        <span class="php-comment">// initialization
+</span><a href="#L490" id="L490" class="l">490: </a>        <span class="php-var">$this</span>-&gt;marks = <span class="php-keyword1">array</span>();
+<a href="#L491" id="L491" class="l">491: </a>        <span class="php-var">$this</span>-&gt;processing = <span class="php-keyword1">TRUE</span>;
+<a href="#L492" id="L492" class="l">492: </a>
+<a href="#L493" id="L493" class="l">493: </a>        <span class="php-comment">// speed-up
+</span><a href="#L494" id="L494" class="l">494: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">is_array</span>(<span class="php-var">$this</span>-&gt;allowedClasses)) <span class="php-var">$this</span>-&gt;_classes = <span class="php-keyword2">array_flip</span>(<span class="php-var">$this</span>-&gt;allowedClasses);
+<a href="#L495" id="L495" class="l">495: </a>        <span class="php-keyword1">else</span> <span class="php-var">$this</span>-&gt;_classes = <span class="php-var">$this</span>-&gt;allowedClasses;
+<a href="#L496" id="L496" class="l">496: </a>
+<a href="#L497" id="L497" class="l">497: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">is_array</span>(<span class="php-var">$this</span>-&gt;allowedStyles)) <span class="php-var">$this</span>-&gt;_styles = <span class="php-keyword2">array_flip</span>(<span class="php-var">$this</span>-&gt;allowedStyles);
+<a href="#L498" id="L498" class="l">498: </a>        <span class="php-keyword1">else</span> <span class="php-var">$this</span>-&gt;_styles = <span class="php-var">$this</span>-&gt;allowedStyles;
+<a href="#L499" id="L499" class="l">499: </a>
+<a href="#L500" id="L500" class="l">500: </a>        <span class="php-comment">// convert to UTF-8 (and check source encoding)
+</span><a href="#L501" id="L501" class="l">501: </a>        <span class="php-var">$text</span> = TexyUtf::toUtf(<span class="php-var">$text</span>, <span class="php-var">$this</span>-&gt;encoding);
+<a href="#L502" id="L502" class="l">502: </a>
+<a href="#L503" id="L503" class="l">503: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$this</span>-&gt;removeSoftHyphens) {
+<a href="#L504" id="L504" class="l">504: </a>            <span class="php-var">$text</span> = <span class="php-keyword2">str_replace</span>(<span class="php-quote">&quot;\xC2\xAD&quot;</span>, <span class="php-quote">''</span>, <span class="php-var">$text</span>);
+<a href="#L505" id="L505" class="l">505: </a>        }
+<a href="#L506" id="L506" class="l">506: </a>
+<a href="#L507" id="L507" class="l">507: </a>        <span class="php-comment">// standardize line endings and spaces
+</span><a href="#L508" id="L508" class="l">508: </a>        <span class="php-var">$text</span> = self::normalize(<span class="php-var">$text</span>);
+<a href="#L509" id="L509" class="l">509: </a>
+<a href="#L510" id="L510" class="l">510: </a>        <span class="php-comment">// replace tabs with spaces
+</span><a href="#L511" id="L511" class="l">511: </a>        <span class="php-var">$this</span>-&gt;tabWidth = <span class="php-keyword2">max</span>(<span class="php-num">1</span>, (int) <span class="php-var">$this</span>-&gt;tabWidth);
+<a href="#L512" id="L512" class="l">512: </a>        <span class="php-keyword1">while</span> (<span class="php-keyword2">strpos</span>(<span class="php-var">$text</span>, <span class="php-quote">&quot;\t&quot;</span>) !== <span class="php-keyword1">FALSE</span>) {
+<a href="#L513" id="L513" class="l">513: </a>            <span class="php-var">$text</span> = <span class="php-keyword2">preg_replace_callback</span>(<span class="php-quote">'#^(.*)\t#mU'</span>, <span class="php-keyword1">array</span>(<span class="php-var">$this</span>, <span class="php-quote">'tabCb'</span>), <span class="php-var">$text</span>);
+<a href="#L514" id="L514" class="l">514: </a>        }
+<a href="#L515" id="L515" class="l">515: </a>
+<a href="#L516" id="L516" class="l">516: </a>        <span class="php-comment">// user before handler
+</span><a href="#L517" id="L517" class="l">517: </a>        <span class="php-var">$this</span>-&gt;invokeHandlers(<span class="php-quote">'beforeParse'</span>, <span class="php-keyword1">array</span>(<span class="php-var">$this</span>, &amp; <span class="php-var">$text</span>, <span class="php-var">$singleLine</span>));
+<a href="#L518" id="L518" class="l">518: </a>
+<a href="#L519" id="L519" class="l">519: </a>        <span class="php-comment">// select patterns
+</span><a href="#L520" id="L520" class="l">520: </a>        <span class="php-var">$this</span>-&gt;_linePatterns = <span class="php-var">$this</span>-&gt;linePatterns;
+<a href="#L521" id="L521" class="l">521: </a>        <span class="php-var">$this</span>-&gt;_blockPatterns = <span class="php-var">$this</span>-&gt;blockPatterns;
+<a href="#L522" id="L522" class="l">522: </a>        <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;_linePatterns as <span class="php-var">$name</span> =&gt; <span class="php-var">$foo</span>) {
+<a href="#L523" id="L523" class="l">523: </a>            <span class="php-keyword1">if</span> (<span class="php-keyword1">empty</span>(<span class="php-var">$this</span>-&gt;allowed[<span class="php-var">$name</span>])) <span class="php-keyword1">unset</span>(<span class="php-var">$this</span>-&gt;_linePatterns[<span class="php-var">$name</span>]);
+<a href="#L524" id="L524" class="l">524: </a>        }
+<a href="#L525" id="L525" class="l">525: </a>        <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;_blockPatterns as <span class="php-var">$name</span> =&gt; <span class="php-var">$foo</span>) {
+<a href="#L526" id="L526" class="l">526: </a>            <span class="php-keyword1">if</span> (<span class="php-keyword1">empty</span>(<span class="php-var">$this</span>-&gt;allowed[<span class="php-var">$name</span>])) <span class="php-keyword1">unset</span>(<span class="php-var">$this</span>-&gt;_blockPatterns[<span class="php-var">$name</span>]);
+<a href="#L527" id="L527" class="l">527: </a>        }
+<a href="#L528" id="L528" class="l">528: </a>
+<a href="#L529" id="L529" class="l">529: </a>        <span class="php-comment">// parse Texy! document into internal DOM structure
+</span><a href="#L530" id="L530" class="l">530: </a>        <span class="php-var">$this</span>-&gt;DOM = TexyHtml::el();
+<a href="#L531" id="L531" class="l">531: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$singleLine</span>) {
+<a href="#L532" id="L532" class="l">532: </a>            <span class="php-var">$this</span>-&gt;DOM-&gt;parseLine(<span class="php-var">$this</span>, <span class="php-var">$text</span>);
+<a href="#L533" id="L533" class="l">533: </a>        } <span class="php-keyword1">else</span> {
+<a href="#L534" id="L534" class="l">534: </a>            <span class="php-var">$this</span>-&gt;DOM-&gt;parseBlock(<span class="php-var">$this</span>, <span class="php-var">$text</span>);
+<a href="#L535" id="L535" class="l">535: </a>        }
+<a href="#L536" id="L536" class="l">536: </a>
+<a href="#L537" id="L537" class="l">537: </a>        <span class="php-comment">// user after handler
+</span><a href="#L538" id="L538" class="l">538: </a>        <span class="php-var">$this</span>-&gt;invokeHandlers(<span class="php-quote">'afterParse'</span>, <span class="php-keyword1">array</span>(<span class="php-var">$this</span>, <span class="php-var">$this</span>-&gt;DOM, <span class="php-var">$singleLine</span>));
+<a href="#L539" id="L539" class="l">539: </a>
+<a href="#L540" id="L540" class="l">540: </a>        <span class="php-comment">// converts internal DOM structure to final HTML code
+</span><a href="#L541" id="L541" class="l">541: </a>        <span class="php-var">$html</span> = <span class="php-var">$this</span>-&gt;DOM-&gt;toHtml(<span class="php-var">$this</span>);
+<a href="#L542" id="L542" class="l">542: </a>
+<a href="#L543" id="L543" class="l">543: </a>        <span class="php-comment">// this notice should remain
+</span><a href="#L544" id="L544" class="l">544: </a>        <span class="php-keyword1">if</span> (self::<span class="php-var">$advertisingNotice</span>) {
+<a href="#L545" id="L545" class="l">545: </a>            <span class="php-var">$html</span> .= <span class="php-quote">&quot;\n&lt;!-- by Texy2! --&gt;&quot;</span>;
+<a href="#L546" id="L546" class="l">546: </a>            <span class="php-keyword1">if</span> (self::<span class="php-var">$advertisingNotice</span> === <span class="php-quote">'once'</span>) {
+<a href="#L547" id="L547" class="l">547: </a>                self::<span class="php-var">$advertisingNotice</span> = <span class="php-keyword1">FALSE</span>;
+<a href="#L548" id="L548" class="l">548: </a>            }
+<a href="#L549" id="L549" class="l">549: </a>        }
+<a href="#L550" id="L550" class="l">550: </a>
+<a href="#L551" id="L551" class="l">551: </a>        <span class="php-var">$this</span>-&gt;processing = <span class="php-keyword1">FALSE</span>;
+<a href="#L552" id="L552" class="l">552: </a>
+<a href="#L553" id="L553" class="l">553: </a>        <span class="php-keyword1">return</span> TexyUtf::utf2html(<span class="php-var">$html</span>, <span class="php-var">$this</span>-&gt;encoding);
+<a href="#L554" id="L554" class="l">554: </a>    }
+<a href="#L555" id="L555" class="l">555: </a>
+<a href="#L556" id="L556" class="l">556: </a>
+<a href="#L557" id="L557" class="l">557: </a>
+<a href="#L558" id="L558" class="l">558: </a>    <span class="php-comment">/**
+</span><a href="#L559" id="L559" class="l">559: </a><span class="php-comment">     * Converts single line in Texy! to (X)HTML code.
+</span><a href="#L560" id="L560" class="l">560: </a><span class="php-comment">     *
+</span><a href="#L561" id="L561" class="l">561: </a><span class="php-comment">     * @param  string   input text
+</span><a href="#L562" id="L562" class="l">562: </a><span class="php-comment">     * @return string   output HTML code
+</span><a href="#L563" id="L563" class="l">563: </a><span class="php-comment">     */</span>
+<a href="#L564" id="L564" class="l">564: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> processLine(<span class="php-var">$text</span>)
+<a href="#L565" id="L565" class="l">565: </a>    {
+<a href="#L566" id="L566" class="l">566: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;process(<span class="php-var">$text</span>, <span class="php-keyword1">TRUE</span>);
+<a href="#L567" id="L567" class="l">567: </a>    }
+<a href="#L568" id="L568" class="l">568: </a>
+<a href="#L569" id="L569" class="l">569: </a>
+<a href="#L570" id="L570" class="l">570: </a>
+<a href="#L571" id="L571" class="l">571: </a>    <span class="php-comment">/**
+</span><a href="#L572" id="L572" class="l">572: </a><span class="php-comment">     * Makes only typographic corrections.
+</span><a href="#L573" id="L573" class="l">573: </a><span class="php-comment">     * @param  string   input text (in encoding defined by Texy::$encoding)
+</span><a href="#L574" id="L574" class="l">574: </a><span class="php-comment">     * @return string   output text (in UTF-8)
+</span><a href="#L575" id="L575" class="l">575: </a><span class="php-comment">     */</span>
+<a href="#L576" id="L576" class="l">576: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> processTypo(<span class="php-var">$text</span>)
+<a href="#L577" id="L577" class="l">577: </a>    {
+<a href="#L578" id="L578" class="l">578: </a>        <span class="php-comment">// convert to UTF-8 (and check source encoding)
+</span><a href="#L579" id="L579" class="l">579: </a>        <span class="php-var">$text</span> = TexyUtf::toUtf(<span class="php-var">$text</span>, <span class="php-var">$this</span>-&gt;encoding);
+<a href="#L580" id="L580" class="l">580: </a>
+<a href="#L581" id="L581" class="l">581: </a>        <span class="php-comment">// standardize line endings and spaces
+</span><a href="#L582" id="L582" class="l">582: </a>        <span class="php-var">$text</span> = self::normalize(<span class="php-var">$text</span>);
+<a href="#L583" id="L583" class="l">583: </a>
+<a href="#L584" id="L584" class="l">584: </a>        <span class="php-var">$this</span>-&gt;typographyModule-&gt;beforeParse(<span class="php-var">$this</span>, <span class="php-var">$text</span>);
+<a href="#L585" id="L585" class="l">585: </a>        <span class="php-var">$text</span> = <span class="php-var">$this</span>-&gt;typographyModule-&gt;postLine(<span class="php-var">$text</span>, <span class="php-keyword1">TRUE</span>);
+<a href="#L586" id="L586" class="l">586: </a>
+<a href="#L587" id="L587" class="l">587: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">empty</span>(<span class="php-var">$this</span>-&gt;allowed[<span class="php-quote">'longwords'</span>])) {
+<a href="#L588" id="L588" class="l">588: </a>            <span class="php-var">$text</span> = <span class="php-var">$this</span>-&gt;longWordsModule-&gt;postLine(<span class="php-var">$text</span>);
+<a href="#L589" id="L589" class="l">589: </a>        }
+<a href="#L590" id="L590" class="l">590: </a>
+<a href="#L591" id="L591" class="l">591: </a>        <span class="php-keyword1">return</span> TexyUtf::utf2html(<span class="php-var">$text</span>, <span class="php-var">$this</span>-&gt;encoding);
+<a href="#L592" id="L592" class="l">592: </a>    }
+<a href="#L593" id="L593" class="l">593: </a>
+<a href="#L594" id="L594" class="l">594: </a>
+<a href="#L595" id="L595" class="l">595: </a>
+<a href="#L596" id="L596" class="l">596: </a>    <span class="php-comment">/**
+</span><a href="#L597" id="L597" class="l">597: </a><span class="php-comment">     * Converts DOM structure to pure text.
+</span><a href="#L598" id="L598" class="l">598: </a><span class="php-comment">     * @return string
+</span><a href="#L599" id="L599" class="l">599: </a><span class="php-comment">     */</span>
+<a href="#L600" id="L600" class="l">600: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> toText()
+<a href="#L601" id="L601" class="l">601: </a>    {
+<a href="#L602" id="L602" class="l">602: </a>        <span class="php-keyword1">if</span> (!<span class="php-var">$this</span>-&gt;DOM) {
+<a href="#L603" id="L603" class="l">603: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> InvalidStateException(<span class="php-quote">'Call $texy-&gt;process() first.'</span>);
+<a href="#L604" id="L604" class="l">604: </a>        }
+<a href="#L605" id="L605" class="l">605: </a>
+<a href="#L606" id="L606" class="l">606: </a>        <span class="php-keyword1">return</span> TexyUtf::utfTo(<span class="php-var">$this</span>-&gt;DOM-&gt;toText(<span class="php-var">$this</span>), <span class="php-var">$this</span>-&gt;encoding);
+<a href="#L607" id="L607" class="l">607: </a>    }
+<a href="#L608" id="L608" class="l">608: </a>
+<a href="#L609" id="L609" class="l">609: </a>
+<a href="#L610" id="L610" class="l">610: </a>
+<a href="#L611" id="L611" class="l">611: </a>    <span class="php-comment">/**
+</span><a href="#L612" id="L612" class="l">612: </a><span class="php-comment">     * Converts internal string representation to final HTML code in UTF-8.
+</span><a href="#L613" id="L613" class="l">613: </a><span class="php-comment">     * @return string
+</span><a href="#L614" id="L614" class="l">614: </a><span class="php-comment">     */</span>
+<a href="#L615" id="L615" class="l">615: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> stringToHtml(<span class="php-var">$s</span>)
+<a href="#L616" id="L616" class="l">616: </a>    {
+<a href="#L617" id="L617" class="l">617: </a>        <span class="php-comment">// decode HTML entities to UTF-8
+</span><a href="#L618" id="L618" class="l">618: </a>        <span class="php-var">$s</span> = self::unescapeHtml(<span class="php-var">$s</span>);
+<a href="#L619" id="L619" class="l">619: </a>
+<a href="#L620" id="L620" class="l">620: </a>        <span class="php-comment">// line-postprocessing
+</span><a href="#L621" id="L621" class="l">621: </a>        <span class="php-var">$blocks</span> = <span class="php-keyword2">explode</span>(self::CONTENT_BLOCK, <span class="php-var">$s</span>);
+<a href="#L622" id="L622" class="l">622: </a>        <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;postHandlers as <span class="php-var">$name</span> =&gt; <span class="php-var">$handler</span>) {
+<a href="#L623" id="L623" class="l">623: </a>            <span class="php-keyword1">if</span> (<span class="php-keyword1">empty</span>(<span class="php-var">$this</span>-&gt;allowed[<span class="php-var">$name</span>])) <span class="php-keyword1">continue</span>;
+<a href="#L624" id="L624" class="l">624: </a>            <span class="php-keyword1">foreach</span> (<span class="php-var">$blocks</span> as <span class="php-var">$n</span> =&gt; <span class="php-var">$s</span>) {
+<a href="#L625" id="L625" class="l">625: </a>                <span class="php-keyword1">if</span> (<span class="php-var">$n</span> % <span class="php-num">2</span> === <span class="php-num">0</span> &amp;&amp; <span class="php-var">$s</span> !== <span class="php-quote">''</span>) {
+<a href="#L626" id="L626" class="l">626: </a>                    <span class="php-var">$blocks</span>[<span class="php-var">$n</span>] = <span class="php-keyword2">call_user_func</span>(<span class="php-var">$handler</span>, <span class="php-var">$s</span>);
+<a href="#L627" id="L627" class="l">627: </a>                }
+<a href="#L628" id="L628" class="l">628: </a>            }
+<a href="#L629" id="L629" class="l">629: </a>        }
+<a href="#L630" id="L630" class="l">630: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">implode</span>(self::CONTENT_BLOCK, <span class="php-var">$blocks</span>);
+<a href="#L631" id="L631" class="l">631: </a>
+<a href="#L632" id="L632" class="l">632: </a>        <span class="php-comment">// encode &lt; &gt; &amp;
+</span><a href="#L633" id="L633" class="l">633: </a>        <span class="php-var">$s</span> = self::escapeHtml(<span class="php-var">$s</span>);
+<a href="#L634" id="L634" class="l">634: </a>
+<a href="#L635" id="L635" class="l">635: </a>        <span class="php-comment">// replace protected marks
+</span><a href="#L636" id="L636" class="l">636: </a>        <span class="php-var">$s</span> = <span class="php-var">$this</span>-&gt;unProtect(<span class="php-var">$s</span>);
+<a href="#L637" id="L637" class="l">637: </a>
+<a href="#L638" id="L638" class="l">638: </a>        <span class="php-comment">// wellform and reformat HTML
+</span><a href="#L639" id="L639" class="l">639: </a>        <span class="php-var">$this</span>-&gt;invokeHandlers(<span class="php-quote">'postProcess'</span>, <span class="php-keyword1">array</span>(<span class="php-var">$this</span>, &amp; <span class="php-var">$s</span>));
+<a href="#L640" id="L640" class="l">640: </a>
+<a href="#L641" id="L641" class="l">641: </a>        <span class="php-comment">// unfreeze spaces
+</span><a href="#L642" id="L642" class="l">642: </a>        <span class="php-var">$s</span> = self::unfreezeSpaces(<span class="php-var">$s</span>);
+<a href="#L643" id="L643" class="l">643: </a>
+<a href="#L644" id="L644" class="l">644: </a>        <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L645" id="L645" class="l">645: </a>    }
+<a href="#L646" id="L646" class="l">646: </a>
+<a href="#L647" id="L647" class="l">647: </a>
+<a href="#L648" id="L648" class="l">648: </a>
+<a href="#L649" id="L649" class="l">649: </a>    <span class="php-comment">/**
+</span><a href="#L650" id="L650" class="l">650: </a><span class="php-comment">     * Converts internal string representation to final HTML code in UTF-8.
+</span><a href="#L651" id="L651" class="l">651: </a><span class="php-comment">     * @return string
+</span><a href="#L652" id="L652" class="l">652: </a><span class="php-comment">     */</span>
+<a href="#L653" id="L653" class="l">653: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> stringToText(<span class="php-var">$s</span>)
+<a href="#L654" id="L654" class="l">654: </a>    {
+<a href="#L655" id="L655" class="l">655: </a>        <span class="php-var">$save</span> = <span class="php-var">$this</span>-&gt;htmlOutputModule-&gt;lineWrap;
+<a href="#L656" id="L656" class="l">656: </a>        <span class="php-var">$this</span>-&gt;htmlOutputModule-&gt;lineWrap = <span class="php-keyword1">FALSE</span>;
+<a href="#L657" id="L657" class="l">657: </a>        <span class="php-var">$s</span> = <span class="php-var">$this</span>-&gt;stringToHtml( <span class="php-var">$s</span> );
+<a href="#L658" id="L658" class="l">658: </a>        <span class="php-var">$this</span>-&gt;htmlOutputModule-&gt;lineWrap = <span class="php-var">$save</span>;
+<a href="#L659" id="L659" class="l">659: </a>
+<a href="#L660" id="L660" class="l">660: </a>        <span class="php-comment">// remove tags
+</span><a href="#L661" id="L661" class="l">661: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">preg_replace</span>(<span class="php-quote">'#&lt;(script|style)(.*)&lt;/\\1&gt;#Uis'</span>, <span class="php-quote">''</span>, <span class="php-var">$s</span>);
+<a href="#L662" id="L662" class="l">662: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">strip_tags</span>(<span class="php-var">$s</span>);
+<a href="#L663" id="L663" class="l">663: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">preg_replace</span>(<span class="php-quote">'#\n\s*\n\s*\n[\n\s]*\n#'</span>, <span class="php-quote">&quot;\n\n&quot;</span>, <span class="php-var">$s</span>);
+<a href="#L664" id="L664" class="l">664: </a>
+<a href="#L665" id="L665" class="l">665: </a>        <span class="php-comment">// entities -&gt; chars
+</span><a href="#L666" id="L666" class="l">666: </a>        <span class="php-var">$s</span> = self::unescapeHtml(<span class="php-var">$s</span>);
+<a href="#L667" id="L667" class="l">667: </a>
+<a href="#L668" id="L668" class="l">668: </a>        <span class="php-comment">// convert nbsp to normal space and remove shy
+</span><a href="#L669" id="L669" class="l">669: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">strtr</span>(<span class="php-var">$s</span>, <span class="php-keyword1">array</span>(
+<a href="#L670" id="L670" class="l">670: </a>            <span class="php-quote">&quot;\xC2\xAD&quot;</span> =&gt; <span class="php-quote">''</span>,  <span class="php-comment">// shy
+</span><a href="#L671" id="L671" class="l">671: </a>            <span class="php-quote">&quot;\xC2\xA0&quot;</span> =&gt; <span class="php-quote">' '</span>, <span class="php-comment">// nbsp
+</span><a href="#L672" id="L672" class="l">672: </a>        ));
+<a href="#L673" id="L673" class="l">673: </a>
+<a href="#L674" id="L674" class="l">674: </a>        <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L675" id="L675" class="l">675: </a>    }
+<a href="#L676" id="L676" class="l">676: </a>
+<a href="#L677" id="L677" class="l">677: </a>
+<a href="#L678" id="L678" class="l">678: </a>
+<a href="#L679" id="L679" class="l">679: </a>    <span class="php-comment">/**
+</span><a href="#L680" id="L680" class="l">680: </a><span class="php-comment">     * Add new event handler.
+</span><a href="#L681" id="L681" class="l">681: </a><span class="php-comment">     *
+</span><a href="#L682" id="L682" class="l">682: </a><span class="php-comment">     * @param  string   event name
+</span><a href="#L683" id="L683" class="l">683: </a><span class="php-comment">     * @param  callback
+</span><a href="#L684" id="L684" class="l">684: </a><span class="php-comment">     * @return void
+</span><a href="#L685" id="L685" class="l">685: </a><span class="php-comment">     */</span>
+<a href="#L686" id="L686" class="l">686: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> addHandler(<span class="php-var">$event</span>, <span class="php-var">$callback</span>)
+<a href="#L687" id="L687" class="l">687: </a>    {
+<a href="#L688" id="L688" class="l">688: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword2">is_callable</span>(<span class="php-var">$callback</span>)) {
+<a href="#L689" id="L689" class="l">689: </a>            <span class="php-var">$able</span> = <span class="php-keyword2">is_callable</span>(<span class="php-var">$callback</span>, <span class="php-keyword1">TRUE</span>, <span class="php-var">$textual</span>);
+<a href="#L690" id="L690" class="l">690: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> InvalidArgumentException(<span class="php-quote">&quot;Handler '</span><span class="php-var">$textual</span><span class="php-quote">' is not &quot;</span> . (<span class="php-var">$able</span> ? <span class="php-quote">'callable.'</span> : <span class="php-quote">'valid PHP callback.'</span>));
+<a href="#L691" id="L691" class="l">691: </a>        }
+<a href="#L692" id="L692" class="l">692: </a>
+<a href="#L693" id="L693" class="l">693: </a>        <span class="php-var">$this</span>-&gt;handlers[<span class="php-var">$event</span>][] = <span class="php-var">$callback</span>;
+<a href="#L694" id="L694" class="l">694: </a>    }
+<a href="#L695" id="L695" class="l">695: </a>
+<a href="#L696" id="L696" class="l">696: </a>
+<a href="#L697" id="L697" class="l">697: </a>
+<a href="#L698" id="L698" class="l">698: </a>    <span class="php-comment">/**
+</span><a href="#L699" id="L699" class="l">699: </a><span class="php-comment">     * Invoke registered around-handlers.
+</span><a href="#L700" id="L700" class="l">700: </a><span class="php-comment">     *
+</span><a href="#L701" id="L701" class="l">701: </a><span class="php-comment">     * @param  string   event name
+</span><a href="#L702" id="L702" class="l">702: </a><span class="php-comment">     * @param  TexyParser  actual parser object
+</span><a href="#L703" id="L703" class="l">703: </a><span class="php-comment">     * @param  array    arguments passed into handler
+</span><a href="#L704" id="L704" class="l">704: </a><span class="php-comment">     * @return mixed
+</span><a href="#L705" id="L705" class="l">705: </a><span class="php-comment">     */</span>
+<a href="#L706" id="L706" class="l">706: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> invokeAroundHandlers(<span class="php-var">$event</span>, <span class="php-var">$parser</span>, <span class="php-var">$args</span>)
+<a href="#L707" id="L707" class="l">707: </a>    {
+<a href="#L708" id="L708" class="l">708: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">isset</span>(<span class="php-var">$this</span>-&gt;handlers[<span class="php-var">$event</span>])) <span class="php-keyword1">return</span> <span class="php-keyword1">FALSE</span>;
+<a href="#L709" id="L709" class="l">709: </a>
+<a href="#L710" id="L710" class="l">710: </a>        <span class="php-var">$invocation</span> = <span class="php-keyword1">new</span> TexyHandlerInvocation(<span class="php-var">$this</span>-&gt;handlers[<span class="php-var">$event</span>], <span class="php-var">$parser</span>, <span class="php-var">$args</span>);
+<a href="#L711" id="L711" class="l">711: </a>        <span class="php-var">$res</span> = <span class="php-var">$invocation</span>-&gt;proceed();
+<a href="#L712" id="L712" class="l">712: </a>        <span class="php-var">$invocation</span>-&gt;free();
+<a href="#L713" id="L713" class="l">713: </a>        <span class="php-keyword1">return</span> <span class="php-var">$res</span>;
+<a href="#L714" id="L714" class="l">714: </a>    }
+<a href="#L715" id="L715" class="l">715: </a>
+<a href="#L716" id="L716" class="l">716: </a>
+<a href="#L717" id="L717" class="l">717: </a>
+<a href="#L718" id="L718" class="l">718: </a>    <span class="php-comment">/**
+</span><a href="#L719" id="L719" class="l">719: </a><span class="php-comment">     * Invoke registered after-handlers.
+</span><a href="#L720" id="L720" class="l">720: </a><span class="php-comment">     *
+</span><a href="#L721" id="L721" class="l">721: </a><span class="php-comment">     * @param  string   event name
+</span><a href="#L722" id="L722" class="l">722: </a><span class="php-comment">     * @param  array    arguments passed into handler
+</span><a href="#L723" id="L723" class="l">723: </a><span class="php-comment">     * @return void
+</span><a href="#L724" id="L724" class="l">724: </a><span class="php-comment">     */</span>
+<a href="#L725" id="L725" class="l">725: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> invokeHandlers(<span class="php-var">$event</span>, <span class="php-var">$args</span>)
+<a href="#L726" id="L726" class="l">726: </a>    {
+<a href="#L727" id="L727" class="l">727: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">isset</span>(<span class="php-var">$this</span>-&gt;handlers[<span class="php-var">$event</span>])) <span class="php-keyword1">return</span>;
+<a href="#L728" id="L728" class="l">728: </a>
+<a href="#L729" id="L729" class="l">729: </a>        <span class="php-keyword1">foreach</span> (<span class="php-var">$this</span>-&gt;handlers[<span class="php-var">$event</span>] as <span class="php-var">$handler</span>) {
+<a href="#L730" id="L730" class="l">730: </a>            <span class="php-keyword2">call_user_func_array</span>(<span class="php-var">$handler</span>, <span class="php-var">$args</span>);
+<a href="#L731" id="L731" class="l">731: </a>        }
+<a href="#L732" id="L732" class="l">732: </a>    }
+<a href="#L733" id="L733" class="l">733: </a>
+<a href="#L734" id="L734" class="l">734: </a>
+<a href="#L735" id="L735" class="l">735: </a>
+<a href="#L736" id="L736" class="l">736: </a>    <span class="php-comment">/**
+</span><a href="#L737" id="L737" class="l">737: </a><span class="php-comment">     * Translate all white spaces (\t \n \r space) to meta-spaces \x01-\x04.
+</span><a href="#L738" id="L738" class="l">738: </a><span class="php-comment">     * which are ignored by TexyHtmlOutputModule routine
+</span><a href="#L739" id="L739" class="l">739: </a><span class="php-comment">     * @param  string
+</span><a href="#L740" id="L740" class="l">740: </a><span class="php-comment">     * @return string
+</span><a href="#L741" id="L741" class="l">741: </a><span class="php-comment">     */</span>
+<a href="#L742" id="L742" class="l">742: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> freezeSpaces(<span class="php-var">$s</span>)
+<a href="#L743" id="L743" class="l">743: </a>    {
+<a href="#L744" id="L744" class="l">744: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">strtr</span>(<span class="php-var">$s</span>, <span class="php-quote">&quot; \t\r\n&quot;</span>, <span class="php-quote">&quot;\x01\x02\x03\x04&quot;</span>);
+<a href="#L745" id="L745" class="l">745: </a>    }
+<a href="#L746" id="L746" class="l">746: </a>
+<a href="#L747" id="L747" class="l">747: </a>
+<a href="#L748" id="L748" class="l">748: </a>
+<a href="#L749" id="L749" class="l">749: </a>    <span class="php-comment">/**
+</span><a href="#L750" id="L750" class="l">750: </a><span class="php-comment">     * Reverts meta-spaces back to normal spaces.
+</span><a href="#L751" id="L751" class="l">751: </a><span class="php-comment">     * @param  string
+</span><a href="#L752" id="L752" class="l">752: </a><span class="php-comment">     * @return string
+</span><a href="#L753" id="L753" class="l">753: </a><span class="php-comment">     */</span>
+<a href="#L754" id="L754" class="l">754: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> unfreezeSpaces(<span class="php-var">$s</span>)
+<a href="#L755" id="L755" class="l">755: </a>    {
+<a href="#L756" id="L756" class="l">756: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">strtr</span>(<span class="php-var">$s</span>, <span class="php-quote">&quot;\x01\x02\x03\x04&quot;</span>, <span class="php-quote">&quot; \t\r\n&quot;</span>);
+<a href="#L757" id="L757" class="l">757: </a>    }
+<a href="#L758" id="L758" class="l">758: </a>
+<a href="#L759" id="L759" class="l">759: </a>
+<a href="#L760" id="L760" class="l">760: </a>
+<a href="#L761" id="L761" class="l">761: </a>    <span class="php-comment">/**
+</span><a href="#L762" id="L762" class="l">762: </a><span class="php-comment">     * Removes special controls characters and normalizes line endings and spaces.
+</span><a href="#L763" id="L763" class="l">763: </a><span class="php-comment">     * @param  string
+</span><a href="#L764" id="L764" class="l">764: </a><span class="php-comment">     * @return string
+</span><a href="#L765" id="L765" class="l">765: </a><span class="php-comment">     */</span>
+<a href="#L766" id="L766" class="l">766: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> normalize(<span class="php-var">$s</span>)
+<a href="#L767" id="L767" class="l">767: </a>    {
+<a href="#L768" id="L768" class="l">768: </a>        <span class="php-comment">// standardize line endings to unix-like
+</span><a href="#L769" id="L769" class="l">769: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">str_replace</span>(<span class="php-quote">&quot;\r\n&quot;</span>, <span class="php-quote">&quot;\n&quot;</span>, <span class="php-var">$s</span>); <span class="php-comment">// DOS
+</span><a href="#L770" id="L770" class="l">770: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">strtr</span>(<span class="php-var">$s</span>, <span class="php-quote">&quot;\r&quot;</span>, <span class="php-quote">&quot;\n&quot;</span>); <span class="php-comment">// Mac
+</span><a href="#L771" id="L771" class="l">771: </a>
+<a href="#L772" id="L772" class="l">772: </a>        <span class="php-comment">// remove special chars; leave \t + \n
+</span><a href="#L773" id="L773" class="l">773: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">preg_replace</span>(<span class="php-quote">'#[\x00-\x08\x0B-\x1F]+#'</span>, <span class="php-quote">''</span>, <span class="php-var">$s</span>);
+<a href="#L774" id="L774" class="l">774: </a>
+<a href="#L775" id="L775" class="l">775: </a>        <span class="php-comment">// right trim
+</span><a href="#L776" id="L776" class="l">776: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">preg_replace</span>(<span class="php-quote">&quot;#[\t ]+</span><span class="php-var">$</span><span class="php-quote">#m&quot;</span>, <span class="php-quote">''</span>, <span class="php-var">$s</span>);
+<a href="#L777" id="L777" class="l">777: </a>
+<a href="#L778" id="L778" class="l">778: </a>        <span class="php-comment">// trailing spaces
+</span><a href="#L779" id="L779" class="l">779: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">trim</span>(<span class="php-var">$s</span>, <span class="php-quote">&quot;\n&quot;</span>);
+<a href="#L780" id="L780" class="l">780: </a>
+<a href="#L781" id="L781" class="l">781: </a>        <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L782" id="L782" class="l">782: </a>    }
+<a href="#L783" id="L783" class="l">783: </a>
+<a href="#L784" id="L784" class="l">784: </a>
+<a href="#L785" id="L785" class="l">785: </a>
+<a href="#L786" id="L786" class="l">786: </a>    <span class="php-comment">/**
+</span><a href="#L787" id="L787" class="l">787: </a><span class="php-comment">     * Converts to web safe characters [a-z0-9-] text.
+</span><a href="#L788" id="L788" class="l">788: </a><span class="php-comment">     * @param  string
+</span><a href="#L789" id="L789" class="l">789: </a><span class="php-comment">     * @param  string
+</span><a href="#L790" id="L790" class="l">790: </a><span class="php-comment">     * @return string
+</span><a href="#L791" id="L791" class="l">791: </a><span class="php-comment">     */</span>
+<a href="#L792" id="L792" class="l">792: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> webalize(<span class="php-var">$s</span>, <span class="php-var">$charlist</span> = <span class="php-keyword1">NULL</span>)
+<a href="#L793" id="L793" class="l">793: </a>    {
+<a href="#L794" id="L794" class="l">794: </a>        <span class="php-var">$s</span> = TexyUtf::utf2ascii(<span class="php-var">$s</span>);
+<a href="#L795" id="L795" class="l">795: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">strtolower</span>(<span class="php-var">$s</span>);
+<a href="#L796" id="L796" class="l">796: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">preg_replace</span>(<span class="php-quote">'#[^a-z0-9'</span>.<span class="php-keyword2">preg_quote</span>(<span class="php-var">$charlist</span>, <span class="php-quote">'#'</span>).<span class="php-quote">']+#'</span>, <span class="php-quote">'-'</span>, <span class="php-var">$s</span>);
+<a href="#L797" id="L797" class="l">797: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">trim</span>(<span class="php-var">$s</span>, <span class="php-quote">'-'</span>);
+<a href="#L798" id="L798" class="l">798: </a>        <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L799" id="L799" class="l">799: </a>    }
+<a href="#L800" id="L800" class="l">800: </a>
+<a href="#L801" id="L801" class="l">801: </a>
+<a href="#L802" id="L802" class="l">802: </a>
+<a href="#L803" id="L803" class="l">803: </a>    <span class="php-comment">/**
+</span><a href="#L804" id="L804" class="l">804: </a><span class="php-comment">     * Texy! version of htmlSpecialChars (much faster than htmlSpecialChars!).
+</span><a href="#L805" id="L805" class="l">805: </a><span class="php-comment">     * note: &amp;quot; is not encoded!
+</span><a href="#L806" id="L806" class="l">806: </a><span class="php-comment">     * @param  string
+</span><a href="#L807" id="L807" class="l">807: </a><span class="php-comment">     * @return string
+</span><a href="#L808" id="L808" class="l">808: </a><span class="php-comment">     */</span>
+<a href="#L809" id="L809" class="l">809: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> escapeHtml(<span class="php-var">$s</span>)
+<a href="#L810" id="L810" class="l">810: </a>    {
+<a href="#L811" id="L811" class="l">811: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">str_replace</span>(<span class="php-keyword1">array</span>(<span class="php-quote">'&amp;'</span>, <span class="php-quote">'&lt;'</span>, <span class="php-quote">'&gt;'</span>), <span class="php-keyword1">array</span>(<span class="php-quote">'&amp;amp;'</span>, <span class="php-quote">'&amp;lt;'</span>, <span class="php-quote">'&amp;gt;'</span>), <span class="php-var">$s</span>);
+<a href="#L812" id="L812" class="l">812: </a>    }
+<a href="#L813" id="L813" class="l">813: </a>
+<a href="#L814" id="L814" class="l">814: </a>
+<a href="#L815" id="L815" class="l">815: </a>
+<a href="#L816" id="L816" class="l">816: </a>    <span class="php-comment">/**
+</span><a href="#L817" id="L817" class="l">817: </a><span class="php-comment">     * Texy! version of html_entity_decode (always UTF-8, much faster than original!).
+</span><a href="#L818" id="L818" class="l">818: </a><span class="php-comment">     * @param  string
+</span><a href="#L819" id="L819" class="l">819: </a><span class="php-comment">     * @return string
+</span><a href="#L820" id="L820" class="l">820: </a><span class="php-comment">     */</span>
+<a href="#L821" id="L821" class="l">821: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> unescapeHtml(<span class="php-var">$s</span>)
+<a href="#L822" id="L822" class="l">822: </a>    {
+<a href="#L823" id="L823" class="l">823: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">strpos</span>(<span class="php-var">$s</span>, <span class="php-quote">'&amp;'</span>) === <span class="php-keyword1">FALSE</span>) <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L824" id="L824" class="l">824: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">html_entity_decode</span>(<span class="php-var">$s</span>, ENT_QUOTES, <span class="php-quote">'UTF-8'</span>);
+<a href="#L825" id="L825" class="l">825: </a>    }
+<a href="#L826" id="L826" class="l">826: </a>
+<a href="#L827" id="L827" class="l">827: </a>
+<a href="#L828" id="L828" class="l">828: </a>
+<a href="#L829" id="L829" class="l">829: </a>    <span class="php-comment">/**
+</span><a href="#L830" id="L830" class="l">830: </a><span class="php-comment">     * Outdents text block.
+</span><a href="#L831" id="L831" class="l">831: </a><span class="php-comment">     * @param  string
+</span><a href="#L832" id="L832" class="l">832: </a><span class="php-comment">     * @return string
+</span><a href="#L833" id="L833" class="l">833: </a><span class="php-comment">     */</span>
+<a href="#L834" id="L834" class="l">834: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> outdent(<span class="php-var">$s</span>)
+<a href="#L835" id="L835" class="l">835: </a>    {
+<a href="#L836" id="L836" class="l">836: </a>        <span class="php-var">$s</span> = <span class="php-keyword2">trim</span>(<span class="php-var">$s</span>, <span class="php-quote">&quot;\n&quot;</span>);
+<a href="#L837" id="L837" class="l">837: </a>        <span class="php-var">$spaces</span> = <span class="php-keyword2">strspn</span>(<span class="php-var">$s</span>, <span class="php-quote">' '</span>);
+<a href="#L838" id="L838" class="l">838: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$spaces</span>) <span class="php-keyword1">return</span> <span class="php-keyword2">preg_replace</span>(<span class="php-quote">&quot;#^ {1,</span><span class="php-var">$spaces}</span><span class="php-quote">#m&quot;</span>, <span class="php-quote">''</span>, <span class="php-var">$s</span>);
+<a href="#L839" id="L839" class="l">839: </a>        <span class="php-keyword1">return</span> <span class="php-var">$s</span>;
+<a href="#L840" id="L840" class="l">840: </a>    }
+<a href="#L841" id="L841" class="l">841: </a>
+<a href="#L842" id="L842" class="l">842: </a>
+<a href="#L843" id="L843" class="l">843: </a>
+<a href="#L844" id="L844" class="l">844: </a>    <span class="php-comment">/**
+</span><a href="#L845" id="L845" class="l">845: </a><span class="php-comment">     * Generate unique mark - useful for freezing (folding) some substrings.
+</span><a href="#L846" id="L846" class="l">846: </a><span class="php-comment">     * @param  string   any string to froze
+</span><a href="#L847" id="L847" class="l">847: </a><span class="php-comment">     * @param  int      Texy::CONTENT_* constant
+</span><a href="#L848" id="L848" class="l">848: </a><span class="php-comment">     * @return string  internal mark
+</span><a href="#L849" id="L849" class="l">849: </a><span class="php-comment">     */</span>
+<a href="#L850" id="L850" class="l">850: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> protect(<span class="php-var">$child</span>, <span class="php-var">$contentType</span>)
+<a href="#L851" id="L851" class="l">851: </a>    {
+<a href="#L852" id="L852" class="l">852: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$child</span>===<span class="php-quote">''</span>) <span class="php-keyword1">return</span> <span class="php-quote">''</span>;
+<a href="#L853" id="L853" class="l">853: </a>
+<a href="#L854" id="L854" class="l">854: </a>        <span class="php-var">$key</span> = <span class="php-var">$contentType</span>
+<a href="#L855" id="L855" class="l">855: </a>            . <span class="php-keyword2">strtr</span>(<span class="php-keyword2">base_convert</span>(<span class="php-keyword2">count</span>(<span class="php-var">$this</span>-&gt;marks), <span class="php-num">10</span>, <span class="php-num">8</span>), <span class="php-quote">'01234567'</span>, <span class="php-quote">&quot;\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F&quot;</span>)
+<a href="#L856" id="L856" class="l">856: </a>            . <span class="php-var">$contentType</span>;
+<a href="#L857" id="L857" class="l">857: </a>
+<a href="#L858" id="L858" class="l">858: </a>        <span class="php-var">$this</span>-&gt;marks[<span class="php-var">$key</span>] = <span class="php-var">$child</span>;
+<a href="#L859" id="L859" class="l">859: </a>
+<a href="#L860" id="L860" class="l">860: </a>        <span class="php-keyword1">return</span> <span class="php-var">$key</span>;
+<a href="#L861" id="L861" class="l">861: </a>    }
+<a href="#L862" id="L862" class="l">862: </a>
+<a href="#L863" id="L863" class="l">863: </a>
+<a href="#L864" id="L864" class="l">864: </a>
+<a href="#L865" id="L865" class="l">865: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> unProtect(<span class="php-var">$html</span>)
+<a href="#L866" id="L866" class="l">866: </a>    {
+<a href="#L867" id="L867" class="l">867: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">strtr</span>(<span class="php-var">$html</span>, <span class="php-var">$this</span>-&gt;marks);
+<a href="#L868" id="L868" class="l">868: </a>    }
+<a href="#L869" id="L869" class="l">869: </a>
+<a href="#L870" id="L870" class="l">870: </a>
+<a href="#L871" id="L871" class="l">871: </a>
+<a href="#L872" id="L872" class="l">872: </a>    <span class="php-comment">/**
+</span><a href="#L873" id="L873" class="l">873: </a><span class="php-comment">     * Filters bad URLs.
+</span><a href="#L874" id="L874" class="l">874: </a><span class="php-comment">     * @param  string   user URL
+</span><a href="#L875" id="L875" class="l">875: </a><span class="php-comment">     * @param  string   type: a-anchor, i-image, c-cite
+</span><a href="#L876" id="L876" class="l">876: </a><span class="php-comment">     * @return bool
+</span><a href="#L877" id="L877" class="l">877: </a><span class="php-comment">     */</span>
+<a href="#L878" id="L878" class="l">878: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> checkURL(<span class="php-var">$URL</span>, <span class="php-var">$type</span>)
+<a href="#L879" id="L879" class="l">879: </a>    {
+<a href="#L880" id="L880" class="l">880: </a>        <span class="php-comment">// absolute URL with scheme? check scheme!
+</span><a href="#L881" id="L881" class="l">881: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword1">empty</span>(<span class="php-var">$this</span>-&gt;urlSchemeFilters[<span class="php-var">$type</span>])
+<a href="#L882" id="L882" class="l">882: </a>            &amp;&amp; <span class="php-keyword2">preg_match</span>(<span class="php-quote">'#'</span>.TEXY_URLSCHEME.<span class="php-quote">'#A'</span>, <span class="php-var">$URL</span>)
+<a href="#L883" id="L883" class="l">883: </a>            &amp;&amp; !<span class="php-keyword2">preg_match</span>(<span class="php-var">$this</span>-&gt;urlSchemeFilters[<span class="php-var">$type</span>], <span class="php-var">$URL</span>))
+<a href="#L884" id="L884" class="l">884: </a>            <span class="php-keyword1">return</span> <span class="php-keyword1">FALSE</span>;
+<a href="#L885" id="L885" class="l">885: </a>
+<a href="#L886" id="L886" class="l">886: </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">TRUE</span>;
+<a href="#L887" id="L887" class="l">887: </a>    }
+<a href="#L888" id="L888" class="l">888: </a>
+<a href="#L889" id="L889" class="l">889: </a>
+<a href="#L890" id="L890" class="l">890: </a>
+<a href="#L891" id="L891" class="l">891: </a>    <span class="php-comment">/**
+</span><a href="#L892" id="L892" class="l">892: </a><span class="php-comment">     * Is given URL relative?
+</span><a href="#L893" id="L893" class="l">893: </a><span class="php-comment">     * @param  string  URL
+</span><a href="#L894" id="L894" class="l">894: </a><span class="php-comment">     * @return bool
+</span><a href="#L895" id="L895" class="l">895: </a><span class="php-comment">     */</span>
+<a href="#L896" id="L896" class="l">896: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> isRelative(<span class="php-var">$URL</span>)
+<a href="#L897" id="L897" class="l">897: </a>    {
+<a href="#L898" id="L898" class="l">898: </a>        <span class="php-comment">// check for scheme, or absolute path, or absolute URL
+</span><a href="#L899" id="L899" class="l">899: </a>        <span class="php-keyword1">return</span> !<span class="php-keyword2">preg_match</span>(<span class="php-quote">'#'</span>.TEXY_URLSCHEME.<span class="php-quote">'|[\#/?]#A'</span>, <span class="php-var">$URL</span>);
+<a href="#L900" id="L900" class="l">900: </a>    }
+<a href="#L901" id="L901" class="l">901: </a>
+<a href="#L902" id="L902" class="l">902: </a>
+<a href="#L903" id="L903" class="l">903: </a>
+<a href="#L904" id="L904" class="l">904: </a>    <span class="php-comment">/**
+</span><a href="#L905" id="L905" class="l">905: </a><span class="php-comment">     * Prepends root to URL, if possible.
+</span><a href="#L906" id="L906" class="l">906: </a><span class="php-comment">     * @param  string  URL
+</span><a href="#L907" id="L907" class="l">907: </a><span class="php-comment">     * @param  string  root
+</span><a href="#L908" id="L908" class="l">908: </a><span class="php-comment">     * @return string
+</span><a href="#L909" id="L909" class="l">909: </a><span class="php-comment">     */</span>
+<a href="#L910" id="L910" class="l">910: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> prependRoot(<span class="php-var">$URL</span>, <span class="php-var">$root</span>)
+<a href="#L911" id="L911" class="l">911: </a>    {
+<a href="#L912" id="L912" class="l">912: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$root</span> == <span class="php-keyword1">NULL</span> || !self::isRelative(<span class="php-var">$URL</span>)) <span class="php-keyword1">return</span> <span class="php-var">$URL</span>;
+<a href="#L913" id="L913" class="l">913: </a>        <span class="php-keyword1">return</span> <span class="php-keyword2">rtrim</span>(<span class="php-var">$root</span>, <span class="php-quote">'/\\'</span>) . <span class="php-quote">'/'</span> . <span class="php-var">$URL</span>;
+<a href="#L914" id="L914" class="l">914: </a>    }
+<a href="#L915" id="L915" class="l">915: </a>
+<a href="#L916" id="L916" class="l">916: </a>
+<a href="#L917" id="L917" class="l">917: </a>
+<a href="#L918" id="L918" class="l">918: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getLinePatterns()
+<a href="#L919" id="L919" class="l">919: </a>    {
+<a href="#L920" id="L920" class="l">920: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;_linePatterns;
+<a href="#L921" id="L921" class="l">921: </a>    }
+<a href="#L922" id="L922" class="l">922: </a>
+<a href="#L923" id="L923" class="l">923: </a>
+<a href="#L924" id="L924" class="l">924: </a>
+<a href="#L925" id="L925" class="l">925: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getBlockPatterns()
+<a href="#L926" id="L926" class="l">926: </a>    {
+<a href="#L927" id="L927" class="l">927: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;_blockPatterns;
+<a href="#L928" id="L928" class="l">928: </a>    }
+<a href="#L929" id="L929" class="l">929: </a>
+<a href="#L930" id="L930" class="l">930: </a>
+<a href="#L931" id="L931" class="l">931: </a>
+<a href="#L932" id="L932" class="l">932: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> getDOM()
+<a href="#L933" id="L933" class="l">933: </a>    {
+<a href="#L934" id="L934" class="l">934: </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>-&gt;DOM;
+<a href="#L935" id="L935" class="l">935: </a>    }
+<a href="#L936" id="L936" class="l">936: </a>
+<a href="#L937" id="L937" class="l">937: </a>
+<a href="#L938" id="L938" class="l">938: </a>
+<a href="#L939" id="L939" class="l">939: </a>    <span class="php-keyword1">private</span> <span class="php-keyword1">function</span> tabCb(<span class="php-var">$m</span>)
+<a href="#L940" id="L940" class="l">940: </a>    {
+<a href="#L941" id="L941" class="l">941: </a>        <span class="php-keyword1">return</span> <span class="php-var">$m</span>[<span class="php-num">1</span>] . <span class="php-keyword2">str_repeat</span>(<span class="php-quote">' '</span>, <span class="php-var">$this</span>-&gt;tabWidth - <span class="php-keyword2">strlen</span>(<span class="php-var">$m</span>[<span class="php-num">1</span>]) % <span class="php-var">$this</span>-&gt;tabWidth);
+<a href="#L942" id="L942" class="l">942: </a>    }
+<a href="#L943" id="L943" class="l">943: </a>
+<a href="#L944" id="L944" class="l">944: </a>
+<a href="#L945" id="L945" class="l">945: </a>
+<a href="#L946" id="L946" class="l">946: </a>    <span class="php-comment">/**
+</span><a href="#L947" id="L947" class="l">947: </a><span class="php-comment">     * PHP garbage collector helper.
+</span><a href="#L948" id="L948" class="l">948: </a><span class="php-comment">     */</span>
+<a href="#L949" id="L949" class="l">949: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> free()
+<a href="#L950" id="L950" class="l">950: </a>    {
+<a href="#L951" id="L951" class="l">951: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">version_compare</span>(PHP_VERSION , <span class="php-quote">'5.3'</span>, <span class="php-quote">'&lt;'</span>)) {
+<a href="#L952" id="L952" class="l">952: </a>            <span class="php-keyword1">foreach</span> (<span class="php-keyword2">array_keys</span>(<span class="php-keyword2">get_object_vars</span>(<span class="php-var">$this</span>)) as <span class="php-var">$key</span>) {
+<a href="#L953" id="L953" class="l">953: </a>                <span class="php-var">$this</span>-&gt;<span class="php-var">$key</span> = <span class="php-keyword1">NULL</span>;
+<a href="#L954" id="L954" class="l">954: </a>            }
+<a href="#L955" id="L955" class="l">955: </a>        }
+<a href="#L956" id="L956" class="l">956: </a>    }
+<a href="#L957" id="L957" class="l">957: </a>
+<a href="#L958" id="L958" class="l">958: </a>
+<a href="#L959" id="L959" class="l">959: </a>
+<a href="#L960" id="L960" class="l">960: </a>    <span class="php-keyword1">final</span> <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> __<span class="php-keyword1">clone</span>()
+<a href="#L961" id="L961" class="l">961: </a>    {
+<a href="#L962" id="L962" class="l">962: </a>        <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> NotSupportedException(<span class="php-quote">'Clone is not supported.'</span>);
+<a href="#L963" id="L963" class="l">963: </a>    }
+<a href="#L964" id="L964" class="l">964: </a>
+<a href="#L965" id="L965" class="l">965: </a>}
+<a href="#L966" id="L966" class="l">966: </a></code></pre>
+
+	<div id="footer">
+		Texy2 API documentation generated by <a href="http://github.com/nette/apigen">Apigen</a>
+	</div>
+</div>
+</body>
+</html>

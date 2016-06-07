@@ -1,0 +1,58 @@
+Converting a number to Excel column character name
+==================================================
+
+If you use Java to work with Excel files
+(for example, using "HSSF":http://poi.apache.org/hssf/index.html
+from the "Apache POI project":http://poi.apache.org/hssf/index.html),
+you might to cross the problem
+of converting an integer to a alphabetical columns naming.
+
+That might seem trivial at first sight, but the Excel letter naming system
+is not easily convertible because of different handling of zero.
+
+Here is the method I created for that task.
+
+//Note that this solution is general for any number;
+when counting on the fact that Excel's last column is IV,
+this could be done using one `if`.//
+
+
+/--code java .[brush:]
+  /**
+   * Converts column number to Excel column characters name, e.g.: 43 => AQ 
+   * @autor Ondra Žižka
+   */
+  private static String ConvertColumnNumberToChars( int i ){
+    if( i < 0 )
+      throw new UnsupportedOperationException("Converted number must be greater than zero.");
+    
+    int iBase = 'Z' - 'A'+1;
+    if( iBase > Character.MAX_RADIX )
+      throw new UnsupportedOperationException("This JRE can't convert to radix greater than "+Character.MAX_RADIX);
+      
+    String interConversion = Integer.toString(i-1, iBase).toUpperCase();
+    
+    System.out.print("inter: "+ interConversion +";  ");
+    
+    char[] ac = interConversion.toCharArray();
+    for( int j = 0; j < ac.length; j++ ) {
+      int poziceOdzadu = ac.length - j - 1;
+      char c = ac[j];
+      ac[j] =  (char) ('A' - poziceOdzadu + Character.digit( c, iBase ));
+      
+    }    
+    return String.copyValueOf( ac );
+    
+  }// private static String ConvertColumnNumberToChars( int i )	
+\--
+
+
+Keywords: Excel, column, number, integer, letter, column name, sheet, Java, POI, HSSF.
+
+
+
+Převod čísla sloupce na písmeno ve stylu Excelu
+===============================================
+
+Výše najdete způsob, jak převést číslo sloupce v Excel tabulce na název složený z písmen.
+Nechce se mi to přepisovat do češtiny celé, tak aspoň tahle česká klíčová slova :-)

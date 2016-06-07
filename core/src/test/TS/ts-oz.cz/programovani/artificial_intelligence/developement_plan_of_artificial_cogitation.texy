@@ -1,0 +1,305 @@
+Plan to develop artificial Cogitation - what has to be done
+***********************************************************
+
+The long-term goal of artificial intelligence science is to develop an artificial intelligent mind.
+That means, an intelligent system which is able to learn new facts and consequences,
+and to perform independent cogitation which leads to an ideas of solution of its goals.
+
+Before we can succesfuly develop such system, we have to solve several problems.
+
+
+
+
+1) Covering AI theory
+=====================
+
+We will have to create general artifical intelligence theory / algorithm / model,
+which would fit for the purposes of intelligent system. Such model will have to satisfy these needs (among others):
+
+
+<ul>
+
+<li> Self-organization:
+
+System must be able to organize it's inner structure to some extent.
+This extent will be dependent on what functions will be hard-coded in the model's structure
+and which functions the system will learn.
+
+
+
+<li> Must be able to store all kind information in the same way.
+
+An intelligent system will need to treat all it's conscious knowledge the same way.
+A "piece of knowledge" is a subject of infering with other knowledge,
+and the way of infering itself is also subject of further infering.
+
+Talking about infering suggest the way of representing the knowledge - by associating different terms. 
+A term (idea, conception, notion) can be any kind of information about any object at any level of abstraction:
+"the sky is blue" is represented by associating a term "sky" with a term "blue".
+These terms are created by regular observing the environment with receptors.
+The association "the sky is blue" is created by observing the environment,
+which activates the term for "blue" and the term for "sky" (can be perceived as "that area that is above everything else").
+
+The model also has to store information about dynamic processes:
+About its own actions, observated actions of other objects, and the effects of these actions.
+Again, this will be stored as association between the action and its effect, using the terms involved in action.
+
+
+<li> Processes represented the same way as facts.
+
+To be able to learn beavior, the system must be able to store processes the same way as facts
+and to handle these processes the same way. This is implicitly said by the previous point.
+
+//Update:// "A. V. Gavrilov":[http://www.mind-consciousness-language.com/gavrilov%20principles.pdf]:
+
+> The basis of reasoning lies in operating with fuzzy images by means of a process of
+> associative recall of images (see Principle No. 1). At the end of the process, a choice
+> of certain operations is carried out (recalling of it): it is therefore possible to
+> associate the successful choice (the solved task) with the focusing of attention, the
+> start of operation as programs of operation motor neurons, etc. Thus the selected
+> operation is involved as a tag in the further process of reasoning.
+
+
+<li> Must be able to infer from the stored information.
+
+Cogitation will be done by infering all types of information from all parts of the system:
+
+* Long-term memory - facts learned, generalized information about classes of objects, stereotypes, long-term goals.
+* Mid-term memory  - recent actions and their effect; "where am I", mid-term goals ("what's my today's plan")
+* Short-term memory - current "context" of the system.
+
+These will not be separated in some systemic way; the separation will be rather fuzzy 
+and will ensue from the usage of the particular information (or association).
+This will follow the well-known principle of association re-inforcement.
+
+
+The cogitation would probably happen mostly in the short-term memory part.
+
+
+<li> Must be "serializable" to some extent to be evolvable.
+
+It's almost clear that an artificial cogitating mind will not be designed.
+In my opinion, humans are not able to design as complex structure as human brain.
+The way to design it is to design a general principles of how the structure works,
+and then let it evolve, using something like genetic algorithms.
+
+During evolution, a general structure will "crystalize" and some of it's parts will be hard-coded
+in the genetic information; other parts will be described vaguely and left as a subject of self-organization.
+
+To be able to store the structure and properties of the structure, 
+it has to provide means to store its every aspect as a serialized genetic information.
+
+
+</ul>
+
+Of course, there are more things that such AI theory should satisfy.
+
+
+
+
+Now let's create a simple example of how a primaeval man can think in this model.
+It shows how the information could be stored and how inference could be done.
+
+
+<div style="border: 1px solid gray; padding: 1ex 1em;">
+
+Based on some experience, a primaeval man could create this association:
+
+> action "crush" subject ("stone" property "sharp")  -->  effect "cuts", effect "divides", effect "hurts", ...
+
+//(Note that the meta-words like "property" and "action" have to be represented somehow in the system, too.
+Using them here this way is just for brevity.)//
+
+The terms at right side could be associated depending on the situation in which the action was performed -
+thus the association itself would be associated with terms which were activated in short-term memory in that moment.
+
+Now the man sees other man hunting an animal with a spear. He watches and creates an associations:
+
+> property "sharp" <--> effect "pierces", effect "hurts"
+>  object "spear" (abstraction 0.8) <= => "sharp"
+>  object "spear" (abstraction 0.8) <--> "wooden stick" (abstraction 0.9)
+>  object "spear" (abstraction 0.8) <-->  goal "hunted" subject "animal" (abstraction 1.0)
+>  action "stab" subject "spear" <= =>  goal "hunted" subject "animal" (abstraction 1.0)
+>  (and many others...)
+
+Then, some day, he desices to go hunting. "hunt an animal" term is activated and associated as mid-term goal. (TODO: how?)
+Using the association created before, the "excitation" reaches the "spear" term.
+He gets an idea of "making a spear". Using associations
+
+> object "spear" (abstraction 0.8) <= => "sharp"
+>  object "spear" (abstraction 0.8) <--> ("wooden stick" property "long", property, abstraction 0.9)
+>  action "crush" subject ("stone" property "sharp")  -->  effect "cuts", effect "divides", effect "hurts", ...
+
+he infers an idea of creating a spear by crusing a wooden stick with a sharp stone.
+Having no better ideas, he associates this idea as a short-term goal,
+having all the terms and associations used to get to idea activated.
+As he goes through the environment, using his receptors he recognites a stick that activates the "long" term.
+That (re-)activates the short-term goal structure of associations, so he stops, gets the stick
+crushes it with a sharp stone. So he makes it sharp, efectively making a spear.
+So he reinforces all association in the structure used to infer the plan to make a spear.
+
+Then he succesfully uses the spear to hunt an animal, and having done his mid-term goal,
+the association between a goal of hunted animal and the structure of making the spear is reinforced.
+And because having a hunted animal is very important goal,
+the primaeval man is very happy this reinforcement is very strong.
+
+</div>
+
+
+This example demonstrated how the intelligent cogitation could work.
+(Maybe I should not suggest my own solutions for the cogitation system
+in a list of its necessary properties, but I am not good at creating structured documents ;-)
+
+
+
+
+
+//Update:// General description of cogitating intelligent system's principles is in
+"A. V. Gavrilov":[http://www.mind-consciousness-language.com/]'s
+"The Principles of Action of Intelligent Systems":[http://www.mind-consciousness-language.com/gavrilov%20principles.pdf].
+This description overlaps my ideas, but could hardly put it in such easy-to-read, consistent document.
+
+
+
+
+**Estimated time: 10 years** to a complex AI theory tested in simulated (virtual) environment.
+
+
+
+2) Computing power
+=====================
+
+
+Based on currently accepted estimates, a human brain capacity is approximately 10 000 TeraFLOPS.
+Although, this estimation is very rough and can not be closer in principle - human brain does not perform //floating point operations//.
+
+Today's fastest centralized supercomputers, like "Ranger":http://www.tacc.utexas.edu/resources/hpcsystems/,
+have about 504 TeraFLOPS.
+
+Today's fastest distributed computation structures, like "SETI@home":http://setiathome.berkeley.edu/ 
+or "BOINC":http://boinc.berkeley.edu/, have computing power over 1 200 TeraFLOPS.
+
+To imitate the human brain behavior, first we will have to get to a level when __common__ computers
+will have brain's computing power. Why?
+
+As described above, the structure in which the cogitating system will work, has to evolve -
+it's very improbable that humans will design it. Thus, we need a computing power at least for:
+
+* running __all__ individual cogitating systems that will take part in evolution
+* computing their "fitness function", that is, evaluating their "intelligence"
+* performing genetic operations on their genes.
+
+
+
+Seeing the sum of computing power needed, it's almost clear 
+that to develop, evolve and teach artificial cogitating system,
+we will need much more computing power than human brain has.
+
+**Estimated time: 45 years** to first potentially cogitating, but not learned mind situated in simulated environment;
+another 2 to 5 years to teach it and see whether it's learning at all.
+
+
+However, the second point of the list above is discutable: Will we really simulate system's environment, 
+or will we place the system into the real environment with sufficient number of receptors and effectors?
+That depends on what actually the artificial mind will be for. Should it live in the internet and
+do some job in its virtual environment? Or should it act like an educated monkey in real-world?
+In both cases, simulation might be either insufficient in one case,
+or it would need even more computing power than the system itself.
+Thus, it's more likely that we will learn the systems in the real world.
+
+That makes a good question: How will we evolve the system and place it in the real world in the same time?
+The answer is "pluggable brain". The physical "body" of the system will consist of it's receptors and effectors,
+and the "CNS((Central Neural System))" will be unplugged / downloaded from it for genetic operations,
+and plugged / uploaded into it after genetic operations.
+
+This way, we can skip the time needed to form the body. However, remember, that we do not perform
+genetic operations on the system's knowledge, but it's structure. So we can't skip the time
+needed to teach the system. Depending on the growing complexity of the system (not the task), its learning will be longer.
+"Not the task", because our goal is not to create a system that will solve some "task";
+our goal is to create independent cogitating system.
+We will let the system face very various tasks, from simplest to more and more difficult.
+The teaching of the system will be similar to education of a dog, or to bringing up a baby;
+it just might be more intensive and faster.
+
+**Corrected estimated time: 30 years** to first prototype of potentially cogitating, but not learned mind situated in real world;
+another 5 to 10 years to teach it and see whether it's learning at all.
+
+
+The last point of the above list will doubtless be the least computing power demanding:
+
+Current estimates of 
+"number of human protein-coding genes is 20,000-25,000":http://www.ornl.gov/sci/techresources/Human_Genome/faq/genenumber.shtml.
+I suppose we will not be able to be as efficient, and the length of coded data will rise exponentially
+with the size of the precisely described parts of the system (cogitation center, visual recognition, sound processing),
+minus the sizes of parts that will be described vaguely (e.g. memories, "fact" storage).
+
+However, it is likely that genetic operations will not be done using a computing device of any kind.
+Instead, biological and chemical processes will be used; most likely, it will be done using natural ways:
+
+Let's say there are more ways to encode information about how to form a system.
+Imagine a world (e.g. Earth at the time when RNA principles were forming, at the level of self-reproducing "crystals").
+In this world, all ways of information encoding exist, materialized and working, at some time.
+They spread, forming some systems. 
+At some point, the systems, and that means their way of inforation encoding too,
+will necessarily start fighting for resources.
+Which systems have better chance to survive?
+The ones whose principles of "genetic information" are more efficient:
+Duplicates faster, and in case of mutation, this mutation is likely to introduce 
+a new feature of the system instead of corrupting whole information.
+
+So, with some level of certainty, we can say that if there are more ways of encoding information about system,
+history choosed the best one - RNA, and later, DNA.
+
+So, we can include another need - "fast" reading and writing of genes and their processing.
+
+
+
+
+3) Genes reading / writing and their processing
+===============================================
+
+
+As "deduced" above, RNA / DNA is probably the most effective way of storing an information about a system.
+If we adopt it for our system, we will have to develop the means of fast and reliable reading / writing of DNA.
+
+Fast means that the process of reading / writing will not involve high-tech laboratory,
+many rounds of segmented scanning, time-demanding concatenation and uncertain parsing.
+
+We will also need the means of genetic operations of mutation and crossing.
+
+* Mutation will probably happen accidentaly, but we may also rise it's level using e.g. focused radiation.
+* Crossing is likely to be performed in specialized biological cells.
+
+Note that we will probably not use DNA as instructions for cells which proteins to create;
+DNA will be just our "storage medium".
+
+
+
+**Estimated time: 20 years.**
+
+
+
+
+
+4) Principles of computation
+============================
+
+
+Current computers still operate on the basis of binary logical circuits
+and work on the principles of the Turing Machine.
+
+However,  Maass and Markram have recently argued that
+
+> "in contrast to Turing machines, generic computations by neural circuits are not digital, 
+> and are not carried out on static inputs, but rather on functions of time".
+
+We have two possibilities: Come up with mental model that could be run using binary computers,
+or design new kind of computers which would be more appropriate for this task.
+
+Since binary computers are said to reach their limits soon, the second option is more probable.
+
+**Estimated time: 15 years.**
+
+
+
+

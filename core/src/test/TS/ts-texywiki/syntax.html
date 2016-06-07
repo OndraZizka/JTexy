@@ -1,0 +1,1095 @@
+<h1 id="toc-syntax">Syntax</h1>
+
+<h2 id="toc-paragraphs">Paragraphs</h2>
+
+<pre
+class="src-texy"><code>Lorem ipsum dolor sit amet,
+still the same paragraph.
+
+Second paragraph</code></pre>
+
+<pre
+class="html html"><code>&lt;p&gt;Lorem ipsum dolor sit amet, still the same paragraph.&lt;/p&gt;
+
+&lt;p&gt;Second paragraph&lt;/p&gt;</code></pre>
+
+<pre
+class="src-texy"><code>Lorem ipsum dolor sit amet,
+ still the same paragraph, but wrapped with element `&lt;br&gt;`
+ using one space befero</code></pre>
+
+<pre
+class="html html"><code>&lt;p&gt;Lorem ipsum dolor sit amet,&lt;br&gt;
+still the same paragraph, but wrapped with element &lt;code&gt;&amp;lt;br&amp;gt;&lt;/code&gt;&lt;br&gt;
+one space before&lt;/p&gt;</code></pre>
+
+<p>Centered or colored by modifier:</p>
+
+<pre
+class="src-texy"><code>.{color:blue}
+Lorem ipsum dolor sit amet.
+
+.&lt;&gt;
+Lorem ipsum dolor sit amet.</code></pre>
+
+<pre
+class="html html"><code>&lt;p style="color:blue"&gt;Lorem ipsum dolor sit amet.&lt;/p&gt;
+
+&lt;p style="text-align:center"&gt;Lorem ipsum dolor sit amet.&lt;/p&gt;</code></pre>
+
+<h2 id="toc-headings">Headings</h2>
+
+<p>One way:</p>
+
+<pre class="src-texy"><code>Main title
+<span
+class="texy-hlead">**************</span>
+
+Subtitle
+<span
+class="texy-hlead">==========</span></code></pre>
+
+<p>Second way:</p>
+
+<pre class="src-texy"><code><span class="texy-hlead">===</span><span
+class="texy-hbody"> Main title </span><span class="texy-hlead">===</span>
+
+<span
+class="texy-hlead">##</span><span class="texy-hbody"> Subtitle </span><span
+class="texy-hlead">##</span>
+
+<span class="texy-hlead">##</span><span
+class="texy-hbody"> or same subtitle</span></code></pre>
+
+<pre
+class="html html"><code>&lt;h2&gt;Main title&lt;/h2&gt;
+
+&lt;h3&gt;Subtitle&lt;/h3&gt;</code></pre>
+
+<h2 id="toc-horizontal-line">Horizontal line</h2>
+
+<p>Texy knows four ways:</p>
+
+<pre class="src-texy"><code><span class="texy-hlead">--------</span>
+
+<span
+class="texy-hr">********</span></code></pre>
+
+<h2 id="toc-code">Code</h2>
+
+<pre class="src-texy"><code><span class="texy-hr">/---code php</span><span
+class="texy-code">
+  function reImage($matches) {
+    $content = $matches[1];
+    $align = $matches[5];
+    $href = $matches[6];
+  }
+</span><span
+class="texy-hr">\---</span></code></pre>
+
+<p>Syntax can be highlighted by third party module</p>
+
+<pre class="src-php"><code><span
+class="php-keyword1">function</span> reImage(<span
+class="php-var">$matches</span>) {
+  <span
+class="php-var">$content</span> = <span class="php-var">$matches</span>[<span
+class="php-num">1</span>];
+  <span class="php-var">$align</span> = <span
+class="php-var">$matches</span>[<span class="php-num">5</span>];
+  <span
+class="php-var">$href</span> = <span class="php-var">$matches</span>[<span
+class="php-num">6</span>];
+}</code></pre>
+
+<pre
+class="html html"><code>&lt;pre class="src-php"&gt;&lt;code&gt;&lt;span
+class="php-keyword1"&gt;function&lt;/span&gt; reImage(&lt;span
+class="php-var"&gt;$matches&lt;/span&gt;) {
+  &lt;span
+class="php-var"&gt;$content&lt;/span&gt; = &lt;span class="php-var"&gt;$matches&lt;/span&gt;[&lt;span
+class="php-num"&gt;1&lt;/span&gt;];
+  &lt;span class="php-var"&gt;$align&lt;/span&gt; = &lt;span
+class="php-var"&gt;$matches&lt;/span&gt;[&lt;span class="php-num"&gt;5&lt;/span&gt;];
+  &lt;span
+class="php-var"&gt;$href&lt;/span&gt; = &lt;span class="php-var"&gt;$matches&lt;/span&gt;[&lt;span
+class="php-num"&gt;6&lt;/span&gt;];
+}&lt;/code&gt;&lt;/pre&gt;</code></pre>
+
+<h2 id="toc-disable-texy">Disable Texy</h2>
+
+<pre class="src-texy"><code><span class="texy-hr">/---html</span><span
+class="texy-html">
+  &lt;em&gt;test&lt;/em&gt;: **this is not strong**
+</span><span
+class="texy-hr">\---</span>
+
+
+<span class="texy-hr">/---text</span><span
+class="texy-text">
+  &lt;em&gt;test&lt;/em&gt;: **this is not strong**
+</span><span
+class="texy-hr">\---</span></code></pre>
+
+<h2 id="toc-div">Div</h2>
+
+<pre class="src-texy"><code><span
+class="texy-hr">/---div</span> .[header]
+
+  content of div
+
+<span
+class="texy-hr">\---</span></code></pre>
+
+<pre
+class="html html"><code>&lt;div class="header"&gt;
+	&lt;p&gt;content of div&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+<p>Nested divs:</p>
+
+<pre class="src-texy"><code><span
+class="texy-hr">/---div</span> .[header]
+
+  ## This is a header.
+
+  <span
+class="texy-hr">/---div</span>
+    nested div
+  <span
+class="texy-hr">\---</span>
+
+  Texy is sexy!
+
+<span
+class="texy-hr">\---</span></code></pre>
+
+<pre
+class="html html"><code>&lt;div class="header"&gt;
+	&lt;h6&gt;This is a header.&lt;/h6&gt;
+
+	&lt;div&gt;
+		&lt;p&gt;nested div&lt;/p&gt;
+	&lt;/div&gt;
+
+	&lt;p&gt;Texy is sexy!&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+<h2 id="toc-block-quotes">Block quotes</h2>
+
+<pre
+class="src-texy"><code>&gt; This is a blockquote with two paragraphs.
+&gt;
+&gt; 640 K should be enough for everyone
+&gt;
+&gt;:http://www.microsoft.com</code></pre>
+
+<pre
+class="html html"><code>&lt;blockquote cite="http://www.microsoft.com"&gt;
+	&lt;p&gt;This is a blockquote with two paragraphs.&lt;/p&gt;
+
+	&lt;p&gt;640 K should be enough for everyone&lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+
+<p>Nested block quote:</p>
+
+<pre
+class="src-texy"><code>&gt; This is header
+&gt; ******
+&gt;
+&gt; &gt; Lorem ipsum dolor sit amet.
+&gt; &gt; Vestibulum enim wisi
+&gt;
+&gt; Back to the first level.</code></pre>
+
+<pre
+class="html html"><code>&lt;blockquote&gt;
+	&lt;h2&gt;This is header&lt;/h2&gt;
+
+	&lt;blockquote&gt;
+		&lt;p&gt;Lorem ipsum dolor sit amet. Vestibulum enim wisi&lt;/p&gt;
+	&lt;/blockquote&gt;
+
+	&lt;p&gt;Back to the first level.&lt;/p&gt;
+&lt;/blockquote&gt;</code></pre>
+
+<h2 id="toc-links">Links</h2>
+
+<pre
+class="src-texy"><code>Look at homepage:[http://texy.info].
+
+Do you know &quot;Nette&quot;:http://nette.org?
+
+&quot;Write me&quot;:me@example.com</code></pre>
+
+<pre
+class="html html"><code>&lt;p&gt;Look at &lt;a href="http://texy.info"&gt;homepage&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Do you know &lt;a href="http://nette.org"&gt;Nette&lt;/a&gt;?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="mailto:me&amp;#64;example.com"&gt;Write me&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h3 id="toc-references">References</h3>
+
+<pre
+class="src-texy"><code>[homepage]: http://texy.info/ Texy .(homepage)
+[la trine]: http://latrine.dgx.cz
+
+This is [homepage]
+
+Look at [this site | la trine]</code></pre>
+
+<pre
+class="html html"><code>&lt;p&gt;This is &lt;a href="http://texy.info/" title="homepage"&gt;Texy&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Look at &lt;a title="Create new page" class="new" href="/en/la-trine"&gt;this site&lt;/a&gt;&lt;/p&gt;</code></pre>
+
+<h2 id="toc-images">Images</h2>
+
+<pre class="src-texy"><code>[* image.gif *]</code></pre>
+
+<pre
+class="html html"><code>&lt;div&gt;&lt;img src="http://texy.infofiles/1166/image.gif" alt=""&gt;&lt;/div&gt;</code></pre>
+
+<p>Aligned images:</p>
+
+<pre
+class="src-texy"><code>[* image.gif &lt;] Left-aligned image. Lorem ipsum ...
+
+[* image.gif &gt;] Right-aligned image. Curabitur quam ...</code></pre>
+
+<pre
+class="html html"><code>&lt;p&gt;&lt;img src="http://texy.infofiles/1166/image.gif" alt="" class="left"&gt;
+Left-aligned image. Lorem ipsum …&lt;/p&gt;
+
+&lt;p&gt;&lt;img src="http://texy.infofiles/1166/image.gif" alt="" class="right"&gt;
+Right-aligned image. Curabitur quam …&lt;/p&gt;</code></pre>
+
+<h3 id="toc-with-dimensions">With dimensions</h3>
+
+<pre class="src-texy"><code>[* image.gif 10x20 *]</code></pre>
+
+<pre
+class="html html"><code>&lt;div&gt;&lt;img src="http://texy.infofiles/1166/image.gif" alt="" width="10"
+height="20"&gt;&lt;/div&gt;</code></pre>
+
+<h3 id="toc-with-on-mouse-over-event">With on-mouse-over event</h3>
+
+<pre class="src-texy"><code>[* image.gif | image-over.gif *]</code></pre>
+
+<pre
+class="html html"><code>&lt;div&gt;&lt;img src="http://texy.infofiles/1166/image.gif" alt=""&gt;&lt;/div&gt;</code></pre>
+
+<div class="output">
+	<div><img src="http://texy.infofiles/1166/image.gif" alt=""></div>
+</div>
+
+<h3 id="toc-with-modifiers">With modifiers</h3>
+
+<pre class="src-texy"><code>[* image.gif .(alt text)[foto] *]</code></pre>
+
+<pre
+class="html html"><code>&lt;div&gt;&lt;img src="http://texy.infofiles/1166/image.gif" class="foto"
+alt="alt text"&gt;&lt;/div&gt;</code></pre>
+
+<h3 id="toc-image-using-references">Image using references</h3>
+
+<pre class="src-texy"><code>What a beautiful girl [*picture*] !</code></pre>
+
+<pre class="src-htmlcb"><code>What a beautiful girl <span
+class="html-tag">&lt;img</span><span class="html-tagin"> src=</span><span
+class="html-quote">&quot;images/image.gif&quot;</span><span
+class="html-tagin">
+alt=</span><span
+class="html-quote">&quot;my girl&quot;</span><span
+class="html-tagin"> /</span><span class="html-tag">&gt;</span> !</code></pre>
+
+<h3 id="toc-images-with-description">Images with description</h3>
+
+<pre
+class="src-texy"><code>[* image.gif *] *** This is *description* under image</code></pre>
+
+<pre
+class="html html"><code>&lt;div class="figure"&gt;&lt;img src="http://texy.infofiles/1166/image.gif" alt=""&gt;
+	&lt;p&gt;This is &lt;i&gt;description&lt;/i&gt; under image&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+<h2 id="toc-phrases">Phrases</h2>
+
+<pre class="src-texy"><code>*emphasis*
+
+<span
+class="texy-hr">**strong emphasis**</span>
+
+<span
+class="texy-hr">***stronger emphasis***</span>
+
+^^superscript^^ vs. __subscript__
+
+Quotes: &gt;&gt;Lorem Ipsum Dolores&lt;&lt;:www.lipsum.com
+
+Cite: As ~~Frank Borland~~ said, ...</code></pre>
+
+<pre class="src-htmlcb"><code><span
+class="html-tag">&lt;em&gt;</span>emphasis<span
+class="html-tag">&lt;/em&gt;</span>
+
+<span
+class="html-tag">&lt;strong&gt;</span>strong emphasis<span
+class="html-tag">&lt;/strong&gt;</span>
+
+<span
+class="html-tag">&lt;strong&gt;&lt;em&gt;</span>stronger emphasis<span
+class="html-tag">&lt;/em&gt;&lt;/strong&gt;</span>
+
+<span
+class="html-tag">&lt;sup&gt;</span>superscript<span
+class="html-tag">&lt;/sup&gt;</span> vs. <span
+class="html-tag">&lt;sub&gt;</span>subscript<span
+class="html-tag">&lt;/sub&gt;</span>
+
+Quotes: <span
+class="html-tag">&lt;q</span><span class="html-tagin"> cite=</span><span
+class="html-quote">&quot;http://www.lipsum.com&quot;</span><span
+class="html-tag">&gt;</span>Lorem Ipsum Dolores<span
+class="html-tag">&lt;/q&gt;</span>
+
+Cite: As <span
+class="html-tag">&lt;cite&gt;</span>Frank Borland<span
+class="html-tag">&lt;/cite&gt;</span> said, ...</code></pre>
+
+<div class="output">
+	<p><i>emphasis</i></p>
+
+	<p><b>strong emphasis</b></p>
+
+	<p><b><i>stronger emphasis</i></b></p>
+
+	<p>^^superscript^^ vs. __subscript__</p>
+
+	<p>Quotes: <q cite="http://www.lipsum.com">Lorem Ipsum Dolores</q></p>
+
+	<p>Cite: As ~~Frank Borland~~ said, …</p>
+</div>
+
+<h3 id="toc-with-modifiers-2">With modifiers</h3>
+
+<pre class="src-texy"><code><span class="texy-hlead">**</span><span
+class="texy-hbody">strong and green .{color:green}</span><span
+class="texy-hlead">** like Hulk</span></code></pre>
+
+<pre class="src-htmlcb"><code><span class="html-tag">&lt;strong</span><span
+class="html-tagin"> style=</span><span
+class="html-quote">&quot;color:green;&quot;</span><span
+class="html-tag">&gt;</span>strong and green<span
+class="html-tag">&lt;/strong&gt;</span> like Hulk</code></pre>
+
+<div class="output">
+	<p><b style="color:green">strong and green</b> like Hulk</p>
+</div>
+
+<h2 id="toc-direct-html-tags">Direct HTML tags</h2>
+
+<pre
+class="src-texy"><code>This &lt;strong class=info&gt;is strong&lt;/strong&gt; text.
+&lt;br&gt; This is not.</code></pre>
+
+<pre class="src-htmlcb"><code>This <span class="html-tag">&lt;strong</span><span
+class="html-tagin"> class=</span><span
+class="html-quote">&quot;info&quot;</span><span
+class="html-tag">&gt;</span>is strong<span
+class="html-tag">&lt;/strong&gt;</span> text.
+<span
+class="html-tag">&lt;br</span><span class="html-tagin"> /</span><span
+class="html-tag">&gt;</span> This is not.</code></pre>
+
+<h2 id="toc-lists">Lists</h2>
+
+<pre class="src-texy"><code>-   Red
+-   Green
+-   Blue</code></pre>
+
+<pre class="src-htmlcb"><code><span class="html-tag">&lt;ul&gt;</span>
+    <span
+class="html-tag">&lt;li&gt;</span>Red<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Green<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Blue<span
+class="html-tag">&lt;/li&gt;</span>
+<span
+class="html-tag">&lt;/ul&gt;</span></code></pre>
+
+<div class="output">
+	<ul>
+		<li>Red</li>
+
+		<li>Green</li>
+
+		<li>Blue</li>
+	</ul>
+</div>
+
+<h3 id="toc-ordered">Ordered</h3>
+
+<pre
+class="src-texy"><code>1)  One
+2)  Two
+3)  Three
+
+a)  One
+b)  Two
+c)  Three
+
+A)  DOS
+B)  Windows
+C)  Linux
+
+I)  Yesterday
+II)  Today
+III)  Tomorrow</code></pre>
+
+<pre class="src-htmlcb"><code><span class="html-tag">&lt;ol&gt;</span>
+    <span
+class="html-tag">&lt;li&gt;</span>One<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Two<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Three<span
+class="html-tag">&lt;/li&gt;</span>
+<span
+class="html-tag">&lt;/ol&gt;</span>
+
+<span class="html-tag">&lt;ol</span><span
+class="html-tagin"> style=</span><span
+class="html-quote">&quot;list-style-type:lower-alpha;&quot;</span><span
+class="html-tag">&gt;</span>
+    <span
+class="html-tag">&lt;li&gt;</span>One<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Two<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Three<span
+class="html-tag">&lt;/li&gt;</span>
+<span
+class="html-tag">&lt;/ol&gt;</span>
+
+<span class="html-tag">&lt;ol</span><span
+class="html-tagin"> style=</span><span
+class="html-quote">&quot;list-style-type:upper-alpha;&quot;</span><span
+class="html-tag">&gt;</span>
+    <span
+class="html-tag">&lt;li&gt;</span>DOS<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Windows<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Linux<span
+class="html-tag">&lt;/li&gt;</span>
+<span
+class="html-tag">&lt;/ol&gt;</span>
+
+<span class="html-tag">&lt;ol</span><span
+class="html-tagin"> style=</span><span
+class="html-quote">&quot;list-style-type:upper-roman;&quot;</span><span
+class="html-tag">&gt;</span>
+    <span
+class="html-tag">&lt;li&gt;</span>Yesterday<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Today<span
+class="html-tag">&lt;/li&gt;</span>
+
+    <span
+class="html-tag">&lt;li&gt;</span>Tomorrow<span
+class="html-tag">&lt;/li&gt;</span>
+<span
+class="html-tag">&lt;/ol&gt;</span></code></pre>
+
+<div class="output">
+	<ol>
+		<li>One</li>
+
+		<li>Two</li>
+
+		<li>Three</li>
+	</ol>
+
+	<ol style="list-style-type:lower-alpha">
+		<li>One</li>
+
+		<li>Two</li>
+
+		<li>Three</li>
+	</ol>
+
+	<ol style="list-style-type:upper-alpha">
+		<li>DOS</li>
+
+		<li>Windows</li>
+
+		<li>Linux</li>
+
+		<li>Yesterday</li>
+	</ol>
+
+	<ol style="list-style-type:upper-roman">
+		<li>Today</li>
+
+		<li>Tomorrow</li>
+	</ol>
+</div>
+
+<h3 id="toc-nested-lists">Nested lists</h3>
+
+<pre
+class="src-texy"><code>a)  Bird
+  I)  Bird
+    -   Red
+    -   Green
+    -   Blue
+  II)  McHale
+  III)  Parish
+b)  McHale
+c)  Parish
+      1)  Bird
+      2)  McHale
+      3)  Parish</code></pre>
+
+<div class="output">
+	<ol style="list-style-type:lower-alpha">
+		<li>Bird
+			<ol style="list-style-type:upper-roman">
+				<li>Bird
+					<ul>
+						<li>Red</li>
+
+						<li>Green</li>
+
+						<li>Blue</li>
+					</ul>
+				</li>
+
+				<li>McHale</li>
+
+				<li>Parish</li>
+			</ol>
+		</li>
+
+		<li>McHale</li>
+
+		<li>Parish
+			<ol>
+				<li>Bird</li>
+
+				<li>McHale</li>
+
+				<li>Parish</li>
+			</ol>
+		</li>
+	</ol>
+</div>
+
+<h3 id="toc-definition-list">Definition list</h3>
+
+<pre
+class="src-texy"><code>Concert Divokej Bill:
+    - when: 9. 12. 2004
+    - where: Brno
+    - Price: EUR 26</code></pre>
+
+<pre class="src-htmlcb"><code><span class="html-tag">&lt;dl&gt;</span>
+    <span
+class="html-tag">&lt;dt&gt;</span>Concert Divokej Bill<span
+class="html-tag">&lt;/dt&gt;</span>
+
+    <span
+class="html-tag">&lt;dd&gt;</span>when: 9. 12. 2004<span
+class="html-tag">&lt;/dd&gt;</span>
+
+    <span
+class="html-tag">&lt;dd&gt;</span>where: Brno<span
+class="html-tag">&lt;/dd&gt;</span>
+
+    <span
+class="html-tag">&lt;dd&gt;</span>Price: EUR 26<span
+class="html-tag">&lt;/dd&gt;</span>
+<span
+class="html-tag">&lt;/dl&gt;</span></code></pre>
+
+<div class="output">
+	<dl>
+		<dt>Concert Divokej Bill</dt>
+
+		<dd>when: 9. 12. 2004</dd>
+
+		<dd>where: Brno</dd>
+
+		<dd>Price: EUR 26</dd>
+	</dl>
+</div>
+
+<h3 id="toc-with-modifiers-3">With modifiers</h3>
+
+<pre
+class="src-texy"><code>.{color:red}
+PHP:    .{color:blue}
+  - PHP: Hypertext Preprocessor .{color:green}
+  - A scripting language
+  - Personal Home Pages</code></pre>
+
+<div class="output">
+	<dl style="color:red">
+		<dt style="color:blue">PHP</dt>
+
+		<dd style="color:green">PHP: Hypertext Preprocessor</dd>
+
+		<dd>A scripting language</dd>
+
+		<dd>Personal Home Pages</dd>
+	</dl>
+</div>
+
+<h2 id="toc-modifiers">Modifiers</h2>
+
+<p>These types of modifiers are available:</p>
+
+<ul>
+	<li>(title) descriptive, used as attribute title or alt (for images)</li>
+
+	<li><code>[class1 class2 #id]</code> determine class and/or ID</li>
+
+	<li>{class:blue} direct CSS style</li>
+
+	<li>{target:_blank} direct HTML attribute</li>
+
+	<li>horizontal alignment:
+		<ul>
+			<li>left &lt;</li>
+
+			<li>right &gt;</li>
+
+			<li>center &lt;&gt;</li>
+
+			<li>justify =</li>
+		</ul>
+	</li>
+
+	<li>vertical alignment: (for tables)
+		<ul>
+			<li>top ^</li>
+
+			<li>middle –</li>
+
+			<li>bottom _</li>
+		</ul>
+	</li>
+</ul>
+
+<pre
+class="src-texy"><code>Centered using modifier  .&lt;&gt;
+
+Another example .{color:blue; lang: cs}</code></pre>
+
+<pre class="src-htmlcb"><code><span class="html-tag">&lt;p</span><span
+class="html-tagin"> style=</span><span
+class="html-quote">&quot;text-align:center&quot;</span><span
+class="html-tag">&gt;</span>Centered using modifier<span
+class="html-tag">&lt;/p&gt;</span>
+
+<span class="html-tag">&lt;p</span><span
+class="html-tagin"> style=</span><span
+class="html-quote">&quot;color:blue&quot;</span><span
+class="html-tagin"> lang=</span><span
+class="html-quote">&quot;cs&quot;</span><span
+class="html-tag">&gt;</span>Another example<span
+class="html-tag">&lt;/p&gt;</span></code></pre>
+
+<h2 id="toc-quick-corrects">Quick-corrects</h2>
+
+<pre
+class="src-texy"><code>- very long words division (with respect for language rules). Example: antidisestablishmentarianism
+- clickable emails and URL www.dgx.cz, dave@dgx.cz (emails are obfuscated against spambots)
+- &quot;national&quot; 'typographic' quotes
+- divider vs. dash: 10-15 vs. north-west
+- em-dash: one -- two
+- dimension sign 10 x 20
+- nonbreakable spaces in phone numbers +420 776 552 046
+- acronym NATO((North Atlantic Treaty Organisation))
+- abbr &quot;et al.&quot;((and others))
+- quickCorrects like this(TM) this(R) or this(C)
+- arrows &lt;- and -&gt; and &lt;-&gt;
+- ellipsis...
+- preserve HTML entities
+- and many others :-)</code></pre>
+
+<div class="output">
+	<ul>
+		<li>very long words division (with respect for language rules). Example:
+		antidisestablishmentarianism</li>
+
+		<li>clickable emails and URL <a href="http://www.dgx.cz">www.dgx.cz</a>, <a
+		href="mailto:dave&#64;dgx.cz">dave&#64;<!---->dgx.cz</a> (emails are obfuscated
+		against spambots)</li>
+
+		<li>“national” ‘typographic’ quotes</li>
+
+		<li>divider vs. dash: 10–15 vs. north-west</li>
+
+		<li>em-dash: one – two</li>
+
+		<li>dimension sign 10×20</li>
+
+		<li>nonbreakable spaces in phone numbers +420 776 552 046</li>
+
+		<li>acronym <abbr title="North Atlantic Treaty Organisation"
+		class="about">NATO</abbr></li>
+
+		<li>abbr <abbr title="and others" class="about">et al.</abbr></li>
+
+		<li>quickCorrects like this™ this® or this(C)</li>
+
+		<li>arrows ← and → and ← &gt;</li>
+
+		<li>ellipsis…</li>
+
+		<li>preserve HTML entities</li>
+
+		<li>and many others :-)</li>
+	</ul>
+</div>
+
+<p>spaces:</p>
+
+<pre
+class="src-texy"><code>- vkládání nezalomitelných mezer za jednopísmennc ptedložky (v aut&gt; u okna)
+- ned&gt;litelnc mezery u telefonních čísel +420 776 552 046</code></pre>
+
+<pre
+class="src-htmlcb"><code>vkládání nezalomitelných mezer za jednopísmennc ptedložky (v<span
+class="html-entity">&amp;nbsp;</span>aut&gt; u<span
+class="html-entity">&amp;nbsp;</span>okna)
+
+ned&gt;litelnc mezery u<span
+class="html-entity">&amp;nbsp;</span>telefonních čísel +420<span
+class="html-entity">&amp;nbsp;</span>776<span
+class="html-entity">&amp;nbsp;</span>552<span
+class="html-entity">&amp;nbsp;</span>046</code></pre>
+
+<p><em>Poznámka: Nahrazování se obvykle tídí dalšími pravidly, kterc
+určují, kdy symbol nahradit a kdy ne. Naptíklad šipka <code>-&gt;</code>
+nemůže být na konci tádku atd. Proto nebuďte ptekvapeni, když
+v n&gt;kterých ptípadech Texy náhradu neprovede. Pokud to považujete za
+chybu, dejte mi v&gt;d&gt;t.</em></p>
+
+<h3 id="toc-zkratky-akronymy">Zkratky, akronymy</h3>
+
+<p>Používá se zápisu s dvojitou kulatou závorkou:</p>
+
+<pre
+class="src-texy"><code>jednoslovnc: NATO((North Atlantic Treaty Organisation))
+
+víceslovnc: &quot;et al.&quot;((a další))</code></pre>
+
+<pre class="src-htmlcb"><code>jednoslovnc: <span
+class="html-tag">&lt;acronym</span><span class="html-tagin"> title=</span><span
+class="html-quote">&quot;North Atlantic Treaty Organisation&quot;</span><span
+class="html-tag">&gt;</span>NATO<span
+class="html-tag">&lt;/acronym&gt;</span>
+
+víceslovnc: <span
+class="html-tag">&lt;acronym</span><span class="html-tagin"> title=</span><span
+class="html-quote">&quot;a další&quot;</span><span
+class="html-tag">&gt;</span>et al.<span
+class="html-tag">&lt;/abbr&gt;</span></code></pre>
+
+<p><em>Poznámka: mezi ABBR a ACRONYM se <a
+href="http://forum.texy.info/viewtopic.php?id=11">nerozlišuje</a>.</em></p>
+
+<h3 id="toc-klikatelnc-uri">Klikatelnc URI</h3>
+
+<p>Automatický ptevod URI do klikatelnc formy (včetn&gt; emailů)</p>
+
+<pre
+class="src-texy"><code>další informace na www.dgx.cz a takc ...</code></pre>
+
+<div class="output">
+	<p>další informace na <a href="http://www.dgx.cz">www.dgx.cz</a> a takc
+	…</p>
+</div>
+
+<h2 id="toc-rozd-leni-velmi-dlouhych-slov">Rozd&gt;lení velmi dlouhých
+slov</h2>
+
+<p>Velmi zajímavá a důležitá funkce Texy. Dlouhá slova mohou narušit
+vzhled stránky, proto je vhodnc prohlížeči naznačit, kde je může zalomit.
+Texy tyto místa hledá s ptihlcdnutím k národním zvyklostem, tedy slovo
+rozd&gt;luje podle slabik:</p>
+
+<pre class="src-texy"><code>nejneobhospodatovávateln&gt;jšími</code></pre>
+
+<pre class="src-htmlcb"><code>nejneobhospoda<span
+class="html-entity">&amp;shy;</span>továvateln&gt;jší<span
+class="html-entity">&amp;shy;</span>mi<span
+class="html-tag">&lt;/p</span></code></pre>
+
+<p><em>Poznámka: limit dclky slova je volitelný</em></p>
+
+<p><em>Poznámka: současnc prohlížeče na jádru Gecko (Mozilla, Firefox)
+jsou k naznačencmu d&gt;lení slepí. Doufám, že vývojáti tento nedostatek
+brzy odstraní. Nebo zkuste <a
+href="http://forum.texy.info/viewtopic.php?id=36">tohle</a></em></p>
+
+<h2 id="toc-tabulky">Tabulky</h2>
+
+<p>Ptíklad jednoduchc tabulky, sloupce se odd&gt;lují
+znakem <code>|</code></p>
+
+<pre
+class="src-texy"><code>| first col | second col | third col
+| Adam      | Eva        | Franta</code></pre>
+
+<p>A výsledek je:</p>
+
+<table>
+	<tbody>
+		<tr>
+			<td>first col</td>
+
+			<td>second col</td>
+
+			<td>third col</td>
+		</tr>
+
+		<tr class="alt">
+			<td>Adam</td>
+
+			<td>Eva</td>
+
+			<td>Franta</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>Hlavičku tabulky můžeme definovat tímto zápisem:</p>
+
+<pre
+class="src-texy"><code>|-----------------------------
+| First Name | Last Name | Age
+|----------------------------
+| Jesus      | Christ    | 33
+| Cecilie    | Svobodova | 74</code></pre>
+
+<table>
+	<thead>
+		<tr>
+			<th>First Name</th>
+
+			<th>Last Name</th>
+
+			<th>Age</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr class="alt">
+			<td>Jesus</td>
+
+			<td>Christ</td>
+
+			<td>33</td>
+		</tr>
+
+		<tr>
+			<td>Cecilie</td>
+
+			<td>Svobodova</td>
+
+			<td>74</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>Pokud hlavičku netvotí tádek (tádky), můžeme ji definovat na úrovni
+bun&gt;k. Stačí vložit hv&gt;zdičku ihned po znaku <code>|</code></p>
+
+<pre
+class="src-texy"><code>|* First Name | Jesus    | Cecilie
+|* Last Name  | Christ   | Svobodova
+|* Age        | 33       | 74</code></pre>
+
+<table>
+	<tbody>
+		<tr>
+			<th>First Name</th>
+
+			<td>Jesus</td>
+
+			<td>Cecilie</td>
+		</tr>
+
+		<tr class="alt">
+			<th>Last Name</th>
+
+			<td>Christ</td>
+
+			<td>Svobodova</td>
+		</tr>
+
+		<tr>
+			<th>Age</th>
+
+			<td>33</td>
+
+			<td>74</td>
+		</tr>
+	</tbody>
+</table>
+
+<h3 id="toc-slouceni-sloupcu">Sloučení sloupců</h3>
+
+<p>všimn&gt;te si zdvojencho ||</p>
+
+<pre
+class="src-texy"><code>|-----------------------------
+| Name                  || Age
+|----------------------------
+| Jesus      | Christ    | 33</code></pre>
+
+<table>
+	<thead>
+		<tr>
+			<th colspan="2">Name</th>
+
+			<th>Age</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr class="alt">
+			<td>Jesus</td>
+
+			<td>Christ</td>
+
+			<td>33</td>
+		</tr>
+	</tbody>
+</table>
+
+<h3 id="toc-slouceni-tadku">Sloučení tádků</h3>
+
+<p>Všimn&gt;te si znaku <code>^</code> symbolizujícího sm&gt;r nahoru:</p>
+
+<pre
+class="src-texy"><code>|-----------------------------
+| First Name | Last Name | Age
+|----------------------------
+| Bill                  || 50
+|^                       | 52
+| Jim        | Beam      | 70</code></pre>
+
+<table>
+	<thead>
+		<tr>
+			<th>First Name</th>
+
+			<th>Last Name</th>
+
+			<th>Age</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		<tr class="alt">
+			<td colspan="2" rowspan="2">Bill</td>
+
+			<td>50</td>
+		</tr>
+
+		<tr>
+			<td>52</td>
+		</tr>
+
+		<tr class="alt">
+			<td>Jim</td>
+
+			<td>Beam</td>
+
+			<td>70</td>
+		</tr>
+	</tbody>
+</table>
+
+<h3 id="toc-modifikatory">Modifikátory</h3>
+
+<p>Platí tato pravidla:</p>
+
+<ul>
+	<li>modifikátor ovliv_ující celou tabulku se vkládá bezprosttedn&gt; pted
+	tabulku</li>
+
+	<li>ovliv_ující tádek se vkládá na konec tádku</li>
+
+	<li>ovliv_ující sloupec se vkládá na začátek bu_ky (vlevo v bu_ce)</li>
+
+	<li>a nakonec ovliv_ující bu_ku se vkládá na konec bu_ky (pravo
+	v bu_ce)</li>
+</ul>
+
+<p>Podívejte se na ptíklad.</p>
+
+<pre
+class="src-texy"><code>.(people)
+| .{color: green} first col | second col      .&gt;| third col | .{font-style:italic}
+| Adam                      | Eva .{color: blue}| Franta    |</code></pre>
+
+<p>Zde je:</p>
+
+<ul>
+	<li><code>.(people)</code> modifikátor tabulky</li>
+
+	<li><code>.{color: green}</code> modifikátor sloupce</li>
+
+	<li><code>.{font-style:italic}</code> modifikátor tádku</li>
+
+	<li><code>.{color: blue}</code> a takc <code>.&gt;</code>
+	modifikátor bu_ky</li>
+</ul>
+
+<p>Takže výsledná tabulka vypadá takto:</p>
+
+<table title="people">
+	<tbody>
+		<tr style="font-style:italic">
+			<td style="color:green">first col</td>
+
+			<td class="right">second col</td>
+
+			<td>third col</td>
+		</tr>
+
+		<tr class="alt">
+			<td style="color:green">Adam</td>
+
+			<td style="color:blue">Eva</td>
+
+			<td>Franta</td>
+		</tr>
+	</tbody>
+</table>
