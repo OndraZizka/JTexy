@@ -107,14 +107,12 @@ Looks like yet-another-wiki-markup, but (J)Texy can do much more - [see here](ht
 
 <p>&lt;wiki:gadget url="http://www.ohloh.net/p/323685/widgets/project_basic_stats.xml" height="220" border="1"/&gt;</p>
 
-<p></p>
-
 <h2>Implementation progress</h2>
 
 <p>Uncommented are done.
 Numbers in parens denote expected priority.</p>
 
-<p>```
+
     // line parsing
     (8)//module = this.scriptModule = new ScriptModule();
     (1)//module = this.htmlModule = new HtmlModule();
@@ -139,7 +137,6 @@ module = this.listModule = new ListModule();                this.registerModule(
 (2)//module = this.htmlOutputModule = new HtmlOutputModule();
 </code></pre>
 
-<p>```</p>
 
 <h2>TODOs</h2>
 
@@ -152,28 +149,16 @@ module = this.listModule = new ListModule();                this.registerModule(
 </ul>
 
 Maven's settings.xml
+--------------------
 
 <p>To run the testsuite, you need to set the <code>jtexy.phptexy.ts.dir</code> property in <code>settings.xml</code>, pointing to the testsuite dir:</p>
-
-<p>```
-    
-      jtexy
-       true 
-      
         
         c:/java/JTexy/JTexy-google/src/phptexy20/testsuite
-        
         c:/java/JTexy/JTexy-google/src/test/resources/cz/dynawest/jtexy/ts
-        
-        c:/java/JTexy/JTexy-google/target/ts-output</p>
-
-<pre><code>  &lt;/properties&gt;
-&lt;/profile&gt;
-</code></pre>
-
-<p>```</p>
+        c:/java/JTexy/JTexy-google/target/ts-output
 
 JTexy Maven repository
+----------------------
 
 <p>To add JTexy as a maven dependency, add the repo to your pom.</p>
 
