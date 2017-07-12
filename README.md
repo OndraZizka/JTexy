@@ -20,45 +20,39 @@ When that is reached, 2.0.0 will be released and Texy 2.1 improvements porting w
 
 <h2>What does it do?</h2>
 
-<p>Converts a concise easy-to-write syntax like</p>
+Converts a concise easy-to-write syntax like this
 
-<p>```
-Title  .[myHtmlId]{my-css-class1 class2}</p>
+    Title  .[myHtmlId]{my-css-class1 class2}</p>
+    ============================================
 
-<hr>
-
-<p>Hello //world!//
-How are you?
- I'm fine. Look at my "blog":<a href="http://www.blog.cz/">http://www.blog.cz/</a>. And my photo: [* img/me.png *]</p>
-
-<h1>Subtitle</h1>
-
-<p>/--code java
-System.out.println("That's all.");
---
-```</p>
+    Hello //world!//
+    How are you?
+    I'm fine. Look at my "blog":<a href="http://www.blog.cz/">http://www.blog.cz/</a>. And my photo: [* img/me.png *]</p>
+     
+    Subtitle
+    --------
+     
+    /--code java
+    System.out.println("That's all.");
+    \-
+    
 
 <p>to XHTML:</p>
 
-<p>```
-Title</p>
+    <p>Title</p>
 
-<p>Hello <em>world!</em> How are you?
-  <br>I'm fine. Look at my <a href="http://www.blog.cz/">blog</a>. And my photo: </p>
+    <p>Hello <em>world!</em> How are you?
+      <br>I'm fine. Look at my <a href="http://www.blog.cz/">blog</a>. And my photo: </p>
 
-<h2>Subtitle</h2><h2>
+    <h2>Subtitle</h2>
+    
+    <code>System.out.println("That's all.");</code>
 
-
-
-<code>System.out.println("That's all.");
-</code>
-
-```
 
 Looks like yet-another-wiki-markup, but (J)Texy can do much more - [see here](http://texy.info/en/), [try here](http://texy.info/cs/try/).
 
 
-</h2><h2>Features</h2>
+<h2>Features</h2>
 
 <ul>
 <li>Natural syntax, really easy to learn, see here: <a href="http://texy.info/en/syntax">http://texy.info/en/syntax</a></li>
