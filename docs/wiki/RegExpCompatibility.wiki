@@ -1,0 +1,11 @@
+= Java vs. PHP Regular Expressions Compatibility =
+
+
+Removed unnecessary escapes from regexp patterns: \\/, \\", \\', \\~, \\_, \\>, \\< 
+
+`UNGREEDY` flag - own modified `Pattern` from JDK 5, see `cz.dynawest.openjdkregex`
+
+
+Caucho Quercus - PHP java interpreter:
+
+http://www.caucho.com/resin-javadoc/com/caucho/quercus/lib/regexp/RegexpModule.html

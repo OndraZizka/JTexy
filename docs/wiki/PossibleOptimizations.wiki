@@ -1,0 +1,12 @@
+#summary Optimizations that can be done if necessary.
+
+= Possible Optimizations =
+
+== Parsing ==
+
+ * Parse loop: Don't scan all matches of all patterns; instead:
+   * Find the first match of each pattern.
+   * Then process the one at nearest position; that sets the offset after that block.
+   * Then find the next match of those patterns whose nearest matches were in the processed block.
+
+This should spare many regexp find() calls.

@@ -1,0 +1,17 @@
+#summary JTexy performance and comparison to PHP Texy.
+
+= JTexy Performance =
+
+=== JTexy: ===
+
+{{{
+19.1.2010 0:03:18 cz.dynawest.jtexy.perf.JTexyPerfTest testPerformance - INFO:   Processing smoke.texy 10000x took 17798 ms.
+}}}
+
+
+=== PHP Texy: ===
+
+{{{
+ondra@ondra-redhat:~/work/JTexy/svn-google/trunk/src/phptexy20/testsuite$ php TexyPerfTest.php
+Init: 0.0022280216217 Run: 40.3541600704
+}}}

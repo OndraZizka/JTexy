@@ -1,0 +1,27 @@
+[*test.jpg*]
+[*test.jpg *]
+[* test.jpg*]
+[* test.jpg *]
+
+[*test>]
+[*test >]
+[* test>]
+[* test >]
+
+[*test.jpg<>]
+
+[*test.jpg<]
+[*test.jpg <]
+[* test.jpg<]
+[* test.jpg <]
+
+[*test.jpg*] *** Popis
+[*test.jpg *] *** Popis
+[* test.jpg*] *** Popis
+[* test.jpg *] *** Popis
+
+
+[*test.jpg<] *** Popis *** Popis
+[*test.jpg <] * * * Popis
+[* test.jpg<]*** Popis
+[* test.jpg <] ***Popis

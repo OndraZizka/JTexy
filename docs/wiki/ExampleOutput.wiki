@@ -1,0 +1,73 @@
+=Example parsing test output=
+
+
+{{{
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running cz.dynawest.jtexy.ts.TexyGenericTestSuite
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.ts.TexyGenericTestSuite suite
+SEVERE: TEST FILTER: *smoke.*
+Oct 28, 2012 1:18:07 AM cz.dynawest.logging.LoggingUtils initLogging
+INFO: Loading logging conf from: #/logging.properties (set in sys var java.util.logging.config.file)
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.JTexy registerModule - FINE:      Registering module cz.dynawest.jtexy.modules.ImageModule...
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.JTexy registerModule - FINE:      Registering module cz.dynawest.jtexy.modules.PhraseModule...
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.JTexy registerModule - FINE:      Registering module cz.dynawest.jtexy.modules.LinkModule...
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.JTexy registerModule - FINE:      Registering module cz.dynawest.jtexy.modules.ParagraphModule...
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.JTexy registerModule - FINE:      Registering module cz.dynawest.jtexy.modules.BlockModule...
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.JTexy registerModule - FINE:      Registering module cz.dynawest.jtexy.modules.HorizontalLineModule...
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.JTexy registerModule - FINE:      Registering module cz.dynawest.jtexy.modules.HeadingModule...
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.JTexy registerModule - FINE:      Registering module cz.dynawest.jtexy.modules.ListModule...
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ListModule init - FINE:      List regex: #^(?:(?: *(?<= |^)\.((?:\([^)\n]+\)|\[[^\]\n]+\]|\{[^}\n]+\}|<>|>|=|<){1,4}?))\n)?(\*\ |[\u2013-](?![>-])|\+\ |1\.\ |\d{1,3}\)\ |I\.\ |[IVX]+\)\ |[a-z]\)\ |[A-Z]\)\ )\ *\S.*$#mUu
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ListModule init - FINE:      List def regex: #^(?:(?: *(?<= |^)\.((?:\([^)\n]+\)|\[[^\]\n]+\]|\{[^}\n]+\}|<>|>|=|<){1,4}?))\n)?(\S.*)\:\ *(?: *(?<= |^)\.((?:\([^)\n]+\)|\[[^\]\n]+\]|\{[^}\n]+\}|<>|>|=|<){1,4}?))?\n(\ ++)(\*\ |[\u2013-](?![>-])|\+\ )\ *\S.*$#mUu
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parse - FINE:      ===================================================================
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parse - FINE:      Parsing: Title  .[main-title]\n*****\n\nHello //world!... (210)
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINEST:        Applying pattern: blocks
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINEST:        Applying pattern: horizline
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINEST:        Applying pattern: heading/underlined
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINEST:        Applying pattern: heading/surrounded
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINEST:        Applying pattern: list
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINEST:        Applying pattern: list/definition
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINE:      Matches: 4
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINER:           Match: 0: [@0: "Title  .[main-title]\n*...", @0: "Title", @8: "[main-title]", @21: "*****"]
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINER:           Match: 21: [@21: "*****", @21: "*****", @-1: "null", @26: ""]
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINER:           Match: 140: [@140: "Subtitle\n========", @140: "Subtitle", @-1: "null", @149: "========"]
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser parseLoop - FINER:           Match: 159: [@159: "\/--code java\nSystem.ou...", @162: "code java", @-1: "null", @171: "\nSystem.out.println(\"T..."]
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyLineParser parse - FINE:      Resulting string after parsing: Title
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyLineParser parse - FINER:       Using handler: patternPhrase
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @6: "\/\/world!\/\/"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @8: "world!"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @-1: "null"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @-1: "null"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @16: ""
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.Invocation proceed - WARNING:  Event handler 'cz.dynawest.jtexy.modules.LinkModule$8' for 'class cz.dynawest.jtexy.parsers.LinkProcessEvent' returned null.
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyLineParser parse - FINER:       Using handler: patternPhrase
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @51: "\"blog\""
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @52: "blog"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @-1: "null"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @-1: "null"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.PhraseModule$1 handle - FINEST:          @57: ""
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.Invocation proceed - WARNING:  Event handler 'cz.dynawest.jtexy.modules.LinkModule$8' for 'class cz.dynawest.jtexy.parsers.LinkProcessEvent' returned null.
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyLineParser parse - FINER:       Using handler: urlOrEmail
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.LinkModule$2 handle - FINEST:          @58: "http:\/\/www.blog.cz\/"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.LinkModule$2 handle - FINEST:        TexyLink{ raw:http://www.blog.cz/ label: null name: null type: COMMON mod: TexyModifier{id=null, hAlign=null, vAlign=null, title=null, cite=null, classes='', styles 0, attrs 0} }
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.LinkModule solveLinkReference - FINER:       Link: TexyLink{ raw:http://www.blog.cz/ label: null name: null type: COMMON mod: TexyModifier{id=null, hAlign=null, vAlign=null, title=null, cite=null, classes='', styles 0, attrs 0} } Content: 
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.LinkModule solveLinkReference - FINEST:        Resulting href = /http://www.blog.cz/
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyLineParser parse - FINER:       Using handler: imagePattern
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ImageModule$1 handle - FINEST:          @93: "[* img\/me.png *]"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ImageModule$1 handle - FINEST:          @95: " img\/me.png"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ImageModule$1 handle - FINEST:          @-1: "null"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ImageModule$1 handle - FINEST:          @107: "*"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ImageModule$1 handle - FINEST:          @-1: "null"
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ImageModule$1 handle - FINEST:          @109: ""
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.Invocation proceed - WARNING:  Event handler 'cz.dynawest.jtexy.modules.LinkModule$8' for 'class cz.dynawest.jtexy.parsers.LinkProcessEvent' returned null.
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ImageModule$3 onEvent - WARNING:  Image link feature not implemented yet.
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyLineParser parse - FINE:      Resulting string after parsing: Hello world!
+How are you?
+I'm fine. Look at my blog:. And my photo: 
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.modules.ParagraphModule solve - FINER:       Paragraph content after parse: Hello world!
+How are you?
+I'm fine. Look at my blog:. And my photo: 
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyBlockParser processTextBetweenMatches - FINER:       ParagraphEvent invocation returned: org.dom4j.dom.DOMElement@24cd6034 [Element: <p attributes: []/>]
+Oct 28, 2012 1:18:07 AM cz.dynawest.jtexy.parsers.TexyLineParser parse - FINE:      Resulting string after parsing: Subtitle
+}}}

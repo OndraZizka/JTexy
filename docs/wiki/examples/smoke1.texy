@@ -1,0 +1,13 @@
+Title  .[main-title]
+*****
+
+Hello //world!//
+How are you?
+ I'm fine. Look at my "blog":http://www.blog.cz/. And my photo: [* img/me.png *]
+
+Subtitle
+========
+
+/--code java
+System.out.println("That's all.");
+\--

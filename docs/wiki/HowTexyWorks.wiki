@@ -1,0 +1,116 @@
+= How Texy Works =
+
+== Workflow ==
+
+ * Get a String.
+ * Normalize the string (replace \r\n with \n, eplace tabs, etc.)
+ * Call before-parse handlers, giving them the text to be parsed.
+ * Parse loop:
+   * Try to match all the patterns.
+   * Use the one that comes first.
+   * Hadle it with the appropriate module and it's handler (usually calls `solve()`).
+ * Now there's a pseudo-DOM.
+ * Call after-parse handlers, giving them the resulted DOM tree.
+ * Convert the DOM tree to HTML code.
+ * Return the HTML as String.
+
+== Parsing ==
+
+Parsing core: TexyParser.php @ 152
+
+{{{
+// parse loop
+$matches = array();
+$priority = 0;
+foreach ($this->patterns as $name => $pattern)
+{
+        preg_match_all(
+                $pattern['pattern'],
+                $text,
+                $ms,
+                PREG_OFFSET_CAPTURE | PREG_SET_ORDER
+        );
+
+        foreach ($ms as $m) {
+                $offset = $m[0][1];
+                foreach ($m as $k => $v) $m[$k] = $v[0];
+                $matches[] = array($offset, $name, $m, $priority);
+        }
+        $priority++;
+}
+}}}
+
+`TexyLineParser` replaces each matched part of the string with the resulting HTML snippet.
+
+TODO: jtexy.parsers.ParserMatchInfo vs. jtexy.util.MatchWithOffset?
+
+TODO: Use CDATA instead of `protector.[un]protect()`?
+
+== Handlers ==
+
+Almost everything in PHP Texy is called "handler", which can cause some confusion, so let's sum it up:
+
+ * Pattern handlers (Java: PatternHandler) are something completely different than parsing event handlers (Java: TexyParseEvent[Listener]).
+ * The handlers are all in `$texy->handlers[]` hashmap.
+ * Indexes are names of groups of handlers.
+ * `beforeParse` and `afterParse` are called in `process()`.
+ * Other handlers are these:
+   http://jtexy.googlecode.com/svn/wiki/img/Texy-invokeHandlers-usages.png
+   http://jtexy.googlecode.com/svn/wiki/img/Texy-invokeAroundHandlers-usages.png
+
+
+=== Parsing Events and Listeners model ===
+
+==== In a short ====
+Parser goes trough matches -> patternHandler creates and fires an around event -> event handler creates a DOMNode -> returned back to parser -> whole DOM fragment is protected -> the original string is replaced with this protected version.
+------------
+
+The transformation of the text to a HTML code mainly happens in what PHP Texy calls "handlers". These are simply PHP functions with various number and meaning of parameters.
+
+All the handlers are stacked in the same hashmap (`$texy->handlers[]`);
+the keys are "event names" like `block`, `beforeBlock` etc. (see the usages screenshots).
+
+However, from what I can tell, there are groups of handlers which are not mutualy compatible.
+
+The two main groups are:
+ * before / after handlers
+ * "around" handlers
+
+Invocation of these groups differs significantly.
+ * Before / after handlers are all called in the order they were registered in.
+ * Around handlers are called using an `TexyParserInvocation` object's `proceed()`.
+   * Only the most recently added hander's `proceed()` is called from the parser; the successive are probably called from within the handlers themselves.
+
+{{{
+	final public function invokeHandlers($event, $args)
+	{
+		if (!isset($this->handlers[$event])) return;
+
+		foreach ($this->handlers[$event] as $handler) {
+			call_user_func_array($handler, $args);
+		}
+	}
+
+	final public function invokeAroundHandlers($event, $parser, $args)
+	{
+		if (!isset($this->handlers[$event])) return FALSE;
+
+		$invocation = new TexyHandlerInvocation($this->handlers[$event], $parser, $args);
+		$res = $invocation->proceed();
+		$invocation->free();
+		return $res;
+	}
+}}}
+
+
+... to be continued
+
+
+== Protecting strings ==
+
+Protecting is replacing a (part of a) string with an unique key and stroring the string to a hashmap under that key.
+
+The key is a string which has no Texy syntax to be parsed ("Texy-inert string").
+
+=== Calls to `protect()` ===
+   http://jtexy.googlecode.com/svn/wiki/img/Texy-protect-usages.png

@@ -1,0 +1,61 @@
+= Module design =
+
+== Module classes structure ==
+
+{{{
+class TexyModule {
+  private JTexy texy = null; // Backref.
+
+  // Init - loads regular expressions and their metainfo
+  void init( String propertiesFilePath );
+
+  // Default behavior: Register all listeners.
+  public void onRegister() throws TexyException
+
+  // Pattern handlers - used when parsing.
+  abstract PatternHandler getHandlerByName( String name );
+
+  // Event listeners - registered by init()
+  abstract TexyParserEventListener[] getEventListeners();  
+}
+
+class SomeModule extends TexyModule {
+
+  // ... overrides
+
+  // Pattern handlers
+
+  PatternHandler referencePH = new PatternHandler() {
+    String getName() { return "pattern name"; }
+    Node handle(TexyParser parser, List<MatchWithOffset> groups, RegexpInfo pattern){ ... }
+
+  // Event listeners
+
+  BeforeAfterEventListener<...Event> someListener
+       = new BeforeAfterEventListener<...Event>(){
+    Class getEventClass(){ return ...Event.class; }
+    Node onEvent(...Event event) throws TexyException { ... }
+  }
+}
+}}}
+
+
+
+== Module .properties file format ==
+
+{{{
+default.type = < LINE or BLOCK >
+default.handler = <handler name>
+
+phrase/sup-alt = #(?<=[a-z0-9])\^([0-9+-]{1,4}?)(?![a-z0-9])#Uui
+phrase/sup-alt.handler = <handler name>
+phrase/sup-alt.type = < LINE or BLOCK >
+}}}
+
+ * `phrase/sup-alt`: Pattern name.
+ * `phrase/sup-alt.mode`: Pattern mode - which handler will handle it's matches.
+ * `phrase/sup-alt.htmlelement`: Default pattern's rendering element.
+
+`.htmlelement` works only for `PatternModule`.
+Default `.htmlelement` is the part of pattern name after '/' .
+I.e.  `phrase/sub` =>  default element is "sub".

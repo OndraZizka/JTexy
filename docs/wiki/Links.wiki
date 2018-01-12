@@ -1,0 +1,11 @@
+#summary Links
+
+= Links =
+
+http://java.sun.com/javase/7/docs/api/java/util/regex/Pattern.html
+
+http://www.php.net/manual/en/reference.pcre.pattern.modifiers.php
+
+http://en.wikipedia.org/wiki/Lightweight_markup_language
+
+http://www.30minut.cz/david-grudl-nette-je-nejefektivnejsi-php-framework/

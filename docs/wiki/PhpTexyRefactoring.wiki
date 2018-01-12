@@ -1,0 +1,84 @@
+# What would I change on PHP Texy impl.
+# Moved from http://ondra.zizka.cz/stranky/programovani/java/texy_java_implementation.texy
+
+=Texy Refactoring=
+
+    Zdravím,
+
+    mám pár návrhů na mírný refactoring parseru:
+
+== 0) TexyParser je anti-pattern God Object.==
+
+Drží jak implementační detaily (mapy handlerů atd), tak konfiguraci, tak kontext v průběhu parsování. Toto vše je potřeba rozdělit.
+
+== 0) Nekonzistentní modularizace. Moduly si volají metody navzájem.
+      Měla by se zavést nějaká rozhraní.==
+
+== 0) Zcela odstranit zneužívání PHP Array() a nahradit třídami.
+      Viz např. registrace handleru, což je provedeno přes dvouprvkové pole.
+
+==1) Zavést třídu pro patterny; handlery uložit k patternům rovnou jako referenci funkce.==
+
+{{{
+    public class RegexpInfo {
+
+            public String name;
+            public String perlRegexp;
+            public String regexp;
+            public String flags;
+            public String mode;
+            public String htmlElement;
+
+            // Handler of this pattern - a "callback".
+            public PatternHandler handler;
+
+            public enum Type { LINE, BLOCK };
+            public Type type = Type.LINE;
+    }
+}}}
+
+==2) V parseru: Výsledky preg_match_all() převést na pole objektů, místo pole polí (… polí polí, jak je zvykem v PHP).==
+
+{{{
+    class ParserMatchInfo implements Comparable<ParserMatchInfo>
+    {
+            public final RegexpInfo pattern;
+            public final List<MatchWithOffset> groups;
+            public final int offset;
+            public final int priority;
+    }
+}}}
+
+    Taková třída je taky přirozeným místem pro funkci `cmp()`.
+
+==3) Při vytváření objektu s informacemi o matchnutí rovnou uložit referenci na použitý patten, místo jeho jména.==
+    Zaprvé se tak ušetří jeden lookup, zadruhé to zpřehlední kód.
+
+==4) V názvech proměnných zavést pojem group pro skupiny matchnutí reg. výrazu. „Match“ ponechat pro celý match.==
+    Aneb:
+{{{
+    preg_match_all( $pattern['pattern'],  $text,  $ms,  PREG_SET_ORDER );
+    $matches[0];    // --> First match
+    $matches[0][0]; // --> Group - matched text of the whole first match.
+    $matches[0][1]; // --> First sub-group of the first match.
+}}}
+    Tak nebude nutné pojmenovávat proměnné $ms, $matches, $m, $mMatches, …
+
+==**5) Přesunout TexyParagraphMo­dule.process() do TexyBlockParser==
+
+==**6) Zavést třídu ParserEvent, dědit od ní a tyto používat pro model událostí.==
+
+== Rename `$this->postHandlers` to `$this->postLineHandlers`
+
+== HTML metadata scattered all around the code ==
+  dtd.php
+vs.
+  TexyHtml::$emptyElements
+  TexyHtml::$optionalEnds
+
+
+    Jsou to všechno interní věci, takže to nikoho moc netrápí, ale když už je to ten opensource a někdo by to mohl chtít časem hackovat… ;-)
+
+    Ondra
+
+    PS: Kódy jsou v Javě; nápady na refaktorizaci totiž pocházejí ze vznikajícího JTexy.

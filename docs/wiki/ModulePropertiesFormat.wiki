@@ -1,0 +1,11 @@
+= Module .properties file format =
+
+{{{
+phrase/sup-alt = #(?<=[a-z0-9])\^([0-9+-]{1,4}?)(?![a-z0-9])#Uui
+phrase/sup-alt.mode = patternSupSub
+phrase/sup-alt.htmlelement = sup
+}}}
+
+ * `phrase/sup-alt`: Pattern name.
+ * `phrase/sup-alt.mode`: Pattern mode - which handler will handle it's matches.
+ * `phrase/sup-alt.htmlelement`: Default pattern's rendering element.

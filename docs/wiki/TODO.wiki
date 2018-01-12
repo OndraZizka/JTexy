@@ -1,0 +1,12 @@
+#summary JTexy TODO-list.
+
+= JTexy TODOs =
+
+  * Implement a parser in lieu of recursive regex's.
+  * Create small-grained testsuite test-cases.
+  * Implement the rest of modules.
+  * Analyze Texy 2.0 thoroughly
+    * DONE:Get a spot on the hacks like paragraphModule abuse in beforeParse and afterParse etc. (Refactored)
+    * DONE: Check if all RegExp's are supported by the JDK Pattern class. (except for `(?0)`)
+  * DONE: Design the module interface.
+  * DONE: Try and run the parser to see how it goes. (Testsuite created)

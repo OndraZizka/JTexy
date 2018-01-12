@@ -1,0 +1,7 @@
+#summary Other Java simple markup languages.
+
+= Similar Projects =
+
+ * MarkdownJ
+   * Quite simple - just a simple regex replacing:
+   * http://github.com/myabc/markdownj/blob/master/core/src/main/java/com/petebevin/markdown/MarkdownProcessor.java
