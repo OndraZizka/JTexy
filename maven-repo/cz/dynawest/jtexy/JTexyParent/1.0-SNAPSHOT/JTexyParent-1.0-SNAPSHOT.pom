@@ -1,0 +1,170 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   
+   <groupId>cz.dynawest.jtexy</groupId>
+   <artifactId>JTexyParent</artifactId>
+   <packaging>pom</packaging>
+   <version>1.0-SNAPSHOT</version>
+   <name>JTexy Parent</name>
+   <url>http://code.google.com/p/jtexy/</url>
+
+   
+   <distributionManagement>
+     <downloadUrl>http://code.google.com/p/jtexy/downloads/list</downloadUrl>
+     <repository>
+        <id>local-svn-hack-repo</id>
+        <name>Put the artifact to target/, then commit it to GoogleCode SVN.</name>
+        <url>file://${project.basedir}/../../maven</url>
+     </repository>
+     <snapshotRepository>
+        <id>local-svn-hack-repo-snapshots</id>
+        <name>Put the artifact to target/, then commit it to GoogleCode SVN.</name>
+        <url>file://${project.basedir}/../../maven</url> <!-- file://${project.build.directory}/repo -->
+        <uniqueVersion>false</uniqueVersion>
+     </snapshotRepository>
+   </distributionManagement>
+
+
+   <scm>
+      <connection>scm:http://jtexy.googlecode.com/svn</connection>
+      <developerConnection>scm:https://jtexy.googlecode.com/svn</developerConnection>
+      <url>http://jtexy.googlecode.com/svn/</url>
+   </scm>
+
+
+   <!-- Properties -->
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
+
+
+   <build>
+      <plugins>
+
+         <!-- SCM plugin. Intention: Commit the new artifacts to the Google Code SVN. -->
+               <!--
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-scm-plugin</artifactId>
+            <version>1.3</version>
+            <configuration>
+               <connectionType>developerConnection</connectionType>
+            </configuration>
+            <executions>
+               <execution> <id>id-scm-1</id>
+                  <phase>deploy</phase>
+                  <goals> <goal>checkout</goal> </goals>
+                  <configuration>
+                     <developerConnectionUrl>${project.scm.developerConnection}/maven/cz/dynawest/jtexy/JTexy</developerConnectionUrl>
+                     <basedir>${project.build.directory}/maven/repo/cz/dynawest/jtexy/JTexy</basedir>
+                     <excludes>*</excludes>
+                     <includes>${project.}</includes>
+                  </configuration>
+               </execution>
+               <execution> <id>id-scm-2</id>
+                  <phase>deploy</phase>
+                  <goals> <goal>checkin</goal> </goals>
+                  <configuration>
+                     <developerConnectionUrl>${project.scm.developerConnection}/maven</developerConnectionUrl>
+                     <basedir>${project.build.directory}/maven/repo</basedir>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+               -->
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+               <source>1.6</source>
+               <target>1.6</target>
+               <encoding>${project.build.sourceEncoding}</encoding>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <configuration>
+               <encoding>${project.build.sourceEncoding}</encoding>
+            </configuration>
+         </plugin>
+
+         <!-- Jar - MANIFEST.MF options. -->
+         <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-jar-plugin</artifactId>
+           <configuration>
+             <archive>
+               <manifest>
+                 <addClasspath>true</addClasspath>
+                 <classpathPrefix>lib/</classpathPrefix>
+               </manifest>
+             </archive>
+           </configuration>
+         </plugin>
+
+         <!-- Dependencies to lib/ . -->
+         <plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-dependency-plugin</artifactId>
+           <configuration>
+             <outputDirectory>${project.build.directory}/lib</outputDirectory>
+             <includeScope>runtime</includeScope>
+           </configuration>
+         </plugin>
+
+
+      </plugins>
+   </build>
+
+
+   <profiles>
+    <!-- "Create distribution zip" profile. -->
+    <profile>
+      <id>dist</id>
+      <build>
+        <plugins>
+
+          <!-- dependency:copy-dependencies -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>dep-copy</id>
+                <phase>package</phase>
+                <goals> <goal>copy-dependencies</goal> </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+
+   </profiles>
+
+
+   <dependencies>
+
+      <!-- Runtime deps -->
+      <dependency>
+         <groupId>commons-lang</groupId>
+         <artifactId>commons-lang</artifactId>
+         <version>2.4</version>
+      </dependency>
+
+      <!-- Test deps -->
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>3.8.1</version>
+         <scope>test</scope>
+      </dependency>
+
+   </dependencies>
+
+</project>

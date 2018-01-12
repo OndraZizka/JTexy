@@ -1,0 +1,187 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- JTexy SandBox -->
+
+    <groupId>cz.dynawest.jtexy.sandbox</groupId>
+    <artifactId>SwingSandbox</artifactId>
+    <packaging>jar</packaging>
+    <version>1.1</version>
+
+    <name>JTexy SwingSandbox</name>
+    <description>A simple desktop app to try JTexy.</description>
+    <url>http://code.google.com/p/jtexy/</url>
+    <organization>
+        <name>Dynawest.cz</name>
+        <url>http://www.dynawest.cz/</url>
+    </organization>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mainClass>cz.dynawest.jtexy.sandbox.swing.SwingSandboxApp</mainClass>
+    </properties>
+
+    <distributionManagement>
+        <downloadUrl>http://code.google.com/p/jtexy/downloads/list</downloadUrl>
+        <repository>
+            <id>local-svn-hack-repo</id>
+            <name>Put the artifact to target/, then commit it to GoogleCode SVN.</name>
+            <url>file://${project.basedir}/../../maven</url>
+        </repository>
+        <snapshotRepository>
+            <id>local-svn-hack-repo-snapshots</id>
+            <name>Put the artifact to target/, then commit it to GoogleCode SVN.</name>
+            <url>file://${project.basedir}/../../maven</url> <!-- file://${project.build.directory}/repo -->
+            <uniqueVersion>false</uniqueVersion>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <scm>
+        <connection>scm:http://jtexy.googlecode.com/svn</connection>
+        <developerConnection>scm:https://jtexy.googlecode.com/svn</developerConnection>
+        <url>http://jtexy.googlecode.com/svn/</url>
+    </scm>
+
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- Jar - MANIFEST.MF options. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>${mainClass}</mainClass>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Dependencies to lib/ . -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                    <includeScope>runtime</includeScope>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- "Create distribution zip" profile. -->
+        <profile>
+            <id>dist</id>
+            <build>
+                <plugins>
+
+                    <!-- dependency:copy-dependencies -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.5.1</version>
+                        <executions>
+                            <execution>
+                                <id>dep-copy</id>
+                                <phase>package</phase>
+                                <goals>  <goal>copy-dependencies</goal>  </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- JNLP file (Java WebStart) -->
+                    <!-- http://www.jfrog.org/sites/jfrog-jnlp-plugin/0.x/jnlp-mojo.html -->
+                    <plugin>
+                        <groupId>org.jfrog.maven.plugins</groupId>
+                        <artifactId>jfrog-jnlp-plugin</artifactId>
+                        <executions> <execution> <goals> <goal>jnlp</goal> </goals> </execution> </executions>
+                        <configuration>
+                            <project.Url>${project.url}</project.Url>
+                            <mainClass>${mainClass}</mainClass>
+                            <targetDirectory>${project.build.directory}</targetDirectory>
+                            <additionalParameters>
+                                <j2seVersion>1.6+</j2seVersion>
+                            </additionalParameters>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
+    </profiles>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.appframework</groupId>
+            <artifactId>appframework</artifactId>
+            <version>1.03</version>
+        </dependency>
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swing-worker</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.swinglabs</groupId>
+            <artifactId>swing-layout</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cz.dynawest.jtexy</groupId>
+            <artifactId>JTexyCore</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jfrog-plugins-dist</id>
+            <name>jfrog-plugins-dist</name>
+            <url>http://repo.jfrog.org/artifactory/plugins-releases-local</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+
+</project>
