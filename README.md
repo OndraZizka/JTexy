@@ -20,45 +20,39 @@ When that is reached, 2.0.0 will be released and Texy 2.1 improvements porting w
 
 <h2>What does it do?</h2>
 
-<p>Converts a concise easy-to-write syntax like</p>
+Converts a concise easy-to-write syntax like this
 
-<p>```
-Title  .[myHtmlId]{my-css-class1 class2}</p>
+    Title  .[myHtmlId]{my-css-class1 class2}</p>
+    ============================================
 
-<hr>
-
-<p>Hello //world!//
-How are you?
- I'm fine. Look at my "blog":<a href="http://www.blog.cz/">http://www.blog.cz/</a>. And my photo: [* img/me.png *]</p>
-
-<h1>Subtitle</h1>
-
-<p>/--code java
-System.out.println("That's all.");
---
-```</p>
+    Hello //world!//
+    How are you?
+    I'm fine. Look at my "blog":<a href="http://www.blog.cz/">http://www.blog.cz/</a>. And my photo: [* img/me.png *]</p>
+     
+    Subtitle
+    --------
+     
+    /--code java
+    System.out.println("That's all.");
+    \-
+    
 
 <p>to XHTML:</p>
 
-<p>```
-Title</p>
+    <p>Title</p>
 
-<p>Hello <em>world!</em> How are you?
-  <br>I'm fine. Look at my <a href="http://www.blog.cz/">blog</a>. And my photo: </p>
+    <p>Hello <em>world!</em> How are you?
+      <br>I'm fine. Look at my <a href="http://www.blog.cz/">blog</a>. And my photo: </p>
 
-<h2>Subtitle</h2><h2>
+    <h2>Subtitle</h2>
+    
+    <code>System.out.println("That's all.");</code>
 
-
-
-<code>System.out.println("That's all.");
-</code>
-
-```
 
 Looks like yet-another-wiki-markup, but (J)Texy can do much more - [see here](http://texy.info/en/), [try here](http://texy.info/cs/try/).
 
 
-</h2><h2>Features</h2>
+<h2>Features</h2>
 
 <ul>
 <li>Natural syntax, really easy to learn, see here: <a href="http://texy.info/en/syntax">http://texy.info/en/syntax</a></li>
@@ -113,14 +107,12 @@ Looks like yet-another-wiki-markup, but (J)Texy can do much more - [see here](ht
 
 <p>&lt;wiki:gadget url="http://www.ohloh.net/p/323685/widgets/project_basic_stats.xml" height="220" border="1"/&gt;</p>
 
-<p></p>
-
 <h2>Implementation progress</h2>
 
 <p>Uncommented are done.
 Numbers in parens denote expected priority.</p>
 
-<p>```
+
     // line parsing
     (8)//module = this.scriptModule = new ScriptModule();
     (1)//module = this.htmlModule = new HtmlModule();
@@ -145,7 +137,6 @@ module = this.listModule = new ListModule();                this.registerModule(
 (2)//module = this.htmlOutputModule = new HtmlOutputModule();
 </code></pre>
 
-<p>```</p>
 
 <h2>TODOs</h2>
 
@@ -158,28 +149,16 @@ module = this.listModule = new ListModule();                this.registerModule(
 </ul>
 
 Maven's settings.xml
+--------------------
 
 <p>To run the testsuite, you need to set the <code>jtexy.phptexy.ts.dir</code> property in <code>settings.xml</code>, pointing to the testsuite dir:</p>
-
-<p>```
-    
-      jtexy
-       true 
-      
         
         c:/java/JTexy/JTexy-google/src/phptexy20/testsuite
-        
         c:/java/JTexy/JTexy-google/src/test/resources/cz/dynawest/jtexy/ts
-        
-        c:/java/JTexy/JTexy-google/target/ts-output</p>
-
-<pre><code>  &lt;/properties&gt;
-&lt;/profile&gt;
-</code></pre>
-
-<p>```</p>
+        c:/java/JTexy/JTexy-google/target/ts-output
 
 JTexy Maven repository
+----------------------
 
 <p>To add JTexy as a maven dependency, add the repo to your pom.</p>
 
