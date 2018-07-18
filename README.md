@@ -177,4 +177,6 @@ To add JTexy as a maven dependency, add the repo to your pom.
       </dependencies>
     </project>
 
+<script type='text/javascript' src='https://www.openhub.net/p/jtexy/widgets/project_factoids_stats?format=js'></script>
+
 <a href="http://navrcholu.cz/Statistika/129225/"><img src="http://c1.navrcholu.cz/hit?site=129225;t=lb14;ref=;jss=0;foo.gif" alt="" title=""></a>
