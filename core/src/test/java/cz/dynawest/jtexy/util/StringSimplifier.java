@@ -117,4 +117,4 @@ public class StringSimplifier {
 		return str;
 	}
 
-}// class
+}

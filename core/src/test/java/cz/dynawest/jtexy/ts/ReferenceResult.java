@@ -32,4 +32,4 @@ public class ReferenceResult
         return new ReferenceResult( parts[0], parts[1], parts[2] );
     }
     
-}// class
+}

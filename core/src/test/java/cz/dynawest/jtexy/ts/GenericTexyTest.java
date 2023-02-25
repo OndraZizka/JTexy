@@ -39,4 +39,4 @@ class GenericTexyTest extends VerboseTestBase {
         }
     }
     
-}// class
+}

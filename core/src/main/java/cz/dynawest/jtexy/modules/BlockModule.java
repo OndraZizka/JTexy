@@ -254,6 +254,6 @@ public class BlockModule extends TexyModule {
 
 
 
-}// class
+}
 
 

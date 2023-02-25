@@ -15,4 +15,4 @@ public abstract interface TexyEventListener<T extends TexyEvent> {
 
 	public Node onEvent( T event ) throws TexyException;
 
-}// class
+}

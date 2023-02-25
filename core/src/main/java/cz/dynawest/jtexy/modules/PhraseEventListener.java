@@ -9,4 +9,4 @@ import cz.dynawest.jtexy.parsers.AroundEventListener;
  */
 public interface PhraseEventListener extends AroundEventListener<PhraseEvent> {
 
-}// class
+}

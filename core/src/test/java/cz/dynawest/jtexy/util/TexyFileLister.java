@@ -68,7 +68,7 @@ public class TexyFileLister {
         return list;
     }
     
-}// class TexyFileLister
+}
 
 
 

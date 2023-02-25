@@ -24,27 +24,27 @@ Moje nadtřída vypadala takto (zkráceno):
 
 /--code java .[brush:]
 public abstract class Action {
-  
+
   protected static Logger log;
   static{
     log = Logger.getLogger(Action.class.getName());
   }
-  
+
   public Action(){}
-  
+
   public abstract String execute( AppContext appContext, Map<String, Object> params, Map<String, Object> mapOutput );
-  
+
   public static final String SUCCESS = "success";
   public static final String ERROR   = "error";
-  
-  
+
+
   public class Output{
-    
+
     // -- Fields -- //
     String view;
     Map<String, Object> data;
 
-    
+
     public Output( String view, Map<String, Object> data ) {
       this.view = view;
       this.data = data;
@@ -53,25 +53,25 @@ public abstract class Action {
     // -- Getters / Setters -- //
     public Map<String, Object> getData() {     return data;    }
     public void setData( Map<String, Object> data ) {      this.data = data;    }
-    
-    public String getView() {      return view;    }    
-    public void setView( String view ) {      this.view = view;    }    
+
+    public String getView() {      return view;    }
+    public void setView( String view ) {      this.view = view;    }
   }
 
-}// class Action
+}
 \--
 
 V podstatě velmi jednoduchá třída. Když jsem se na ni zběžně podíval,
 zdálo se mi, že na to, abych z ní udělal interface je moc složitá.
 Až když jsem zjistil, že nepoužívat `JpaTemplate` by bylo ještě složitější,
 než se vykašlat na polymorfizmus a tuto nad-třídu zcela zrušit,
-podíval jsem se ještě na 
+podíval jsem se ještě na
 "popis `interface` z tutoriálu od Sunu":http://java.sun.com/docs/books/tutorial/java/IandI/createinterface.html.
 
 Zde stoji:
 
-> In the Java programming language, an interface is a reference type, 
-> similar to a class, that can contain only constants, method signatures, and nested types. 
+> In the Java programming language, an interface is a reference type,
+> similar to a class, that can contain only constants, method signatures, and nested types.
 
 Přičemž i vnitřní třída je vnořený typ.
 `JpaTemplate` používá vlastní referenci na `logger`, takže `log` jsem mohl vyhodit;
@@ -105,7 +105,7 @@ Jejich instance je součástí instance vnější třídy:
 
 [* img\tipy\classes-inner.gif *]
 
-//(Vnitřních koleček by mohlo být i více, protože pro daný objekt vnější třídy 
+//(Vnitřních koleček by mohlo být i více, protože pro daný objekt vnější třídy
 můžete vytvořit libovolný počet instancí vnitřní třídy.)//
 
 Díky tomu z ní můžete přistupovat ke všem jejím prvkům:
@@ -113,7 +113,7 @@ Díky tomu z ní můžete přistupovat ke všem jejím prvkům:
 /--code
 class MujProgram(){
   Logger log;
-  
+
   // inicializace v konstruktoru...
   public MujProgram(){ ... }
 
@@ -157,14 +157,14 @@ jdbc:mysql://dev:3306/myDatabase?autoReconnect=true&amp;allowMultiQueries=true&a
 \--
 
 Pokud byste chtěli kódování `Windows-1250`, použijte hodnotu `Cp1250`.
- Na stránkách MySQL pak najdete ostatní 
+ Na stránkách MySQL pak najdete ostatní
 "kódování, která MySQL podporuje":http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-charsets.html.
 
 //Vyzkoušeno s Connector/J 5.1.6, Java 1.6.x MySQL 5.0.53.//
 
 Další zajímavé tipy ohledně Unicode a Javy najdete na http://www.macroware.cz/software/unicode/.
 
-Klíčová slova: databáze, JDBC, MySQL, nastavení, kódování, iBatis, Hibernate.   
+Klíčová slova: databáze, JDBC, MySQL, nastavení, kódování, iBatis, Hibernate.
 Keywords:  database, JDBC, character set, setting, charset.
 
 
@@ -176,7 +176,7 @@ Jak zjistit, zda cesta (adresář) existuje, a pokud ne, vytvořit jej?
 /--code java .[brush:]
     try{
       File dir = new File("./spisy_xml");
-      if( !dir.exists() && !dir.mkdirs() ) 
+      if( !dir.exists() && !dir.mkdirs() )
         throw new Exception("Nepodařilo se vytvořit adresář "+dir.getPath());
     }
     catch( Exception ex ){

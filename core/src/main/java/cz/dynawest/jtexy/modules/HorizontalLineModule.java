@@ -66,4 +66,4 @@ public class HorizontalLineModule extends TexyModule {
 
 
 
-}// class
+}

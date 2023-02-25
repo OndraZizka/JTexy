@@ -23,4 +23,4 @@ public class PhraseEvent extends AroundEvent {
 		this.phraseName = phraseName;
 	}
 
-}// class
+}

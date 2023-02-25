@@ -113,4 +113,4 @@ public class Dtd {
         return list;
     }
     
-}// class
+}

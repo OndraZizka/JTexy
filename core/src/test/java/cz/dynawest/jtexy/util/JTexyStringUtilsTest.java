@@ -53,5 +53,5 @@ public class JTexyStringUtilsTest extends TestCase {
 		assertEquals( "b-c", JTexyStringUtils.webalize("$b#$@---!$-!$C@#%%") );
 	}
 
-}// class
+}
 

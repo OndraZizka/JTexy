@@ -31,4 +31,4 @@ public class ProtectedHTMLWriterTest extends TestCase {
 
 	}
 
-}// class
+}

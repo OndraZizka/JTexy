@@ -17,7 +17,7 @@ Maven configuration
 -------------------
 
 You need to set up Maven to use JBoss Maven repository (all JBoss projects use this repository, by the way).
-Follow instalation instructions in 
+Follow instalation instructions in
 "JBoss Micontainer User Guide":http://www.jboss.org/file-access/default/members/jbossmc/freezone/docs/2.0.x/userGuide/ch02.html.
 Here is the shortened version of the profile:
 
@@ -205,7 +205,7 @@ public class App {
     // Bootstrap.
     BasicBootstrap bootstrap = new BasicBootstrap();
     bootstrap.run();
-    
+
 
     // Load the bean definitions.
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -219,10 +219,10 @@ public class App {
 
     // Clean up.
     deployer.shutdown();
- 
+
   }// main()
 
-}// class
+}
 \--
 
 

@@ -13,4 +13,4 @@ public abstract class AroundEvent extends TexyParserModEvent {
 		super(parser, text, modifier);
 	}
 
-}// class
+}

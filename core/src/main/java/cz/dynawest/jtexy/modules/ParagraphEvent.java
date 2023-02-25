@@ -14,4 +14,4 @@ public class ParagraphEvent extends AroundEvent {
 		super(parser, text, modifier);
 	}
 
-}// class
+}

@@ -78,4 +78,4 @@ public class TexyTestCaseInfo {
     public File getRef() { return ref; }
     public void setRef(File ref) { this.ref = ref; }
     
-}// class
+}

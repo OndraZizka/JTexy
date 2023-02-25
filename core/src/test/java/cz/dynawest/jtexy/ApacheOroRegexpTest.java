@@ -67,4 +67,4 @@ public class ApacheOroRegexpTest extends TestCase {
 
 
 
-}// class
+}

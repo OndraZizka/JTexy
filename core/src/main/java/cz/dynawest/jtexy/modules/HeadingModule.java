@@ -342,4 +342,4 @@ public class HeadingModule extends TexyModule {
 
 
 
-}// class
+}

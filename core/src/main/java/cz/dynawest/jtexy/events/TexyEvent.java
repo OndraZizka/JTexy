@@ -16,4 +16,4 @@ public class TexyEvent {
         this.text = text;
     }
 
-}// class
+}

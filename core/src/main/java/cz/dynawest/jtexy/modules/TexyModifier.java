@@ -257,4 +257,4 @@ public final class TexyModifier implements Cloneable {
     }
     
 
-}// class
+}

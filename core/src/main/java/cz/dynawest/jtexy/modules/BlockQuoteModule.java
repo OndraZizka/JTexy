@@ -31,4 +31,4 @@ public class BlockQuoteModule extends TexyModule
 		}
 	}
 
-}// class HtmlModule
+}

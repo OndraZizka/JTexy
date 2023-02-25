@@ -55,4 +55,4 @@ public interface RegexpPatterns {
     public static final String TEXY_URLSCHEME = "[a-z][a-z0-9+.-]*:";    // http:  |  mailto:
 
 
-}// class RegexpPatterns
+}

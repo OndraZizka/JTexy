@@ -14,4 +14,4 @@ public class BeforeBlockEvent extends BeforeAfterEvent {
 		super(parser, text);
 	}
 
-}// class
+}

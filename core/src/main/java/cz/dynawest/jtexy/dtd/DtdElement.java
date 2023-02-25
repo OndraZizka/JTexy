@@ -182,4 +182,4 @@ public class DtdElement {
         
     };// ALL
     
-}// class
+}

@@ -9,14 +9,14 @@ It's a hybrid solution similar to a //thread barrier// and //producers-consumers
 
 There's an implementation of `ReadWriteLock`, `ReentrantReadWriteLock`, but that seemed too cumbersome and slow:
 
-> Whether or not a read-write lock will improve performance over the use of a mutual exclusion lock depends on the frequency that the data is read compared to being modified, 
-> the duration of the read and write operations, and the contention for the data - that is, the number of threads that will try to read or write the data at the same time. 
-> For example, a collection that is initially populated with data and thereafter infrequently modified, while being frequently searched (such as a directory of some kind) 
-> is an ideal candidate for the use of a read-write lock. 
-> However, if updates become frequent then the data spends most of its time being exclusively locked and there is little, if any increase in concurrency. 
-> Further, if the read operations are too short the overhead of the read-write lock implementation (which is inherently more complex than a mutual exclusion lock) 
-> can dominate the execution cost, particularly as many read-write lock implementations still serialize all threads through a small section of code. 
-> Ultimately, only profiling and measurement will establish whether the use of a read-write lock is suitable for your application. 
+> Whether or not a read-write lock will improve performance over the use of a mutual exclusion lock depends on the frequency that the data is read compared to being modified,
+> the duration of the read and write operations, and the contention for the data - that is, the number of threads that will try to read or write the data at the same time.
+> For example, a collection that is initially populated with data and thereafter infrequently modified, while being frequently searched (such as a directory of some kind)
+> is an ideal candidate for the use of a read-write lock.
+> However, if updates become frequent then the data spends most of its time being exclusively locked and there is little, if any increase in concurrency.
+> Further, if the read operations are too short the overhead of the read-write lock implementation (which is inherently more complex than a mutual exclusion lock)
+> can dominate the execution cost, particularly as many read-write lock implementations still serialize all threads through a small section of code.
+> Ultimately, only profiling and measurement will establish whether the use of a read-write lock is suitable for your application.
 
 
 
@@ -59,7 +59,7 @@ public class ReadersAndModifierSynchronizerReentrant implements ReadersAndModifi
 
   /** Reader threads re-entries. */
   private CounterMap<Thread> depths = new CounterMap<Thread>();
-  
+
   /** Eventual owning writer thread and re-entries count. */
   private Thread owningWriter = null;
   private int owningWriterReentries = 0;
@@ -156,7 +156,7 @@ public class ReadersAndModifierSynchronizerReentrant implements ReadersAndModifi
   }
 
 
-  
+
   public void doneWriting(){
     lock.lock();
     try{
@@ -178,7 +178,7 @@ public class ReadersAndModifierSynchronizerReentrant implements ReadersAndModifi
   }
 
 
-}// class ReadersAndModifierSynchronizer2
+}
 
 
 
@@ -224,7 +224,7 @@ import java.util.logging.Logger;
 
 
 /**
- * 
+ *
  * @author Ondrej Zizka
  */
 public class ReadersAndModifierSynchronizer2 {
@@ -292,7 +292,7 @@ public class ReadersAndModifierSynchronizer2 {
     finally{ lock.unlock(); }
   }
 
-}// class ReadersAndModifierSynchronizer2
+}
 \--
 
 
@@ -324,7 +324,7 @@ public class ReadersAndModifierTest {
   {
 
     LoggingUtils.initLogging();
-    
+
     final ReadersAndModifierSynchronizer2 pcs = new ReadersAndModifierSynchronizer2();
 
 
@@ -418,7 +418,7 @@ Modifier and concurrent Readers, leads to modifier starvation:
 /--code java .[brush:]
 /**
  * Todo: try to use Condition.
- * 
+ *
  * @author Ondrej Zizka
  */
 public class ReadersAndModifierSynchronizer {
@@ -458,7 +458,7 @@ public class ReadersAndModifierSynchronizer {
       this.notifyAll();
   }
 
-}// class ReadersAndModifierSynchronizer
+}
 \--
 
 
@@ -483,7 +483,7 @@ public class ReadersAndModifierTest {
   {
 
     LoggingUtils.initLogging();
-    
+
     final ReadersAndModifierSynchronizer pcs = new ReadersAndModifierSynchronizer();
 
     List<Thread> readers = new ArrayList();
@@ -554,7 +554,7 @@ public class ReadersAndModifierTest {
       return new Thread( cons );
   }
 
-}// class TestTest
+}
 \--
 
 

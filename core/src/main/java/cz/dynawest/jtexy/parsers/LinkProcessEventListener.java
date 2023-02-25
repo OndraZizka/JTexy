@@ -7,4 +7,4 @@ package cz.dynawest.jtexy.parsers;
  */
 public interface LinkProcessEventListener extends AroundEventListener {
 
-}// class LinkProcessEventListener
+}

@@ -37,4 +37,4 @@ public class MatchWithOffsetTest extends VerboseTestBase
 
 	}
 
-}// class
+}

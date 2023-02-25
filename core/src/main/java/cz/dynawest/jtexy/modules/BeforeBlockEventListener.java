@@ -9,4 +9,4 @@ import cz.dynawest.jtexy.parsers.BeforeAfterEventListener;
  */
 public interface BeforeBlockEventListener<T extends BeforeBlockEvent> extends BeforeAfterEventListener<T> {
 
-}// class
+}

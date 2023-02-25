@@ -37,7 +37,7 @@ public class RunInJetty {
 		filterHolder.setInitParameter("applicationClassName", cz.dw.test.WicketApplication.class.getName() );
 		root.addFilter( filterHolder, "/*" , Handler.ALL );
 		/**/
-		
+
 		try {
 			server.start();
 		} catch (Exception ex) {
@@ -46,8 +46,8 @@ public class RunInJetty {
 
 	}
 
-}// class
+}
 \--
 
-The filter does not work - I don't know why. Also note that 
+The filter does not work - I don't know why. Also note that
 "this way to add filters is deprecated in Jetty 7":http://mirrors.ibiblio.org/pub/mirrors/eclipse/jetty/7.0.0.M2/apidocs/org/eclipse/jetty/servlet/ServletHandler.html#addFilter%28java.lang.String,%20java.lang.String,%20int%29.

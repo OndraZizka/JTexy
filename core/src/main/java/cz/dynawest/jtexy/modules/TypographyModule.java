@@ -211,7 +211,7 @@ public class TypographyModule extends TexyModule
     }
     
 
-}// class
+}
 
 
 

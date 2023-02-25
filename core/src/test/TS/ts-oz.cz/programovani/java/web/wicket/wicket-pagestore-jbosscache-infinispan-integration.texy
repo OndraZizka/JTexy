@@ -64,7 +64,7 @@ import org.infinispan.tree.TreeCacheFactory;
 
 /**
  * JBoss Cache / Infinispan implementation of IPageStore.
- * 
+ *
  * @author Ondrej Zizka
  */
 public class JBossCachePageStore extends AbstractPageStore implements IPageStore {
@@ -96,7 +96,7 @@ public class JBossCachePageStore extends AbstractPageStore implements IPageStore
    }
 
 
-   
+
    // Page key - takes only the metainfo from the given page.
    private class PageKey extends SerializedPage
    {
@@ -119,7 +119,7 @@ public class JBossCachePageStore extends AbstractPageStore implements IPageStore
 
 
    /**
-    * Destroy the store. 
+    * Destroy the store.
     */
    @Override
    public void destroy() {
@@ -263,7 +263,7 @@ public class JBossCachePageStore extends AbstractPageStore implements IPageStore
       return cq.getResultSize() > 0;
    }
 
-}// class
+}
 \--
 
 
@@ -291,7 +291,7 @@ Dependencies (Maven)
     </dependency>
 \--
 
-For possible Infinispan cache store implementations, see the 
+For possible Infinispan cache store implementations, see the
 "JBoss Maven repo":https://repository.jboss.org/nexus/content/groups/public/org/infinispan/
 
 /--code xml .[brush:]

@@ -13,4 +13,4 @@ public abstract class BeforeAfterEvent extends TexyParserEvent {
 		super(parser, text);
 	}
 	
-}// class
+}

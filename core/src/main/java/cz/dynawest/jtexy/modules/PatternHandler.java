@@ -33,4 +33,4 @@ public interface PatternHandler {
 									  )
 											throws TexyException;
 
-}// class
+}

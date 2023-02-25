@@ -421,4 +421,4 @@ public final class JTexyStringUtils {
     private static final Pattern DIA = Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
 
 
-}// class
+}

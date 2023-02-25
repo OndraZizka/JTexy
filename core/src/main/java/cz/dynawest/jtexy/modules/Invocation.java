@@ -61,4 +61,4 @@ public class Invocation
 
     // TODO: Position in the list of handlers - integer index or an iterator?
 
-}// class
+}

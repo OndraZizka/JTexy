@@ -36,4 +36,4 @@ public class HeadingPatternsTest extends VerboseTestBase {
 
 	}
 
-}// class
+}

@@ -485,4 +485,4 @@ public class HtmlOutputModule extends TexyModule
 		return space + WordUtils.wrap(str, this.lineWrapWidth, "\n" + space, false);
 	}
 
-}// class HtmlModule
+}

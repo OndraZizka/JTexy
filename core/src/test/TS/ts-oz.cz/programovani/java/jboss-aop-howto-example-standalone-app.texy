@@ -8,8 +8,8 @@ JBoss Microcontainer with JBoss AOP - Howto with sample application
 Prerequisites
 =============
 
-This tutorial is a follow-up to the 
-"JBoss Microcontainer intro":jboss-microcontainer-howto-example-standalone-app.texy - 
+This tutorial is a follow-up to the
+"JBoss Microcontainer intro":jboss-microcontainer-howto-example-standalone-app.texy -
 read that first if you haven't yet.
 
 
@@ -60,25 +60,25 @@ Terms
 Copied from "JBoss AOP reference docs":http://www.jboss.org/jbossaop/docs/2.0.0.GA/docs/aspect-framework/reference/en/html_single/index.html#base-terms.
 
 Joinpoint:
-    - A joinpoint is any point in your java program. The call of a method. The execution of a constructor the access of a field. All these are joinpoints. You could also think of a joinpoint as a particular Java event. Where an event is a method call, constructor call, field access etc... 
+    - A joinpoint is any point in your java program. The call of a method. The execution of a constructor the access of a field. All these are joinpoints. You could also think of a joinpoint as a particular Java event. Where an event is a method call, constructor call, field access etc...
 
 Invocation:
-    - An Invocation is a JBoss AOP class that encapsulates what a joinpiont is at runtime. It could contain information like which method is being called, the arguments of the method, etc... 
+    - An Invocation is a JBoss AOP class that encapsulates what a joinpiont is at runtime. It could contain information like which method is being called, the arguments of the method, etc...
 
 Advice:
-    - An advice is a method that is called when a particular joinpoint is executed, i.e., the behavior that is triggered when a method is called. It could also be thought of as the code that does the interception. Another analogy is that an advice is an "event handler". 
+    - An advice is a method that is called when a particular joinpoint is executed, i.e., the behavior that is triggered when a method is called. It could also be thought of as the code that does the interception. Another analogy is that an advice is an "event handler".
 
 Pointcut:
-    - Pointcuts are AOP's expression language. Just as a regular expression matches strings, a pointcut expression matches a particular joinpoint. 
+    - Pointcuts are AOP's expression language. Just as a regular expression matches strings, a pointcut expression matches a particular joinpoint.
 
 Introductions:
-    - An introduction modifies the type and structure of a Java class. It can be used to force an existing class to implement an interface or to add an annotation to anything. 
+    - An introduction modifies the type and structure of a Java class. It can be used to force an existing class to implement an interface or to add an annotation to anything.
 
 Aspect:
-    - An Aspect is a plain Java class that encapsulates any number of advices, pointcut definitions, mixins, or any other JBoss AOP construct. 
+    - An Aspect is a plain Java class that encapsulates any number of advices, pointcut definitions, mixins, or any other JBoss AOP construct.
 
 Interceptor:
-    - An interceptor is an Aspect with only one advice named "invoke". It is a specific interface that you can implement if you want your code to be checked by forcing your class to implement an interface. It also will be portable and can be reused in other JBoss environments like EJBs and JMX MBeans. 
+    - An interceptor is an Aspect with only one advice named "invoke". It is a specific interface that you can implement if you want your code to be checked by forcing your class to implement an interface. It also will be portable and can be reused in other JBoss environments like EJBs and JMX MBeans.
 
 
 
@@ -139,14 +139,14 @@ public class FuelInterceptor implements Interceptor, Untransformable {
   public String getName() {
     return FuelInterceptor.class.getName();
   }
-}// class FuelInterceptor
+}
 \--
 
 
 Binding the interceptor to the method calls
 ===========================================
 
-For the syntax of AOP pointcuts, see 
+For the syntax of AOP pointcuts, see
 "JBoss AOP documentation":http://www.jboss.org/jbossaop/docs/2.0.0.GA/docs/aspect-framework/reference/en/html_single/index.html#pointcuts.
 
 The syntax for our purpose stated above would be:
@@ -159,7 +159,7 @@ execution(* cz.zizka.ondra.jbmctest.Car->set*Fuel(..)
 
 The AOP settings go to a special XML file having `<aop>` as it's root element, and conforming to the JBoss AOP XSD.
  From what I've found, this file must be either in `META-INF/jboss-aop.xml` of your `.jar`,
-or anywhere on the filesystem, but you'll have to point to it by the `-Djboss.aop.path` JVM argument - see 
+or anywhere on the filesystem, but you'll have to point to it by the `-Djboss.aop.path` JVM argument - see
 "10.2.1. Precompiled instrumentation":http://www.jboss.org/jbossaop/docs/2.0.0.GA/docs/aspect-framework/reference/en/html_single/index.html#standalone-compiletime and
 "5.2. Resolving XML":http://www.jboss.org/jbossaop/docs/2.0.0.GA/docs/aspect-framework/reference/en/html_single/index.html#xml-resolving.
 
@@ -265,7 +265,7 @@ public class JBossAopSampleApp {
   {
     Car myCar = new Car("Red Devil");
     System.out.println( "I have a garage: "+car);
-    
+
     // Put some fuel in.
     myCar.setLitresOfFuel( myCar.getLitresOfFuel() + 1 );
     myCar.setReserveFuel( myCar.getReserveFuel() + 1 );
@@ -287,7 +287,8 @@ Now run the application, and you'll see that the interceptor is really being inv
 I have a garage: Garage with a car: Car "Red Devil" with 0 litres of fuel.
 16.11.2009 11:42:47 FuelInterceptor invoke INFO: The fuel is being changed for the car 'Red Devil'.
 16.11.2009 11:42:47 FuelInterceptor invoke INFO: The fuel is being changed for the car 'Red Devil'.
-I have a garage: Garage with a car: Car "Red Devil" with 2 litres of fuel.
+I have a garage: Garage with a car: Car "Red Devil" with 2 litres of fuel.
+
 \--
 
 

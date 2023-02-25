@@ -432,4 +432,4 @@ public class ImageModule extends TexyModule
     }
 
 	
-}// class
+}

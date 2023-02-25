@@ -31,4 +31,4 @@ public class HtmlModule extends TexyModule
         }
     }
 
-}// class HtmlModule
+}

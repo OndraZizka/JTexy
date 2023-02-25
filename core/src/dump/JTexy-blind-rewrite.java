@@ -37,14 +37,14 @@ public class JTexy1 /*extends Nette::Object*/ {
 	public static final String XML = 2;
 
 	// HTML modes
-  public enum HtmlMode {
-    HTML4_TRANSITIONAL(0),
-    HTML4_STRICT(1),
-    HTML5(4),
-    XHTML1_TRANSITIONAL(2), // JTexy.HTML4_TRANSITIONAL | JTexy.XML;
-    XHTML1_STRICT(3), // JTexy.HTML4_STRICT | JTexy.XML;
-    XHTML5(6), // JTexy.HTML5 | JTexy.XML;
-  }
+	public enum HtmlMode {
+		HTML4_TRANSITIONAL(0),
+		HTML4_STRICT(1),
+		HTML5(4),
+		XHTML1_TRANSITIONAL(2), // JTexy.HTML4_TRANSITIONAL | JTexy.XML;
+		XHTML1_STRICT(3), // JTexy.HTML4_STRICT | JTexy.XML;
+		XHTML5(6), // JTexy.HTML5 | JTexy.XML;
+	}
 
 	/** @var string  input & output text encoding */
 	public String encoding = "utf-8";
@@ -63,7 +63,7 @@ public class JTexy1 /*extends Nette::Object*/ {
 
 	/** @var int  TAB width (for converting tabs to spaces) */
 	public int tabWidth = 8;
-  
+
 	/** @var boolean  Do obfuscate e-mail addresses? */
 	public boolean obfuscateEmail = true;
 
@@ -253,7 +253,7 @@ public class JTexy1 /*extends Nette::Object*/ {
 	 */
 	public void setOutputMode(JTexy1.HtmlMode mode)
 	{
-		
+
 
 		/*if (!isset(JTexy.dtdCache[$mode])) {
 			require dirname(__FILE__) . "/libs/DTD.php";
@@ -313,10 +313,10 @@ public class JTexy1 /*extends Nette::Object*/ {
 		this.longWordsModule = new TexyLongWordsModule(this);
 		this.htmlOutputModule = new TexyHtmlOutputModule(this);
 	}
-  
 
-  
-  
+
+
+
   class PatternHandler{
     String name;
     Handler handler;
@@ -327,9 +327,9 @@ public class JTexy1 /*extends Nette::Object*/ {
       this.handler = handler;
       this.pattern = pattern;
     }
-    
-  }// class HandlerPattern;
-  
+
+  }
+
 
 	public final void registerLinePattern(Handler handler, Pattern pattern, String name )
 	{
@@ -809,7 +809,7 @@ public class JTexy1 /*extends Nette::Object*/ {
 	private String tabCb($m)
 	{
     StringBuilder sb = new StringBuilder();
-    
+
 		return $m[1] + str_repeat(" ", this.tabWidth - strlen($m[1]) % this.tabWidth);
 	}
 
@@ -831,4 +831,4 @@ public class JTexy1 /*extends Nette::Object*/ {
 		throw new NotSupportedException("Clone is not supported.");
 	}
 
-}// class JTexy
+}

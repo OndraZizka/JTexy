@@ -14,4 +14,4 @@ public class HorizontalLineEvent extends AroundEvent {
 		super(parser, text, modifier);
 	}
 
-}// class
+}

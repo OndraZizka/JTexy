@@ -35,4 +35,4 @@ public class RegexTest extends VerboseTestBase {
 
 	}
 
-}// class
+}

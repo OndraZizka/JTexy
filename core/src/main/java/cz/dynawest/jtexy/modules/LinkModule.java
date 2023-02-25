@@ -475,4 +475,4 @@ public class LinkModule extends TexyModule
 	};
 
 
-}// class LinkModule
+}

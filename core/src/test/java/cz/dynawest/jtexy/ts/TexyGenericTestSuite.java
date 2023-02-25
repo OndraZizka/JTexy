@@ -134,4 +134,4 @@ public class TexyGenericTestSuite extends TestSuite
         NEXT_TO, INPUT_AND_REF_DIRS, TRIPLET, NO_REF_FILES
     }
 
-}// class
+}

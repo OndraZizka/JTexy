@@ -390,4 +390,4 @@ public class ListModule extends TexyModule
 
     }// parseItem()
 
-}// class
+}

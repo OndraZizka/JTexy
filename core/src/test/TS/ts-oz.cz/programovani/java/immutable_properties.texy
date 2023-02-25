@@ -14,12 +14,12 @@ import java.util.*;
 
 /**
  * Immutable version of Properties object.
- * Instances work transparently as Properties object 
+ * Instances work transparently as Properties object
  * unless you try to change it.
- * 
+ *
  * Calling any method that can potentially change the properties
  * throws UnsupportedOperationException("Immutable Properties object - can't be changed.");
- * 
+ *
  * @author Ondřej Žižka
  * @see java.util.Properties
  * @version 1.0
@@ -34,11 +34,11 @@ public class ImmutableProperties extends java.util.Properties {
     //super.defaults = original;
     super.putAll( original );
   }
-  
-  
-  
-  // -- Properties overrides -- 
-  
+
+
+
+  // -- Properties overrides --
+
   @Override
   public Object setProperty( String key, String val ){
     throw new UnsupportedOperationException("Immutable Properties object - can't be changed.");
@@ -60,9 +60,9 @@ public class ImmutableProperties extends java.util.Properties {
   public synchronized void loadFromXML( InputStream arg0 ) throws IOException, InvalidPropertiesFormatException {
     throw new UnsupportedOperationException("Immutable Properties object - can't be changed.");
   }
-  
-  
-  
+
+
+
   // -- Hashtable overrides --
 
   @Override
@@ -88,6 +88,6 @@ public class ImmutableProperties extends java.util.Properties {
     throw new UnsupportedOperationException("Immutable Properties object - can't be changed.");
   }
 
-}// class ImmutableProperties
+}
 
 \--

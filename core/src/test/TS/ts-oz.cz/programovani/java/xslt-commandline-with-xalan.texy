@@ -80,7 +80,7 @@ public class Xslt {
     System.out.println("The generated HTML file is:" + outTXT);
     }
 
-}// class
+}
 
 
 class MyErrorListener implements ErrorListener {
