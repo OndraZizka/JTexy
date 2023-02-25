@@ -1,174 +1,166 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-   <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-   <!-- JTexy Core -->
+    <!-- JTexy Core -->
 
-   <groupId>cz.dynawest.jtexy</groupId>
-   <artifactId>JTexyCore</artifactId>
-   <name>JTexy Core</name>
+    <groupId>cz.dynawest.jtexy</groupId>
+    <artifactId>JTexyCore</artifactId>
+    <name>JTexy Core</name>
 
-   <parent>
-       <groupId>cz.dynawest.jtexy</groupId>
-       <artifactId>JTexyParent</artifactId>
-       <version>1.0.5-SNAPSHOT</version>
-       <relativePath>../parent</relativePath>
-   </parent>
-
-
-   <!-- Properties -->
-   <properties>
-       <jtexyTest />
-       <jvm.args.debug />
-
-       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-       <jtexy.jtexy.ts.dir>${project.basedir}/src/test/TS/ts</jtexy.jtexy.ts.dir>
-       <jtexy.jtexy.ts.out.dir>${project.build.directory}/ts-output</jtexy.jtexy.ts.out.dir>
-   </properties>
+    <parent>
+        <groupId>cz.dynawest.jtexy</groupId>
+        <artifactId>JTexyParent</artifactId>
+        <version>1.0.5-SNAPSHOT</version>
+        <relativePath>../parent</relativePath>
+    </parent>
 
 
-   <build>
-      <plugins>
+    <!-- Properties -->
+    <properties>
+        <jtexyTest />
+        <jvm.args.debug />
 
-         <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-resources-plugin</artifactId>
-             <version>3.3.0</version>
-             <configuration>
-                 <encoding>${project.build.sourceEncoding}</encoding>
-             </configuration>
-         </plugin>
-
-         <!-- Jar - MANIFEST.MF options. -->
-         <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-jar-plugin</artifactId>
-             <version>3.3.0</version>
-             <configuration>
-                 <archive>
-                     <manifest>
-                         <addClasspath>true</addClasspath>
-                         <classpathPrefix>lib/</classpathPrefix>
-                     </manifest>
-                 </archive>
-             </configuration>
-         </plugin>
-
-         <!-- Dependencies to lib/ . -->
-         <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-dependency-plugin</artifactId>
-             <version>3.3.0</version>
-             <configuration>
-                 <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                 <includeScope>runtime</includeScope>
-             </configuration>
-         </plugin>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jtexy.jtexy.ts.dir>${project.basedir}/src/test/TS/ts</jtexy.jtexy.ts.dir>
+        <jtexy.jtexy.ts.out.dir>${project.build.directory}/ts-output</jtexy.jtexy.ts.out.dir>
+    </properties>
 
 
-         <!-- Surefire -->
-         <!-- The test set is defined by TexyGenericTestSuite which then uses GenericTestCase. -->
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0-M7</version>
-            <configuration>
-                <debugForkedProcess>-da ${jvm.args.debug}</debugForkedProcess>
-                <includes>
-                    <include>**/*GenericTestSuite.java</include>
-                </includes>
-                <excludes>
-                    <exclude>**/*TestSuite</exclude>
-                    <exclude>**/*Test</exclude>
-                </excludes>
-                <systemProperties>
-                    <!-- Doesn't work, must be in execution.
-                    <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
-                    -->
-                </systemProperties>
-            </configuration>
+    <build>
+        <plugins>
 
-            <executions>
-                <!-- Disable default. -->
-                <execution>  <id>default-test</id> <phase>none</phase> </execution>
-                <!-- Basic testsuite -->
-                <execution>
-                    <id>ts-basic</id><phase>test</phase><goals><goal>test</goal></goals>
-                    <configuration>
-                        <includes>
-                            <include>**/*GenericTestSuite.java</include>
-                        </includes>
-                        <excludes>
-                            <exclude>**/*TestSuite</exclude>
-                            <exclude>**/*Test</exclude>
-                        </excludes>
-                        <systemProperties>
-                            <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
-                            <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/ts</value> </property>
-                            <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/ts</value> </property>
-                            <property> <name>jtexy.ts.src.dir.layout</name> <value>INPUT_AND_REF_DIRS</value> </property>
-                            <property> <name>jtexy.ts.RefFilesNeeded</name> <value>true</value> </property>
-                        </systemProperties>
-                    </configuration>
-                </execution>
-                <!-- Big files testsuite -->
-                <execution>
-                    <id>ts-big</id>
-                    <phase>none</phase>
-                    <configuration>
-                        <systemProperties>
-                            <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
-                            <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/ts-big</value> </property>
-                            <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/ts-big</value> </property>
-                        </systemProperties>
-                    </configuration>
-                </execution>
-                <!-- OZ.cz/Java testsuite -->
-                <execution>
-                    <id>ts-oz.cz</id>
-                    <phase>none</phase>
-                    <configuration>
-                        <systemProperties>
-                            <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
-                            <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/ts-oz.cz</value> </property>
-                            <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/ts-oz.cz</value> </property>
-                            <property> <name>jtexy.ts.src.dir.layout</name> <value>NEXT_TO</value> </property>
-                        </systemProperties>
-                    </configuration>
-                </execution>
-                <!-- PHP-Texy testsuite -->
-                <execution>
-                    <id>ts-phptexy</id>
-                    <phase>none</phase>
-                    <configuration>
-                        <systemProperties>
-                            <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
-                            <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/tck</value> </property>
-                            <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/tck</value> </property>
-                            <property> <name>jtexy.ts.src.dir.layout</name> <value>TRIPLET</value> </property>
-                        </systemProperties>
-                    </configuration>
-                </execution>
-                <!-- PHP-Texy wiki testsuite - see http://texy.info/cs/special/sitemap -->
-                <execution>
-                    <id>ts-texywiki</id>
-                    <phase>none</phase>
-                    <configuration>
-                        <systemProperties>
-                            <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
-                            <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/ts-texywiki</value> </property>
-                            <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/ts-texywiki</value> </property>
-                            <property> <name>jtexy.ts.src.dir.layout</name> <value>NEXT_TO</value> </property>
-                        </systemProperties>
-                    </configuration>
-                </execution>
-            </executions>
-         </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-resources-plugin</artifactId><version>3.3.0</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
 
-      </plugins>
-   </build>
+            <!-- Jar - MANIFEST.MF options. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Dependencies to lib/ . -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-dependency-plugin</artifactId><version>3.3.0</version>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                    <includeScope>runtime</includeScope>
+                </configuration>
+            </plugin>
 
 
-   <profiles>
+            <!-- Surefire -->
+            <!-- The test set is defined by TexyGenericTestSuite which then uses GenericTestCase. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.0.0-M7</version>
+                <configuration>
+                    <debugForkedProcess>-da ${jvm.args.debug}</debugForkedProcess>
+                    <includes>
+                        <include>**/*GenericTestSuite.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*TestSuite</exclude>
+                        <exclude>**/*Test</exclude>
+                    </excludes>
+                    <systemProperties>
+                        <!-- Doesn't work, must be in execution.
+                        <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
+                        -->
+                    </systemProperties>
+                </configuration>
+
+                <executions>
+                    <!-- Disable default. -->
+                    <execution>  <id>default-test</id> <phase>none</phase> </execution>
+                    <!-- Basic testsuite -->
+                    <execution>
+                        <id>ts-basic</id><phase>test</phase><goals><goal>test</goal></goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*GenericTestSuite.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/*TestSuite</exclude>
+                                <exclude>**/*Test</exclude>
+                            </excludes>
+                            <systemProperties>
+                                <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
+                                <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/ts</value> </property>
+                                <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/ts</value> </property>
+                                <property> <name>jtexy.ts.src.dir.layout</name> <value>INPUT_AND_REF_DIRS</value> </property>
+                                <property> <name>jtexy.ts.RefFilesNeeded</name> <value>true</value> </property>
+                            </systemProperties>
+                        </configuration>
+                    </execution>
+                    <!-- Big files testsuite -->
+                    <execution>
+                        <id>ts-big</id>
+                        <phase>none</phase>
+                        <configuration>
+                            <systemProperties>
+                                <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
+                                <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/ts-big</value> </property>
+                                <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/ts-big</value> </property>
+                            </systemProperties>
+                        </configuration>
+                    </execution>
+                    <!-- OZ.cz/Java testsuite -->
+                    <execution>
+                        <id>ts-oz.cz</id>
+                        <phase>none</phase>
+                        <configuration>
+                            <systemProperties>
+                                <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
+                                <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/ts-oz.cz</value> </property>
+                                <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/ts-oz.cz</value> </property>
+                                <property> <name>jtexy.ts.src.dir.layout</name> <value>NEXT_TO</value> </property>
+                            </systemProperties>
+                        </configuration>
+                    </execution>
+                    <!-- PHP-Texy testsuite -->
+                    <execution>
+                        <id>ts-phptexy</id>
+                        <phase>none</phase>
+                        <configuration>
+                            <systemProperties>
+                                <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
+                                <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/tck</value> </property>
+                                <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/tck</value> </property>
+                                <property> <name>jtexy.ts.src.dir.layout</name> <value>TRIPLET</value> </property>
+                            </systemProperties>
+                        </configuration>
+                    </execution>
+                    <!-- PHP-Texy wiki testsuite - see http://texy.info/cs/special/sitemap -->
+                    <execution>
+                        <id>ts-texywiki</id>
+                        <phase>none</phase>
+                        <configuration>
+                            <systemProperties>
+                                <property> <name>jtexy.test</name> <value>${jtexyTest}</value> </property>
+                                <property> <name>jtexy.ts.src.dir</name> <value>${project.basedir}/src/test/TS/ts-texywiki</value> </property>
+                                <property> <name>jtexy.ts.out.dir</name> <value>${project.build.directory}/TS-output/ts-texywiki</value> </property>
+                                <property> <name>jtexy.ts.src.dir.layout</name> <value>NEXT_TO</value> </property>
+                            </systemProperties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+
+    <profiles>
 
         <!-- Enable various testsuites. -->
         <profile>
@@ -214,18 +206,18 @@
             <build>
                 <plugins>
 
-                     <!-- dependency:copy-dependencies -->
-                     <plugin>
-                         <groupId>org.apache.maven.plugins</groupId>
-                         <artifactId>maven-dependency-plugin</artifactId>
-                         <executions>
-                             <execution>
-                                 <id>dep-copy</id>
-                                 <phase>package</phase>
-                                 <goals> <goal>copy-dependencies</goal> </goals>
-                             </execution>
-                         </executions>
-                     </plugin>
+                    <!-- dependency:copy-dependencies -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>dep-copy</id>
+                                <phase>package</phase>
+                                <goals> <goal>copy-dependencies</goal> </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
 
                 </plugins>
             </build>
@@ -239,57 +231,29 @@
             </properties>
         </profile>
 
-   </profiles>
+    </profiles>
 
 
-   <dependencies>
+    <dependencies>
 
         <!-- Runtime deps -->
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
-        </dependency>
+        <dependency><groupId>dom4j</groupId><artifactId>dom4j</artifactId><version>1.6.1</version></dependency>
 
         <!-- Test deps -->
-        <dependency>
-            <groupId>oro</groupId>
-            <artifactId>oro</artifactId>
-            <version>2.0.8</version>
-            <scope>test</scope>
-        </dependency>
-         <!--
-        <dependency>
-             <groupId>jakarta-regexp</groupId>
-             <artifactId>jakarta-regexp</artifactId>
-             <version>1.4</version>
-             <scope>test</scope>
-        </dependency>
+        <dependency><groupId>oro</groupId><artifactId>oro</artifactId><version>2.0.8</version><scope>test</scope></dependency>
+        <!--
+        <dependency> <groupId>jakarta-regexp</groupId> <artifactId>jakarta-regexp</artifactId> <version>1.4</version> <scope>test</scope> </dependency>
         -->
 
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.6</version>
-            <scope>test</scope>
-        </dependency>
+        <dependency><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.11.0</version><scope>test</scope></dependency>
 
-        <!-- CatalogResolver in testsuite's HTML normalization.
-        <dependency>
-            <groupId>xml-resolver</groupId>
-            <artifactId>xml-resolver</artifactId>
-            <version>1.2</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- CatalogResolver in test suite's HTML normalization.
+        <dependency> <groupId>xml-resolver</groupId> <artifactId>xml-resolver</artifactId> <version>1.2</version> <scope>test</scope> </dependency>
         -->
 
         <!-- For implementation of html_strip_tags(). -->
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.7.2</version>
-        </dependency>
+        <dependency><groupId>org.jsoup</groupId><artifactId>jsoup</artifactId><version>1.15.4</version></dependency>
 
-   </dependencies>
+    </dependencies>
 
 </project>
