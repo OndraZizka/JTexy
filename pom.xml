@@ -19,12 +19,15 @@
     <properties>
         <jtexy.distRepo.url>jtexy.distRepo.url must be set (try settings.xml)</jtexy.distRepo.url>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kotlin.version>1.8.20-Beta</kotlin.version>
     </properties>
 
-    <organization>
-        <name>Dynawest</name>
-        <url>http://www.dynawest.cz/</url>
-    </organization>
+    <dependencies>
+        <dependency><groupId>org.jetbrains.kotlin</groupId><artifactId>kotlin-stdlib-jdk8</artifactId><version>${kotlin.version}</version></dependency>
+        <dependency><groupId>org.jetbrains.kotlin</groupId><artifactId>kotlin-test</artifactId><version>${kotlin.version}</version><scope>test</scope></dependency>
+    </dependencies>
+
+    <organization><name>Dynawest</name><url>http://www.dynawest.cz/</url></organization>
 
     <distributionManagement>
         <downloadUrl>https://github.com/OndraZizka/JTexy/</downloadUrl>
@@ -46,13 +49,22 @@
         <connection>scm:git:https://github.com/OndraZizka/JTexy.git</connection>
         <!-- scm:svn:https://[username[:password]@]server_name[:port]/path_to_repository -->
         <developerConnection>scm:git:git@github.com:OndraZizka/JTexy.git</developerConnection>
-        <url>http://jtexy.googlecode.com/svn/trunk</url>
+        <url>https://github.com/OndraZizka/JTexy</url>
     </scm>
 
     <build>
         <plugins>
 
-
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId><artifactId>kotlin-maven-plugin</artifactId><version>${kotlin.version}</version>
+                <executions>
+                    <execution><id>compile</id><phase>compile</phase><goals><goal>compile</goal></goals></execution>
+                    <execution><id>test-compile</id><phase>test-compile</phase><goals><goal>test-compile</goal></goals></execution>
+                </executions>
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
