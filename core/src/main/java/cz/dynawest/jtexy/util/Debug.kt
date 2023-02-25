@@ -1,30 +1,27 @@
+package cz.dynawest.jtexy.util
 
-package cz.dynawest.jtexy.util;
-
-import cz.dynawest.jtexy.ContentType;
+import cz.dynawest.jtexy.ContentType
 
 /**
  *
  * @author Ondrej Zizka
  */
-public class Debug {
+object Debug {
+    fun showCodes(str: String?): String {
+        return str!!.replace(ContentType.BLOCK.delim, '▉')
+            .replace(ContentType.TEXTUAL.delim, '₮')
+            .replace(ContentType.MARKUP.delim, 'ℳ')
+            .replace(ContentType.REPLACED.delim, '℞')
+    }
 
-    public static String showCodes( String str ){
-        return str.replace(ContentType.BLOCK   .getDelim(), '▉')
-                 .replace(ContentType.TEXTUAL .getDelim(), '₮')
-                 .replace(ContentType.MARKUP  .getDelim(), 'ℳ')
-                 .replace(ContentType.REPLACED.getDelim(), '℞');
-    }
-    
-    public static String showCodesWithNumbers( String str ){
-        str = str.replace(ContentType.BLOCK   .getDelim(), '▉')
-                 .replace(ContentType.TEXTUAL .getDelim(), '₮')
-                 .replace(ContentType.MARKUP  .getDelim(), 'ℳ')
-                 .replace(ContentType.REPLACED.getDelim(), '℞');
-        
+    fun showCodesWithNumbers(str: String): String {
+        var str = str
+        str = str.replace(ContentType.BLOCK.delim, '▉')
+            .replace(ContentType.TEXTUAL.delim, '₮')
+            .replace(ContentType.MARKUP.delim, 'ℳ')
+            .replace(ContentType.REPLACED.delim, '℞')
+
         // TODO: Show numbers inside delimiters.
-        
-        return str;
+        return str
     }
-    
 }

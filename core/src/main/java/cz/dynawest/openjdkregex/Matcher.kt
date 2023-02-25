@@ -22,76 +22,81 @@
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
  */
-
-package cz.dynawest.openjdkregex;
-
+package cz.dynawest.openjdkregex
 
 /**
- * An engine that performs match operations on a {@link java.lang.CharSequence
- * </code>character sequence<code>} by interpreting a {@link Pattern}.
+ * An engine that performs match operations on a [ &lt;/code&gt;character sequence&lt;code&gt;][java.lang.CharSequence] by interpreting a [Pattern].
  *
- * <p> A matcher is created from a pattern by invoking the pattern's {@link
- * Pattern#matcher matcher} method.  Once created, a matcher can be used to
+ *
+ *  A matcher is created from a pattern by invoking the pattern's [ ][Pattern.matcher] method.  Once created, a matcher can be used to
  * perform three different kinds of match operations:
  *
- * <ul>
  *
- *   <li><p> The {@link #matches matches} method attempts to match the entire
- *   input sequence against the pattern.  </p></li>
  *
- *   <li><p> The {@link #lookingAt lookingAt} method attempts to match the
- *   input sequence, starting at the beginning, against the pattern.  </p></li>
+ *  *
  *
- *   <li><p> The {@link #find find} method scans the input sequence looking for
- *   the next subsequence that matches the pattern.  </p></li>
+ * The [matches][.matches] method attempts to match the entire
+ * input sequence against the pattern.
  *
- * </ul>
+ *  *
  *
- * <p> Each of these methods returns a boolean indicating success or failure.
+ * The [lookingAt][.lookingAt] method attempts to match the
+ * input sequence, starting at the beginning, against the pattern.
+ *
+ *  *
+ *
+ * The [find][.find] method scans the input sequence looking for
+ * the next subsequence that matches the pattern.
+ *
+ *
+ *
+ *
+ *  Each of these methods returns a boolean indicating success or failure.
  * More information about a successful match can be obtained by querying the
  * state of the matcher.
  *
- * <p> A matcher finds matches in a subset of its input called the
- * <i>region</i>. By default, the region contains all of the matcher's input.
- * The region can be modified via the{@link #region region} method and queried
- * via the {@link #regionStart regionStart} and {@link #regionEnd regionEnd}
+ *
+ *  A matcher finds matches in a subset of its input called the
+ * *region*. By default, the region contains all of the matcher's input.
+ * The region can be modified via the[region][.region] method and queried
+ * via the [regionStart][.regionStart] and [regionEnd][.regionEnd]
  * methods. The way that the region boundaries interact with some pattern
- * constructs can be changed. See {@link #useAnchoringBounds
- * useAnchoringBounds} and {@link #useTransparentBounds useTransparentBounds}
+ * constructs can be changed. See [ useAnchoringBounds][.useAnchoringBounds] and [useTransparentBounds][.useTransparentBounds]
  * for more details.
  *
- * <p> This class also defines methods for replacing matched subsequences with
+ *
+ *  This class also defines methods for replacing matched subsequences with
  * new strings whose contents can, if desired, be computed from the match
- * result.  The {@link #appendReplacement appendReplacement} and {@link
- * #appendTail appendTail} methods can be used in tandem in order to collect
- * the result into an existing string buffer, or the more convenient {@link
- * #replaceAll replaceAll} method can be used to create a string in which every
+ * result.  The [appendReplacement][.appendReplacement] and [ ][.appendTail] methods can be used in tandem in order to collect
+ * the result into an existing string buffer, or the more convenient [ ][.replaceAll] method can be used to create a string in which every
  * matching subsequence in the input sequence is replaced.
  *
- * <p> The explicit state of a matcher includes the start and end indices of
+ *
+ *  The explicit state of a matcher includes the start and end indices of
  * the most recent successful match.  It also includes the start and end
- * indices of the input subsequence captured by each <a
- * href="Pattern.html#cg">capturing group</a> in the pattern as well as a total
+ * indices of the input subsequence captured by each [capturing group](Pattern.html#cg) in the pattern as well as a total
  * count of such subsequences.  As a convenience, methods are also provided for
  * returning these captured subsequences in string form.
  *
- * <p> The explicit state of a matcher is initially undefined; attempting to
- * query any part of it before a successful match will cause an {@link
- * IllegalStateException} to be thrown.  The explicit state of a matcher is
+ *
+ *  The explicit state of a matcher is initially undefined; attempting to
+ * query any part of it before a successful match will cause an [ ] to be thrown.  The explicit state of a matcher is
  * recomputed by every match operation.
  *
- * <p> The implicit state of a matcher includes the input character sequence as
- * well as the <i>append position</i>, which is initially zero and is updated
- * by the {@link #appendReplacement appendReplacement} method.
  *
- * <p> A matcher may be reset explicitly by invoking its {@link #reset()}
- * method or, if a new input sequence is desired, its {@link
- * #reset(java.lang.CharSequence) reset(CharSequence)} method.  Resetting a
+ *  The implicit state of a matcher includes the input character sequence as
+ * well as the *append position*, which is initially zero and is updated
+ * by the [appendReplacement][.appendReplacement] method.
+ *
+ *
+ *  A matcher may be reset explicitly by invoking its [.reset]
+ * method or, if a new input sequence is desired, its [ ][.reset] method.  Resetting a
  * matcher discards its explicit state information and sets the append position
  * to zero.
  *
- * <p> Instances of this class are not safe for use by multiple concurrent
- * threads. </p>
+ *
+ *  Instances of this class are not safe for use by multiple concurrent
+ * threads.
  *
  *
  * @author      Mike McCloskey
@@ -100,46 +105,37 @@ package cz.dynawest.openjdkregex;
  * @since       1.4
  * @spec        JSR-51
  */
-
-public final class Matcher implements MatchResult {
-
+class Matcher : MatchResult {
     /**
      * The Pattern object that created this Matcher.
      */
-    Pattern parentPattern;
+    var parentPattern: Pattern? = null
 
     /**
      * The storage used by groups. They may contain invalid values if
      * a group was skipped during the matching.
      */
-    int[] groups;
+    var groups: IntArray
 
     /**
      * The range within the sequence that is to be matched. Anchors
      * will match at these "hard" boundaries. Changing the region
      * changes these values.
      */
-    int from, to;
+    var from = 0
+    var to = 0
 
     /**
      * Lookbehind uses this value to ensure that the subexpression
      * match ends at the point where the lookbehind was encountered.
      */
-    int lookbehindTo;
+    var lookbehindTo = 0
 
     /**
      * The original string being matched.
      */
-    CharSequence text;
-
-    /**
-     * Matcher state used by the last node. NOANCHOR is used when a
-     * match does not have to consume all of the input. ENDANCHOR is
-     * the mode used for matching all the input.
-     */
-    static final int ENDANCHOR = 1;
-    static final int NOANCHOR = 0;
-    int acceptMode = NOANCHOR;
+    var text: CharSequence? = null
+    var acceptMode = NOANCHOR
 
     /**
      * The range of string that last matched the pattern. If the last
@@ -147,24 +143,25 @@ public final class Matcher implements MatchResult {
      * holds the index of the end of the last match (which is where the
      * next search starts).
      */
-    int first = -1, last = 0;
+    var first = -1
+    var last = 0
 
     /**
      * The end index of what matched in the last match operation.
      */
-    int oldLast = -1;
+    var oldLast = -1
 
     /**
      * The index of the last position appended in a substitution.
      */
-    int lastAppendPosition = 0;
+    var lastAppendPosition = 0
 
     /**
      * Storage used by nodes to tell what repetition they are on in
      * a pattern, and where groups begin. The nodes themselves are stateless,
      * so they rely on this field to hold state during a match.
      */
-    int[] locals;
+    var locals: IntArray
 
     /**
      * Boolean indicating whether or not more input could change
@@ -179,7 +176,7 @@ public final class Matcher implements MatchResult {
      * If hitEnd is false and a match was not found, then more
      * input will not cause a match to be found.
      */
-    boolean hitEnd;
+    var hitEnd = false
 
     /**
      * Boolean indicating whether or not more input could change
@@ -191,41 +188,40 @@ public final class Matcher implements MatchResult {
      * input might change the match but the match won't be lost.
      * If a match was not found, then requireEnd has no meaning.
      */
-    boolean requireEnd;
+    var requireEnd = false
 
     /**
      * If transparentBounds is true then the boundaries of this
      * matcher's region are transparent to lookahead, lookbehind,
      * and boundary matching constructs that try to see beyond them.
      */
-    boolean transparentBounds = false;
+    var transparentBounds = false
 
     /**
      * If anchoringBounds is true then the boundaries of this
      * matcher's region match anchors such as ^ and $.
      */
-    boolean anchoringBounds = true;
+    var anchoringBounds = true
 
     /**
      * No default constructor.
      */
-    Matcher() {
-    }
+    internal constructor()
 
     /**
      * All matchers have the state used by Pattern during a match.
      */
-    Matcher(Pattern parent, CharSequence text) {
-        this.parentPattern = parent;
-        this.text = text;
+    internal constructor(parent: Pattern?, text: CharSequence?) {
+        parentPattern = parent
+        this.text = text
 
         // Allocate state storage
-        int parentGroupCount = Math.max(parent.capturingGroupCount, 10);
-        groups = new int[parentGroupCount * 2];
-        locals = new int[parent.localCount];
+        val parentGroupCount = Math.max(parent!!.capturingGroupCount, 10)
+        groups = IntArray(parentGroupCount * 2)
+        locals = IntArray(parent.localCount)
 
         // Put fields into initial states
-        reset();
+        reset()
     }
 
     /**
@@ -233,323 +229,323 @@ public final class Matcher implements MatchResult {
      *
      * @return  The pattern for which this matcher was created
      */
-    public Pattern pattern() {
-        return parentPattern;
+    fun pattern(): Pattern? {
+        return parentPattern
     }
 
     /**
-     * Returns the match state of this matcher as a {@link MatchResult}.
+     * Returns the match state of this matcher as a [MatchResult].
      * The result is unaffected by subsequent operations performed upon this
      * matcher.
      *
-     * @return  a <code>MatchResult</code> with the state of this matcher
+     * @return  a `MatchResult` with the state of this matcher
      * @since 1.5
      */
-    public MatchResult toMatchResult() {
-        Matcher result = new Matcher(this.parentPattern, text.toString());
-        result.first = this.first;
-        result.last = this.last;
-        result.groups = (int[])(this.groups.clone());
-        return result;
+    fun toMatchResult(): MatchResult {
+        val result = Matcher(parentPattern, text.toString())
+        result.first = first
+        result.last = last
+        result.groups = groups.clone()
+        return result
     }
 
     /**
-      * Changes the <tt>Pattern</tt> that this <tt>Matcher</tt> uses to
-      * find matches with.
-      *
-      * <p> This method causes this matcher to lose information
-      * about the groups of the last match that occurred. The
-      * matcher's position in the input is maintained and its
-      * last append position is unaffected.</p>
-      *
-      * @param  newPattern
-      *         The new pattern used by this matcher
-      * @return  This matcher
-      * @throws  IllegalArgumentException
-      *          If newPattern is <tt>null</tt>
-      * @since 1.5
-      */
-    public Matcher usePattern(Pattern newPattern) {
-        if (newPattern == null)
-            throw new IllegalArgumentException("Pattern cannot be null");
-        parentPattern = newPattern;
+     * Changes the <tt>Pattern</tt> that this <tt>Matcher</tt> uses to
+     * find matches with.
+     *
+     *
+     *  This method causes this matcher to lose information
+     * about the groups of the last match that occurred. The
+     * matcher's position in the input is maintained and its
+     * last append position is unaffected.
+     *
+     * @param  newPattern
+     * The new pattern used by this matcher
+     * @return  This matcher
+     * @throws  IllegalArgumentException
+     * If newPattern is <tt>null</tt>
+     * @since 1.5
+     */
+    fun usePattern(newPattern: Pattern?): Matcher {
+        requireNotNull(newPattern) { "Pattern cannot be null" }
+        parentPattern = newPattern
 
         // Reallocate state storage
-        int parentGroupCount = Math.max(newPattern.capturingGroupCount, 10);
-        groups = new int[parentGroupCount * 2];
-        locals = new int[newPattern.localCount];
-        for (int i = 0; i < groups.length; i++)
-            groups[i] = -1;
-        for (int i = 0; i < locals.length; i++)
-            locals[i] = -1;
-        return this;
+        val parentGroupCount = Math.max(newPattern.capturingGroupCount, 10)
+        groups = IntArray(parentGroupCount * 2)
+        locals = IntArray(newPattern.localCount)
+        for (i in groups.indices) groups[i] = -1
+        for (i in locals.indices) locals[i] = -1
+        return this
     }
 
     /**
      * Resets this matcher.
      *
-     * <p> Resetting a matcher discards all of its explicit state information
+     *
+     *  Resetting a matcher discards all of its explicit state information
      * and sets its append position to zero. The matcher's region is set to the
      * default region, which is its entire character sequence. The anchoring
      * and transparency of this matcher's region boundaries are unaffected.
      *
      * @return  This matcher
      */
-    public Matcher reset() {
-        first = -1;
-        last = 0;
-        oldLast = -1;
-        for(int i=0; i<groups.length; i++)
-            groups[i] = -1;
-        for(int i=0; i<locals.length; i++)
-            locals[i] = -1;
-        lastAppendPosition = 0;
-        from = 0;
-        to = getTextLength();
-        return this;
+    fun reset(): Matcher {
+        first = -1
+        last = 0
+        oldLast = -1
+        for (i in groups.indices) groups[i] = -1
+        for (i in locals.indices) locals[i] = -1
+        lastAppendPosition = 0
+        from = 0
+        to = getTextLength()
+        return this
     }
 
     /**
      * Resets this matcher with a new input sequence.
      *
-     * <p> Resetting a matcher discards all of its explicit state information
+     *
+     *  Resetting a matcher discards all of its explicit state information
      * and sets its append position to zero.  The matcher's region is set to
      * the default region, which is its entire character sequence.  The
      * anchoring and transparency of this matcher's region boundaries are
      * unaffected.
      *
      * @param  input
-     *         The new input character sequence
+     * The new input character sequence
      *
      * @return  This matcher
      */
-    public Matcher reset(CharSequence input) {
-        text = input;
-        return reset();
+    fun reset(input: CharSequence?): Matcher {
+        text = input
+        return reset()
     }
 
     /**
-     * Returns the start index of the previous match.  </p>
+     * Returns the start index of the previous match.
      *
      * @return  The index of the first character matched
      *
      * @throws  IllegalStateException
-     *          If no match has yet been attempted,
-     *          or if the previous match operation failed
+     * If no match has yet been attempted,
+     * or if the previous match operation failed
      */
-    public int start() {
-        if (first < 0)
-            throw new IllegalStateException("No match available");
-        return first;
+    override fun start(): Int {
+        check(first >= 0) { "No match available" }
+        return first
     }
 
     /**
      * Returns the start index of the subsequence captured by the given group
      * during the previous match operation.
      *
-     * <p> <a href="Pattern.html#cg">Capturing groups</a> are indexed from left
+     *
+     *  [Capturing groups](Pattern.html#cg) are indexed from left
      * to right, starting at one.  Group zero denotes the entire pattern, so
-     * the expression <i>m.</i><tt>start(0)</tt> is equivalent to
-     * <i>m.</i><tt>start()</tt>.  </p>
+     * the expression *m.*<tt>start(0)</tt> is equivalent to
+     * *m.*<tt>start()</tt>.
      *
      * @param  group
-     *         The index of a capturing group in this matcher's pattern
+     * The index of a capturing group in this matcher's pattern
      *
      * @return  The index of the first character captured by the group,
-     *          or <tt>-1</tt> if the match was successful but the group
-     *          itself did not match anything
+     * or <tt>-1</tt> if the match was successful but the group
+     * itself did not match anything
      *
      * @throws  IllegalStateException
-     *          If no match has yet been attempted,
-     *          or if the previous match operation failed
+     * If no match has yet been attempted,
+     * or if the previous match operation failed
      *
      * @throws  IndexOutOfBoundsException
-     *          If there is no capturing group in the pattern
-     *          with the given index
+     * If there is no capturing group in the pattern
+     * with the given index
      */
-    public int start(int group) {
-        if (first < 0)
-            throw new IllegalStateException("No match available");
-        if (group > groupCount())
-            throw new IndexOutOfBoundsException("No group " + group);
-        return groups[group * 2];
+    override fun start(group: Int): Int {
+        check(first >= 0) { "No match available" }
+        if (group > groupCount()) throw IndexOutOfBoundsException("No group $group")
+        return groups[group * 2]
     }
 
     /**
-     * Returns the offset after the last character matched.  </p>
+     * Returns the offset after the last character matched.
      *
      * @return  The offset after the last character matched
      *
      * @throws  IllegalStateException
-     *          If no match has yet been attempted,
-     *          or if the previous match operation failed
+     * If no match has yet been attempted,
+     * or if the previous match operation failed
      */
-    public int end() {
-        if (first < 0)
-            throw new IllegalStateException("No match available");
-        return last;
+    override fun end(): Int {
+        check(first >= 0) { "No match available" }
+        return last
     }
 
     /**
      * Returns the offset after the last character of the subsequence
      * captured by the given group during the previous match operation.
      *
-     * <p> <a href="Pattern.html#cg">Capturing groups</a> are indexed from left
+     *
+     *  [Capturing groups](Pattern.html#cg) are indexed from left
      * to right, starting at one.  Group zero denotes the entire pattern, so
-     * the expression <i>m.</i><tt>end(0)</tt> is equivalent to
-     * <i>m.</i><tt>end()</tt>.  </p>
+     * the expression *m.*<tt>end(0)</tt> is equivalent to
+     * *m.*<tt>end()</tt>.
      *
      * @param  group
-     *         The index of a capturing group in this matcher's pattern
+     * The index of a capturing group in this matcher's pattern
      *
      * @return  The offset after the last character captured by the group,
-     *          or <tt>-1</tt> if the match was successful
-     *          but the group itself did not match anything
+     * or <tt>-1</tt> if the match was successful
+     * but the group itself did not match anything
      *
      * @throws  IllegalStateException
-     *          If no match has yet been attempted,
-     *          or if the previous match operation failed
+     * If no match has yet been attempted,
+     * or if the previous match operation failed
      *
      * @throws  IndexOutOfBoundsException
-     *          If there is no capturing group in the pattern
-     *          with the given index
+     * If there is no capturing group in the pattern
+     * with the given index
      */
-    public int end(int group) {
-        if (first < 0)
-            throw new IllegalStateException("No match available");
-        if (group > groupCount())
-            throw new IndexOutOfBoundsException("No group " + group);
-        return groups[group * 2 + 1];
+    override fun end(group: Int): Int {
+        check(first >= 0) { "No match available" }
+        if (group > groupCount()) throw IndexOutOfBoundsException("No group $group")
+        return groups[group * 2 + 1]
     }
 
     /**
      * Returns the input subsequence matched by the previous match.
      *
-     * <p> For a matcher <i>m</i> with input sequence <i>s</i>,
-     * the expressions <i>m.</i><tt>group()</tt> and
-     * <i>s.</i><tt>substring(</tt><i>m.</i><tt>start(),</tt>&nbsp;<i>m.</i><tt>end())</tt>
-     * are equivalent.  </p>
      *
-     * <p> Note that some patterns, for example <tt>a*</tt>, match the empty
+     *  For a matcher *m* with input sequence *s*,
+     * the expressions *m.*<tt>group()</tt> and
+     * *s.*<tt>substring(</tt>*m.*<tt>start(),</tt>&nbsp;*m.*<tt>end())</tt>
+     * are equivalent.
+     *
+     *
+     *  Note that some patterns, for example <tt>a*</tt>, match the empty
      * string.  This method will return the empty string when the pattern
-     * successfully matches the empty string in the input.  </p>
+     * successfully matches the empty string in the input.
      *
      * @return The (possibly empty) subsequence matched by the previous match,
-     *         in string form
+     * in string form
      *
      * @throws  IllegalStateException
-     *          If no match has yet been attempted,
-     *          or if the previous match operation failed
+     * If no match has yet been attempted,
+     * or if the previous match operation failed
      */
-    public String group() {
-        return group(0);
+    override fun group(): String? {
+        return group(0)
     }
 
     /**
      * Returns the input subsequence captured by the given group during the
      * previous match operation.
      *
-     * <p> For a matcher <i>m</i>, input sequence <i>s</i>, and group index
-     * <i>g</i>, the expressions <i>m.</i><tt>group(</tt><i>g</i><tt>)</tt> and
-     * <i>s.</i><tt>substring(</tt><i>m.</i><tt>start(</tt><i>g</i><tt>),</tt>&nbsp;<i>m.</i><tt>end(</tt><i>g</i><tt>))</tt>
-     * are equivalent.  </p>
      *
-     * <p> <a href="Pattern.html#cg">Capturing groups</a> are indexed from left
+     *  For a matcher *m*, input sequence *s*, and group index
+     * *g*, the expressions *m.*<tt>group(</tt>*g*<tt>)</tt> and
+     * *s.*<tt>substring(</tt>*m.*<tt>start(</tt>*g*<tt>),</tt>&nbsp;*m.*<tt>end(</tt>*g*<tt>))</tt>
+     * are equivalent.
+     *
+     *
+     *  [Capturing groups](Pattern.html#cg) are indexed from left
      * to right, starting at one.  Group zero denotes the entire pattern, so
      * the expression <tt>m.group(0)</tt> is equivalent to <tt>m.group()</tt>.
-     * </p>
      *
-     * <p> If the match was successful but the group specified failed to match
+     *
+     *
+     *  If the match was successful but the group specified failed to match
      * any part of the input sequence, then <tt>null</tt> is returned. Note
      * that some groups, for example <tt>(a*)</tt>, match the empty string.
      * This method will return the empty string when such a group successfully
-     * matches the empty string in the input.  </p>
+     * matches the empty string in the input.
      *
      * @param  group
-     *         The index of a capturing group in this matcher's pattern
+     * The index of a capturing group in this matcher's pattern
      *
      * @return  The (possibly empty) subsequence captured by the group
-     *          during the previous match, or <tt>null</tt> if the group
-     *          failed to match part of the input
+     * during the previous match, or <tt>null</tt> if the group
+     * failed to match part of the input
      *
      * @throws  IllegalStateException
-     *          If no match has yet been attempted,
-     *          or if the previous match operation failed
+     * If no match has yet been attempted,
+     * or if the previous match operation failed
      *
      * @throws  IndexOutOfBoundsException
-     *          If there is no capturing group in the pattern
-     *          with the given index
+     * If there is no capturing group in the pattern
+     * with the given index
      */
-    public String group(int group) {
-        if (first < 0)
-            throw new IllegalStateException("No match found");
-        if (group < 0 || group > groupCount())
-            throw new IndexOutOfBoundsException("No group " + group);
-        if ((groups[group*2] == -1) || (groups[group*2+1] == -1))
-            return null;
-        return getSubSequence(groups[group * 2], groups[group * 2 + 1]).toString();
+    override fun group(group: Int): String? {
+        check(first >= 0) { "No match found" }
+        if (group < 0 || group > groupCount()) throw IndexOutOfBoundsException("No group $group")
+        return if (groups[group * 2] == -1 || groups[group * 2 + 1] == -1) null else getSubSequence(
+            groups[group * 2],
+            groups[group * 2 + 1]
+        ).toString()
     }
 
     /**
      * Returns the number of capturing groups in this matcher's pattern.
      *
-     * <p> Group zero denotes the entire pattern by convention. It is not
+     *
+     *  Group zero denotes the entire pattern by convention. It is not
      * included in this count.
      *
-     * <p> Any non-negative integer smaller than or equal to the value
+     *
+     *  Any non-negative integer smaller than or equal to the value
      * returned by this method is guaranteed to be a valid group index for
-     * this matcher.  </p>
+     * this matcher.
      *
      * @return The number of capturing groups in this matcher's pattern
      */
-    public int groupCount() {
-        return parentPattern.capturingGroupCount - 1;
+    override fun groupCount(): Int {
+        return parentPattern!!.capturingGroupCount - 1
     }
 
     /**
      * Attempts to match the entire region against the pattern.
      *
-     * <p> If the match succeeds then more information can be obtained via the
-     * <tt>start</tt>, <tt>end</tt>, and <tt>group</tt> methods.  </p>
+     *
+     *  If the match succeeds then more information can be obtained via the
+     * <tt>start</tt>, <tt>end</tt>, and <tt>group</tt> methods.
      *
      * @return  <tt>true</tt> if, and only if, the entire region sequence
-     *          matches this matcher's pattern
+     * matches this matcher's pattern
      */
-    public boolean matches() {
-        return match(from, ENDANCHOR);
+    fun matches(): Boolean {
+        return match(from, ENDANCHOR)
     }
 
     /**
      * Attempts to find the next subsequence of the input sequence that matches
      * the pattern.
      *
-     * <p> This method starts at the beginning of this matcher's region, or, if
+     *
+     *  This method starts at the beginning of this matcher's region, or, if
      * a previous invocation of the method was successful and the matcher has
      * not since been reset, at the first character not matched by the previous
      * match.
      *
-     * <p> If the match succeeds then more information can be obtained via the
-     * <tt>start</tt>, <tt>end</tt>, and <tt>group</tt> methods.  </p>
+     *
+     *  If the match succeeds then more information can be obtained via the
+     * <tt>start</tt>, <tt>end</tt>, and <tt>group</tt> methods.
      *
      * @return  <tt>true</tt> if, and only if, a subsequence of the input
-     *          sequence matches this matcher's pattern
+     * sequence matches this matcher's pattern
      */
-    public boolean find() {
-        int nextSearchIndex = last;
-        if (nextSearchIndex == first)
-            nextSearchIndex++;
+    fun find(): Boolean {
+        var nextSearchIndex = last
+        if (nextSearchIndex == first) nextSearchIndex++
 
         // If next search starts before region, start it at region
-        if (nextSearchIndex < from)
-            nextSearchIndex = from;
+        if (nextSearchIndex < from) nextSearchIndex = from
 
         // If next search starts beyond region then it fails
         if (nextSearchIndex > to) {
-            for (int i = 0; i < groups.length; i++)
-                groups[i] = -1;
-            return false;
+            for (i in groups.indices) groups[i] = -1
+            return false
         }
-        return search(nextSearchIndex);
+        return search(nextSearchIndex)
     }
 
     /**
@@ -557,100 +553,80 @@ public final class Matcher implements MatchResult {
      * the input sequence that matches the pattern, starting at the specified
      * index.
      *
-     * <p> If the match succeeds then more information can be obtained via the
+     *
+     *  If the match succeeds then more information can be obtained via the
      * <tt>start</tt>, <tt>end</tt>, and <tt>group</tt> methods, and subsequent
-     * invocations of the {@link #find()} method will start at the first
-     * character not matched by this match.  </p>
+     * invocations of the [.find] method will start at the first
+     * character not matched by this match.
      *
      * @throws  IndexOutOfBoundsException
-     *          If start is less than zero or if start is greater than the
-     *          length of the input sequence.
+     * If start is less than zero or if start is greater than the
+     * length of the input sequence.
      *
      * @return  <tt>true</tt> if, and only if, a subsequence of the input
-     *          sequence starting at the given index matches this matcher's
-     *          pattern
+     * sequence starting at the given index matches this matcher's
+     * pattern
      */
-    public boolean find(int start) {
-        int limit = getTextLength();
-        if ((start < 0) || (start > limit))
-            throw new IndexOutOfBoundsException("Illegal start index");
-        reset();
-        return search(start);
+    fun find(start: Int): Boolean {
+        val limit = getTextLength()
+        if (start < 0 || start > limit) throw IndexOutOfBoundsException("Illegal start index")
+        reset()
+        return search(start)
     }
 
     /**
      * Attempts to match the input sequence, starting at the beginning of the
      * region, against the pattern.
      *
-     * <p> Like the {@link #matches matches} method, this method always starts
+     *
+     *  Like the [matches][.matches] method, this method always starts
      * at the beginning of the region; unlike that method, it does not
      * require that the entire region be matched.
      *
-     * <p> If the match succeeds then more information can be obtained via the
-     * <tt>start</tt>, <tt>end</tt>, and <tt>group</tt> methods.  </p>
+     *
+     *  If the match succeeds then more information can be obtained via the
+     * <tt>start</tt>, <tt>end</tt>, and <tt>group</tt> methods.
      *
      * @return  <tt>true</tt> if, and only if, a prefix of the input
-     *          sequence matches this matcher's pattern
+     * sequence matches this matcher's pattern
      */
-    public boolean lookingAt() {
-        return match(from, NOANCHOR);
-    }
-
-    /**
-     * Returns a literal replacement <code>String</code> for the specified
-     * <code>String</code>.
-     *
-     * This method produces a <code>String</code> that will work
-     * as a literal replacement <code>s</code> in the
-     * <code>appendReplacement</code> method of the {@link Matcher} class.
-     * The <code>String</code> produced will match the sequence of characters
-     * in <code>s</code> treated as a literal sequence. Slashes ('\') and
-     * dollar signs ('$') will be given no special meaning.
-     *
-     * @param  s The string to be literalized
-     * @return  A literal string replacement
-     * @since 1.5
-     */
-    public static String quoteReplacement(String s) {
-        if ((s.indexOf('\\') == -1) && (s.indexOf('$') == -1))
-            return s;
-        StringBuilder sb = new StringBuilder();
-        for (int i=0; i<s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == '\\' || c == '$') {
-                sb.append('\\');
-            }
-            sb.append(c);
-        }
-        return sb.toString();
+    fun lookingAt(): Boolean {
+        return match(from, NOANCHOR)
     }
 
     /**
      * Implements a non-terminal append-and-replace step.
      *
-     * <p> This method performs the following actions: </p>
      *
-     * <ol>
+     *  This method performs the following actions:
      *
-     *   <li><p> It reads characters from the input sequence, starting at the
-     *   append position, and appends them to the given string buffer.  It
-     *   stops after reading the last character preceding the previous match,
-     *   that is, the character at index {@link
-     *   #start()}&nbsp;<tt>-</tt>&nbsp;<tt>1</tt>.  </p></li>
      *
-     *   <li><p> It appends the given replacement string to the string buffer.
-     *   </p></li>
      *
-     *   <li><p> It sets the append position of this matcher to the index of
-     *   the last character matched, plus one, that is, to {@link #end()}.
-     *   </p></li>
+     *  1.
      *
-     * </ol>
+     * It reads characters from the input sequence, starting at the
+     * append position, and appends them to the given string buffer.  It
+     * stops after reading the last character preceding the previous match,
+     * that is, the character at index [   ][.start]&nbsp;<tt>-</tt>&nbsp;<tt>1</tt>.
      *
-     * <p> The replacement string may contain references to subsequences
+     *  1.
+     *
+     * It appends the given replacement string to the string buffer.
+     *
+     *
+     *  1.
+     *
+     * It sets the append position of this matcher to the index of
+     * the last character matched, plus one, that is, to [.end].
+     *
+     *
+     *
+     *
+     *
+     *  The replacement string may contain references to subsequences
      * captured during the previous match: Each occurrence of
-     * <tt>$</tt><i>g</i><tt></tt> will be replaced by the result of
-     * evaluating {@link #group(int) group}<tt>(</tt><i>g</i><tt>)</tt>.
+     * <tt>$</tt>*g*<tt></tt> will be replaced by the result of
+     * evaluating [group][.group]<tt>(</tt>*g*<tt>)</tt>.
      * The first number after the <tt>$</tt> is always treated as part of
      * the group reference. Subsequent numbers are incorporated into g if
      * they would form a legal group reference. Only the numerals '0'
@@ -661,434 +637,453 @@ public final class Matcher implements MatchResult {
      * sign (<tt>$</tt>) may be included as a literal in the replacement
      * string by preceding it with a backslash (<tt>\$</tt>).
      *
-     * <p> Note that backslashes (<tt>\</tt>) and dollar signs (<tt>$</tt>) in
+     *
+     *  Note that backslashes (<tt>\</tt>) and dollar signs (<tt>$</tt>) in
      * the replacement string may cause the results to be different than if it
      * were being treated as a literal replacement string. Dollar signs may be
      * treated as references to captured subsequences as described above, and
      * backslashes are used to escape literal characters in the replacement
      * string.
      *
-     * <p> This method is intended to be used in a loop together with the
-     * {@link #appendTail appendTail} and {@link #find find} methods.  The
+     *
+     *  This method is intended to be used in a loop together with the
+     * [appendTail][.appendTail] and [find][.find] methods.  The
      * following code, for example, writes <tt>one dog two dogs in the
-     * yard</tt> to the standard-output stream: </p>
+     * yard</tt> to the standard-output stream:
      *
      * <blockquote><pre>
      * Pattern p = Pattern.compile("cat");
      * Matcher m = p.matcher("one cat two cats in the yard");
      * StringBuffer sb = new StringBuffer();
      * while (m.find()) {
-     *     m.appendReplacement(sb, "dog");
+     * m.appendReplacement(sb, "dog");
      * }
      * m.appendTail(sb);
      * System.out.println(sb.toString());</pre></blockquote>
      *
      * @param  sb
-     *         The target string buffer
+     * The target string buffer
      *
      * @param  replacement
-     *         The replacement string
+     * The replacement string
      *
      * @return  This matcher
      *
      * @throws  IllegalStateException
-     *          If no match has yet been attempted,
-     *          or if the previous match operation failed
+     * If no match has yet been attempted,
+     * or if the previous match operation failed
      *
      * @throws  IndexOutOfBoundsException
-     *          If the replacement string refers to a capturing group
-     *          that does not exist in the pattern
+     * If the replacement string refers to a capturing group
+     * that does not exist in the pattern
      */
-    public Matcher appendReplacement(StringBuffer sb, String replacement) {
+    fun appendReplacement(sb: StringBuffer, replacement: String?): Matcher {
 
         // If no match, return error
-        if (first < 0)
-            throw new IllegalStateException("No match available");
+        check(first >= 0) { "No match available" }
 
         // Process substitution string to replace group references with groups
-        int cursor = 0;
-        StringBuilder result = new StringBuilder();
-
-        while (cursor < replacement.length()) {
-            char nextChar = replacement.charAt(cursor);
+        var cursor = 0
+        val result = StringBuilder()
+        while (cursor < replacement!!.length) {
+            var nextChar = replacement[cursor]
             if (nextChar == '\\') {
-                cursor++;
-                nextChar = replacement.charAt(cursor);
-                result.append(nextChar);
-                cursor++;
+                cursor++
+                nextChar = replacement[cursor]
+                result.append(nextChar)
+                cursor++
             } else if (nextChar == '$') {
                 // Skip past $
-                cursor++;
+                cursor++
                 // The first number is always a group
-                int refNum = (int)replacement.charAt(cursor) - '0';
-                if ((refNum < 0)||(refNum > 9))
-                    throw new IllegalArgumentException(
-                        "Illegal group reference");
-                cursor++;
+                var refNum = replacement[cursor].code - '0'.code
+                require(!(refNum < 0 || refNum > 9)) { "Illegal group reference" }
+                cursor++
 
                 // Capture the largest legal group string
-                boolean done = false;
+                var done = false
                 while (!done) {
-                    if (cursor >= replacement.length()) {
-                        break;
+                    if (cursor >= replacement.length) {
+                        break
                     }
-                    int nextDigit = replacement.charAt(cursor) - '0';
-                    if ((nextDigit < 0)||(nextDigit > 9)) { // not a number
-                        break;
+                    val nextDigit = replacement[cursor].code - '0'.code
+                    if (nextDigit < 0 || nextDigit > 9) { // not a number
+                        break
                     }
-                    int newRefNum = (refNum * 10) + nextDigit;
+                    val newRefNum = refNum * 10 + nextDigit
                     if (groupCount() < newRefNum) {
-                        done = true;
+                        done = true
                     } else {
-                        refNum = newRefNum;
-                        cursor++;
+                        refNum = newRefNum
+                        cursor++
                     }
                 }
                 // Append group
-                if (start(refNum) != -1 && end(refNum) != -1)
-                    result.append(text, start(refNum), end(refNum));
+                if (start(refNum) != -1 && end(refNum) != -1) result.append(text, start(refNum), end(refNum))
             } else {
-                result.append(nextChar);
-                cursor++;
+                result.append(nextChar)
+                cursor++
             }
         }
         // Append the intervening text
-        sb.append(text, lastAppendPosition, first);
+        sb.append(text, lastAppendPosition, first)
         // Append the match substitution
-        sb.append(result);
-
-        lastAppendPosition = last;
-        return this;
+        sb.append(result)
+        lastAppendPosition = last
+        return this
     }
 
     /**
      * Implements a terminal append-and-replace step.
      *
-     * <p> This method reads characters from the input sequence, starting at
+     *
+     *  This method reads characters from the input sequence, starting at
      * the append position, and appends them to the given string buffer.  It is
-     * intended to be invoked after one or more invocations of the {@link
-     * #appendReplacement appendReplacement} method in order to copy the
-     * remainder of the input sequence.  </p>
+     * intended to be invoked after one or more invocations of the [ ][.appendReplacement] method in order to copy the
+     * remainder of the input sequence.
      *
      * @param  sb
-     *         The target string buffer
+     * The target string buffer
      *
      * @return  The target string buffer
      */
-    public StringBuffer appendTail(StringBuffer sb) {
-        sb.append(text, lastAppendPosition, getTextLength());
-        return sb;
+    fun appendTail(sb: StringBuffer): StringBuffer {
+        sb.append(text, lastAppendPosition, getTextLength())
+        return sb
     }
 
     /**
      * Replaces every subsequence of the input sequence that matches the
      * pattern with the given replacement string.
      *
-     * <p> This method first resets this matcher.  It then scans the input
+     *
+     *  This method first resets this matcher.  It then scans the input
      * sequence looking for matches of the pattern.  Characters that are not
      * part of any match are appended directly to the result string; each match
      * is replaced in the result by the replacement string.  The replacement
-     * string may contain references to captured subsequences as in the {@link
-     * #appendReplacement appendReplacement} method.
+     * string may contain references to captured subsequences as in the [ ][.appendReplacement] method.
      *
-     * <p> Note that backslashes (<tt>\</tt>) and dollar signs (<tt>$</tt>) in
+     *
+     *  Note that backslashes (<tt>\</tt>) and dollar signs (<tt>$</tt>) in
      * the replacement string may cause the results to be different than if it
      * were being treated as a literal replacement string. Dollar signs may be
      * treated as references to captured subsequences as described above, and
      * backslashes are used to escape literal characters in the replacement
      * string.
      *
-     * <p> Given the regular expression <tt>a*b</tt>, the input
+     *
+     *  Given the regular expression <tt>a*b</tt>, the input
      * <tt>"aabfooaabfooabfoob"</tt>, and the replacement string
      * <tt>"-"</tt>, an invocation of this method on a matcher for that
      * expression would yield the string <tt>"-foo-foo-foo-"</tt>.
      *
-     * <p> Invoking this method changes this matcher's state.  If the matcher
+     *
+     *  Invoking this method changes this matcher's state.  If the matcher
      * is to be used in further matching operations then it should first be
-     * reset.  </p>
+     * reset.
      *
      * @param  replacement
-     *         The replacement string
+     * The replacement string
      *
      * @return  The string constructed by replacing each matching subsequence
-     *          by the replacement string, substituting captured subsequences
-     *          as needed
+     * by the replacement string, substituting captured subsequences
+     * as needed
      */
-    public String replaceAll(String replacement) {
-        reset();
-        boolean result = find();
+    fun replaceAll(replacement: String?): String {
+        reset()
+        var result = find()
         if (result) {
-            StringBuffer sb = new StringBuffer();
+            val sb = StringBuffer()
             do {
-                appendReplacement(sb, replacement);
-                result = find();
-            } while (result);
-            appendTail(sb);
-            return sb.toString();
+                appendReplacement(sb, replacement)
+                result = find()
+            } while (result)
+            appendTail(sb)
+            return sb.toString()
         }
-        return text.toString();
+        return text.toString()
     }
 
     /**
      * Replaces the first subsequence of the input sequence that matches the
      * pattern with the given replacement string.
      *
-     * <p> This method first resets this matcher.  It then scans the input
+     *
+     *  This method first resets this matcher.  It then scans the input
      * sequence looking for a match of the pattern.  Characters that are not
      * part of the match are appended directly to the result string; the match
      * is replaced in the result by the replacement string.  The replacement
-     * string may contain references to captured subsequences as in the {@link
-     * #appendReplacement appendReplacement} method.
+     * string may contain references to captured subsequences as in the [ ][.appendReplacement] method.
      *
-     * <p>Note that backslashes (<tt>\</tt>) and dollar signs (<tt>$</tt>) in
+     *
+     * Note that backslashes (<tt>\</tt>) and dollar signs (<tt>$</tt>) in
      * the replacement string may cause the results to be different than if it
      * were being treated as a literal replacement string. Dollar signs may be
      * treated as references to captured subsequences as described above, and
      * backslashes are used to escape literal characters in the replacement
      * string.
      *
-     * <p> Given the regular expression <tt>dog</tt>, the input
+     *
+     *  Given the regular expression <tt>dog</tt>, the input
      * <tt>"zzzdogzzzdogzzz"</tt>, and the replacement string
      * <tt>"cat"</tt>, an invocation of this method on a matcher for that
-     * expression would yield the string <tt>"zzzcatzzzdogzzz"</tt>.  </p>
+     * expression would yield the string <tt>"zzzcatzzzdogzzz"</tt>.
      *
-     * <p> Invoking this method changes this matcher's state.  If the matcher
+     *
+     *  Invoking this method changes this matcher's state.  If the matcher
      * is to be used in further matching operations then it should first be
-     * reset.  </p>
+     * reset.
      *
      * @param  replacement
-     *         The replacement string
+     * The replacement string
      * @return  The string constructed by replacing the first matching
-     *          subsequence by the replacement string, substituting captured
-     *          subsequences as needed
+     * subsequence by the replacement string, substituting captured
+     * subsequences as needed
      */
-    public String replaceFirst(String replacement) {
-        if (replacement == null)
-            throw new NullPointerException("replacement");
-        reset();
-        if (!find())
-            return text.toString();
-        StringBuffer sb = new StringBuffer();
-        appendReplacement(sb, replacement);
-        appendTail(sb);
-        return sb.toString();
+    fun replaceFirst(replacement: String?): String {
+        if (replacement == null) throw NullPointerException("replacement")
+        reset()
+        if (!find()) return text.toString()
+        val sb = StringBuffer()
+        appendReplacement(sb, replacement)
+        appendTail(sb)
+        return sb.toString()
     }
 
     /**
      * Sets the limits of this matcher's region. The region is the part of the
      * input sequence that will be searched to find a match. Invoking this
      * method resets the matcher, and then sets the region to start at the
-     * index specified by the <code>start</code> parameter and end at the
-     * index specified by the <code>end</code> parameter.
+     * index specified by the `start` parameter and end at the
+     * index specified by the `end` parameter.
      *
-     * <p>Depending on the transparency and anchoring being used (see
-     * {@link #useTransparentBounds useTransparentBounds} and
-     * {@link #useAnchoringBounds useAnchoringBounds}), certain constructs such
+     *
+     * Depending on the transparency and anchoring being used (see
+     * [useTransparentBounds][.useTransparentBounds] and
+     * [useAnchoringBounds][.useAnchoringBounds]), certain constructs such
      * as anchors may behave differently at or around the boundaries of the
      * region.
      *
      * @param  start
-     *         The index to start searching at (inclusive)
+     * The index to start searching at (inclusive)
      * @param  end
-     *         The index to end searching at (exclusive)
+     * The index to end searching at (exclusive)
      * @throws  IndexOutOfBoundsException
-     *          If start or end is less than zero, if
-     *          start is greater than the length of the input sequence, if
-     *          end is greater than the length of the input sequence, or if
-     *          start is greater than end.
+     * If start or end is less than zero, if
+     * start is greater than the length of the input sequence, if
+     * end is greater than the length of the input sequence, or if
+     * start is greater than end.
      * @return  this matcher
      * @since 1.5
      */
-    public Matcher region(int start, int end) {
-        if ((start < 0) || (start > getTextLength()))
-            throw new IndexOutOfBoundsException("start");
-        if ((end < 0) || (end > getTextLength()))
-            throw new IndexOutOfBoundsException("end");
-        if (start > end)
-            throw new IndexOutOfBoundsException("start > end");
-        reset();
-        from = start;
-        to = end;
-        return this;
+    fun region(start: Int, end: Int): Matcher {
+        if (start < 0 || start > getTextLength()) throw IndexOutOfBoundsException("start")
+        if (end < 0 || end > getTextLength()) throw IndexOutOfBoundsException("end")
+        if (start > end) throw IndexOutOfBoundsException("start > end")
+        reset()
+        from = start
+        to = end
+        return this
     }
 
     /**
      * Reports the start index of this matcher's region. The
      * searches this matcher conducts are limited to finding matches
-     * within {@link #regionStart regionStart} (inclusive) and
-     * {@link #regionEnd regionEnd} (exclusive).
+     * within [regionStart][.regionStart] (inclusive) and
+     * [regionEnd][.regionEnd] (exclusive).
      *
      * @return  The starting point of this matcher's region
      * @since 1.5
      */
-    public int regionStart() {
-        return from;
+    fun regionStart(): Int {
+        return from
     }
 
     /**
      * Reports the end index (exclusive) of this matcher's region.
      * The searches this matcher conducts are limited to finding matches
-     * within {@link #regionStart regionStart} (inclusive) and
-     * {@link #regionEnd regionEnd} (exclusive).
+     * within [regionStart][.regionStart] (inclusive) and
+     * [regionEnd][.regionEnd] (exclusive).
      *
      * @return  the ending point of this matcher's region
      * @since 1.5
      */
-    public int regionEnd() {
-        return to;
+    fun regionEnd(): Int {
+        return to
     }
 
     /**
      * Queries the transparency of region bounds for this matcher.
      *
-     * <p> This method returns <tt>true</tt> if this matcher uses
-     * <i>transparent</i> bounds, <tt>false</tt> if it uses <i>opaque</i>
+     *
+     *  This method returns <tt>true</tt> if this matcher uses
+     * *transparent* bounds, <tt>false</tt> if it uses *opaque*
      * bounds.
      *
-     * <p> See {@link #useTransparentBounds useTransparentBounds} for a
+     *
+     *  See [useTransparentBounds][.useTransparentBounds] for a
      * description of transparent and opaque bounds.
      *
-     * <p> By default, a matcher uses opaque region boundaries.
+     *
+     *  By default, a matcher uses opaque region boundaries.
      *
      * @return <tt>true</tt> iff this matcher is using transparent bounds,
-     *         <tt>false</tt> otherwise.
-     * @see java.util.regex.Matcher#useTransparentBounds(boolean)
+     * <tt>false</tt> otherwise.
+     * @see java.util.regex.Matcher.useTransparentBounds
      * @since 1.5
      */
-    public boolean hasTransparentBounds() {
-        return transparentBounds;
+    fun hasTransparentBounds(): Boolean {
+        return transparentBounds
     }
 
     /**
      * Sets the transparency of region bounds for this matcher.
      *
-     * <p> Invoking this method with an argument of <tt>true</tt> will set this
-     * matcher to use <i>transparent</i> bounds. If the boolean
-     * argument is <tt>false</tt>, then <i>opaque</i> bounds will be used.
      *
-     * <p> Using transparent bounds, the boundaries of this
+     *  Invoking this method with an argument of <tt>true</tt> will set this
+     * matcher to use *transparent* bounds. If the boolean
+     * argument is <tt>false</tt>, then *opaque* bounds will be used.
+     *
+     *
+     *  Using transparent bounds, the boundaries of this
      * matcher's region are transparent to lookahead, lookbehind,
      * and boundary matching constructs. Those constructs can see beyond the
      * boundaries of the region to see if a match is appropriate.
      *
-     * <p> Using opaque bounds, the boundaries of this matcher's
+     *
+     *  Using opaque bounds, the boundaries of this matcher's
      * region are opaque to lookahead, lookbehind, and boundary matching
      * constructs that may try to see beyond them. Those constructs cannot
      * look past the boundaries so they will fail to match anything outside
      * of the region.
      *
-     * <p> By default, a matcher uses opaque bounds.
+     *
+     *  By default, a matcher uses opaque bounds.
      *
      * @param  b a boolean indicating whether to use opaque or transparent
-     *         regions
+     * regions
      * @return this matcher
-     * @see java.util.regex.Matcher#hasTransparentBounds
+     * @see java.util.regex.Matcher.hasTransparentBounds
+     *
      * @since 1.5
      */
-    public Matcher useTransparentBounds(boolean b) {
-        transparentBounds = b;
-        return this;
+    fun useTransparentBounds(b: Boolean): Matcher {
+        transparentBounds = b
+        return this
     }
 
     /**
      * Queries the anchoring of region bounds for this matcher.
      *
-     * <p> This method returns <tt>true</tt> if this matcher uses
-     * <i>anchoring</i> bounds, <tt>false</tt> otherwise.
      *
-     * <p> See {@link #useAnchoringBounds useAnchoringBounds} for a
+     *  This method returns <tt>true</tt> if this matcher uses
+     * *anchoring* bounds, <tt>false</tt> otherwise.
+     *
+     *
+     *  See [useAnchoringBounds][.useAnchoringBounds] for a
      * description of anchoring bounds.
      *
-     * <p> By default, a matcher uses anchoring region boundaries.
+     *
+     *  By default, a matcher uses anchoring region boundaries.
      *
      * @return <tt>true</tt> iff this matcher is using anchoring bounds,
-     *         <tt>false</tt> otherwise.
-     * @see java.util.regex.Matcher#useAnchoringBounds(boolean)
+     * <tt>false</tt> otherwise.
+     * @see java.util.regex.Matcher.useAnchoringBounds
      * @since 1.5
      */
-    public boolean hasAnchoringBounds() {
-        return anchoringBounds;
+    fun hasAnchoringBounds(): Boolean {
+        return anchoringBounds
     }
 
     /**
      * Sets the anchoring of region bounds for this matcher.
      *
-     * <p> Invoking this method with an argument of <tt>true</tt> will set this
-     * matcher to use <i>anchoring</i> bounds. If the boolean
-     * argument is <tt>false</tt>, then <i>non-anchoring</i> bounds will be
+     *
+     *  Invoking this method with an argument of <tt>true</tt> will set this
+     * matcher to use *anchoring* bounds. If the boolean
+     * argument is <tt>false</tt>, then *non-anchoring* bounds will be
      * used.
      *
-     * <p> Using anchoring bounds, the boundaries of this
+     *
+     *  Using anchoring bounds, the boundaries of this
      * matcher's region match anchors such as ^ and $.
      *
-     * <p> Without anchoring bounds, the boundaries of this
+     *
+     *  Without anchoring bounds, the boundaries of this
      * matcher's region will not match anchors such as ^ and $.
      *
-     * <p> By default, a matcher uses anchoring region boundaries.
+     *
+     *  By default, a matcher uses anchoring region boundaries.
      *
      * @param  b a boolean indicating whether or not to use anchoring bounds.
      * @return this matcher
-     * @see java.util.regex.Matcher#hasAnchoringBounds
+     * @see java.util.regex.Matcher.hasAnchoringBounds
+     *
      * @since 1.5
      */
-    public Matcher useAnchoringBounds(boolean b) {
-        anchoringBounds = b;
-        return this;
+    fun useAnchoringBounds(b: Boolean): Matcher {
+        anchoringBounds = b
+        return this
     }
 
     /**
-     * <p>Returns the string representation of this matcher. The
-     * string representation of a <code>Matcher</code> contains information
+     *
+     * Returns the string representation of this matcher. The
+     * string representation of a `Matcher` contains information
      * that may be useful for debugging. The exact format is unspecified.
      *
      * @return  The string representation of this matcher
      * @since 1.5
      */
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("java.util.regex.Matcher");
-        sb.append("[pattern=" + pattern());
-        sb.append(" region=");
-        sb.append(regionStart() + "," + regionEnd());
-        sb.append(" lastmatch=");
-        if ((first >= 0) && (group() != null)) {
-            sb.append(group());
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append("java.util.regex.Matcher")
+        sb.append("[pattern=" + pattern())
+        sb.append(" region=")
+        sb.append(regionStart().toString() + "," + regionEnd())
+        sb.append(" lastmatch=")
+        if (first >= 0 && group() != null) {
+            sb.append(group())
         }
-        sb.append("]");
-        return sb.toString();
+        sb.append("]")
+        return sb.toString()
     }
 
     /**
-     * <p>Returns true if the end of input was hit by the search engine in
+     *
+     * Returns true if the end of input was hit by the search engine in
      * the last match operation performed by this matcher.
      *
-     * <p>When this method returns true, then it is possible that more input
+     *
+     * When this method returns true, then it is possible that more input
      * would have changed the result of the last search.
      *
      * @return  true iff the end of input was hit in the last match; false
-     *          otherwise
+     * otherwise
      * @since 1.5
      */
-    public boolean hitEnd() {
-        return hitEnd;
+    fun hitEnd(): Boolean {
+        return hitEnd
     }
 
     /**
-     * <p>Returns true if more input could change a positive match into a
+     *
+     * Returns true if more input could change a positive match into a
      * negative one.
      *
-     * <p>If this method returns true, and a match was found, then more
+     *
+     * If this method returns true, and a match was found, then more
      * input could cause the match to be lost. If this method returns false
      * and a match was found, then more input might change the match but the
      * match won't be lost. If a match was not found, then requireEnd has no
      * meaning.
      *
      * @return  true iff more input could change a positive match into a
-     *          negative one.
+     * negative one.
      * @since 1.5
      */
-    public boolean requireEnd() {
-        return requireEnd;
+    fun requireEnd(): Boolean {
+        return requireEnd
     }
 
     /**
@@ -1104,20 +1099,19 @@ public final class Matcher implements MatchResult {
      * calls to the search methods start at a new "soft" boundary which is
      * the end of the previous match.
      */
-    boolean search(int from) {
-        this.hitEnd = false;
-        this.requireEnd = false;
-        from        = from < 0 ? 0 : from;
-        this.first  = from;
-        this.oldLast = oldLast < 0 ? from : oldLast;
-        for (int i = 0; i < groups.length; i++)
-            groups[i] = -1;
-        acceptMode = NOANCHOR;
-        boolean result = parentPattern.root.match(this, from, text);
-        if (!result)
-            this.first = -1;
-        this.oldLast = this.last;
-        return result;
+    fun search(from: Int): Boolean {
+        var from = from
+        hitEnd = false
+        requireEnd = false
+        from = if (from < 0) 0 else from
+        first = from
+        oldLast = if (oldLast < 0) from else oldLast
+        for (i in groups.indices) groups[i] = -1
+        acceptMode = NOANCHOR
+        val result = parentPattern!!.root!!.match(this, from, text)
+        if (!result) first = -1
+        oldLast = last
+        return result
     }
 
     /**
@@ -1126,20 +1120,19 @@ public final class Matcher implements MatchResult {
      * root of the state machine is called. The state machine will hold the
      * state of the match as it proceeds in this matcher.
      */
-    boolean match(int from, int anchor) {
-        this.hitEnd = false;
-        this.requireEnd = false;
-        from        = from < 0 ? 0 : from;
-        this.first  = from;
-        this.oldLast = oldLast < 0 ? from : oldLast;
-        for (int i = 0; i < groups.length; i++)
-            groups[i] = -1;
-        acceptMode = anchor;
-        boolean result = parentPattern.matchRoot.match(this, from, text);
-        if (!result)
-            this.first = -1;
-        this.oldLast = this.last;
-        return result;
+    fun match(from: Int, anchor: Int): Boolean {
+        var from = from
+        hitEnd = false
+        requireEnd = false
+        from = if (from < 0) 0 else from
+        first = from
+        oldLast = if (oldLast < 0) from else oldLast
+        for (i in groups.indices) groups[i] = -1
+        acceptMode = anchor
+        val result = parentPattern!!.matchRoot!!.match(this, from, text)
+        if (!result) first = -1
+        oldLast = last
+        return result
     }
 
     /**
@@ -1147,8 +1140,8 @@ public final class Matcher implements MatchResult {
      *
      * @return the index after the last character in the text
      */
-    int getTextLength() {
-        return text.length();
+    fun getTextLength(): Int {
+        return text!!.length
     }
 
     /**
@@ -1158,8 +1151,8 @@ public final class Matcher implements MatchResult {
      * @param  endIndex     the ending index, exclusive
      * @return A String generated from this Matcher's input
      */
-    CharSequence getSubSequence(int beginIndex, int endIndex) {
-        return text.subSequence(beginIndex, endIndex);
+    fun getSubSequence(beginIndex: Int, endIndex: Int): CharSequence {
+        return text!!.subSequence(beginIndex, endIndex)
     }
 
     /**
@@ -1167,8 +1160,45 @@ public final class Matcher implements MatchResult {
      *
      * @return A char from the specified index
      */
-    char charAt(int i) {
-        return text.charAt(i);
+    fun charAt(i: Int): Char {
+        return text!![i]
     }
 
+    companion object {
+        /**
+         * Matcher state used by the last node. NOANCHOR is used when a
+         * match does not have to consume all of the input. ENDANCHOR is
+         * the mode used for matching all the input.
+         */
+        const val ENDANCHOR = 1
+        const val NOANCHOR = 0
+
+        /**
+         * Returns a literal replacement `String` for the specified
+         * `String`.
+         *
+         * This method produces a `String` that will work
+         * as a literal replacement `s` in the
+         * `appendReplacement` method of the [Matcher] class.
+         * The `String` produced will match the sequence of characters
+         * in `s` treated as a literal sequence. Slashes ('\') and
+         * dollar signs ('$') will be given no special meaning.
+         *
+         * @param  s The string to be literalized
+         * @return  A literal string replacement
+         * @since 1.5
+         */
+        fun quoteReplacement(s: String): String {
+            if (s.indexOf('\\') == -1 && s.indexOf('$') == -1) return s
+            val sb = StringBuilder()
+            for (i in 0 until s.length) {
+                val c = s[i]
+                if (c == '\\' || c == '$') {
+                    sb.append('\\')
+                }
+                sb.append(c)
+            }
+            return sb.toString()
+        }
+    }
 }

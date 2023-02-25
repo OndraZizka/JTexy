@@ -1,48 +1,27 @@
-
-package cz.dynawest.jtexy;
-
-import java.util.List;
+package cz.dynawest.jtexy
 
 /**
  *
- ** @author Ondrej Zizka
+ * @author Ondrej Zizka
  */
-public class TexyException extends Exception {
+open class TexyException : Exception {
+    constructor(arg0: Throwable?) : super(arg0)
+    constructor(arg0: String?, arg1: Throwable?) : super(arg0, arg1)
+    constructor(arg0: String?) : super(arg0)
+    constructor()
 
-  public TexyException( Throwable arg0 ) {
-    super( arg0 );
-  }
+    companion object {
+        @Throws(TexyException::class)
+        fun throwIfErrors(string: String?, exceptions: List<TexyException?>) {
+            if (exceptions.size > 0) throw create(string, exceptions)
+        }
 
-
-  public TexyException( String arg0, Throwable arg1 ) {
-    super( arg0, arg1 );
-  }
-
-
-  public TexyException( String arg0 ) {
-    super( arg0 );
-  }
-
-
-  public TexyException() {
-  }
-
-
-
-	public static void throwIfErrors(String string, List<TexyException> exceptions) throws TexyException {
-		if( exceptions.size() > 0 )
-			throw create(string, exceptions);
-	}
-
-
-	static TexyException create(String string, List<TexyException> exceptions) {
-		StringBuilder sb = new StringBuilder( string );
-		for (Exception ex : exceptions) {
-			sb.append("\n  ").append(ex.getMessage());
-		}
-		return new TexyException(sb.toString());
-	}
-
-  
-  
+        fun create(string: String?, exceptions: List<TexyException?>): TexyException {
+            val sb = StringBuilder(string)
+            for (ex in exceptions) {
+                sb.append("\n  ").append(ex!!.message)
+            }
+            return TexyException(sb.toString())
+        }
+    }
 }

@@ -1,72 +1,63 @@
+package cz.dynawest.jtexy.util
 
-package cz.dynawest.jtexy.util;
-
-import java.io.IOException;
-import java.io.Writer;
-import org.dom4j.io.HTMLWriter;
-import org.dom4j.io.OutputFormat;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
+import org.dom4j.io.HTMLWriter
+import org.dom4j.io.OutputFormat
+import org.xml.sax.Attributes
+import org.xml.sax.SAXException
+import java.io.*
 
 /**
  * This mutation of HTML writer will only write child nodes of the root.
- * E.g.:   <p>Hi</p> instead of <!DOCTYPE ...><html><p>Hi</p></html>
+ * E.g.:
+ *
+ *Hi instead of  <html>
+ *
+ *Hi</html>
  *
  * @author Ondrej Zizka
  */
-final class ChildrenHTMLWriter extends HTMLWriter {
+internal class ChildrenHTMLWriter : HTMLWriter {
+    var depth = 0
+    var activeWriter = voidWriter
+    var realWriter: Writer
 
-	int depth = 0;
+    // -- Const --
+    constructor(writer: Writer, format: OutputFormat?) : super(voidWriter, format) {
+        realWriter = writer
+    }
 
-	Writer activeWriter = voidWriter;
-	
-	Writer realWriter;
-	
-	// No-op writer for nodes which will not be written.
-	private static Writer voidWriter = new Writer() {
-		@Override	public void write(char[] cbuf, int off, int len) throws IOException {	}
-		@Override	public void flush() throws IOException { }
-		@Override	public void close() throws IOException { }
-	};
+    constructor(writer: Writer) : super(voidWriter) {
+        realWriter = writer
+    }
+    // -- Overrides --
+    /** Upon root element start, switch to real writer.  */
+    @Throws(SAXException::class)
+    override fun startElement(namespaceURI: String, localName: String, qName: String, attributes: Attributes) {
+        super.startElement(namespaceURI, localName, qName, attributes)
+        if (++depth == 1) activeWriter = realWriter
+    }
 
+    /** Upon root element end, switch back to void writer.  */
+    @Throws(SAXException::class)
+    override fun endElement(namespaceURI: String, localName: String, qName: String) {
+        if (--depth == 0) activeWriter = voidWriter
+        super.endElement(namespaceURI, localName, qName)
+    }
 
-	// -- Const --
+    companion object {
+        // No-op writer for nodes which will not be written.
+        private val voidWriter: Writer = object : Writer() {
+            @Throws(IOException::class)
+            override fun write(cbuf: CharArray, off: Int, len: Int) {
+            }
 
-	public ChildrenHTMLWriter(Writer writer, OutputFormat format) {
-		super(voidWriter, format);
-		this.realWriter = writer;
-	}
+            @Throws(IOException::class)
+            override fun flush() {
+            }
 
-	public ChildrenHTMLWriter(Writer writer) {
-		super(voidWriter);
-		this.realWriter = writer;
-	}
-
-
-	// -- Overrides --
-
-	/** Upon root element start, switch to real writer. */
-	@Override
-	public void startElement(String namespaceURI, String localName, String qName, Attributes attributes) throws SAXException {
-		super.startElement(namespaceURI, localName, qName, attributes);
-		if( ++depth == 1 )
-			activeWriter = realWriter;
-	}
-
-	/** Upon root element end, switch back to void writer. */
-	@Override
-	public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
-		if( --depth == 0 )
-			activeWriter = voidWriter;
-		super.endElement(namespaceURI, localName, qName);
-	}
-
-
-
-
-
-
-
-
-
+            @Throws(IOException::class)
+            override fun close() {
+            }
+        }
+    }
 }

@@ -1,17 +1,9 @@
+package cz.dynawest.jtexy.modules
 
-package cz.dynawest.jtexy.modules;
-
-import cz.dynawest.jtexy.parsers.AroundEventListener;
+import cz.dynawest.jtexy.parsers.AroundEventListener
 
 /**
  *
  * @author Ondrej Zizka
  */
-public interface HorizontalLineEventListener extends AroundEventListener<HorizontalLineEvent> {
-
-	
-}// interface
-
-
-
-
+interface HorizontalLineEventListener : AroundEventListener<HorizontalLineEvent?> // interface

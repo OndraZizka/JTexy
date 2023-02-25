@@ -1,146 +1,130 @@
-package cz.dynawest.jtexy.modules;
+package cz.dynawest.jtexy.modules
 
-import cz.dynawest.jtexy.RegexpInfo;
-import cz.dynawest.jtexy.TexyException;
-import cz.dynawest.jtexy.parsers.BeforeParseEvent;
-import cz.dynawest.jtexy.parsers.TexyEventListener;
-import cz.dynawest.jtexy.parsers.TexyParser;
-import cz.dynawest.jtexy.util.MatchWithOffset;
-import cz.dynawest.jtexy.util.SimpleImageSize;
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.dom4j.Node;
-import org.dom4j.dom.DOMElement;
+import cz.dynawest.jtexy.RegexpInfo
+import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.parsers.BeforeParseEvent
+import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.parsers.TexyParser
+import cz.dynawest.jtexy.util.MatchWithOffset
+import cz.dynawest.jtexy.util.SimpleImageSize
+import org.dom4j.Node
+import org.dom4j.dom.DOMElement
+import java.io.*
 
 /**
  * Emoticon module.
  *
  * @author Ondrej Zizka
  */
-public class EmoticonModule extends TexyModule
-{
-    
-    private boolean enabled = false;
+class EmoticonModule : TexyModule() {
+    private val enabled = false
 
+    /** CSS class for emoticons  */
+    private val cssClass: String? = null
 
-	/** Supported emoticons and image files */
-	public static final Map<String,String> ICONS = new HashMap();
-    static{
-		ICONS.put(":-)", "smile.gif");
-		ICONS.put(":-(", "sad.gif");
-		ICONS.put(";-)", "wink.gif");
-		ICONS.put(":-D", "biggrin.gif");
-		ICONS.put("8-O", "eek.gif");
-		ICONS.put("8-)", "cool.gif");
-		ICONS.put(":-?", "confused.gif");
-		ICONS.put(":-x", "mad.gif");
-		ICONS.put(":-P", "razz.gif");
-		ICONS.put(":-|", "neutral.gif");
-    }
+    /** Root of relative images (default value is texy.imageModule.root)  */
+    private val root: String? = null
 
-	/** CSS class for emoticons */
-	private String cssClass;
+    /** Physical location of images on server (default value is texy.imageModule.fileRoot)  */
+    private val fileRoot: String? = null
+    private var regexpInfo: RegexpInfo? = null
+    override val eventListeners: Array<TexyEventListener<*>>
+        // "Register" listeners.
+        get() = arrayOf( // BeforeParseEvent. TODO: Move to some void init(JTexy texy) callback.
+            object : TexyEventListener<BeforeParseEvent?> {
+                override val eventClass: Class<*>
+                    get() = BeforeParseEvent::class.java
 
-	/** Root of relative images (default value is texy.imageModule.root) */
-	private String root;
-
-	/** Physical location of images on server (default value is texy.imageModule.fileRoot) */
-	private String fileRoot;
-
-    private RegexpInfo regexpInfo;
-
-
-
-    // "Register" listeners.
-    @Override public TexyEventListener[] getEventListeners() {
-        return new TexyEventListener[]{
-
-            // BeforeParseEvent. TODO: Move to some void init(JTexy texy) callback.
-            new TexyEventListener<BeforeParseEvent>() {
-                @Override public Class getEventClass() { return BeforeParseEvent.class; }
-                @Override public Node onEvent(BeforeParseEvent event) throws TexyException {
-                    if( ! EmoticonModule.this.enabled )  return null;
-                    EmoticonModule.this.regexpInfo = EmoticonModule.this.createRegexpInfo();
-                    EmoticonModule.this.getTexy().addPattern( regexpInfo );
-                    return null;
+                @Throws(TexyException::class)
+                override fun onEvent(event: BeforeParseEvent?): Node? {
+                    if (!enabled) return null
+                    regexpInfo = createRegexpInfo()
+                    getTexy().addPattern(regexpInfo)
+                    return null
                 }
-            },
+            })
 
-        };
-    }
-
-    
     /**
-     *  Just one pattern handler - emoticon.
+     * Just one pattern handler - emoticon.
      */
-    @Override protected PatternHandler getPatternHandlerByName(String name) {
-        return new PatternHandler() {
-            @Override public String getName() { return "emoticon"; }
+    override fun getPatternHandlerByName(name: String): PatternHandler? {
+        return object : PatternHandler {
+            override val name: String
+                get() = "emoticon"
 
-            @Override
-            public Node handle( TexyParser parser, List<MatchWithOffset> groups, RegexpInfo pattern ) throws TexyException {
-                String raw = groups.get(1).match;
-                return createEmotionElement( findEmoticon( raw ), raw );
+            @Throws(TexyException::class)
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+                val raw = groups!![1]!!.match
+                return createEmotionElement(findEmoticon(raw), raw)
             }
-        };
+        }
     }
 
-
     /**
-     *  Finds the emoticon as a prefix.
+     * Finds the emoticon as a prefix.
      */
-    private String findEmoticon(String text) {
+    private fun findEmoticon(text: String?): String? {
         // For each emoticon...
-        for( String key : ICONS.keySet() ) {
-            if( text.startsWith( key ) )  return key;
+        for (key in ICONS.keys) {
+            if (text!!.startsWith(key!!)) return key
         }
-        assert false;
-        return text; // Shouldn't happen.
+        assert(false)
+        return text // Shouldn't happen.
     }
 
-
     /**
-     *  RegexpInfo. Created upon init.
+     * RegexpInfo. Created upon init.
      */
-    private RegexpInfo createRegexpInfo() throws TexyException{
-        if( ICONS.isEmpty() )
-            throw new TexyException("List of icons is empty.");
-
-        StringBuilder regex = new StringBuilder("(?<=^|[\\x00-\\x20])(");
-        for( String emo : ICONS.keySet() ){
-            regex.append( emo ).append("+|");
+    @Throws(TexyException::class)
+    private fun createRegexpInfo(): RegexpInfo {
+        if (ICONS.isEmpty()) throw TexyException("List of icons is empty.")
+        val regex = StringBuilder("(?<=^|[\\x00-\\x20])(")
+        for (emo in ICONS.keys) {
+            regex.append(emo).append("+|")
         }
-        regex.delete( regex.length() -3, regex.length() -1 ); // Cut last +|
-        regex.append(")");
-
-        return RegexpInfo.fromRegexp( regex.toString(), RegexpInfo.Type.LINE, "emoticon" );
-	}
-
-
+        regex.delete(regex.length - 3, regex.length - 1) // Cut last +|
+        regex.append(")")
+        return RegexpInfo.Companion.fromRegexp(regex.toString(), RegexpInfo.Type.LINE, "emoticon")
+    }
 
     /**
-     *  Creates the emoticon element.
+     * Creates the emoticon element.
      */
-    public DOMElement createEmotionElement( String emoticon, String raw )
-    {
-        String iconFileName = ICONS.get(emoticon);
-        DOMElement el = new DOMElement("img");
-        el.setAttribute("src", new File(this.root, iconFileName).getPath());
-        el.setAttribute("alt", raw);
-        el.setAttribute("class", cssClass);
+    fun createEmotionElement(emoticon: String?, raw: String?): DOMElement {
+        val iconFileName = ICONS[emoticon]
+        val el = DOMElement("img")
+        el.setAttribute("src", File(this.root, iconFileName).path)
+        el.setAttribute("alt", raw)
+        el.setAttribute("class", cssClass)
 
         // Actual file - check size.
-        File file = new File(this.fileRoot, iconFileName);
-        if( file.exists() ) try {
-            SimpleImageSize size = new SimpleImageSize( file );
-            el.setAttribute("width", "" + size.getWidth());
-            el.setAttribute("height", "" + size.getHeight());
-        } catch( /*IO*/Exception ex ) {  }
+        val file = File(fileRoot, iconFileName)
+        if (file.exists()) try {
+            val size = SimpleImageSize(file)
+            el.setAttribute("width", "" + size.width)
+            el.setAttribute("height", "" + size.height)
+        } catch (ex: Exception) {
+        }
 
         //this.jtexy.summary.getImages().add( el.getAttribute("src") );
-        return el;
+        return el
     }
 
+    companion object {
+        /** Supported emoticons and image files  */
+        val ICONS: MutableMap<String?, String?> = HashMap<Any?, Any?>()
+
+        init {
+            ICONS[":-)"] = "smile.gif"
+            ICONS[":-("] = "sad.gif"
+            ICONS[";-)"] = "wink.gif"
+            ICONS[":-D"] = "biggrin.gif"
+            ICONS["8-O"] = "eek.gif"
+            ICONS["8-)"] = "cool.gif"
+            ICONS[":-?"] = "confused.gif"
+            ICONS[":-x"] = "mad.gif"
+            ICONS[":-P"] = "razz.gif"
+            ICONS[":-|"] = "neutral.gif"
+        }
+    }
 }

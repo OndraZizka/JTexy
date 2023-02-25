@@ -1,29 +1,12 @@
-
-package cz.dynawest.jtexy;
+package cz.dynawest.jtexy
 
 /**
  *
- ** @author Ondrej Zizka
+ * @author Ondrej Zizka
  */
-public class InvalidStateException extends TexyException {
-
-  public InvalidStateException() {
-  }
-
-
-  public InvalidStateException( String arg0 ) {
-    super( arg0 );
-  }
-
-
-  public InvalidStateException( String arg0, Throwable arg1 ) {
-    super( arg0, arg1 );
-  }
-
-
-  public InvalidStateException( Throwable arg0 ) {
-    super( arg0 );
-  }
-
-
+class InvalidStateException : TexyException {
+    constructor()
+    constructor(arg0: String?) : super(arg0)
+    constructor(arg0: String?, arg1: Throwable?) : super(arg0, arg1)
+    constructor(arg0: Throwable?) : super(arg0)
 }

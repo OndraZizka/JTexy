@@ -1,239 +1,199 @@
-package cz.dynawest.jtexy.util;
+package cz.dynawest.jtexy.util
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.InvalidPropertiesFormatException;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.lang.StringUtils
+import java.io.*
+import java.util.*
 
 /**
  * Completely hide Properties's internal HashMap with our OrderedHashMap.
  */
-public class OrderedProperties extends Properties {
+class OrderedProperties : Properties() {
+    private var properties = LinkedHashMap<Any, Any>()
+    override fun getProperty(key: String): String {
+        return properties[key] as String
+    }
 
-	private LinkedHashMap<Object, Object> properties = new LinkedHashMap<Object, Object>();
+    override fun getProperty(key: String, defaultValue: String): String {
+        val `val` = this.getProperty(key)
+        return `val` ?: defaultValue
+    }
 
-	public OrderedProperties() {
-	}
+    override fun list(out: PrintStream) {
+        throw UnsupportedOperationException()
+    }
 
-	@Override
-	public String getProperty(String key) {
-		return (String) properties.get(key);
-	}
+    override fun list(out: PrintWriter) {
+        throw UnsupportedOperationException()
+    }
 
-	@Override
-	public String getProperty(String key, String defaultValue) {
-		String val = this.getProperty(key);
-		return val == null ? defaultValue : val;
-	}
+    @Synchronized
+    @Throws(IOException::class)
+    override fun load(reader: Reader) {
+        properties = LinkedHashMap()
+        val br = BufferedReader(reader)
+        try {
+            var line: String
+            while (null != br.readLine().also { line = it }) {
+                line = line.trim { it <= ' ' }
+                // Empty or comment -> skip.
+                if ("" == line || '#' == line[0]) {
+                    continue
+                }
+                val delim = StringUtils.indexOfAny(line, "=:")
+                var name: String
+                var value: String
+                if (delim == -1) {
+                    name = line
+                    value = ""
+                } else {
+                    name = line.substring(0, delim).trim { it <= ' ' }
+                    value = StringEscapeUtils.unescapeJava(line.substring(delim + 1).trim { it <= ' ' })
+                }
+                properties[name] = value
+            }
+        } finally {
+            br.close()
+        }
+    }
 
-	@Override
-	public void list(PrintStream out) {
-		throw new UnsupportedOperationException();
-	}
+    @Synchronized
+    @Throws(IOException::class)
+    override fun load(inStream: InputStream) {
+        load(InputStreamReader(inStream))
+    }
 
-	@Override
-	public void list(PrintWriter out) {
-		throw new UnsupportedOperationException();
-	}
+    @Synchronized
+    @Throws(IOException::class, InvalidPropertiesFormatException::class)
+    override fun loadFromXML(`in`: InputStream) {
+        throw UnsupportedOperationException()
+    }
 
-	@Override
-	public synchronized void load(Reader reader) throws IOException {
-		properties = new LinkedHashMap<Object, Object>();
-		BufferedReader br = new BufferedReader(reader);
+    override fun propertyNames(): Enumeration<*> {
+        return keys()
+    }
 
-		try {
-			String line;
-			while (null != (line = br.readLine())) {
-				line = line.trim();
-				// Empty or comment -> skip.
-				if ("".equals(line) || '#' == line.charAt(0)) {
-					continue;
-				}
-				int delim = StringUtils.indexOfAny(line, "=:");
+    @Synchronized
+    override fun save(out: OutputStream, comments: String) {
+        throw UnsupportedOperationException()
+    }
 
-				String name;
-				String value;
+    @Synchronized
+    override fun setProperty(key: String, value: String): Any {
+        return put(key, value)!!
+    }
 
-				if (delim == -1) {
-					name = line;
-					value = "";
-				} else {
-					name = line.substring(0, delim).trim();
-					value = StringEscapeUtils.unescapeJava(line.substring(delim + 1).trim());
-				}
+    @Throws(IOException::class)
+    override fun store(writer: Writer, comments: String) {
+        throw UnsupportedOperationException()
+    }
 
-				properties.put(name, value);
-			}
-		} finally {
-			br.close();
-		}
+    @Throws(IOException::class)
+    override fun store(out: OutputStream, comments: String) {
+        throw UnsupportedOperationException()
+    }
 
-	}
+    @Synchronized
+    @Throws(IOException::class)
+    override fun storeToXML(os: OutputStream, comment: String) {
+        throw UnsupportedOperationException()
+    }
 
-	@Override
-	public synchronized void load(InputStream inStream) throws IOException {
-		load(new InputStreamReader(inStream));
-	}
+    @Synchronized
+    @Throws(IOException::class)
+    override fun storeToXML(os: OutputStream, comment: String, encoding: String) {
+        throw UnsupportedOperationException()
+    }
 
-	@Override
-	public synchronized void loadFromXML(InputStream in) throws IOException, InvalidPropertiesFormatException {
-		throw new UnsupportedOperationException();
-	}
+    override fun stringPropertyNames(): Set<String> {
+        return keys
+    }
 
-	@Override
-	public Enumeration<?> propertyNames() {
-		return this.keys();
-	}
+    // Ordered-map backed.
+    override fun values(): Collection<*> {
+        return properties.values
+    }
 
-	@Override
-	public synchronized void save(OutputStream out, String comments) {
-		throw new UnsupportedOperationException();
-	}
+    override fun size(): Int {
+        return properties.size
+    }
 
-	@Override
-	public synchronized Object setProperty(String key, String value) {
-		return this.put(key, value);
-	}
+    override fun remove(key: Any): Any? {
+        return properties.remove(key)
+    }
 
-	@Override
-	public void store(Writer writer, String comments) throws IOException {
-		throw new UnsupportedOperationException();
-	}
+    override fun putAll(m: Map<*, *>?) {
+        properties.putAll(m)
+    }
 
-	@Override
-	public void store(OutputStream out, String comments) throws IOException {
-		throw new UnsupportedOperationException();
-	}
+    override fun put(key: Any, value: Any): Any? {
+        return properties.put(key, value)
+    }
 
-	@Override
-	public synchronized void storeToXML(OutputStream os, String comment) throws IOException {
-		throw new UnsupportedOperationException();
-	}
+    override fun keySet(): Set<*> {
+        return properties.keys
+    }
 
-	@Override
-	public synchronized void storeToXML(OutputStream os, String comment, String encoding) throws IOException {
-		throw new UnsupportedOperationException();
-	}
+    override fun isEmpty(): Boolean {
+        return properties.isEmpty()
+    }
 
-	@Override
-	public Set<String> stringPropertyNames() {
-		return this.keySet();
-	}
+    override fun get(key: Any): Any? {
+        return properties[key]
+    }
 
-	// Ordered-map backed.
-	@Override
-	public Collection values() {
-		return properties.values();
-	}
+    override fun entrySet(): Set<*> {
+        return properties.entries
+    }
 
-	@Override
-	public int size() {
-		return properties.size();
-	}
+    override fun containsValue(value: Any): Boolean {
+        return properties.containsValue(value)
+    }
 
-	@Override
-	public Object remove(Object key) {
-		return properties.remove(key);
-	}
+    override fun containsKey(key: Any): Boolean {
+        return properties.containsKey(key)
+    }
 
-	@Override
-	public void putAll(Map m) {
-		properties.putAll(m);
-	}
+    override fun clear() {
+        properties.clear()
+    }
 
-	@Override
-	public Object put(Object key, Object value) {
-		return properties.put(key, value);
-	}
+    operator fun iterator(): Iterator<*> {
+        return properties.entries.iterator()
+    }
 
-	@Override
-	public Set keySet() {
-		return properties.keySet();
-	}
+    @Synchronized
+    override fun toString(): String {
+        return this.javaClass.name + " " + Arrays.toString(properties.values.toTypedArray())
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return properties.isEmpty();
-	}
+    @Synchronized
+    override fun hashCode(): Int {
+        return properties.hashCode()
+    }
 
-	@Override
-	public Object get(Object key) {
-		return properties.get(key);
-	}
+    @Synchronized
+    override fun equals(o: Any?): Boolean {
+        return o is OrderedProperties && properties == o
+    }
 
-	@Override
-	public Set entrySet() {
-		return properties.entrySet();
-	}
+    @Synchronized
+    override fun keys(): Enumeration<Any> {
+        return Collections.enumeration(properties.keys)
+    }
 
-	@Override
-	public boolean containsValue(Object value) {
-		return properties.containsValue(value);
-	}
+    @Synchronized
+    override fun elements(): Enumeration<Any> {
+        return Collections.enumeration(properties.values)
+    }
 
-	@Override
-	public boolean containsKey(Object key) {
-		return properties.containsKey(key);
-	}
+    @Synchronized
+    override fun contains(value: Any): Boolean {
+        return properties.containsValue(value)
+    }
 
-	@Override
-	public void clear() {
-		properties.clear();
-	}
-
-	public Iterator iterator() {
-		return properties.entrySet().iterator();
-	}
-
-	@Override
-	public synchronized String toString() {
-		return this.getClass().getName() + " " + Arrays.toString(properties.values().toArray());
-	}
-
-	@Override
-	public synchronized int hashCode() {
-		return properties.hashCode();
-	}
-
-	@Override
-	public synchronized boolean equals(Object o) {
-		return (o instanceof OrderedProperties) && properties.equals(o);
-	}
-
-	@Override
-	public synchronized Enumeration<Object> keys() {
-		return Collections.enumeration(properties.keySet());
-	}
-
-	@Override
-	public synchronized Enumeration<Object> elements() {
-		return Collections.enumeration(properties.values());
-	}
-
-	@Override
-	public synchronized boolean contains(Object value) {
-		return properties.containsValue(value);
-	}
-
-	@Override
-	public synchronized Object clone() {
-		throw new UnsupportedOperationException();
-	}
+    @Synchronized
+    override fun clone(): Any {
+        throw UnsupportedOperationException()
+    }
 }

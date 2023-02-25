@@ -1,185 +1,180 @@
-
-package cz.dynawest.jtexy.dtd;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+package cz.dynawest.jtexy.dtd
 
 /**
  * DTD descriptor.
- *   $dtd[element][0] - allowed attributes (as array keys)
- *   $dtd[element][1] - allowed content for an element (content model) (as array keys)
- *                    - array of allowed elements (as keys)
- *                    - FALSE - empty element
- *                    - 0 - special case for ins & del
- * 
+ * $dtd[element][0] - allowed attributes (as array keys)
+ * $dtd[element][1] - allowed content for an element (content model) (as array keys)
+ * - array of allowed elements (as keys)
+ * - FALSE - empty element
+ * - 0 - special case for ins & del
+ *
  * @author Ondrej Zizka
- * 
+ *
  * @ It would be great to work directly with DTD, if there was an library...
  */
-public class DtdElement {
-    
+class DtdElement
+/**
+ * Does not set DTD. Use for cases like set.contains( new DtdElement("foo") );
+ */( //<editor-fold defaultstate="collapsed" desc="get/set">
+    val name: String?
+) {
+    private val elements: MutableMap<String?, DtdElement?> = HashMap<Any?, Any?>()
+    private val attrs: MutableSet<DtdAttr?> = HashSet<Any?>()
+    var dtd: Dtd? = null
+    fun getElement(name: String?): DtdElement? {
+        return elements[name]
+    }
 
-    private final String name;
-    
-    private final Map<String, DtdElement> elements = new HashMap();
-    
-    private final Set<DtdAttr> attrs = new HashSet();
-    
-    private Dtd dtd;
+    fun add(e: DtdElement?): DtdElement {
+        elements[e!!.name] = e
+        return this
+    }
 
-    
-    /**
-     *  Does not set DTD. Use for cases like set.contains( new DtdElement("foo") );
-     */
-    public DtdElement(String name) {
-        this.name = name;
+    fun add(a: DtdAttr?): DtdElement {
+        attrs.add(a)
+        return this
     }
-    
-    
-    
-    
-    public DtdElement getElement(String name) {
-        return elements.get(name);
-    }
-    
-    
-    public DtdElement add( DtdElement e ){
-        this.elements.put(e.name, e);
-        return this;
-    }
-    
-    public DtdElement add( DtdAttr a ){
-        this.attrs.add(a);
-        return this;
-    }
-    
-    public DtdElement addAll( Collection<DtdElement> c ){
-        for (DtdElement dtdElement : c) {
-            add(dtdElement);
+
+    fun addAll(c: Collection<DtdElement?>?): DtdElement {
+        for (dtdElement in c!!) {
+            add(dtdElement)
         }
-        return this;
-    }
-    
-    public DtdElement addAllAttrs( Collection<DtdAttr> c ){
-        this.attrs.addAll(c);
-        return this;
-    }
-    
-    public DtdElement addAll( String nameStr ){
-        for (DtdElement dtdElement : dtd.getOrCreateElements(nameStr) ) {
-            add(dtdElement);
-        }
-        return this;
-    }
-    
-    public DtdElement removeAll( String nameStr ){
-        for( String name : nameStr.split(" ") ) {
-            this.elements.remove(name);
-        }
-        return this;
-    }
-    
-    public DtdElement addAllAttrs( String nameStr ){
-        this.attrs.addAll( Dtd.createAttributes(nameStr)); return this;
-    }
-    public DtdElement addAllAttrsIf( String nameStr, boolean cond ){
-        if( cond )
-            this.attrs.addAll( Dtd.createAttributes(nameStr));
-        return this;
-    }
-    
-    
-    public boolean hasChildren(){
-        return !this.elements.isEmpty();
-    }
-    public boolean hasNoChildren(){
-        return this.elements.isEmpty();
+        return this
     }
 
-    
-    
-    
-    //<editor-fold defaultstate="collapsed" desc="get/set">
-    public String getName() {
-        return name;
-    }
-    
-    public Set<DtdElement> getElements() {
-        return new HashSet(elements.values());
-    }
-    
-    public Set<DtdAttr> getAttrs() {
-        return attrs;
+    fun addAllAttrs(c: Collection<DtdAttr?>?): DtdElement {
+        attrs.addAll(c!!)
+        return this
     }
 
-    void setDtd(Dtd dtd) { this.dtd = dtd; }
-    public Dtd getDtd() { return dtd; }
+    fun addAll(nameStr: String?): DtdElement {
+        for (dtdElement in dtd!!.getOrCreateElements(nameStr)) {
+            add(dtdElement)
+        }
+        return this
+    }
+
+    fun removeAll(nameStr: String): DtdElement {
+        for (name in nameStr.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
+            elements.remove(name)
+        }
+        return this
+    }
+
+    fun addAllAttrs(nameStr: String?): DtdElement {
+        attrs.addAll(Dtd.Companion.createAttributes(nameStr))
+        return this
+    }
+
+    fun addAllAttrsIf(nameStr: String?, cond: Boolean): DtdElement {
+        if (cond) attrs.addAll(Dtd.Companion.createAttributes(nameStr))
+        return this
+    }
+
+    fun hasChildren(): Boolean {
+        return !elements.isEmpty()
+    }
+
+    fun hasNoChildren(): Boolean {
+        return elements.isEmpty()
+    }
+
+    fun getElements(): Set<DtdElement?> {
+        return HashSet<Any?>(elements.values)
+    }
+
+    fun getAttrs(): Set<DtdAttr?> {
+        return attrs
+    }
+
     //</editor-fold>
-
-    
     //<editor-fold defaultstate="collapsed" desc="equals/hash">
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + (this.name != null ? this.name.hashCode() : 0);
-        return hash;
+    override fun hashCode(): Int {
+        var hash = 7
+        hash = 97 * hash + if (name != null) name.hashCode() else 0
+        return hash
     }
-    
-    @Override
-    public boolean equals(Object obj) {
+
+    override fun equals(obj: Any?): Boolean {
         if (obj == null) {
-            return false;
+            return false
         }
-        if (getClass() != obj.getClass()) {
-            return false;
+        if (javaClass != obj.javaClass) {
+            return false
         }
-        final DtdElement other = (DtdElement) obj;
-        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-            return false;
-        }
-        return true;
+        val other = obj as DtdElement
+        return if (if (name == null) other.name != null else name != other.name) {
+            false
+        } else true
     }
 
-    @Override public String toString() {
-        return "DtdElement{ " + name + ", " + elements.size() + " elms, " + attrs.size() + "attrs }";
+    override fun toString(): String {
+        return "DtdElement{ " + name + ", " + elements.size + " elms, " + attrs.size + "attrs }"
     }
-    //</editor-fold>
 
-    
-    
-    
-    
-    // Unused. TODO - good for anything?
-    private static final Set<DtdElement> ALL = new Set<DtdElement>() {
-        @Override public int size() {
-            throw new UnsupportedOperationException("ALL constant only supports contains().");
-        }
+    companion object {
+        //</editor-fold>
+        // Unused. TODO - good for anything?
+        private val ALL: Set<DtdElement> = object : MutableSet<DtdElement?> {
+            override fun size(): Int {
+                throw UnsupportedOperationException("ALL constant only supports contains().")
+            }
 
-        @Override public boolean isEmpty() { return false; }
-        @Override public boolean contains(Object o) { return o instanceof DtdElement; }
-        @Override public Iterator<DtdElement> iterator() { throw co(); }
-        @Override public Object[] toArray() { throw co(); }
-        @Override public <T> T[] toArray(T[] a) { throw co(); }
-        @Override public boolean add(DtdElement e) { throw ro(); }
-        @Override public boolean remove(Object o) { throw ro(); }
-        @Override public boolean containsAll(Collection<?> c) { return true; }
-        @Override public boolean addAll(Collection<? extends DtdElement> c) { throw ro(); }
-        @Override public boolean retainAll(Collection<?> c) { throw ro(); }
-        @Override public boolean removeAll(Collection<?> c) { throw ro(); }
-        @Override public void clear() { ro(); }
-        
-        private final UnsupportedOperationException ro(){
-            return new UnsupportedOperationException("Read only.");
-        }
-        
-        private final UnsupportedOperationException co(){
-            return new UnsupportedOperationException("ALL constant only supports contains().");
-        }
-        
-    };// ALL
-    
+            override fun isEmpty(): Boolean {
+                return false
+            }
+
+            override operator fun contains(o: Any): Boolean {
+                return o is DtdElement
+            }
+
+            override fun iterator(): MutableIterator<DtdElement> {
+                throw co()
+            }
+
+            override fun toArray(): Array<Any> {
+                throw co()
+            }
+
+            override fun <T> toArray(a: Array<T>): Array<T> {
+                throw co()
+            }
+
+            override fun add(e: DtdElement): Boolean {
+                throw ro()
+            }
+
+            override fun remove(o: Any): Boolean {
+                throw ro()
+            }
+
+            override fun containsAll(c: Collection<*>?): Boolean {
+                return true
+            }
+
+            override fun addAll(c: Collection<DtdElement>): Boolean {
+                throw ro()
+            }
+
+            override fun retainAll(c: Collection<*>?): Boolean {
+                throw ro()
+            }
+
+            override fun removeAll(c: Collection<*>?): Boolean {
+                throw ro()
+            }
+
+            override fun clear() {
+                ro()
+            }
+
+            private fun ro(): UnsupportedOperationException {
+                return UnsupportedOperationException("Read only.")
+            }
+
+            private fun co(): UnsupportedOperationException {
+                return UnsupportedOperationException("ALL constant only supports contains().")
+            }
+        } // ALL
+    }
 }

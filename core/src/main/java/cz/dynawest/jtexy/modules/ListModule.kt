@@ -1,122 +1,96 @@
-package cz.dynawest.jtexy.modules;
+package cz.dynawest.jtexy.modules
 
-import cz.dynawest.jtexy.JTexy;
-import cz.dynawest.jtexy.RegexpInfo;
-import cz.dynawest.jtexy.RegexpPatterns;
-import cz.dynawest.jtexy.TexyException;
-import cz.dynawest.jtexy.parsers.TexyBlockParser;
-import cz.dynawest.jtexy.parsers.TexyLineParser;
-import cz.dynawest.jtexy.parsers.TexyParser;
-import cz.dynawest.jtexy.parsers.TexyEventListener;
-import cz.dynawest.jtexy.util.MatchWithOffset;
-import cz.dynawest.openjdkregex.Matcher;
-import cz.dynawest.openjdkregex.Pattern;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.dom4j.Node;
-import org.dom4j.dom.DOMElement;
-import org.w3c.dom.NodeList;
+import cz.dynawest.jtexy.JTexy
+import cz.dynawest.jtexy.RegexpInfo
+import cz.dynawest.jtexy.RegexpPatterns
+import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.parsers.TexyBlockParser
+import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.parsers.TexyLineParser
+import cz.dynawest.jtexy.parsers.TexyParser
+import cz.dynawest.jtexy.util.MatchWithOffset
+import cz.dynawest.openjdkregex.Pattern
+import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang.math.NumberUtils
+import org.dom4j.Node
+import org.dom4j.dom.DOMElement
+import java.util.logging.*
 
 /**
  *
  * @author Ondrej Zizka, Martin Večeřa
  */
-public class ListModule extends TexyModule
-{
-    private static final Logger log = Logger.getLogger(ListModule.class.getName());
+class ListModule : TexyModule() {
+    private val listPatternHandler: PatternHandler = ListPatternHandler()
+    private val listDefPatternHandler: PatternHandler = DefListPatternHandler()
+    override val eventListeners: Array<TexyEventListener<*>>
+        // -- Module meta-info -- //
+        get() = arrayOf()
 
-    private PatternHandler listPatternHandler = new ListPatternHandler();
-    private PatternHandler listDefPatternHandler = new DefListPatternHandler();
-
-
-
-    // -- Module meta-info -- //
-
-    @Override public TexyEventListener[] getEventListeners() {
-        return new TexyEventListener[]{};
-    }
-
-    @Override	protected PatternHandler getPatternHandlerByName(String name) {
-        if( listPatternHandler.getName().equals(name) ) {
-            return listPatternHandler;
-        } else if( listDefPatternHandler.getName().equals(name) ) {
-            return listDefPatternHandler;
+    override fun getPatternHandlerByName(name: String): PatternHandler? {
+        return if (listPatternHandler.name == name) {
+            listPatternHandler
+        } else if (listDefPatternHandler.name == name) {
+            listDefPatternHandler
         } else {
-            return null;
+            null
         }
     }
-
-
 
     /**
      * Override init() - don't read the properties file.
      * Instead, create the regex infos manually from the ListType enum.
      */
-    @Override
-    protected void loadRegexFromPropertiesFile( String propertiesFilePath ) throws TexyException {
+    @Throws(TexyException::class)
+    override fun loadRegexFromPropertiesFile(propertiesFilePath: String?) {
 
         // List.
-        StringBuilder sb1 = new StringBuilder();
-        sb1.append("#^(?:").append(RegexpPatterns.TEXY_MODIFIER_H).append("\\n)?");
-        sb1.append("(");
-        for( ListType bullet : ListType.values() ) {
-            sb1.append(bullet.getFirstRegExp()).append("|");
+        val sb1 = StringBuilder()
+        sb1.append("#^(?:").append(RegexpPatterns.Companion.TEXY_MODIFIER_H).append("\\n)?")
+        sb1.append("(")
+        for (bullet in ListType.values()) {
+            sb1.append(bullet.firstRegExp).append("|")
         }
-        sb1.deleteCharAt( sb1.length() - 1 );
-        sb1.append(")\\ *\\S.*$#mUu");
+        sb1.deleteCharAt(sb1.length - 1)
+        sb1.append(")\\ *\\S.*$#mUu")
 
         // List definition.
-        StringBuilder sb2 = new StringBuilder();
-        sb2.append("#^(?:").append(RegexpPatterns.TEXY_MODIFIER_H).append("\\n)?");
-        sb2.append("(\\S.*)\\:\\ *").append(RegexpPatterns.TEXY_MODIFIER_H).append("?\\n"); // Term
-        sb2.append("(\\ ++)(");
-        for( ListType bullet : ListType.values() ) {
-            if( !bullet.isOrdered() ) {
-                sb2.append(bullet.getFirstRegExp()).append("|");
+        val sb2 = StringBuilder()
+        sb2.append("#^(?:").append(RegexpPatterns.Companion.TEXY_MODIFIER_H).append("\\n)?")
+        sb2.append("(\\S.*)\\:\\ *").append(RegexpPatterns.Companion.TEXY_MODIFIER_H).append("?\\n") // Term
+        sb2.append("(\\ ++)(")
+        for (bullet in ListType.values()) {
+            if (!bullet.isOrdered) {
+                sb2.append(bullet.firstRegExp).append("|")
             }
         }
-        sb2.deleteCharAt( sb2.length() - 1 );
-        sb2.append(")\\ *\\S.*$#mUu");
-
-
-        log.finer("List regex: "    + sb1.toString());
-        log.finer("List def regex: "+ sb2.toString());
+        sb2.deleteCharAt(sb2.length - 1)
+        sb2.append(")\\ *\\S.*$#mUu")
+        log.finer("List regex: $sb1")
+        log.finer("List def regex: $sb2")
 
         // List.
-        RegexpInfo listRI = new RegexpInfo( "list", RegexpInfo.Type.BLOCK );
-        listRI.parseRegexp( sb1.toString() );
-        listRI.handler = listPatternHandler;
-        this.addRegexpInfo( listRI );
+        val listRI = RegexpInfo("list", RegexpInfo.Type.BLOCK)
+        listRI.parseRegexp(sb1.toString())
+        listRI.handler = listPatternHandler
+        addRegexpInfo(listRI)
 
         // List definition.
-        RegexpInfo listDefRI = new RegexpInfo( "list/definition", RegexpInfo.Type.BLOCK );
-        listDefRI.parseRegexp( sb2.toString() );
-        listDefRI.handler = listDefPatternHandler;
-        this.addRegexpInfo( listDefRI );
-
-    }// init()
-
-
-
-
-
-
+        val listDefRI = RegexpInfo("list/definition", RegexpInfo.Type.BLOCK)
+        listDefRI.parseRegexp(sb2.toString())
+        listDefRI.handler = listDefPatternHandler
+        addRegexpInfo(listDefRI)
+    } // init()
     // -- Handlers and listeners -- //
-
-
-
     /**
      * List pattern handler.
      */
-    private class ListPatternHandler implements PatternHandler {
+    private inner class ListPatternHandler : PatternHandler {
+        override val name: String
+            get() = "list" // Not used - init() overriden.
 
-        @Override public String getName() { return "list"; } // Not used - init() overriden.
-
-        @Override
-        public Node handle( TexyParser parser, List<MatchWithOffset> groups, RegexpInfo pattern ) throws TexyException {
+        @Throws(TexyException::class)
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
             /*
              *  Advances in two steps:
              *   1. Reads the first line of the list, to get its type.
@@ -125,257 +99,227 @@ public class ListModule extends TexyModule
 
             //    [1] => .(title)[class]{style}<>
             //    [2] => bullet * + - 1) a) A) IV)
-            if( log.isLoggable(Level.FINEST) ) {
-                for( MatchWithOffset match : groups ) {
-                    log.finest("  " + match.toString());
+            if (log.isLoggable(Level.FINEST)) {
+                for (match in groups!!) {
+                    log.finest("  " + match.toString())
                 }
             }
-
-            String modStr    = groups.get(1).match;
-            String bulletStr = groups.get(2).match;
-
-
-            DOMElement elm = new DOMElement( (String) null );
+            val modStr = groups!![1]!!.match
+            val bulletStr = groups[2]!!.match
+            val elm = DOMElement(null as String?)
 
             // Determine the list type used.
-            ListType listType = null;
-            for( ListType curListType : ListType.values() ) {
-                Matcher mat = curListType.getPattern().matcher( bulletStr );
-                if( mat.matches() ) {
-                    listType = curListType;
-                    break;
+            var listType: ListType? = null
+            for (curListType in ListType.values()) {
+                val mat = curListType.pattern.matcher(bulletStr)
+                if (mat!!.matches()) {
+                    listType = curListType
+                    break
                 }
             }
-            if( listType == null ) {
-                return null; // None chosen??
+            if (listType == null) {
+                return null // None chosen??
             }
-
-            String itemBulletRegex = listType.getNextOrFirstRegExp(); // StringUtils.defaultString( listType.getNextRegExp(), listType.getFirstRegExp() );
-            int min = listType.getNextRegExp() == null ? 1 : 2; // List must have at least <min> items.
+            val itemBulletRegex =
+                listType.nextOrFirstRegExp // StringUtils.defaultString( listType.getNextRegExp(), listType.getFirstRegExp() );
+            val min = if (listType.nextRegExp == null) 1 else 2 // List must have at least <min> items.
 
             // Prepare the list element.
-            {
-                elm.setName( listType.isOrdered() ? "ol" : "ul" );
-                if( null != listType.getListStyleType() )
-                    elm.setAttribute( "style", "list-style-type: " + listType.getListStyleType() );
+            run {
+                elm.name = if (listType.isOrdered) "ol" else "ul"
+                if (null != listType.listStyleType) elm.setAttribute("style", "list-style-type: " + listType.listStyleType)
 
                 // Ordered list.
-                if( listType.isOrdered() ) {
-                    char firstTypeBulChar = listType.getType().charAt(0);
+                if (listType.isOrdered) {
+                    val firstTypeBulChar = listType.type[0]
                     // 1) or 1.
-                    if( listType == ListType.ARABPAR || listType == ListType.ARABDOT ) {
-                        int bulletNum = NumberUtils.toInt( StringUtils.chop(bulletStr.trim()) );
-                        if( bulletNum > 1 ) {
-                            elm.setAttribute( "start", "" + bulletNum );
+                    if (listType == ListType.ARABPAR || listType == ListType.ARABDOT) {
+                        val bulletNum = NumberUtils.toInt(StringUtils.chop(bulletStr!!.trim { it <= ' ' }))
+                        if (bulletNum > 1) {
+                            elm.setAttribute("start", "" + bulletNum)
                         }
                     } else {
-                        char firstBulChar = bulletStr.charAt(0);
-                        if( firstTypeBulChar == 'a' && firstBulChar > 'a' ) {
-                            elm.setAttribute( "start", Character.toString((char) ('1' + firstBulChar - 'a')) );
-                        } else if( firstTypeBulChar == 'A' && firstBulChar > 'A' ) {
-                            elm.setAttribute( "start", Character.toString((char) ('1' + firstBulChar - 'A')) );
+                        val firstBulChar = bulletStr!![0]
+                        if (firstTypeBulChar == 'a' && firstBulChar > 'a') {
+                            elm.setAttribute("start", Character.toString(('1'.code + firstBulChar.code - 'a'.code).toChar()))
+                        } else if (firstTypeBulChar == 'A' && firstBulChar > 'A') {
+                            elm.setAttribute("start", Character.toString(('1'.code + firstBulChar.code - 'A'.code).toChar()))
                         }
                     }
-                }// <ol>
+                } // <ol>
             }
-
-            TexyModifier mod = new TexyModifier(modStr);
-            mod.decorate(elm);
+            val mod = TexyModifier(modStr)
+            mod.decorate(elm)
 
 
             // Move backwards to have the first list item yet to be parsed.
-            if( JTexy.debug ) log.finest("Before moveBackward(): " + ((TexyBlockParser)parser).getPosAsString());
-            ((TexyBlockParser) parser).moveBackward(1);
-            if( JTexy.debug ) log.finest("After  moveBackward(): " + ((TexyBlockParser)parser).getPosAsString());
+            if (JTexy.Companion.debug) log.finest("Before moveBackward(): " + (parser as TexyBlockParser).posAsString)
+            (parser as TexyBlockParser).moveBackward(1)
+            if (JTexy.Companion.debug) log.finest("After  moveBackward(): " + parser.posAsString)
 
             // And now parse all the items.
-            DOMElement itemElm;
-            while( null != (itemElm = parseItem((TexyBlockParser) parser, itemBulletRegex, false, "li")) ) {
-                elm.add(itemElm);
+            var itemElm: DOMElement?
+            while (null != parseItem(parser, itemBulletRegex, false, "li").also { itemElm = it }) {
+                elm.add(itemElm)
             }
-            if( ! elm.hasContent() ) {
-                return null;
-            }
+            return if (!elm.hasContent()) {
+                null
+            } else elm
 
             // TODO.
             //getTexy().invokeNormalHandlers( new AfterListEvent() );
-
-            return elm;
-
-        }// handle()
-    }// PatternList
-
-
-
-
+        } // handle()
+    } // PatternList
 
     /**
      * List definition pattern handler.
      */
-    private class DefListPatternHandler implements PatternHandler {
+    private inner class DefListPatternHandler : PatternHandler {
+        override val name: String
+            get() = "defList" // Not used - init() overriden.
 
-        @Override public String getName() { return "defList"; } // Not used - init() overriden.
-
-        @Override
-        public Node handle(TexyParser parser, List<MatchWithOffset> groups, RegexpInfo pattern) throws TexyException {
+        @Throws(TexyException::class)
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
             //   [1] => .(title)[class]{style}<>
             //   [2] => ...
             //   [3] => .(title)[class]{style}<>
             //   [4] => space
             //   [5] => - * +
-            if( log.isLoggable(Level.FINEST) ) {
-                for( MatchWithOffset match : groups ) {
-                    log.finest("  " + match.toString());
+            if (log.isLoggable(Level.FINEST)) {
+                for (match in groups!!) {
+                    log.finest("  " + match.toString())
                 }
             }
-
-            String modStr = groups.get(1).match;
-            String bulletStr = groups.get(5).match;
+            val modStr = groups!![1]!!.match
+            val bulletStr = groups[5]!!.match
 
 
             // Determine the list type used.
-            ListType listType = null;
-            for( ListType curListType : ListType.values() ) {
-                Matcher mat = curListType.getPattern().matcher( bulletStr );
-                if( mat.matches() ) {
-                    listType = curListType;
-                    break;
+            var listType: ListType? = null
+            for (curListType in ListType.values()) {
+                val mat = curListType.pattern.matcher(bulletStr)
+                if (mat!!.matches()) {
+                    listType = curListType
+                    break
                 }
             }
-            if( listType == null ) {
-                return null; // None chosen??
+            if (listType == null) {
+                return null // None chosen??
             }
-            TexyBlockParser blockParser = (TexyBlockParser) parser;
+            val blockParser = parser as TexyBlockParser
 
             // DL element.
-            DOMElement elm = new DOMElement("dl");
-            TexyModifier mod = new TexyModifier( modStr );
-            mod.decorate( elm );
-            blockParser.moveBackward(2);
+            val elm = DOMElement("dl")
+            val mod = TexyModifier(modStr)
+            mod.decorate(elm)
+            blockParser.moveBackward(2)
 
             // @ $desc[3] == nextRegex .
-            String itemBulletRegex = StringUtils.defaultString(listType.getNextRegExp(), listType.getFirstRegExp());
+            val itemBulletRegex = StringUtils.defaultString(listType.nextRegExp, listType.firstRegExp)
 
 
             // Parse the def list items.
-            while( true ) {
+            while (true) {
 
                 // New DD - definition.
-                DOMElement itemElm;
-                itemElm = parseItem( (TexyBlockParser) parser, itemBulletRegex, false, "li" );
-                if( itemElm != null ){
-                    elm.add(itemElm);
-                    continue;
+                var itemElm: DOMElement?
+                itemElm = parseItem(parser, itemBulletRegex, false, "li")
+                if (itemElm != null) {
+                    elm.add(itemElm)
+                    continue
                 }
 
                 // New DT - definition term.
-                List<MatchWithOffset> dtGroups = blockParser.next( TERM_PATTERN );
-                if( null == dtGroups )
-                    break;
+                val dtGroups = blockParser.next(TERM_PATTERN) ?: break
 
                 //    [1] => ...
                 //    [2] => .(title)[class]{style}<>
-
-                DOMElement dtElm = new DOMElement("dt");
-                new TexyModifier( dtGroups.get(2).match ).decorate(dtElm);
-
-                new TexyLineParser( getTexy(), dtElm );
-                elm.add(dtElm);
-
-            }// parse loop while{}.
-
-
-            // TODO.
-            //getTexy().invokeNormalHandlers( new AfterDefListEvent(parser, elm, mod) );
-
-            //return elm;
-
-            throw new UnsupportedOperationException("Definition lists supported yet.");
+                val dtElm = DOMElement("dt")
+                TexyModifier(dtGroups[2]!!.match).decorate(dtElm)
+                TexyLineParser(getTexy(), dtElm)
+                elm.add(dtElm)
+            } // parse loop while{}.
+            throw UnsupportedOperationException("Definition lists supported yet.")
         }
     }
 
-    /** Used in PatternDefList. */
-    private final static Pattern TERM_PATTERN = Pattern.compile(
-                    "^\\n?(\\S.*)\\:\\ *"+RegexpPatterns.TEXY_MODIFIER_H+"?()$",
-                    Pattern.MULTILINE | Pattern.UNGREEDY ); // (?mU)
+    companion object {
+        private val log = Logger.getLogger(ListModule::class.java.name)
+
+        /** Used in PatternDefList.  */
+        private val TERM_PATTERN: Pattern = Pattern.Companion.compile(
+            "^\\n?(\\S.*)\\:\\ *" + RegexpPatterns.Companion.TEXY_MODIFIER_H + "?()$",
+            Pattern.Companion.MULTILINE or Pattern.Companion.UNGREEDY
+        ) // (?mU)
+
+        /**
+         * Parses a single ongoing list item.
+         *
+         * TODO: Try to optimize this not to create Patterns all around.
+         * Perhaps move that `while` (from which this is called) to a new method.
+         */
+        @Throws(TexyException::class)
+        private fun parseItem(
+            parser: TexyBlockParser,
+            itemBulletRegex: String?,
+            indented: Boolean,
+            tagName: String
+        ): DOMElement? {
+            val spaceBase = if (indented) "\\ +" else ""
+            //   \\A == The beginning of the input, instead of ^ - we don't have the (?A) flag.
+            val itemPattern = ("(?mUu)\\A\\n?(" + spaceBase + ")" + itemBulletRegex + "\\ *(\\S.*)?"
+                    + RegexpPatterns.Companion.TEXY_MODIFIER_H + "?()$")
+            if (JTexy.Companion.debug) log.finest("Parser at: " + parser.posAsString) ///
 
 
+            // First line with a bullet.
+            val firstMatchGroups = parser.next(itemPattern) ?: return null
+            if (JTexy.Companion.debug) log.finest("List item match: $firstMatchGroups") ///
+
+            //    [1] => indent
+            //    [2] => ...
+            //    [3] => .(title)[class]{style}<>
+            val indentStr = firstMatchGroups[1]!!.match
+            val itemElm = DOMElement(tagName)
+            val contentStr = firstMatchGroups[2]!!.match
+            val mod = TexyModifier(firstMatchGroups[3]!!.match)
+            mod.decorate(itemElm)
 
 
+            // Successive lines. They are indented to the same depth or more as first line's content.
+            // E.g.  1)  Hello
+            //           world!
 
-    /**
-     * Parses a single ongoing list item.
-     *
-     * TODO: Try to optimize this not to create Patterns all around.
-     *       Perhaps move that `while` (from which this is called) to a new method.
-     */
-    private static DOMElement parseItem(
-                    TexyBlockParser parser,
-                    String itemBulletRegex,
-                    boolean indented,
-                    String tagName
-    ) throws TexyException
-    {
+            // Spaces count: First line inside the list item defines how much spaces
+            //               precede all successive lines for this item.
+            // At the beginning, we don't know, so it's 0.
+            var spacesCnt = ""
 
-        String spaceBase = indented ? "\\ +" : "";
-        //   \\A == The beginning of the input, instead of ^ - we don't have the (?A) flag.
-        String itemPattern = "(?mUu)\\A\\n?(" + spaceBase + ")" + itemBulletRegex + "\\ *(\\S.*)?"
-                        + RegexpPatterns.TEXY_MODIFIER_H + "?()$";
+            //@ while ($parser->next('#^(\n*)'.$mIndent.'(\ {1,'.$spaces.'})(.*)()$#Am', $matches)) {
+            val contentSB = StringBuilder(" $contentStr") // Prej trick.
+            do {
+                val regex = "(?-m)^(\\n*)$indentStr(\\ {1,$spacesCnt})(.*)()(?m)$" // (?-m)^ ensures it matches right after 1st line.
+                val nextMatchGroups = parser.next(regex) ?: break
+                // No lines between list items ( => inside )
 
-        if( JTexy.debug ) log.finest("Parser at: " + parser.getPosAsString());///
+                //    [1] => blank line?
+                //    [2] => spaces
+                //    [3] => ...
+                if ("" == spacesCnt) {
+                    spacesCnt = "" + nextMatchGroups[2]!!.match!!.length
+                }
+                contentSB.append("\n").append(nextMatchGroups[1]!!.match).append(nextMatchGroups[3]!!.match)
+            } while (true)
 
+            // Parse item content.
+            TexyBlockParser(parser.texy, itemElm, true).parse(contentSB.toString())
 
-        // First line with a bullet.
-        List<MatchWithOffset> firstMatchGroups = parser.next( itemPattern );
-        if( null == firstMatchGroups )  return null;
-        if( JTexy.debug ) log.finest("List item match: " + firstMatchGroups);///
-
-        //    [1] => indent
-        //    [2] => ...
-        //    [3] => .(title)[class]{style}<>
-
-        String indentStr = firstMatchGroups.get(1).match;
-        DOMElement itemElm = new DOMElement( tagName );
-        String contentStr = firstMatchGroups.get(2).match;
-        TexyModifier mod = new TexyModifier( firstMatchGroups.get(3).match );
-        mod.decorate( itemElm );
-
-
-        // Successive lines. They are indented to the same depth or more as first line's content.
-        // E.g.  1)  Hello
-        //           world!
-
-        // Spaces count: First line inside the list item defines how much spaces
-        //               precede all successive lines for this item.
-        // At the beginning, we don't know, so it's 0.
-        String spacesCnt = "";
-
-        //@ while ($parser->next('#^(\n*)'.$mIndent.'(\ {1,'.$spaces.'})(.*)()$#Am', $matches)) {
-        StringBuilder contentSB = new StringBuilder(" " + contentStr); // Prej trick.
-        do {
-            String regex = "(?-m)^(\\n*)" + indentStr + "(\\ {1,"+spacesCnt+"})(.*)()(?m)$"; // (?-m)^ ensures it matches right after 1st line.
-            List<MatchWithOffset> nextMatchGroups = parser.next( regex );
-            if( null == nextMatchGroups )
-                break; // No lines between list items ( => inside )
-
-            //    [1] => blank line?
-            //    [2] => spaces
-            //    [3] => ...
-            if( "".equals(spacesCnt) ){
-                spacesCnt = "" + nextMatchGroups.get(2).match.length();
-            }
-            contentSB.append("\n").append( nextMatchGroups.get(1).match ).append( nextMatchGroups.get(3).match );
-        } while( true );
-
-        // Parse item content.
-        new TexyBlockParser( parser.getTexy(), itemElm, true ).parse( contentSB.toString() );
-
-        // TODO: @ WTF?  Maybe it's to prevent <p> inside <li>.
-        /*if (isset($elItem[0]) && $elItem[0] instanceof TexyHtml) {
+            // TODO: @ WTF?  Maybe it's to prevent <p> inside <li>.
+            /*if (isset($elItem[0]) && $elItem[0] instanceof TexyHtml) {
             $elItem[0]->setName(NULL);
         }*/
-        // TODO: Use the special container element name, or move children up.
-        /*if( itemElm.getFirstChild().getNodeType() == Node.ELEMENT_NODE ){
+            // TODO: Use the special container element name, or move children up.
+            /*if( itemElm.getFirstChild().getNodeType() == Node.ELEMENT_NODE ){
             NodeList nodes = itemElm.getFirstChild().getChildNodes();
             //itemElm.removeChild( itemElm.getFirstChild() );
             for( int i = 0; i < nodes.getLength(); i++ ) {
@@ -384,10 +328,7 @@ public class ListModule extends TexyModule
                 //itemElm.add( DOMNodeHelper.asDOMNode( itemElm, nodes.item(i) ));
                 DOMNodeHelper.appendChild( itemElm, nodes.item(i) ); // TODO: Could improve Dom4j.
             }
-        }/**/
-
-        return itemElm;
-
-    }// parseItem()
-
+        }/ **/return itemElm
+        } // parseItem()
+    }
 }

@@ -1,55 +1,45 @@
-package cz.dynawest.jtexy;
+package cz.dynawest.jtexy
 
-import java.util.HashMap;
-import java.util.Map;
-import org.dom4j.Element;
+import org.dom4j.Element
 
 /**
- *  Texy content types: MARKUP, REPLACED, TEXTUAL, BLOCK.
- *  @author Ondrej Zizka
+ * Texy content types: MARKUP, REPLACED, TEXTUAL, BLOCK.
+ * @author Ondrej Zizka
  */
-public enum ContentType {
+enum class ContentType(val delim: Char) {
+    MARKUP('\u0017'), REPLACED('\u0016'), TEXTUAL('\u0015'), BLOCK('\u0014');
 
-	MARKUP('\027'), REPLACED('\026'), TEXTUAL('\025'), BLOCK('\024');
+    /** Content type delimiter as String.  */
+    val delimAsString: String
 
-    
-	private final char delim;
-    
-    /** Content type delimiter as String. */
-	private final String asString;
+    init {
+        delimAsString = kotlin.String(charArrayOf(delim))
+    }
 
-	public char getDelim() { return delim; }
-	public String getDelimAsString() { return asString; }
-	
-    private ContentType(char delim) {
-		this.delim = delim;
-		this.asString = new String(new char[]{this.delim});
-	}
+    companion object {
+        /**
+         * Get texy content type by name - starts with B, R, or T.
+         */
+        fun byName(name: String?): ContentType {
+            if (null == name || "" == name) {
+                return MARKUP
+            }
+            val c = name[0]
+            if ('B' == c) {
+                return BLOCK
+            }
+            if ('R' == c) {
+                return REPLACED
+            }
+            return if ('T' == c) {
+                TEXTUAL
+            } else MARKUP
+        }
 
-    /**
-     *  Get texy content type by name - starts with B, R, or T.
-     */
-	public static ContentType byName(String name) {
-		if (null == name || "".equals(name)) {
-			return MARKUP;
-		}
-		char c = name.charAt(0);
-		if ('B' == c) {
-			return BLOCK;
-		}
-		if ('R' == c) {
-			return REPLACED;
-		}
-		if ('T' == c) {
-			return TEXTUAL;
-		}
-		return MARKUP;
-	}
-
-	// TBD: Move to ProtectedHTMLWriter?
-	public static ContentType fromElement(Element elm) {
-		// Cached?
-		/*if( elm instanceof org.w3c.dom.Element ){
+        // TBD: Move to ProtectedHTMLWriter?
+        fun fromElement(elm: Element): ContentType {
+            // Cached?
+            /*if( elm instanceof org.w3c.dom.Element ){
             // ContentType cType = (ContentType) ((DOMElement)elm)x.getUserData(JTexyConstants.DOM_USERDATA_CONTENT_TYPE); // Does not work - bug?
             org.w3c.dom.Element x = (org.w3c.dom.Element) elm;
             // TODO: Check type safety - we're getting
@@ -59,76 +49,69 @@ public enum ContentType {
             // TBD: Set somewhere.
             //elm.setUserData(JTexyConstants.DOM_USERDATA_CONTENT_TYPE, MARKUP, null);
 		}*/
-        
-		Boolean isReplaced = INLINE_ELEMENTS.get(elm.getName());
+            val isReplaced = INLINE_ELEMENTS[elm.name] ?: return BLOCK
 
-        // Not an inline element.
-		if (null == isReplaced) {
-			return BLOCK;
-		}
-        // Replaced inline element (<object>, <img>, ..., <br>).
-		if (isReplaced) {
-			return REPLACED;
-		}
-        // Normal inline element.
-		return MARKUP;
-	}
-    
-    
-    
-	/**
-     *   %inline; elements; Replaced elements + br have value '1'/ 
-     */
-	private final static Map<String, Boolean> INLINE_ELEMENTS = new HashMap();
+            // Not an inline element.
+            // Replaced inline element (<object>, <img>, ..., <br>).
+            return if (isReplaced) {
+                REPLACED
+            } else MARKUP
+            // Normal inline element.
+        }
 
-	static {
-		INLINE_ELEMENTS.put("ins",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("del",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("tt",       Boolean.FALSE);
-		INLINE_ELEMENTS.put("i",        Boolean.FALSE);
-		INLINE_ELEMENTS.put("b",        Boolean.FALSE);
-		INLINE_ELEMENTS.put("big",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("small",    Boolean.FALSE);
-		INLINE_ELEMENTS.put("em",       Boolean.FALSE);
-		INLINE_ELEMENTS.put("strong",   Boolean.FALSE);
-		INLINE_ELEMENTS.put("dfn",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("code",     Boolean.FALSE);
-		INLINE_ELEMENTS.put("samp",     Boolean.FALSE);
-		INLINE_ELEMENTS.put("kbd",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("var",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("cite",     Boolean.FALSE);
-		INLINE_ELEMENTS.put("abbr",     Boolean.FALSE);
-		INLINE_ELEMENTS.put("acronym",  Boolean.FALSE);
-		INLINE_ELEMENTS.put("sub",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("sup",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("q",        Boolean.FALSE);
-		INLINE_ELEMENTS.put("span",     Boolean.FALSE);
-		INLINE_ELEMENTS.put("bdo",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("a",        Boolean.FALSE);
-		INLINE_ELEMENTS.put("object",   Boolean.TRUE);
-		INLINE_ELEMENTS.put("img",      Boolean.TRUE);
-		INLINE_ELEMENTS.put("br",       Boolean.TRUE);
-		INLINE_ELEMENTS.put("script",   Boolean.TRUE);
-		INLINE_ELEMENTS.put("map",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("input",    Boolean.TRUE);
-		INLINE_ELEMENTS.put("select",   Boolean.TRUE);
-		INLINE_ELEMENTS.put("textarea", Boolean.TRUE);
-		INLINE_ELEMENTS.put("label",    Boolean.FALSE);
-		INLINE_ELEMENTS.put("button",   Boolean.TRUE);
+        /**
+         * %inline; elements; Replaced elements + br have value '1'/
+         */
+        private val INLINE_ELEMENTS: MutableMap<String?, Boolean?> = HashMap<Any?, Any?>()
 
-		// Transitional.
-		INLINE_ELEMENTS.put("u",        Boolean.FALSE);
-		INLINE_ELEMENTS.put("s",        Boolean.FALSE);
-		INLINE_ELEMENTS.put("strike",   Boolean.FALSE);
-		INLINE_ELEMENTS.put("font",     Boolean.FALSE);
-		INLINE_ELEMENTS.put("applet",   Boolean.TRUE);
-		INLINE_ELEMENTS.put("basefont", Boolean.FALSE);
+        init {
+            INLINE_ELEMENTS["ins"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["del"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["tt"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["i"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["b"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["big"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["small"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["em"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["strong"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["dfn"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["code"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["samp"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["kbd"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["var"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["cite"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["abbr"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["acronym"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["sub"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["sup"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["q"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["span"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["bdo"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["a"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["object"] = java.lang.Boolean.TRUE
+            INLINE_ELEMENTS["img"] = java.lang.Boolean.TRUE
+            INLINE_ELEMENTS["br"] = java.lang.Boolean.TRUE
+            INLINE_ELEMENTS["script"] = java.lang.Boolean.TRUE
+            INLINE_ELEMENTS["map"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["input"] = java.lang.Boolean.TRUE
+            INLINE_ELEMENTS["select"] = java.lang.Boolean.TRUE
+            INLINE_ELEMENTS["textarea"] = java.lang.Boolean.TRUE
+            INLINE_ELEMENTS["label"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["button"] = java.lang.Boolean.TRUE
 
-		// Proprietary.
-		INLINE_ELEMENTS.put("embed",    Boolean.TRUE);
-		INLINE_ELEMENTS.put("wbr",      Boolean.FALSE);
-		INLINE_ELEMENTS.put("nobr",     Boolean.FALSE);
-		INLINE_ELEMENTS.put("canvas",   Boolean.TRUE);
-	}
+            // Transitional.
+            INLINE_ELEMENTS["u"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["s"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["strike"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["font"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["applet"] = java.lang.Boolean.TRUE
+            INLINE_ELEMENTS["basefont"] = java.lang.Boolean.FALSE
 
-}// enum
+            // Proprietary.
+            INLINE_ELEMENTS["embed"] = java.lang.Boolean.TRUE
+            INLINE_ELEMENTS["wbr"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["nobr"] = java.lang.Boolean.FALSE
+            INLINE_ELEMENTS["canvas"] = java.lang.Boolean.TRUE
+        }
+    }
+} // enum

@@ -1,12 +1,9 @@
+package cz.dynawest.jtexy.modules
 
-package cz.dynawest.jtexy.modules;
-
-import cz.dynawest.jtexy.parsers.AroundEventListener;
+import cz.dynawest.jtexy.parsers.AroundEventListener
 
 /**
  *
  * @author Ondrej Zizka
  */
-public interface HeadingEventListener extends AroundEventListener<HeadingEvent> {
-
-}
+interface HeadingEventListener : AroundEventListener<HeadingEvent?>

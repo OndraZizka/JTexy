@@ -1,196 +1,148 @@
+package cz.dynawest.jtexy.parsers
 
-package cz.dynawest.jtexy.parsers;
-
-import cz.dynawest.jtexy.JTexy;
-import cz.dynawest.jtexy.RegexpInfo;
-import cz.dynawest.jtexy.TexyException;
-import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter;
-import cz.dynawest.jtexy.util.MatchWithOffset;
-import cz.dynawest.openjdkregex.Matcher;
-import cz.dynawest.openjdkregex.Pattern;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.Node;
-import org.dom4j.dom.DOMElement;
-import org.dom4j.dom.DOMText;
+import cz.dynawest.jtexy.JTexy
+import cz.dynawest.jtexy.RegexpInfo
+import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter
+import cz.dynawest.jtexy.util.MatchWithOffset
+import org.apache.commons.lang.StringUtils
+import org.dom4j.dom.DOMElement
+import org.dom4j.dom.DOMText
+import java.util.logging.*
 
 /**
- *  Parser which parses the content of the blocks, using LINE patterns.
+ * Parser which parses the content of the blocks, using LINE patterns.
  *
  * @author Ondrej Zizka
  */
-public class TexyLineParser extends TexyParser
-{
-    private static final Logger log = Logger.getLogger( TexyLineParser.class.getName() );
+class TexyLineParser(texy: JTexy?, element: DOMElement) : TexyParser(texy, element) {
+    var again = false
+    protected override val patterns: List<RegexpInfo?>?
+        protected get() = texy.linePatterns
 
-    public boolean again;
-
-
-    public TexyLineParser(JTexy texy, DOMElement element) {
-        super(texy, element);
-    }
-
-
-    @Override
-    protected List<RegexpInfo> getPatterns() {
-        return this.getTexy().getLinePatterns();
-    }
-
-
-
-	/**
-	 * Tries to match all LINE patterns against the text.
-	 * The one which starts at the earliest position is applied -
-	 * it's handler is called, and it's match is replaced with
-	 * the response of the handler (either DOMText, DOMElement or null).
-	 */
-	@Override public void parse( String text ) throws TexyException
-	{
-        final boolean finest = log.isLoggable( Level.FINEST );
-
-        if( this.getPatterns().isEmpty() ){
+    /**
+     * Tries to match all LINE patterns against the text.
+     * The one which starts at the earliest position is applied -
+     * it's handler is called, and it's match is replaced with
+     * the response of the handler (either DOMText, DOMElement or null).
+     */
+    @Throws(TexyException::class)
+    override fun parse(text: String?) {
+        var text = text
+        val finest = log.isLoggable(Level.FINEST)
+        if (patterns!!.isEmpty()) {
             // Nothing to do.
-            ((DOMElement)this.element).add( new DOMText(text) );
-            return;
+            element!!.add(DOMText(text))
+            return
         }
-
-        int offset = 0;
-
-        Map<RegexpInfo, ParserMatchInfo> allMatches = new HashMap( this.getPatterns().size() );
+        var offset = 0
+        val allMatches: MutableMap<RegexpInfo?, ParserMatchInfo?> = HashMap<Any?, Any?>(patterns!!.size)
 
         // Store current offset for each line pattern.
-        Map<RegexpInfo, Integer> patternOffsets = new HashMap( this.getPatterns().size() );
-        for( RegexpInfo ri : this.getPatterns() ){
-            patternOffsets.put( ri, -1 );
+        val patternOffsets: MutableMap<RegexpInfo?, Int?> = HashMap<Any?, Any?>(patterns!!.size)
+        for (ri in patterns!!) {
+            patternOffsets[ri] = -1
         }
 
 
         // Parse loop.
-        do{
-            RegexpInfo minPattern = null;
-            int minOffset = text.length();
+        do {
+            var minPattern: RegexpInfo? = null
+            var minOffset = text!!.length
 
 
             // For each line pattern...
-            for( RegexpInfo ri : this.getPatterns() )
-            {
-				if(finest) log.log(Level.FINEST, "  Parsing with pattern {0} - {1}...", new Object[]{ri.name, ri.getRegexp()});
-
-                if( patternOffsets.get(ri) < offset )
-                {
-                    int delta  =  (patternOffsets.get(ri) == -2) ? 1 : 0;
+            for (ri in patterns!!) {
+                if (finest) log.log(
+                    Level.FINEST, "  Parsing with pattern {0} - {1}...", arrayOf<Any?>(
+                        ri!!.name, ri.regexp
+                    )
+                )
+                if (patternOffsets[ri]!! < offset) {
+                    val delta = if (patternOffsets[ri] == -2) 1 else 0
 
                     // Regexp match
                     //Pattern pat = Pattern.compile( ri.getRegexp() );
-                    Pattern pat = ri.getPattern();
-                    Matcher mat = pat.matcher( text );
-                    if( mat.find( offset + delta ) ){
+                    val pat = ri.getPattern()
+                    val mat = pat!!.matcher(text)
+                    if (mat!!.find(offset + delta)) {
                         // Store match info.
-                        List<MatchWithOffset> groups = MatchWithOffset.fromMatcherState(mat);
-                        ParserMatchInfo curMatchInfo = new ParserMatchInfo(ri, groups, mat.start());
-                        allMatches.put(ri, curMatchInfo);
-                        if( groups.get(0).match.length() == 0 )
-                            continue;
+                        val groups: List<MatchWithOffset?> = MatchWithOffset.Companion.fromMatcherState(mat)
+                        val curMatchInfo = ParserMatchInfo(ri, groups, mat!!.start())
+                        allMatches[ri] = curMatchInfo
+                        if (groups[0]!!.match!!.length == 0) continue
                         // Store offset for this pattern.
-                        patternOffsets.put(ri, mat.start());
-                    }
-                    else{
+                        patternOffsets[ri] = mat!!.start()
+                    } else {
                         // Try next time.
-                        continue;
+                        continue
                     }
-                }// if( patternOffsets.get(ri) < offset )
-
-                int curOffset = patternOffsets.get(ri);
-                if( curOffset < minOffset ){
-                    minOffset = curOffset;
-                    minPattern = ri;
+                } // if( patternOffsets.get(ri) < offset )
+                val curOffset = patternOffsets[ri]!!
+                if (curOffset < minOffset) {
+                    minOffset = curOffset
+                    minPattern = ri
                 }
-            }// for each line pattern ( RegexpInfo ri : this.getPatterns() )
+            } // for each line pattern ( RegexpInfo ri : this.getPatterns() )
 
 
             // Nothing matched?
-            if( minPattern == null ){
-                if(finest) log.finest("No more matches.");
-                break;
+            if (minPattern == null) {
+                if (finest) log.finest("No more matches.")
+                break
             }
-
-
-
-            int start = offset = minOffset;
+            offset = minOffset
+            val start = offset
 
             // Call the handler of the minimal match.
-            this.again = false;
-            log.log(Level.FINER, "Using handler: {0}", minPattern.handler.getName());
-            Node resNode = minPattern.handler.handle( this, allMatches.get(minPattern).groups, minPattern );
-
-            String resString = "Invalid response from handler of "+minPattern.name+": "+resNode;
-
-            if( resNode instanceof DOMElement ){
+            again = false
+            log.log(Level.FINER, "Using handler: {0}", minPattern.handler.name)
+            val resNode = minPattern.handler!!.handle(this, allMatches[minPattern]!!.groups, minPattern)
+            var resString = "Invalid response from handler of " + minPattern.name + ": " + resNode
+            if (resNode is DOMElement) {
                 //resString = resNode.asXML();
-                resString = ProtectedHTMLWriter.fromElement( (DOMElement) resNode, getTexy().getProtector() );
-            }
-            else if( null == resNode ){
+                resString = ProtectedHTMLWriter.Companion.fromElement(resNode, texy.protector)
+            } else if (null == resNode) {
                 // Store that this was rejected.
-                patternOffsets.put( minPattern, -2 );
-                continue;
+                patternOffsets[minPattern] = -2
+                continue
+            } else if (resNode is DOMText) {
+                resString = resNode.text
             }
-            else if( resNode instanceof DOMText ){
-                resString = ((DOMText)resNode).getText();
-            }
-            if(finest) log.log(Level.FINEST, "Result: {0}", resNode);
-            if(finest) log.log(Level.FINEST, "Result string: {0}", resString);
-
-
-            int matchStart = minOffset; //patternOffsets.get(minPattern);
-            int matchLen = allMatches.get(minPattern).groups.get(0).match.length();
+            if (finest) log.log(Level.FINEST, "Result: {0}", resNode)
+            if (finest) log.log(Level.FINEST, "Result string: {0}", resString)
+            val matchStart = minOffset //patternOffsets.get(minPattern);
+            val matchLen = allMatches[minPattern]!!.groups!![0]!!.match!!.length
             // Replace the matched part of the text with the result.
-            text = StringUtils.overlay(text, resString, start, matchStart + matchLen );
-
-            int delta = resString.length() - matchLen;
+            text = StringUtils.overlay(text, resString, start, matchStart + matchLen)
+            val delta = resString.length - matchLen
 
             // Adjust all patterns' offset.
-            for( Entry<RegexpInfo, Integer> entry : patternOffsets.entrySet() ) {
+            for (entry in patternOffsets.entries) {
                 // If this pattern's offset is before the left-most match, reset it back to start.
-                if( entry.getValue() < matchStart + matchLen ){ // TODO: add match end to MatchWithOffset.
-                    entry.setValue( -1 );
-                }
-                // Otherwise, set it after the matched region.
-                else {
-                    entry.setValue( entry.getValue() + delta );
+                if (entry.value!! < matchStart + matchLen) { // TODO: add match end to MatchWithOffset.
+                    entry.setValue(-1)
+                } else {
+                    entry.setValue(entry.value!! + delta)
                 }
             }
-
-            if( this.again ){
-                patternOffsets.put( minPattern, -2 );
-            }
-            else {
-                patternOffsets.put( minPattern, -1 );
-                offset += resString.length();
+            if (again) {
+                patternOffsets[minPattern] = -2
+            } else {
+                patternOffsets[minPattern] = -1
+                offset += resString.length
             }
 
             // TODO
-
-
-		}while( true );
-
-        log.log(Level.FINE, "Resulting string after parsing: {0}", text);
+        } while (true)
+        log.log(Level.FINE, "Resulting string after parsing: {0}", text)
 
         // $this->element->insert(NULL, $text);
         //((DOMElement)this.element).addCDATA( text );
-        this.element.addText( text );
-		
+        element.addText(text)
+    } // parse()
 
-	}// parse()
-
-	
-
-
+    companion object {
+        private val log = Logger.getLogger(TexyLineParser::class.java.name)
+    }
 }
-
-
-

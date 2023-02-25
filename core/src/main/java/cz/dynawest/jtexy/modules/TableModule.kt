@@ -1,34 +1,27 @@
+package cz.dynawest.jtexy.modules
 
-package cz.dynawest.jtexy.modules;
-
-
-import cz.dynawest.jtexy.parsers.TexyEventListener;
-import java.util.logging.*;
-
+import cz.dynawest.jtexy.parsers.TexyEventListener
+import java.util.logging.Logger
 
 /**
  *
  * @author Ondrej Zizka
  */
-public class TableModule extends TexyModule
-{
-  private static final Logger log = Logger.getLogger( TableModule.class.getName() );
+class TableModule : TexyModule() {
+    private val somePH: PatternHandler? = null
+    override val eventListeners: Array<TexyEventListener<*>>
+        // -- Module meta-info -- //
+        get() = arrayOf()
 
-	private PatternHandler somePH = null;
+    override fun getPatternHandlerByName(name: String): PatternHandler? {
+        return if (somePH.getName() == name) {
+            somePH
+        } else {
+            null
+        }
+    }
 
-
-	// -- Module meta-info -- //
-
-	@Override public TexyEventListener[] getEventListeners() {
-		return new TexyEventListener[]{};
-	}
-
-	@Override	protected PatternHandler getPatternHandlerByName(String name) {
-		if( somePH.getName().equals(name) ) {
-			return somePH;
-		} else {
-			return null;
-		}
-	}
-
+    companion object {
+        private val log = Logger.getLogger(TableModule::class.java.name)
+    }
 }

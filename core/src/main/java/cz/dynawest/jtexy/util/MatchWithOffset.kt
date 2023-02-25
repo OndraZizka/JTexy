@@ -1,79 +1,53 @@
+package cz.dynawest.jtexy.util
 
-package cz.dynawest.jtexy.util;
-
-import cz.dynawest.openjdkregex.Matcher;
-import java.util.*;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import cz.dynawest.openjdkregex.Matcher
+import org.apache.commons.lang.StringUtils
+import java.util.*
 
 /**
  *
  * @author Ondrej Zizka
  */
-public class MatchWithOffset
-{
+class MatchWithOffset
+/** Const  */(@JvmField val match: String?, @JvmField val offset: Int) {
+    /** Returns "offset: match".  */
+    override fun toString(): String {
+        var str = StringUtils.abbreviate(match, 25)
+        //str = StringEscapeUtils.escapeJava(str); // Converts diacritics to \u00E1 etc.
+        str = StringUtils.replaceEach(str, arrayOf("\r", "\n", "\t"), arrayOf("\\r", "\\n", "\\t"))
+        val sb = StringBuilder("@").append(offset).append(": ")
+        return if (null == str) sb.append("nul").toString() else sb.append('"').append(str).append('"').toString()
+    }
 
-	public final String match;
-	public final int offset;
+    companion object {
+        /** Get list of match groups after successful match.  */
+        fun fromMatcherState(matcher: Matcher?): List<MatchWithOffset?> {
+            //if( matcher.groupCount() == 0 )
+            //	return Collections.EMPTY_LIST;
+            val groups: MutableList<MatchWithOffset?> = ArrayList<Any?>(matcher!!.groupCount() + 1)
+            for (i in 0..matcher.groupCount()) {
+                groups.add(MatchWithOffset(matcher.group(i), matcher.start(i)))
+            }
+            return groups
+        }
 
+        /** Get list of lists of groups of all matches.  */
+		@JvmStatic
+		fun fromMatcherAll(matcher: Matcher?): List<List<MatchWithOffset?>?> {
 
-	/** Const */
-	public MatchWithOffset(String match, int offset) {
-		this.match = match;
-		this.offset = offset;
-	}
+            // If not matched, return empty list.
+            if (!matcher!!.find()) return Collections.EMPTY_LIST
 
-
-
-
-	/** Get list of match groups after successful match. */
-	public static List<MatchWithOffset> fromMatcherState( Matcher matcher ){
-		//if( matcher.groupCount() == 0 )
-		//	return Collections.EMPTY_LIST;
-
-		List<MatchWithOffset> groups = new ArrayList( matcher.groupCount() + 1 );
-		for (int i = 0; i <= matcher.groupCount(); i++) {
-			groups.add( new MatchWithOffset( matcher.group(i), matcher.start(i) ));
-		}
-
-		return groups;
-	}
-
-
-
-	/** Get list of lists of groups of all matches. */
-	public static List<List<MatchWithOffset>> fromMatcherAll( Matcher matcher )
-	{
-
-		// If not matched, return empty list.
-		if( ! matcher.find() )
-			return Collections.EMPTY_LIST;
-
-		// Else loop trough the matches and groups and build 2-dim array.
-		List<List<MatchWithOffset>> matches = new ArrayList();
-		do{
-			List<MatchWithOffset> groups = new ArrayList();
-			for( int i = 0; i < matcher.groupCount()+1; i++ ) {
-				groups.add( new MatchWithOffset( matcher.group(i), matcher.start(i) ));
-			}
-			matches.add(groups);
-		}while( matcher.find() );
-
-		return matches;
-	}
-
-
-	
-	/** Returns "offset: match". */
-	public String toString(){
-		String str = StringUtils.abbreviate(match, 25);
-		//str = StringEscapeUtils.escapeJava(str); // Converts diacritics to \u00E1 etc.
-        str = StringUtils.replaceEach( str, new String[]{"\r","\n","\t"}, new String[]{"\\r","\\n","\\t"} );
-		StringBuilder sb = new StringBuilder("@").append(this.offset).append(": ");
-        if( null == str ) return sb.append("nul").toString();
-        else              return sb.append('"').append(str).append('"').toString();
-	}
-
-	
-
+            // Else loop trough the matches and groups and build 2-dim array.
+            val matches: MutableList<List<MatchWithOffset?>?> = ArrayList<Any?>()
+            do {
+                val groups: MutableList<MatchWithOffset?> = ArrayList<Any?>()
+                for (i in 0 until matcher.groupCount() + 1) {
+                    groups.add(MatchWithOffset(matcher.group(i), matcher.start(i)))
+                }
+                matches.add(groups)
+            } while (matcher.find())
+            return matches
+        }
+    }
 }

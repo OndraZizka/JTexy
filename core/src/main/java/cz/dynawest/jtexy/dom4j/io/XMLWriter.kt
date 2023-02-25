@@ -1,257 +1,131 @@
 /* Copied from Dom4j just to make the fields protected instead of private. */
+package cz.dynawest.jtexy.dom4j.io
 
-
-package cz.dynawest.jtexy.dom4j.io;
+import org.dom4j.*
+import org.dom4j.io.OutputFormat
+import org.dom4j.tree.NamespaceStack
+import org.xml.sax.*
+import org.xml.sax.ext.LexicalHandler
+import org.xml.sax.helpers.XMLFilterImpl
+import java.io.*
+import java.util.*
 
 /*
  * Copyright 2001-2005 (C) MetaStuff, Ltd. All Rights Reserved.
  *
  * This software is open source.
  * See the bottom of this file for the licence.
- */
-
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import org.dom4j.Attribute;
-import org.dom4j.CDATA;
-import org.dom4j.Comment;
-import org.dom4j.Document;
-import org.dom4j.DocumentType;
-import org.dom4j.Element;
-import org.dom4j.Entity;
-import org.dom4j.Namespace;
-import org.dom4j.Node;
-import org.dom4j.ProcessingInstruction;
-import org.dom4j.Text;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.tree.NamespaceStack;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotRecognizedException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.ext.LexicalHandler;
-import org.xml.sax.helpers.XMLFilterImpl;
-
-/**
- * <p>
- * <code>XMLWriter</code> takes a DOM4J tree and formats it to a stream as
+ */ /**
+ *
+ *
+ * `XMLWriter` takes a DOM4J tree and formats it to a stream as
  * XML. It can also take SAX events too so can be used by SAX clients as this
- * object implements the {@link org.xml.sax.ContentHandler}and {@link
- * LexicalHandler} interfaces. as well. This formatter performs typical document
+ * object implements the [org.xml.sax.ContentHandler]and [ ] interfaces. as well. This formatter performs typical document
  * formatting. The XML declaration and processing instructions are always on
- * their own lines. An {@link OutputFormat}object can be used to define how
+ * their own lines. An [OutputFormat]object can be used to define how
  * whitespace is handled when printing and allows various configuration options,
  * such as to allow suppression of the XML declaration, the encoding declaration
  * or whether empty documents are collapsed.
- * </p>
  *
- * <p>
- * There are <code>write(...)</code> methods to print any of the standard
- * DOM4J classes, including <code>Document</code> and <code>Element</code>,
- * to either a <code>Writer</code> or an <code>OutputStream</code>.
- * Warning: using your own <code>Writer</code> may cause the writer's
+ *
+ *
+ *
+ * There are `write(...)` methods to print any of the standard
+ * DOM4J classes, including `Document` and `Element`,
+ * to either a `Writer` or an `OutputStream`.
+ * Warning: using your own `Writer` may cause the writer's
  * preferred character encoding to be ignored. If you use encodings other than
  * UTF8, we recommend using the method that takes an OutputStream instead.
- * </p>
  *
- * @author <a href="mailto:jstrachan@apache.org">James Strachan </a>
+ *
+ * @author [James Strachan ](mailto:jstrachan@apache.org)
  * @author Joseph Bowbeer
  * @version $Revision: 1.83.2.2 $
  */
-public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
-    private static final String PAD_TEXT = " ";
-
-    protected static final String[] LEXICAL_HANDLER_NAMES = {
-            "http://xml.org/sax/properties/lexical-handler",
-            "http://xml.org/sax/handlers/LexicalHandler"};
-
-    protected static final OutputFormat DEFAULT_FORMAT = new OutputFormat();
-
-    /** Should entityRefs by resolved when writing ? */
-    private boolean resolveEntityRefs = true;
+open class XMLWriter : XMLFilterImpl, LexicalHandler {
+    /** Should entityRefs by resolved when writing ?  */
+    private var resolveEntityRefs = true
 
     /**
      * Stores the last type of node written so algorithms can refer to the
      * previous node type
      */
-    protected int lastOutputNodeType;
+    protected var lastOutputNodeType = 0
 
     /**
      * Stores if the last written element node was a closing tag or an opening
      * tag.
      */
-    private boolean lastElementClosed = false;
+    private var lastElementClosed = false
 
-    /** Stores the xml:space attribute value of preserve for whitespace flag */
-    protected boolean preserve = false;
+    /** Stores the xml:space attribute value of preserve for whitespace flag  */
+    protected var preserve = false
 
-    /** The Writer used to output to */
-    protected Writer writer;
+    /** The Writer used to output to  */
+    protected var writer: Writer
 
-    /** The Stack of namespaceStack written so far */
-    protected NamespaceStack namespaceStack = new NamespaceStack();
-
-    /** The format used by this writer */
-    protected OutputFormat format;
-
-    /** whether we should escape text */
-    private boolean escapeText = true;
-
+    /** The Stack of namespaceStack written so far  */
+    protected var namespaceStack = NamespaceStack()
     /**
-     * The initial number of indentations (so you can print a whole document
-     * indented, if you like)
+     * Lets subclasses get at the current format object, so they can call
+     * setTrimText, setNewLines, etc. Put in to support the HTMLWriter, in the
+     * way that it pushes the current newline/trim state onto a stack and
+     * overrides the state within preformatted tags.
+     *
+     * @return DOCUMENT ME!
      */
-    protected int indentLevel = 0;
-
-    /** buffer used when escaping strings */
-    private StringBuffer buffer = new StringBuffer();
-
-    /**
-     * whether we have added characters before from the same chunk of characters
-     */
-    private boolean charsAdded = false;
-
-    private char lastChar;
-
-    /** Whether a flush should occur after writing a document */
-    private boolean autoFlush;
-
-    /** Lexical handler we should delegate to */
-    private LexicalHandler lexicalHandler;
-
-    /**
-     * Whether comments should appear inside DTD declarations - defaults to
-     * false
-     */
-    private boolean showCommentsInDTDs;
-
-    /** Is the writer curerntly inside a DTD definition? */
-    private boolean inDTD;
-
-    /** The namespaces used for the current element when consuming SAX events */
-    private Map namespacesMap;
-
-    /**
-     * what is the maximum allowed character code such as 127 in US-ASCII (7
-     * bit) or 255 in ISO- (8 bit) or -1 to not escape any characters (other
-     * than the special XML characters like &lt; &gt; &amp;)
-     */
-    private int maximumAllowedCharacter;
-
-    public XMLWriter(Writer writer) {
-        this(writer, DEFAULT_FORMAT);
-    }
-
-    public XMLWriter(Writer writer, OutputFormat format) {
-        this.writer = writer;
-        this.format = format;
-        namespaceStack.push(Namespace.NO_NAMESPACE);
-    }
-
-    public XMLWriter() {
-        this.format = DEFAULT_FORMAT;
-        this.writer = new BufferedWriter(new OutputStreamWriter(System.out));
-        this.autoFlush = true;
-        namespaceStack.push(Namespace.NO_NAMESPACE);
-    }
-
-    public XMLWriter(OutputStream out) throws UnsupportedEncodingException {
-        this.format = DEFAULT_FORMAT;
-        this.writer = createWriter(out, format.getEncoding());
-        this.autoFlush = true;
-        namespaceStack.push(Namespace.NO_NAMESPACE);
-    }
-
-    public XMLWriter(OutputStream out, OutputFormat format)
-            throws UnsupportedEncodingException {
-        this.format = format;
-        this.writer = createWriter(out, format.getEncoding());
-        this.autoFlush = true;
-        namespaceStack.push(Namespace.NO_NAMESPACE);
-    }
-
-    public XMLWriter(OutputFormat format) throws UnsupportedEncodingException {
-        this.format = format;
-        this.writer = createWriter(System.out, format.getEncoding());
-        this.autoFlush = true;
-        namespaceStack.push(Namespace.NO_NAMESPACE);
-    }
-
-    public void setWriter(Writer writer) {
-        this.writer = writer;
-        this.autoFlush = false;
-    }
-
-    public void setOutputStream(OutputStream out)
-            throws UnsupportedEncodingException {
-        this.writer = createWriter(out, format.getEncoding());
-        this.autoFlush = true;
-    }
-
+    /** The format used by this writer  */
+    protected var outputFormat: OutputFormat?
     /**
      * DOCUMENT ME!
      *
      * @return true if text thats output should be escaped. This is enabled by
-     *         default. It could be disabled if the output format is textual,
-     *         like in XSLT where we can have xml, html or text output.
+     * default. It could be disabled if the output format is textual,
+     * like in XSLT where we can have xml, html or text output.
      */
-    public boolean isEscapeText() {
-        return escapeText;
-    }
-
     /**
      * Sets whether text output should be escaped or not. This is enabled by
      * default. It could be disabled if the output format is textual, like in
      * XSLT where we can have xml, html or text output.
      *
      * @param escapeText
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void setEscapeText(boolean escapeText) {
-        this.escapeText = escapeText;
-    }
+    /** whether we should escape text  */
+    var isEscapeText = true
 
     /**
-     * Set the initial indentation level. This can be used to output a document
-     * (or, more likely, an element) starting at a given indent level, so it's
-     * not always flush against the left margin. Default: 0
-     *
-     * @param indentLevel
-     *            the number of indents to start with
+     * The initial number of indentations (so you can print a whole document
+     * indented, if you like)
      */
-    public void setIndentLevel(int indentLevel) {
-        this.indentLevel = indentLevel;
-    }
+    protected var indentLevel = 0
+
+    /** buffer used when escaping strings  */
+    private val buffer = StringBuffer()
 
     /**
-     * Returns the maximum allowed character code that should be allowed
-     * unescaped which defaults to 127 in US-ASCII (7 bit) or 255 in ISO- (8
-     * bit).
-     *
-     * @return DOCUMENT ME!
+     * whether we have added characters before from the same chunk of characters
      */
-    public int getMaximumAllowedCharacter() {
-        if (maximumAllowedCharacter == 0) {
-            maximumAllowedCharacter = defaultMaximumAllowedCharacter();
-        }
+    private var charsAdded = false
+    private var lastChar = 0.toChar()
 
-        return maximumAllowedCharacter;
-    }
+    /** Whether a flush should occur after writing a document  */
+    private var autoFlush = false
 
+    /** Lexical handler we should delegate to  */
+    private var lexicalHandler: LexicalHandler? = null
+
+    /**
+     * Whether comments should appear inside DTD declarations - defaults to
+     * false
+     */
+    private val showCommentsInDTDs = false
+
+    /** Is the writer curerntly inside a DTD definition?  */
+    private var inDTD = false
+
+    /** The namespaces used for the current element when consuming SAX events  */
+    private var namespacesMap: MutableMap<*, *>? = null
     /**
      * Sets the maximum allowed character code that should be allowed unescaped
      * such as 127 in US-ASCII (7 bit) or 255 in ISO- (8 bit) or -1 to not
@@ -260,277 +134,357 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * encoding.
      *
      * @param maximumAllowedCharacter
-     *            The maximumAllowedCharacter to set
+     * The maximumAllowedCharacter to set
      */
-    public void setMaximumAllowedCharacter(int maximumAllowedCharacter) {
-        this.maximumAllowedCharacter = maximumAllowedCharacter;
+    /**
+     * what is the maximum allowed character code such as 127 in US-ASCII (7
+     * bit) or 255 in ISO- (8 bit) or -1 to not escape any characters (other
+     * than the special XML characters like &lt; &gt; &amp;)
+     */
+    var maximumAllowedCharacter = 0
+        /**
+         * Returns the maximum allowed character code that should be allowed
+         * unescaped which defaults to 127 in US-ASCII (7 bit) or 255 in ISO- (8
+         * bit).
+         *
+         * @return DOCUMENT ME!
+         */
+        get() {
+            if (field == 0) {
+                field = defaultMaximumAllowedCharacter()
+            }
+            return field
+        }
+
+    @JvmOverloads
+    constructor(writer: Writer, format: OutputFormat? = DEFAULT_FORMAT) {
+        this.writer = writer
+        outputFormat = format
+        namespaceStack.push(Namespace.NO_NAMESPACE)
+    }
+
+    constructor() {
+        outputFormat = DEFAULT_FORMAT
+        writer = BufferedWriter(OutputStreamWriter(System.out))
+        autoFlush = true
+        namespaceStack.push(Namespace.NO_NAMESPACE)
+    }
+
+    constructor(out: OutputStream?) {
+        outputFormat = DEFAULT_FORMAT
+        writer = createWriter(out, outputFormat!!.encoding)
+        autoFlush = true
+        namespaceStack.push(Namespace.NO_NAMESPACE)
+    }
+
+    constructor(out: OutputStream?, format: OutputFormat?) {
+        outputFormat = format
+        writer = createWriter(out, format!!.encoding)
+        autoFlush = true
+        namespaceStack.push(Namespace.NO_NAMESPACE)
+    }
+
+    constructor(format: OutputFormat?) {
+        outputFormat = format
+        writer = createWriter(System.out, format!!.encoding)
+        autoFlush = true
+        namespaceStack.push(Namespace.NO_NAMESPACE)
+    }
+
+    fun setWriter(writer: Writer) {
+        this.writer = writer
+        autoFlush = false
+    }
+
+    @Throws(UnsupportedEncodingException::class)
+    fun setOutputStream(out: OutputStream?) {
+        writer = createWriter(out, outputFormat!!.encoding)
+        autoFlush = true
+    }
+
+    /**
+     * Set the initial indentation level. This can be used to output a document
+     * (or, more likely, an element) starting at a given indent level, so it's
+     * not always flush against the left margin. Default: 0
+     *
+     * @param indentLevel
+     * the number of indents to start with
+     */
+    fun setIndentLevel(indentLevel: Int) {
+        this.indentLevel = indentLevel
     }
 
     /**
      * Flushes the underlying Writer
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void flush() throws IOException {
-        writer.flush();
+    @Throws(IOException::class)
+    fun flush() {
+        writer.flush()
     }
 
     /**
      * Closes the underlying Writer
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void close() throws IOException {
-        writer.close();
+    @Throws(IOException::class)
+    fun close() {
+        writer.close()
     }
 
     /**
      * Writes the new line text to the underlying Writer
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void println() throws IOException {
-        writer.write(format.getLineSeparator());
+    @Throws(IOException::class)
+    fun println() {
+        writer.write(outputFormat!!.lineSeparator)
     }
 
     /**
-     * Writes the given {@link Attribute}.
+     * Writes the given [Attribute].
      *
      * @param attribute
-     *            <code>Attribute</code> to output.
+     * `Attribute` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(Attribute attribute) throws IOException {
-        writeAttribute(attribute);
-
+    @Throws(IOException::class)
+    fun write(attribute: Attribute) {
+        writeAttribute(attribute)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * <p>
-     * This will print the <code>Document</code> to the current Writer.
-     * </p>
      *
-     * <p>
+     *
+     * This will print the `Document` to the current Writer.
+     *
+     *
+     *
+     *
      * Warning: using your own Writer may cause the writer's preferred character
      * encoding to be ignored. If you use encodings other than UTF8, we
      * recommend using the method that takes an OutputStream instead.
-     * </p>
      *
-     * <p>
+     *
+     *
+     *
      * Note: as with all Writers, you may need to flush() yours after this
      * method returns.
-     * </p>
+     *
      *
      * @param doc
-     *            <code>Document</code> to format.
+     * `Document` to format.
      *
      * @throws IOException
-     *             if there's any problem writing.
+     * if there's any problem writing.
      */
-    public void write(Document doc) throws IOException {
-        writeDeclaration();
-
-        if (doc.getDocType() != null) {
-            indent();
-            writeDocType(doc.getDocType());
+    @Throws(IOException::class)
+    open fun write(doc: Document) {
+        writeDeclaration()
+        if (doc.docType != null) {
+            indent()
+            writeDocType(doc.docType)
         }
-
-        for (int i = 0, size = doc.nodeCount(); i < size; i++) {
-            Node node = doc.node(i);
-            writeNode(node);
+        var i = 0
+        val size = doc.nodeCount()
+        while (i < size) {
+            val node = doc.node(i)
+            writeNode(node)
+            i++
         }
-
-        writePrintln();
-
+        writePrintln()
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * <p>
-     * Writes the <code>{@link Element}</code>, including its <code>{@link
-     * Attribute}</code>
+     *
+     *
+     * Writes the `[Element]`, including its `[ ]`
      * s, and its value, and all its content (child nodes) to the current
      * Writer.
-     * </p>
+     *
      *
      * @param element
-     *            <code>Element</code> to output.
+     * `Element` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(Element element) throws IOException {
-        writeElement(element);
-
+    @Throws(IOException::class)
+    fun write(element: Element) {
+        writeElement(element)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * Writes the given {@link CDATA}.
+     * Writes the given [CDATA].
      *
      * @param cdata
-     *            <code>CDATA</code> to output.
+     * `CDATA` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(CDATA cdata) throws IOException {
-        writeCDATA(cdata.getText());
-
+    @Throws(IOException::class)
+    fun write(cdata: CDATA) {
+        writeCDATA(cdata.text)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * Writes the given {@link Comment}.
+     * Writes the given [Comment].
      *
      * @param comment
-     *            <code>Comment</code> to output.
+     * `Comment` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(Comment comment) throws IOException {
-        writeComment(comment.getText());
-
+    @Throws(IOException::class)
+    fun write(comment: Comment) {
+        writeComment(comment.text)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * Writes the given {@link DocumentType}.
+     * Writes the given [DocumentType].
      *
      * @param docType
-     *            <code>DocumentType</code> to output.
+     * `DocumentType` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(DocumentType docType) throws IOException {
-        writeDocType(docType);
-
+    @Throws(IOException::class)
+    fun write(docType: DocumentType?) {
+        writeDocType(docType)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * Writes the given {@link Entity}.
+     * Writes the given [Entity].
      *
      * @param entity
-     *            <code>Entity</code> to output.
+     * `Entity` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(Entity entity) throws IOException {
-        writeEntity(entity);
-
+    @Throws(IOException::class)
+    fun write(entity: Entity) {
+        writeEntity(entity)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * Writes the given {@link Namespace}.
+     * Writes the given [Namespace].
      *
      * @param namespace
-     *            <code>Namespace</code> to output.
+     * `Namespace` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(Namespace namespace) throws IOException {
-        writeNamespace(namespace);
-
+    @Throws(IOException::class)
+    fun write(namespace: Namespace?) {
+        writeNamespace(namespace)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * Writes the given {@link ProcessingInstruction}.
+     * Writes the given [ProcessingInstruction].
      *
      * @param processingInstruction
-     *            <code>ProcessingInstruction</code> to output.
+     * `ProcessingInstruction` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(ProcessingInstruction processingInstruction)
-            throws IOException {
-        writeProcessingInstruction(processingInstruction);
-
+    @Throws(IOException::class)
+    fun write(processingInstruction: ProcessingInstruction) {
+        writeProcessingInstruction(processingInstruction)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * <p>
-     * Print out a {@link String}, Perfoms the necessary entity escaping and
+     *
+     *
+     * Print out a [String], Perfoms the necessary entity escaping and
      * whitespace stripping.
-     * </p>
+     *
      *
      * @param text
-     *            is the text to output
+     * is the text to output
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(String text) throws IOException {
-        writeString(text);
-
+    @Throws(IOException::class)
+    fun write(text: String) {
+        writeString(text)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * Writes the given {@link Text}.
+     * Writes the given [Text].
      *
      * @param text
-     *            <code>Text</code> to output.
+     * `Text` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(Text text) throws IOException {
-        writeString(text.getText());
-
+    @Throws(IOException::class)
+    fun write(text: Text) {
+        writeString(text.text)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
     /**
-     * Writes the given {@link Node}.
+     * Writes the given [Node].
      *
      * @param node
-     *            <code>Node</code> to output.
+     * `Node` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(Node node) throws IOException {
-        writeNode(node);
-
+    @Throws(IOException::class)
+    fun write(node: Node) {
+        writeNode(node)
         if (autoFlush) {
-            flush();
+            flush()
         }
     }
 
@@ -539,205 +493,203 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * Nodes.
      *
      * @param object
-     *            is the object to output.
+     * is the object to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void write(Object object) throws IOException {
-        if (object instanceof Node) {
-            write((Node) object);
-        } else if (object instanceof String) {
-            write((String) object);
-        } else if (object instanceof List) {
-            List list = (List) object;
-
-            for (int i = 0, size = list.size(); i < size; i++) {
-                write(list.get(i));
+    @Throws(IOException::class)
+    fun write(`object`: Any?) {
+        if (`object` is Node) {
+            write(`object`)
+        } else if (`object` is String) {
+            write(`object`)
+        } else if (`object` is List<*>) {
+            val list = `object`
+            var i = 0
+            val size = list.size
+            while (i < size) {
+                write(list[i])
+                i++
             }
-        } else if (object != null) {
-            throw new IOException("Invalid object: " + object);
+        } else if (`object` != null) {
+            throw IOException("Invalid object: $`object`")
         }
     }
 
     /**
-     * <p>
-     * Writes the opening tag of an {@link Element}, including its {@link
-     * Attribute}s but without its content.
-     * </p>
+     *
+     *
+     * Writes the opening tag of an [Element], including its [ ]s but without its content.
+     *
      *
      * @param element
-     *            <code>Element</code> to output.
+     * `Element` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void writeOpen(Element element) throws IOException {
-        writer.write("<");
-        writer.write(element.getQualifiedName());
-        writeAttributes(element);
-				if( ! element.hasContent() )
-					writer.write("/>");
-				else
-					writer.write(">");
+    @Throws(IOException::class)
+    open fun writeOpen(element: Element) {
+        writer.write("<")
+        writer.write(element.qualifiedName)
+        writeAttributes(element)
+        if (!element.hasContent()) writer.write("/>") else writer.write(">")
     }
 
     /**
-     * <p>
-     * Writes the closing tag of an {@link Element}
-     * </p>
+     *
+     *
+     * Writes the closing tag of an [Element]
+     *
      *
      * @param element
-     *            <code>Element</code> to output.
+     * `Element` to output.
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    public void writeClose(Element element) throws IOException {
-        writeClose(element.getQualifiedName());
+    @Throws(IOException::class)
+    open fun writeClose(element: Element) {
+        writeClose(element.qualifiedName)
     }
 
     // XMLFilterImpl methods
     // -------------------------------------------------------------------------
-    public void parse(InputSource source) throws IOException, SAXException {
-        installLexicalHandler();
-        super.parse(source);
+    @Throws(IOException::class, SAXException::class)
+    override fun parse(source: InputSource) {
+        installLexicalHandler()
+        super.parse(source)
     }
 
-    public void setProperty(String name, Object value)
-            throws SAXNotRecognizedException, SAXNotSupportedException {
-        for (int i = 0; i < LEXICAL_HANDLER_NAMES.length; i++) {
-            if (LEXICAL_HANDLER_NAMES[i].equals(name)) {
-                setLexicalHandler((LexicalHandler) value);
-
-                return;
+    @Throws(SAXNotRecognizedException::class, SAXNotSupportedException::class)
+    override fun setProperty(name: String, value: Any) {
+        for (i in LEXICAL_HANDLER_NAMES.indices) {
+            if (LEXICAL_HANDLER_NAMES[i] == name) {
+                setLexicalHandler(value as LexicalHandler)
+                return
             }
         }
-
-        super.setProperty(name, value);
+        super.setProperty(name, value)
     }
 
-    public Object getProperty(String name) throws SAXNotRecognizedException,
-            SAXNotSupportedException {
-        for (int i = 0; i < LEXICAL_HANDLER_NAMES.length; i++) {
-            if (LEXICAL_HANDLER_NAMES[i].equals(name)) {
-                return getLexicalHandler();
+    @Throws(SAXNotRecognizedException::class, SAXNotSupportedException::class)
+    override fun getProperty(name: String): Any {
+        for (i in LEXICAL_HANDLER_NAMES.indices) {
+            if (LEXICAL_HANDLER_NAMES[i] == name) {
+                return getLexicalHandler()!!
             }
         }
-
-        return super.getProperty(name);
+        return super.getProperty(name)
     }
 
-    public void setLexicalHandler(LexicalHandler handler) {
+    fun setLexicalHandler(handler: LexicalHandler?) {
         if (handler == null) {
-            throw new NullPointerException("Null lexical handler");
+            throw NullPointerException("Null lexical handler")
         } else {
-            this.lexicalHandler = handler;
+            lexicalHandler = handler
         }
     }
 
-    public LexicalHandler getLexicalHandler() {
-        return lexicalHandler;
+    fun getLexicalHandler(): LexicalHandler? {
+        return lexicalHandler
     }
 
     // ContentHandler interface
     // -------------------------------------------------------------------------
-    public void setDocumentLocator(Locator locator) {
-        super.setDocumentLocator(locator);
+    override fun setDocumentLocator(locator: Locator) {
+        super.setDocumentLocator(locator)
     }
 
-    public void startDocument() throws SAXException {
+    @Throws(SAXException::class)
+    override fun startDocument() {
         try {
-            writeDeclaration();
-            super.startDocument();
-        } catch (IOException e) {
-            handleException(e);
+            writeDeclaration()
+            super.startDocument()
+        } catch (e: IOException) {
+            handleException(e)
         }
     }
 
-    public void endDocument() throws SAXException {
-        super.endDocument();
-
+    @Throws(SAXException::class)
+    override fun endDocument() {
+        super.endDocument()
         if (autoFlush) {
             try {
-                flush();
-            } catch (IOException e) {
+                flush()
+            } catch (e: IOException) {
             }
         }
     }
 
-    public void startPrefixMapping(String prefix, String uri)
-            throws SAXException {
+    @Throws(SAXException::class)
+    override fun startPrefixMapping(prefix: String, uri: String) {
         if (namespacesMap == null) {
-            namespacesMap = new HashMap();
+            namespacesMap = HashMap<Any?, Any?>()
         }
-
-        namespacesMap.put(prefix, uri);
-        super.startPrefixMapping(prefix, uri);
+        namespacesMap!![prefix] = uri
+        super.startPrefixMapping(prefix, uri)
     }
 
-    public void endPrefixMapping(String prefix) throws SAXException {
-        super.endPrefixMapping(prefix);
+    @Throws(SAXException::class)
+    override fun endPrefixMapping(prefix: String) {
+        super.endPrefixMapping(prefix)
     }
 
-    public void startElement(String namespaceURI, String localName,
-            String qName, Attributes attributes) throws SAXException {
+    @Throws(SAXException::class)
+    override fun startElement(
+        namespaceURI: String, localName: String,
+        qName: String, attributes: Attributes
+    ) {
         try {
-            charsAdded = false;
-
-            writePrintln();
-            indent();
-            writer.write("<");
-            writer.write(qName);
-            writeNamespaces();
-            writeAttributes(attributes);
-            writer.write(">");
-            ++indentLevel;
-            lastOutputNodeType = Node.ELEMENT_NODE;
-            lastElementClosed = false;
-
-            super.startElement(namespaceURI, localName, qName, attributes);
-        } catch (IOException e) {
-            handleException(e);
+            charsAdded = false
+            writePrintln()
+            indent()
+            writer.write("<")
+            writer.write(qName)
+            writeNamespaces()
+            writeAttributes(attributes)
+            writer.write(">")
+            ++indentLevel
+            lastOutputNodeType = Node.ELEMENT_NODE.toInt()
+            lastElementClosed = false
+            super.startElement(namespaceURI, localName, qName, attributes)
+        } catch (e: IOException) {
+            handleException(e)
         }
     }
 
-    public void endElement(String namespaceURI, String localName, String qName)
-            throws SAXException {
+    @Throws(SAXException::class)
+    override fun endElement(namespaceURI: String, localName: String, qName: String) {
         try {
-            charsAdded = false;
-            --indentLevel;
-
+            charsAdded = false
+            --indentLevel
             if (lastElementClosed) {
-                writePrintln();
-                indent();
+                writePrintln()
+                indent()
             }
 
             // XXXX: need to determine this using a stack and checking for
             // content / children
-            boolean hadContent = true;
-
+            val hadContent = true
             if (hadContent) {
-                writeClose(qName);
+                writeClose(qName)
             } else {
-                writeEmptyElementClose(qName);
+                writeEmptyElementClose(qName)
             }
-
-            lastOutputNodeType = Node.ELEMENT_NODE;
-            lastElementClosed = true;
-
-            super.endElement(namespaceURI, localName, qName);
-        } catch (IOException e) {
-            handleException(e);
+            lastOutputNodeType = Node.ELEMENT_NODE.toInt()
+            lastElementClosed = true
+            super.endElement(namespaceURI, localName, qName)
+        } catch (e: IOException) {
+            handleException(e)
         }
     }
 
-    public void characters(char[] ch, int start, int length)
-            throws SAXException {
-        if ((ch == null) || (ch.length == 0) || (length <= 0)) {
-            return;
+    @Throws(SAXException::class)
+    override fun characters(ch: CharArray, start: Int, length: Int) {
+        if (ch == null || ch.size == 0 || length <= 0) {
+            return
         }
-
         try {
             /*
              * we can't use the writeString method here because it's possible we
@@ -745,238 +697,218 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
              * would cause unwanted spaces to be added in between these chunks
              * of character arrays.
              */
-            String string = String.valueOf(ch, start, length);
-
-            if (escapeText) {
-                string = escapeElementEntities(string);
+            var string = String(ch, start, length)
+            if (isEscapeText) {
+                string = escapeElementEntities(string)
             }
-
-            if (format.isTrimText()) {
-                if ((lastOutputNodeType == Node.TEXT_NODE) && !charsAdded) {
-                    writer.write(' ');
+            if (outputFormat!!.isTrimText) {
+                if (lastOutputNodeType == Node.TEXT_NODE.toInt() && !charsAdded) {
+                    writer.write(' '.code)
                 } else if (charsAdded && Character.isWhitespace(lastChar)) {
-                    writer.write(' ');
-                } else if (lastOutputNodeType == Node.ELEMENT_NODE
-                        && format.isPadText() && lastElementClosed
-                        && Character.isWhitespace(ch[0])) {
-                    writer.write(PAD_TEXT);
+                    writer.write(' '.code)
+                } else if (lastOutputNodeType == Node.ELEMENT_NODE.toInt() && outputFormat!!.isPadText && lastElementClosed
+                    && Character.isWhitespace(ch[0])
+                ) {
+                    writer.write(PAD_TEXT)
                 }
-
-                String delim = "";
-                StringTokenizer tokens = new StringTokenizer(string);
-
+                var delim = ""
+                val tokens = StringTokenizer(string)
                 while (tokens.hasMoreTokens()) {
-                    writer.write(delim);
-                    writer.write(tokens.nextToken());
-                    delim = " ";
+                    writer.write(delim)
+                    writer.write(tokens.nextToken())
+                    delim = " "
                 }
             } else {
-                writer.write(string);
+                writer.write(string)
             }
-
-            charsAdded = true;
-            lastChar = ch[(start + length) - 1];
-            lastOutputNodeType = Node.TEXT_NODE;
-
-            super.characters(ch, start, length);
-        } catch (IOException e) {
-            handleException(e);
+            charsAdded = true
+            lastChar = ch[start + length - 1]
+            lastOutputNodeType = Node.TEXT_NODE.toInt()
+            super.characters(ch, start, length)
+        } catch (e: IOException) {
+            handleException(e)
         }
     }
 
-    public void ignorableWhitespace(char[] ch, int start, int length)
-            throws SAXException {
-        super.ignorableWhitespace(ch, start, length);
+    @Throws(SAXException::class)
+    override fun ignorableWhitespace(ch: CharArray, start: Int, length: Int) {
+        super.ignorableWhitespace(ch, start, length)
     }
 
-    public void processingInstruction(String target, String data)
-            throws SAXException {
+    @Throws(SAXException::class)
+    override fun processingInstruction(target: String, data: String) {
         try {
-            indent();
-            writer.write("<?");
-            writer.write(target);
-            writer.write(" ");
-            writer.write(data);
-            writer.write("?>");
-            writePrintln();
-            lastOutputNodeType = Node.PROCESSING_INSTRUCTION_NODE;
-
-            super.processingInstruction(target, data);
-        } catch (IOException e) {
-            handleException(e);
+            indent()
+            writer.write("<?")
+            writer.write(target)
+            writer.write(" ")
+            writer.write(data)
+            writer.write("?>")
+            writePrintln()
+            lastOutputNodeType = Node.PROCESSING_INSTRUCTION_NODE.toInt()
+            super.processingInstruction(target, data)
+        } catch (e: IOException) {
+            handleException(e)
         }
     }
 
     // DTDHandler interface
     // -------------------------------------------------------------------------
-    public void notationDecl(String name, String publicID, String systemID)
-            throws SAXException {
-        super.notationDecl(name, publicID, systemID);
+    @Throws(SAXException::class)
+    override fun notationDecl(name: String, publicID: String, systemID: String) {
+        super.notationDecl(name, publicID, systemID)
     }
 
-    public void unparsedEntityDecl(String name, String publicID,
-            String systemID, String notationName) throws SAXException {
-        super.unparsedEntityDecl(name, publicID, systemID, notationName);
+    @Throws(SAXException::class)
+    override fun unparsedEntityDecl(
+        name: String, publicID: String,
+        systemID: String, notationName: String
+    ) {
+        super.unparsedEntityDecl(name, publicID, systemID, notationName)
     }
 
     // LexicalHandler interface
     // -------------------------------------------------------------------------
-    public void startDTD(String name, String publicID, String systemID)
-            throws SAXException {
-        inDTD = true;
-
+    @Throws(SAXException::class)
+    override fun startDTD(name: String, publicID: String, systemID: String) {
+        inDTD = true
         try {
-            writeDocType(name, publicID, systemID);
-        } catch (IOException e) {
-            handleException(e);
+            writeDocType(name, publicID, systemID)
+        } catch (e: IOException) {
+            handleException(e)
         }
-
         if (lexicalHandler != null) {
-            lexicalHandler.startDTD(name, publicID, systemID);
+            lexicalHandler!!.startDTD(name, publicID, systemID)
         }
     }
 
-    public void endDTD() throws SAXException {
-        inDTD = false;
-
+    @Throws(SAXException::class)
+    override fun endDTD() {
+        inDTD = false
         if (lexicalHandler != null) {
-            lexicalHandler.endDTD();
+            lexicalHandler!!.endDTD()
         }
     }
 
-    public void startCDATA() throws SAXException {
+    @Throws(SAXException::class)
+    override fun startCDATA() {
         try {
-            writer.write("<![CDATA[");
-        } catch (IOException e) {
-            handleException(e);
+            writer.write("<![CDATA[")
+        } catch (e: IOException) {
+            handleException(e)
         }
-
         if (lexicalHandler != null) {
-            lexicalHandler.startCDATA();
+            lexicalHandler!!.startCDATA()
         }
     }
 
-    public void endCDATA() throws SAXException {
+    @Throws(SAXException::class)
+    override fun endCDATA() {
         try {
-            writer.write("]]>");
-        } catch (IOException e) {
-            handleException(e);
+            writer.write("]]>")
+        } catch (e: IOException) {
+            handleException(e)
         }
-
         if (lexicalHandler != null) {
-            lexicalHandler.endCDATA();
+            lexicalHandler!!.endCDATA()
         }
     }
 
-    public void startEntity(String name) throws SAXException {
+    @Throws(SAXException::class)
+    override fun startEntity(name: String) {
         try {
-            writeEntityRef(name);
-        } catch (IOException e) {
-            handleException(e);
+            writeEntityRef(name)
+        } catch (e: IOException) {
+            handleException(e)
         }
-
         if (lexicalHandler != null) {
-            lexicalHandler.startEntity(name);
+            lexicalHandler!!.startEntity(name)
         }
     }
 
-    public void endEntity(String name) throws SAXException {
+    @Throws(SAXException::class)
+    override fun endEntity(name: String) {
         if (lexicalHandler != null) {
-            lexicalHandler.endEntity(name);
+            lexicalHandler!!.endEntity(name)
         }
     }
 
-    public void comment(char[] ch, int start, int length) throws SAXException {
+    @Throws(SAXException::class)
+    override fun comment(ch: CharArray, start: Int, length: Int) {
         if (showCommentsInDTDs || !inDTD) {
             try {
-                charsAdded = false;
-                writeComment(new String(ch, start, length));
-            } catch (IOException e) {
-                handleException(e);
+                charsAdded = false
+                writeComment(kotlin.String(ch, start, length))
+            } catch (e: IOException) {
+                handleException(e)
             }
         }
-
         if (lexicalHandler != null) {
-            lexicalHandler.comment(ch, start, length);
+            lexicalHandler!!.comment(ch, start, length)
         }
     }
 
     // Implementation methods
     // -------------------------------------------------------------------------
-    protected void writeElement(Element element) throws IOException {
-        int size = element.nodeCount();
-        String qualifiedName = element.getQualifiedName();
-
-        writePrintln();
-        indent();
-
-        writer.write("<");
-        writer.write(qualifiedName);
-
-        int previouslyDeclaredNamespaces = namespaceStack.size();
-        Namespace ns = element.getNamespace();
-
+    @Throws(IOException::class)
+    protected open fun writeElement(element: Element) {
+        val size = element.nodeCount()
+        val qualifiedName = element.qualifiedName
+        writePrintln()
+        indent()
+        writer.write("<")
+        writer.write(qualifiedName)
+        val previouslyDeclaredNamespaces = namespaceStack.size()
+        val ns = element.namespace
         if (isNamespaceDeclaration(ns)) {
-            namespaceStack.push(ns);
-            writeNamespace(ns);
+            namespaceStack.push(ns)
+            writeNamespace(ns)
         }
 
         // Print out additional namespace declarations
-        boolean textOnly = true;
-
-        for (int i = 0; i < size; i++) {
-            Node node = element.node(i);
-
-            if (node instanceof Namespace) {
-                Namespace additional = (Namespace) node;
-
+        var textOnly = true
+        for (i in 0 until size) {
+            val node = element.node(i)
+            if (node is Namespace) {
+                val additional = node
                 if (isNamespaceDeclaration(additional)) {
-                    namespaceStack.push(additional);
-                    writeNamespace(additional);
+                    namespaceStack.push(additional)
+                    writeNamespace(additional)
                 }
-            } else if (node instanceof Element) {
-                textOnly = false;
-            } else if (node instanceof Comment) {
-                textOnly = false;
+            } else if (node is Element) {
+                textOnly = false
+            } else if (node is Comment) {
+                textOnly = false
             }
         }
-
-        writeAttributes(element);
-
-        lastOutputNodeType = Node.ELEMENT_NODE;
-
+        writeAttributes(element)
+        lastOutputNodeType = Node.ELEMENT_NODE.toInt()
         if (size <= 0) {
-            writeEmptyElementClose(qualifiedName);
+            writeEmptyElementClose(qualifiedName)
         } else {
-            writer.write(">");
-
+            writer.write(">")
             if (textOnly) {
                 // we have at least one text node so lets assume
                 // that its non-empty
-                writeElementContent(element);
+                writeElementContent(element)
             } else {
                 // we know it's not null or empty from above
-                ++indentLevel;
-
-                writeElementContent(element);
-
-                --indentLevel;
-
-                writePrintln();
-                indent();
+                ++indentLevel
+                writeElementContent(element)
+                --indentLevel
+                writePrintln()
+                indent()
             }
-
-            writer.write("</");
-            writer.write(qualifiedName);
-            writer.write(">");
+            writer.write("</")
+            writer.write(qualifiedName)
+            writer.write(">")
         }
 
         // remove declared namespaceStack from stack
         while (namespaceStack.size() > previouslyDeclaredNamespaces) {
-            namespaceStack.pop();
+            namespaceStack.pop()
         }
-
-        lastOutputNodeType = Node.ELEMENT_NODE;
+        lastOutputNodeType = Node.ELEMENT_NODE.toInt()
     }
 
     /**
@@ -984,24 +916,21 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * an xml:space attribute of "preserve". If it does, then retain whitespace.
      *
      * @param element
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      *
      * @return DOCUMENT ME!
      */
-    protected final boolean isElementSpacePreserved(Element element) {
-        final Attribute attr = (Attribute) element.attribute("space");
-        boolean preserveFound = preserve; // default to global state
-
+    protected fun isElementSpacePreserved(element: Element): Boolean {
+        val attr = element.attribute("space") as Attribute
+        var preserveFound = preserve // default to global state
         if (attr != null) {
-            if ("xml".equals(attr.getNamespacePrefix())
-                    && "preserve".equals(attr.getText())) {
-                preserveFound = true;
+            preserveFound = if ("xml" == attr.namespacePrefix && "preserve" == attr.text) {
+                true
             } else {
-                preserveFound = false;
+                false
             }
         }
-
-        return preserveFound;
+        return preserveFound
     }
 
     /**
@@ -1012,170 +941,156 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * parser.
      *
      * @param element
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    protected void writeElementContent(Element element) throws IOException {
-        boolean trim = format.isTrimText();
-        boolean oldPreserve = preserve;
-
+    @Throws(IOException::class)
+    protected fun writeElementContent(element: Element) {
+        var trim = outputFormat!!.isTrimText
+        val oldPreserve = preserve
         if (trim) { // verify we have to before more expensive test
-            preserve = isElementSpacePreserved(element);
-            trim = !preserve;
+            preserve = isElementSpacePreserved(element)
+            trim = !preserve
         }
-
         if (trim) {
             // concatenate adjacent text nodes together
             // so that whitespace trimming works properly
-            Text lastTextNode = null;
-            StringBuffer buff = null;
-            boolean textOnly = true;
-
-            for (int i = 0, size = element.nodeCount(); i < size; i++) {
-                Node node = element.node(i);
-
-                if (node instanceof Text) {
+            var lastTextNode: Text? = null
+            var buff: StringBuffer? = null
+            var textOnly = true
+            var i = 0
+            val size = element.nodeCount()
+            while (i < size) {
+                val node = element.node(i)
+                if (node is Text) {
                     if (lastTextNode == null) {
-                        lastTextNode = (Text) node;
+                        lastTextNode = node
                     } else {
                         if (buff == null) {
-                            buff = new StringBuffer(lastTextNode.getText());
+                            buff = StringBuffer(lastTextNode.text)
                         }
-
-                        buff.append(((Text) node).getText());
+                        buff.append(node.text)
                     }
                 } else {
-                    if (!textOnly && format.isPadText()) {
+                    if (!textOnly && outputFormat!!.isPadText) {
                         // only add the PAD_TEXT if the text itself starts with
                         // whitespace
-                        char firstChar = 'a';
+                        var firstChar = 'a'
                         if (buff != null) {
-                            firstChar = buff.charAt(0);
+                            firstChar = buff[0]
                         } else if (lastTextNode != null) {
-                            firstChar = lastTextNode.getText().charAt(0);
+                            firstChar = lastTextNode.text[0]
                         }
-
                         if (Character.isWhitespace(firstChar)) {
-                            writer.write(PAD_TEXT);
+                            writer.write(PAD_TEXT)
                         }
                     }
-
                     if (lastTextNode != null) {
                         if (buff != null) {
-                            writeString(buff.toString());
-                            buff = null;
+                            writeString(buff.toString())
+                            buff = null
                         } else {
-                            writeString(lastTextNode.getText());
+                            writeString(lastTextNode.text)
                         }
-
-                        if (format.isPadText()) {
+                        if (outputFormat!!.isPadText) {
                             // only add the PAD_TEXT if the text itself ends
                             // with whitespace
-                            char lastTextChar = 'a';
+                            var lastTextChar = 'a'
                             if (buff != null) {
-                                lastTextChar = buff.charAt(buff.length() - 1);
+                                lastTextChar = buff[buff.length - 1]
                             } else if (lastTextNode != null) {
-                                String txt = lastTextNode.getText();
-                                lastTextChar = txt.charAt(txt.length() - 1);
+                                val txt = lastTextNode.text
+                                lastTextChar = txt[txt.length - 1]
                             }
-
                             if (Character.isWhitespace(lastTextChar)) {
-                                writer.write(PAD_TEXT);
+                                writer.write(PAD_TEXT)
                             }
                         }
-
-                        lastTextNode = null;
+                        lastTextNode = null
                     }
-
-                    textOnly = false;
-                    writeNode(node);
+                    textOnly = false
+                    writeNode(node)
                 }
+                i++
             }
-
             if (lastTextNode != null) {
-                if (!textOnly && format.isPadText()) {
+                if (!textOnly && outputFormat!!.isPadText) {
                     // only add the PAD_TEXT if the text itself starts with
                     // whitespace
-                    char firstChar = 'a';
-                    if (buff != null) {
-                        firstChar = buff.charAt(0);
+                    var firstChar = 'a'
+                    firstChar = if (buff != null) {
+                        buff[0]
                     } else {
-                        firstChar = lastTextNode.getText().charAt(0);
+                        lastTextNode.text[0]
                     }
-
                     if (Character.isWhitespace(firstChar)) {
-                        writer.write(PAD_TEXT);
+                        writer.write(PAD_TEXT)
                     }
                 }
-
                 if (buff != null) {
-                    writeString(buff.toString());
-                    buff = null;
+                    writeString(buff.toString())
+                    buff = null
                 } else {
-                    writeString(lastTextNode.getText());
+                    writeString(lastTextNode.text)
                 }
-
-                lastTextNode = null;
+                lastTextNode = null
             }
         } else {
-            Node lastTextNode = null;
-
-            for (int i = 0, size = element.nodeCount(); i < size; i++) {
-                Node node = element.node(i);
-
-                if (node instanceof Text) {
-                    writeNode(node);
-                    lastTextNode = node;
+            var lastTextNode: Node? = null
+            var i = 0
+            val size = element.nodeCount()
+            while (i < size) {
+                val node = element.node(i)
+                lastTextNode = if (node is Text) {
+                    writeNode(node)
+                    node
                 } else {
-                    if ((lastTextNode != null) && format.isPadText()) {
+                    if (lastTextNode != null && outputFormat!!.isPadText) {
                         // only add the PAD_TEXT if the text itself ends with
                         // whitespace
-                        String txt = lastTextNode.getText();
-                        char lastTextChar = txt.charAt(txt.length() - 1);
-
+                        val txt = lastTextNode.text
+                        val lastTextChar = txt[txt.length - 1]
                         if (Character.isWhitespace(lastTextChar)) {
-                            writer.write(PAD_TEXT);
+                            writer.write(PAD_TEXT)
                         }
                     }
-
-                    writeNode(node);
+                    writeNode(node)
 
                     // if ((lastTextNode != null) && format.isPadText()) {
                     // writer.write(PAD_TEXT);
                     // }
-
-                    lastTextNode = null;
+                    null
                 }
+                i++
             }
         }
-
-        preserve = oldPreserve;
+        preserve = oldPreserve
     }
 
-    protected void writeCDATA(String text) throws IOException {
-        writer.write("<![CDATA[");
-
+    @Throws(IOException::class)
+    protected open fun writeCDATA(text: String?) {
+        writer.write("<![CDATA[")
         if (text != null) {
-            writer.write(text);
+            writer.write(text)
         }
-
-        writer.write("]]>");
-
-        lastOutputNodeType = Node.CDATA_SECTION_NODE;
+        writer.write("]]>")
+        lastOutputNodeType = Node.CDATA_SECTION_NODE.toInt()
     }
 
-    protected void writeDocType(DocumentType docType) throws IOException {
+    @Throws(IOException::class)
+    protected fun writeDocType(docType: DocumentType?) {
         if (docType != null) {
-            docType.write(writer);
-            writePrintln();
+            docType.write(writer)
+            writePrintln()
         }
     }
 
-    protected void writeNamespace(Namespace namespace) throws IOException {
+    @Throws(IOException::class)
+    protected fun writeNamespace(namespace: Namespace?) {
         if (namespace != null) {
-            writeNamespace(namespace.getPrefix(), namespace.getURI());
+            writeNamespace(namespace.prefix, namespace.uri)
         }
     }
 
@@ -1183,19 +1098,21 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * Writes the SAX namepsaces
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    protected void writeNamespaces() throws IOException {
+    @Throws(IOException::class)
+    protected fun writeNamespaces() {
         if (namespacesMap != null) {
-            for (Iterator iter = namespacesMap.entrySet().iterator(); iter
-                    .hasNext();) {
-                Map.Entry entry = (Map.Entry) iter.next();
-                String prefix = (String) entry.getKey();
-                String uri = (String) entry.getValue();
-                writeNamespace(prefix, uri);
+            val iter: Iterator<*> = namespacesMap!!.entries.iterator()
+            while (iter
+                    .hasNext()
+            ) {
+                val (key, value) = iter.next() as Map.Entry<*, *>
+                val prefix = key as String
+                val uri = value as String
+                writeNamespace(prefix, uri)
             }
-
-            namespacesMap = null;
+            namespacesMap = null
         }
     }
 
@@ -1203,43 +1120,43 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * Writes the SAX namepsaces
      *
      * @param prefix
-     *            the prefix
+     * the prefix
      * @param uri
-     *            the namespace uri
+     * the namespace uri
      *
      * @throws IOException
      */
-    protected void writeNamespace(String prefix, String uri)
-            throws IOException {
-        if ((prefix != null) && (prefix.length() > 0)) {
-            writer.write(" xmlns:");
-            writer.write(prefix);
-            writer.write("=\"");
+    @Throws(IOException::class)
+    protected fun writeNamespace(prefix: String?, uri: String?) {
+        if (prefix != null && prefix.length > 0) {
+            writer.write(" xmlns:")
+            writer.write(prefix)
+            writer.write("=\"")
         } else {
-            writer.write(" xmlns=\"");
+            writer.write(" xmlns=\"")
         }
-
-        writer.write(uri);
-        writer.write("\"");
+        writer.write(uri)
+        writer.write("\"")
     }
 
-    protected void writeProcessingInstruction(ProcessingInstruction pi)
-            throws IOException {
+    @Throws(IOException::class)
+    protected fun writeProcessingInstruction(pi: ProcessingInstruction) {
         // indent();
-        writer.write("<?");
-        writer.write(pi.getName());
-        writer.write(" ");
-        writer.write(pi.getText());
-        writer.write("?>");
-        writePrintln();
-
-        lastOutputNodeType = Node.PROCESSING_INSTRUCTION_NODE;
+        writer.write("<?")
+        writer.write(pi.name)
+        writer.write(" ")
+        writer.write(pi.text)
+        writer.write("?>")
+        writePrintln()
+        lastOutputNodeType = Node.PROCESSING_INSTRUCTION_NODE.toInt()
     }
 
-    protected void writeString(String text) throws IOException {
-        if ((text != null) && (text.length() > 0)) {
-            if (escapeText) {
-                text = escapeElementEntities(text);
+    @Throws(IOException::class)
+    protected open fun writeString(text: String) {
+        var text: String? = text
+        if (text != null && text.length > 0) {
+            if (isEscapeText) {
+                text = escapeElementEntities(text)
             }
 
             // if (format.isPadText()) {
@@ -1247,31 +1164,27 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
             // writer.write(PAD_TEXT);
             // }
             // }
-            if (format.isTrimText()) {
-                boolean first = true;
-                StringTokenizer tokenizer = new StringTokenizer(text);
-
+            if (outputFormat!!.isTrimText) {
+                var first = true
+                val tokenizer = StringTokenizer(text)
                 while (tokenizer.hasMoreTokens()) {
-                    String token = tokenizer.nextToken();
-
+                    val token = tokenizer.nextToken()
                     if (first) {
-                        first = false;
-
-                        if (lastOutputNodeType == Node.TEXT_NODE) {
-                            writer.write(" ");
+                        first = false
+                        if (lastOutputNodeType == Node.TEXT_NODE.toInt()) {
+                            writer.write(" ")
                         }
                     } else {
-                        writer.write(" ");
+                        writer.write(" ")
                     }
-
-                    writer.write(token);
-                    lastOutputNodeType = Node.TEXT_NODE;
-                    lastChar = token.charAt(token.length() - 1);
+                    writer.write(token)
+                    lastOutputNodeType = Node.TEXT_NODE.toInt()
+                    lastChar = token[token.length - 1]
                 }
             } else {
-                lastOutputNodeType = Node.TEXT_NODE;
-                writer.write(text);
-                lastChar = text.charAt(text.length() - 1);
+                lastOutputNodeType = Node.TEXT_NODE.toInt()
+                writer.write(text)
+                lastChar = text[text.length - 1]
             }
         }
     }
@@ -1281,278 +1194,227 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * for xml:space to be handled properly.
      *
      * @param node
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    protected void writeNodeText(Node node) throws IOException {
-        String text = node.getText();
-
-        if ((text != null) && (text.length() > 0)) {
-            if (escapeText) {
-                text = escapeElementEntities(text);
+    @Throws(IOException::class)
+    protected fun writeNodeText(node: Node) {
+        var text = node.text
+        if (text != null && text.length > 0) {
+            if (isEscapeText) {
+                text = escapeElementEntities(text)
             }
-
-            lastOutputNodeType = Node.TEXT_NODE;
-            writer.write(text);
-            lastChar = text.charAt(text.length() - 1);
+            lastOutputNodeType = Node.TEXT_NODE.toInt()
+            writer.write(text)
+            lastChar = text[text.length - 1]
         }
     }
 
-    protected void writeNode(Node node) throws IOException {
-        int nodeType = node.getNodeType();
-
-        switch (nodeType) {
-            case Node.ELEMENT_NODE:
-                writeElement((Element) node);
-
-                break;
-
-            case Node.ATTRIBUTE_NODE:
-                writeAttribute((Attribute) node);
-
-                break;
-
-            case Node.TEXT_NODE:
-                writeNodeText(node);
-
-                // write((Text) node);
-                break;
-
-            case Node.CDATA_SECTION_NODE:
-                writeCDATA(node.getText());
-
-                break;
-
-            case Node.ENTITY_REFERENCE_NODE:
-                writeEntity((Entity) node);
-
-                break;
-
-            case Node.PROCESSING_INSTRUCTION_NODE:
-                writeProcessingInstruction((ProcessingInstruction) node);
-
-                break;
-
-            case Node.COMMENT_NODE:
-                writeComment(node.getText());
-
-                break;
-
-            case Node.DOCUMENT_NODE:
-                write((Document) node);
-
-                break;
-
-            case Node.DOCUMENT_TYPE_NODE:
-                writeDocType((DocumentType) node);
-
-                break;
-
-            case Node.NAMESPACE_NODE:
-
-                // Will be output with attributes
-                // write((Namespace) node);
-                break;
-
-            default:
-                throw new IOException("Invalid node type: " + node);
+    @Throws(IOException::class)
+    protected fun writeNode(node: Node) {
+        val nodeType = node.nodeType.toInt()
+        when (nodeType) {
+            Node.ELEMENT_NODE -> writeElement(node as Element)
+            Node.ATTRIBUTE_NODE -> writeAttribute(node as Attribute)
+            Node.TEXT_NODE -> writeNodeText(node)
+            Node.CDATA_SECTION_NODE -> writeCDATA(node.text)
+            Node.ENTITY_REFERENCE_NODE -> writeEntity(node as Entity)
+            Node.PROCESSING_INSTRUCTION_NODE -> writeProcessingInstruction(node as ProcessingInstruction)
+            Node.COMMENT_NODE -> writeComment(node.text)
+            Node.DOCUMENT_NODE -> write(node as Document)
+            Node.DOCUMENT_TYPE_NODE -> writeDocType(node as DocumentType)
+            Node.NAMESPACE_NODE -> {}
+            else -> throw IOException("Invalid node type: $node")
         }
     }
 
-    protected void installLexicalHandler() {
-        XMLReader parent = getParent();
-
-        if (parent == null) {
-            throw new NullPointerException("No parent for filter");
-        }
+    protected fun installLexicalHandler() {
+        val parent = parent ?: throw NullPointerException("No parent for filter")
 
         // try to register for lexical events
-        for (int i = 0; i < LEXICAL_HANDLER_NAMES.length; i++) {
+        for (i in LEXICAL_HANDLER_NAMES.indices) {
             try {
-                parent.setProperty(LEXICAL_HANDLER_NAMES[i], this);
-
-                break;
-            } catch (SAXNotRecognizedException ex) {
+                parent.setProperty(LEXICAL_HANDLER_NAMES[i], this)
+                break
+            } catch (ex: SAXNotRecognizedException) {
                 // ignore
-            } catch (SAXNotSupportedException ex) {
+            } catch (ex: SAXNotSupportedException) {
                 // ignore
             }
         }
     }
 
-    protected void writeDocType(String name, String publicID, String systemID)
-            throws IOException {
-        boolean hasPublic = false;
-
-        writer.write("<!DOCTYPE ");
-        writer.write(name);
-
-        if ((publicID != null) && (!publicID.equals(""))) {
-            writer.write(" PUBLIC \"");
-            writer.write(publicID);
-            writer.write("\"");
-            hasPublic = true;
+    @Throws(IOException::class)
+    protected fun writeDocType(name: String?, publicID: String?, systemID: String?) {
+        var hasPublic = false
+        writer.write("<!DOCTYPE ")
+        writer.write(name)
+        if (publicID != null && publicID != "") {
+            writer.write(" PUBLIC \"")
+            writer.write(publicID)
+            writer.write("\"")
+            hasPublic = true
         }
-
-        if ((systemID != null) && (!systemID.equals(""))) {
+        if (systemID != null && systemID != "") {
             if (!hasPublic) {
-                writer.write(" SYSTEM");
+                writer.write(" SYSTEM")
             }
-
-            writer.write(" \"");
-            writer.write(systemID);
-            writer.write("\"");
+            writer.write(" \"")
+            writer.write(systemID)
+            writer.write("\"")
         }
-
-        writer.write(">");
-        writePrintln();
+        writer.write(">")
+        writePrintln()
     }
 
-    protected void writeEntity(Entity entity) throws IOException {
+    @Throws(IOException::class)
+    protected open fun writeEntity(entity: Entity) {
         if (!resolveEntityRefs()) {
-            writeEntityRef(entity.getName());
+            writeEntityRef(entity.name)
         } else {
-            writer.write(entity.getText());
+            writer.write(entity.text)
         }
     }
 
-    protected void writeEntityRef(String name) throws IOException {
-        writer.write("&");
-        writer.write(name);
-        writer.write(";");
-
-        lastOutputNodeType = Node.ENTITY_REFERENCE_NODE;
+    @Throws(IOException::class)
+    protected fun writeEntityRef(name: String?) {
+        writer.write("&")
+        writer.write(name)
+        writer.write(";")
+        lastOutputNodeType = Node.ENTITY_REFERENCE_NODE.toInt()
     }
 
-    protected void writeComment(String text) throws IOException {
-        if (format.isNewlines()) {
-            println();
-            indent();
+    @Throws(IOException::class)
+    protected fun writeComment(text: String?) {
+        if (outputFormat!!.isNewlines) {
+            println()
+            indent()
         }
-
-        writer.write("<!--");
-        writer.write(text);
-        writer.write("-->");
-
-        lastOutputNodeType = Node.COMMENT_NODE;
+        writer.write("<!--")
+        writer.write(text)
+        writer.write("-->")
+        lastOutputNodeType = Node.COMMENT_NODE.toInt()
     }
 
     /**
      * Writes the attributes of the given element
      *
      * @param element
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    protected void writeAttributes(Element element) throws IOException {
+    @Throws(IOException::class)
+    protected fun writeAttributes(element: Element) {
         // I do not yet handle the case where the same prefix maps to
         // two different URIs. For attributes on the same element
         // this is illegal; but as yet we don't throw an exception
         // if someone tries to do this
-        for (int i = 0, size = element.attributeCount(); i < size; i++) {
-            Attribute attribute = element.attribute(i);
-            Namespace ns = attribute.getNamespace();
-
-            if ((ns != null) && (ns != Namespace.NO_NAMESPACE)
-                    && (ns != Namespace.XML_NAMESPACE)) {
-                String prefix = ns.getPrefix();
-                String uri = namespaceStack.getURI(prefix);
-
-                if (!ns.getURI().equals(uri)) {
-                    writeNamespace(ns);
-                    namespaceStack.push(ns);
+        var i = 0
+        val size = element.attributeCount()
+        while (i < size) {
+            val attribute = element.attribute(i)
+            val ns = attribute.namespace
+            if (ns != null && ns !== Namespace.NO_NAMESPACE && ns !== Namespace.XML_NAMESPACE) {
+                val prefix = ns.prefix
+                val uri = namespaceStack.getURI(prefix)
+                if (ns.uri != uri) {
+                    writeNamespace(ns)
+                    namespaceStack.push(ns)
                 }
             }
 
             // If the attribute is a namespace declaration, check if we have
             // already written that declaration elsewhere (if that's the case,
             // it must be in the namespace stack
-            String attName = attribute.getName();
-
+            val attName = attribute.name
             if (attName.startsWith("xmlns:")) {
-                String prefix = attName.substring(6);
-
+                val prefix = attName.substring(6)
                 if (namespaceStack.getNamespaceForPrefix(prefix) == null) {
-                    String uri = attribute.getValue();
-                    namespaceStack.push(prefix, uri);
-                    writeNamespace(prefix, uri);
+                    val uri = attribute.value
+                    namespaceStack.push(prefix, uri)
+                    writeNamespace(prefix, uri)
                 }
-            } else if (attName.equals("xmlns")) {
-                if (namespaceStack.getDefaultNamespace() == null) {
-                    String uri = attribute.getValue();
-                    namespaceStack.push(null, uri);
-                    writeNamespace(null, uri);
+            } else if (attName == "xmlns") {
+                if (namespaceStack.defaultNamespace == null) {
+                    val uri = attribute.value
+                    namespaceStack.push(null, uri)
+                    writeNamespace(null, uri)
                 }
             } else {
-                char quote = format.getAttributeQuoteCharacter();
-                writer.write(" ");
-                writer.write(attribute.getQualifiedName());
-                writer.write("=");
-                writer.write(quote);
-                writeEscapeAttributeEntities(attribute.getValue());
-                writer.write(quote);
+                val quote = outputFormat!!.attributeQuoteCharacter
+                writer.write(" ")
+                writer.write(attribute.qualifiedName)
+                writer.write("=")
+                writer.write(quote.code)
+                writeEscapeAttributeEntities(attribute.value)
+                writer.write(quote.code)
             }
+            i++
         }
     }
 
-    protected void writeAttribute(Attribute attribute) throws IOException {
-        writer.write(" ");
-        writer.write(attribute.getQualifiedName());
-        writer.write("=");
-
-        char quote = format.getAttributeQuoteCharacter();
-        writer.write(quote);
-
-        writeEscapeAttributeEntities(attribute.getValue());
-
-        writer.write(quote);
-        lastOutputNodeType = Node.ATTRIBUTE_NODE;
+    @Throws(IOException::class)
+    protected fun writeAttribute(attribute: Attribute) {
+        writer.write(" ")
+        writer.write(attribute.qualifiedName)
+        writer.write("=")
+        val quote = outputFormat!!.attributeQuoteCharacter
+        writer.write(quote.code)
+        writeEscapeAttributeEntities(attribute.value)
+        writer.write(quote.code)
+        lastOutputNodeType = Node.ATTRIBUTE_NODE.toInt()
     }
 
-    protected void writeAttributes(Attributes attributes) throws IOException {
-        for (int i = 0, size = attributes.getLength(); i < size; i++) {
-            writeAttribute(attributes, i);
+    @Throws(IOException::class)
+    protected fun writeAttributes(attributes: Attributes) {
+        var i = 0
+        val size = attributes.length
+        while (i < size) {
+            writeAttribute(attributes, i)
+            i++
         }
     }
 
-    protected void writeAttribute(Attributes attributes, int index)
-            throws IOException {
-        char quote = format.getAttributeQuoteCharacter();
-        writer.write(" ");
-        writer.write(attributes.getQName(index));
-        writer.write("=");
-        writer.write(quote);
-        writeEscapeAttributeEntities(attributes.getValue(index));
-        writer.write(quote);
+    @Throws(IOException::class)
+    protected fun writeAttribute(attributes: Attributes, index: Int) {
+        val quote = outputFormat!!.attributeQuoteCharacter
+        writer.write(" ")
+        writer.write(attributes.getQName(index))
+        writer.write("=")
+        writer.write(quote.code)
+        writeEscapeAttributeEntities(attributes.getValue(index))
+        writer.write(quote.code)
     }
 
-    protected void indent() throws IOException {
-        String indent = format.getIndent();
-
-        if ((indent != null) && (indent.length() > 0)) {
-            for (int i = 0; i < indentLevel; i++) {
-                writer.write(indent);
+    @Throws(IOException::class)
+    protected fun indent() {
+        val indent = outputFormat!!.indent
+        if (indent != null && indent.length > 0) {
+            for (i in 0 until indentLevel) {
+                writer.write(indent)
             }
         }
     }
 
     /**
-     * <p>
+     *
+     *
      * This will print a new line only if the newlines flag was set to true
-     * </p>
+     *
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    protected void writePrintln() throws IOException {
-        if (format.isNewlines()) {
-            String seperator = format.getLineSeparator();
-            if (lastChar != seperator.charAt(seperator.length() - 1)) {
-                writer.write(format.getLineSeparator());
+    @Throws(IOException::class)
+    protected fun writePrintln() {
+        if (outputFormat!!.isNewlines) {
+            val seperator = outputFormat!!.lineSeparator
+            if (lastChar != seperator[seperator.length - 1]) {
+                writer.write(outputFormat!!.lineSeparator)
             }
         }
     }
@@ -1561,80 +1423,77 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * Get an OutputStreamWriter, use preferred encoding.
      *
      * @param outStream
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      * @param encoding
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      *
      * @return DOCUMENT ME!
      *
      * @throws UnsupportedEncodingException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    protected Writer createWriter(OutputStream outStream, String encoding)
-            throws UnsupportedEncodingException {
-        return new BufferedWriter(new OutputStreamWriter(outStream, encoding));
+    @Throws(UnsupportedEncodingException::class)
+    protected fun createWriter(outStream: OutputStream?, encoding: String?): Writer {
+        return BufferedWriter(OutputStreamWriter(outStream, encoding))
     }
 
     /**
-     * <p>
+     *
+     *
      * This will write the declaration to the given Writer. Assumes XML version
      * 1.0 since we don't directly know.
-     * </p>
+     *
      *
      * @throws IOException
-     *             DOCUMENT ME!
+     * DOCUMENT ME!
      */
-    protected void writeDeclaration() throws IOException {
-        String encoding = format.getEncoding();
+    @Throws(IOException::class)
+    protected open fun writeDeclaration() {
+        val encoding = outputFormat!!.encoding
 
         // Only print of declaration is not suppressed
-        if (!format.isSuppressDeclaration()) {
+        if (!outputFormat!!.isSuppressDeclaration) {
             // Assume 1.0 version
-            if (encoding.equals("UTF8")) {
-                writer.write("<?xml version=\"1.0\"");
-
-                if (!format.isOmitEncoding()) {
-                    writer.write(" encoding=\"UTF-8\"");
+            if (encoding == "UTF8") {
+                writer.write("<?xml version=\"1.0\"")
+                if (!outputFormat!!.isOmitEncoding) {
+                    writer.write(" encoding=\"UTF-8\"")
                 }
-
-                writer.write("?>");
+                writer.write("?>")
             } else {
-                writer.write("<?xml version=\"1.0\"");
-
-                if (!format.isOmitEncoding()) {
-                    writer.write(" encoding=\"" + encoding + "\"");
+                writer.write("<?xml version=\"1.0\"")
+                if (!outputFormat!!.isOmitEncoding) {
+                    writer.write(" encoding=\"$encoding\"")
                 }
-
-                writer.write("?>");
+                writer.write("?>")
             }
-
-            if (format.isNewLineAfterDeclaration()) {
-                println();
+            if (outputFormat!!.isNewLineAfterDeclaration) {
+                println()
             }
         }
     }
 
-    protected void writeClose(String qualifiedName) throws IOException {
-        writer.write("</");
-        writer.write(qualifiedName);
-        writer.write(">");
+    @Throws(IOException::class)
+    protected open fun writeClose(qualifiedName: String) {
+        writer.write("</")
+        writer.write(qualifiedName)
+        writer.write(">")
     }
 
-    protected void writeEmptyElementClose(String qualifiedName)
-            throws IOException {
+    @Throws(IOException::class)
+    protected open fun writeEmptyElementClose(qualifiedName: String) {
         // Simply close up
-        if (!format.isExpandEmptyElements()) {
-            writer.write("/>");
+        if (!outputFormat!!.isExpandEmptyElements) {
+            writer.write("/>")
         } else {
-            writer.write("></");
-            writer.write(qualifiedName);
-            writer.write(">");
+            writer.write("></")
+            writer.write(qualifiedName)
+            writer.write(">")
         }
     }
 
-    protected boolean isExpandEmptyElements() {
-        return format.isExpandEmptyElements();
-    }
+    protected val isExpandEmptyElements: Boolean
+        protected get() = outputFormat!!.isExpandEmptyElements
 
     /**
      * This will take the pre-defined entities in XML 1.0 and convert their
@@ -1642,89 +1501,62 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * for XML attributes.
      *
      * @param text
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      *
      * @return DOCUMENT ME!
      */
-    protected String escapeElementEntities(String text) {
-        char[] block = null;
-        int i;
-        int last = 0;
-        int size = text.length();
-
-        for (i = 0; i < size; i++) {
-            String entity = null;
-            char c = text.charAt(i);
-
-            switch (c) {
-                case '<':
-                    entity = "&lt;";
-
-                    break;
-
-                case '>':
-                    entity = "&gt;";
-
-                    break;
-
-                case '&':
-                    entity = "&amp;";
-
-                    break;
-
-                case '\t':
-                case '\n':
-                case '\r':
-
+    protected fun escapeElementEntities(text: String): String {
+        var block: CharArray? = null
+        var i: Int
+        var last = 0
+        val size = text.length
+        i = 0
+        while (i < size) {
+            var entity: String? = null
+            val c = text[i]
+            when (c) {
+                '<' -> entity = "&lt;"
+                '>' -> entity = "&gt;"
+                '&' -> entity = "&amp;"
+                '\t', '\n', '\r' ->
                     // don't encode standard whitespace characters
                     if (preserve) {
-                        entity = String.valueOf(c);
+                        entity = c.toString()
                     }
 
-                    break;
-
-                default:
-
-                    if ((c < 32) || shouldEncodeChar(c)) {
-                        entity = "&#" + (int) c + ";";
-                    }
-
-                    break;
+                else -> if (c.code < 32 || shouldEncodeChar(c)) {
+                    entity = "&#" + c.code + ";"
+                }
             }
-
             if (entity != null) {
                 if (block == null) {
-                    block = text.toCharArray();
+                    block = text.toCharArray()
                 }
-
-                buffer.append(block, last, i - last);
-                buffer.append(entity);
-                last = i + 1;
+                buffer.append(block, last, i - last)
+                buffer.append(entity)
+                last = i + 1
             }
+            i++
         }
-
         if (last == 0) {
-            return text;
+            return text
         }
-
         if (last < size) {
             if (block == null) {
-                block = text.toCharArray();
+                block = text.toCharArray()
             }
-
-            buffer.append(block, last, i - last);
+            buffer.append(block, last, i - last)
         }
-
-        String answer = buffer.toString();
-        buffer.setLength(0);
-
-        return answer;
+        val answer = buffer.toString()
+        buffer.setLength(0)
+        return answer
     }
 
-    protected void writeEscapeAttributeEntities(String txt) throws IOException {
+    @Throws(IOException::class)
+    protected fun writeEscapeAttributeEntities(txt: String?) {
         if (txt != null) {
-            String escapedText = escapeAttributeEntities(txt);
-            writer.write(escapedText);
+            val escapedText = escapeAttributeEntities(txt)
+            writer.write(escapedText)
         }
     }
 
@@ -1734,97 +1566,59 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * for XML attributes.
      *
      * @param text
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      *
      * @return DOCUMENT ME!
      */
-    protected String escapeAttributeEntities(String text) {
-        char quote = format.getAttributeQuoteCharacter();
-
-        char[] block = null;
-        int i;
-        int last = 0;
-        int size = text.length();
-
-        for (i = 0; i < size; i++) {
-            String entity = null;
-            char c = text.charAt(i);
-
-            switch (c) {
-                case '<':
-                    entity = "&lt;";
-
-                    break;
-
-                case '>':
-                    entity = "&gt;";
-
-                    break;
-
-                case '\'':
-
-                    if (quote == '\'') {
-                        entity = "&apos;";
-                    }
-
-                    break;
-
-                case '\"':
-
-                    if (quote == '\"') {
-                        entity = "&quot;";
-                    }
-
-                    break;
-
-                case '&':
-                    entity = "&amp;";
-
-                    break;
-
-                case '\t':
-                case '\n':
-                case '\r':
-
-                    // don't encode standard whitespace characters
-                    break;
-
-                default:
-
-                    if ((c < 32) || shouldEncodeChar(c)) {
-                        entity = "&#" + (int) c + ";";
-                    }
-
-                    break;
-            }
-
-            if (entity != null) {
-                if (block == null) {
-                    block = text.toCharArray();
+    protected fun escapeAttributeEntities(text: String): String {
+        val quote = outputFormat!!.attributeQuoteCharacter
+        var block: CharArray? = null
+        var i: Int
+        var last = 0
+        val size = text.length
+        i = 0
+        while (i < size) {
+            var entity: String? = null
+            val c = text[i]
+            when (c) {
+                '<' -> entity = "&lt;"
+                '>' -> entity = "&gt;"
+                '\'' -> if (quote == '\'') {
+                    entity = "&apos;"
                 }
 
-                buffer.append(block, last, i - last);
-                buffer.append(entity);
-                last = i + 1;
+                '\"' -> if (quote == '\"') {
+                    entity = "&quot;"
+                }
+
+                '&' -> entity = "&amp;"
+                '\t', '\n', '\r' -> {}
+                else -> if (c.code < 32 || shouldEncodeChar(c)) {
+                    entity = "&#" + c.code + ";"
+                }
             }
+            if (entity != null) {
+                if (block == null) {
+                    block = text.toCharArray()
+                }
+                buffer.append(block, last, i - last)
+                buffer.append(entity)
+                last = i + 1
+            }
+            i++
         }
-
         if (last == 0) {
-            return text;
+            return text
         }
-
         if (last < size) {
             if (block == null) {
-                block = text.toCharArray();
+                block = text.toCharArray()
             }
-
-            buffer.append(block, last, i - last);
+            buffer.append(block, last, i - last)
         }
-
-        String answer = buffer.toString();
-        buffer.setLength(0);
-
-        return answer;
+        val answer = buffer.toString()
+        buffer.setLength(0)
+        return answer
     }
 
     /**
@@ -1832,14 +1626,13 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      * the document.
      *
      * @param c
-     *            DOCUMENT ME!
+     * DOCUMENT ME!
      *
      * @return boolean
      */
-    protected boolean shouldEncodeChar(char c) {
-        int max = getMaximumAllowedCharacter();
-
-        return (max > 0) && (c > max);
+    protected fun shouldEncodeChar(c: Char): Boolean {
+        val max = maximumAllowedCharacter
+        return max > 0 && c.code > max
     }
 
     /**
@@ -1849,93 +1642,50 @@ public class XMLWriter extends XMLFilterImpl implements LexicalHandler {
      *
      * @return DOCUMENT ME!
      */
-    protected int defaultMaximumAllowedCharacter() {
-        String encoding = format.getEncoding();
-
+    protected fun defaultMaximumAllowedCharacter(): Int {
+        val encoding = outputFormat!!.encoding
         if (encoding != null) {
-            if (encoding.equals("US-ASCII")) {
-                return 127;
+            if (encoding == "US-ASCII") {
+                return 127
             }
         }
 
         // no encoding for things like ISO-*, UTF-8 or UTF-16
-        return -1;
+        return -1
     }
 
-    protected boolean isNamespaceDeclaration(Namespace ns) {
-        if ((ns != null) && (ns != Namespace.XML_NAMESPACE)) {
-            String uri = ns.getURI();
-
+    protected fun isNamespaceDeclaration(ns: Namespace?): Boolean {
+        if (ns != null && ns !== Namespace.XML_NAMESPACE) {
+            val uri = ns.uri
             if (uri != null) {
                 if (!namespaceStack.contains(ns)) {
-                    return true;
+                    return true
                 }
             }
         }
-
-        return false;
+        return false
     }
 
-    protected void handleException(IOException e) throws SAXException {
-        throw new SAXException(e);
+    @Throws(SAXException::class)
+    protected fun handleException(e: IOException?) {
+        throw SAXException(e)
     }
 
     // Laramie Crocker 4/8/2002 10:38AM
-
-    /**
-     * Lets subclasses get at the current format object, so they can call
-     * setTrimText, setNewLines, etc. Put in to support the HTMLWriter, in the
-     * way that it pushes the current newline/trim state onto a stack and
-     * overrides the state within preformatted tags.
-     *
-     * @return DOCUMENT ME!
-     */
-    protected OutputFormat getOutputFormat() {
-        return format;
+    fun resolveEntityRefs(): Boolean {
+        return resolveEntityRefs
     }
 
-    public boolean resolveEntityRefs() {
-        return resolveEntityRefs;
+    fun setResolveEntityRefs(resolve: Boolean) {
+        resolveEntityRefs = resolve
     }
 
-    public void setResolveEntityRefs(boolean resolve) {
-        this.resolveEntityRefs = resolve;
+    companion object {
+        private const val PAD_TEXT = " "
+        protected val LEXICAL_HANDLER_NAMES = arrayOf(
+            "http://xml.org/sax/properties/lexical-handler",
+            "http://xml.org/sax/handlers/LexicalHandler"
+        )
+        protected val DEFAULT_FORMAT = OutputFormat()
     }
 }
-
-/*
- * Redistribution and use of this software and associated documentation
- * ("Software"), with or without modification, are permitted provided that the
- * following conditions are met:
- *
- * 1. Redistributions of source code must retain copyright statements and
- * notices. Redistributions must also contain a copy of this document.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. The name "DOM4J" must not be used to endorse or promote products derived
- * from this Software without prior written permission of MetaStuff, Ltd. For
- * written permission, please contact dom4j-info@metastuff.com.
- *
- * 4. Products derived from this Software may not be called "DOM4J" nor may
- * "DOM4J" appear in their names without prior written permission of MetaStuff,
- * Ltd. DOM4J is a registered trademark of MetaStuff, Ltd.
- *
- * 5. Due credit should be given to the DOM4J Project - http://www.dom4j.org
- *
- * THIS SOFTWARE IS PROVIDED BY METASTUFF, LTD. AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL METASTUFF, LTD. OR ITS CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * Copyright 2001-2005 (C) MetaStuff, Ltd. All Rights Reserved.
- */

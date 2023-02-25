@@ -1,18 +1,16 @@
+package cz.dynawest.jtexy.parsers
 
-package cz.dynawest.jtexy.parsers;
-
-import cz.dynawest.jtexy.TexyException;
-import cz.dynawest.jtexy.events.TexyEvent;
-import org.dom4j.Node;
+import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.events.TexyEvent
+import org.dom4j.Node
 
 /**
  *
  * @author Ondrej Zizka
  */
-public abstract interface TexyEventListener<T extends TexyEvent> {
+interface TexyEventListener<T : TexyEvent?> {
+    val eventClass: Class<*>
 
-	public Class getEventClass();
-
-	public Node onEvent( T event ) throws TexyException;
-
+    @Throws(TexyException::class)
+    fun onEvent(event: T): Node?
 }

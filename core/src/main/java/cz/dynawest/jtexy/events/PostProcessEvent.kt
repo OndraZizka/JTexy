@@ -1,17 +1,10 @@
+package cz.dynawest.jtexy.events
 
-package cz.dynawest.jtexy.events;
-
-import cz.dynawest.jtexy.JTexy;
+import cz.dynawest.jtexy.JTexy
 
 /**
- *  At the end of processing; currently used by HtmlOutputModule.
+ * At the end of processing; currently used by HtmlOutputModule.
  *
- *  @author Ondrej Zizka
+ * @author Ondrej Zizka
  */
-public class PostProcessEvent extends TexyEvent {
-    
-    public PostProcessEvent(JTexy texy, String text) {
-        super(text);
-    }
-    
-}
+class PostProcessEvent(texy: JTexy?, text: String?) : TexyEvent(text)

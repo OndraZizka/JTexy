@@ -1,259 +1,213 @@
+package cz.dynawest.jtexy.modules
 
-package cz.dynawest.jtexy.modules;
-
-import cz.dynawest.jtexy.RegexpInfo;
-import cz.dynawest.jtexy.TexyException;
-import cz.dynawest.jtexy.parsers.TexyParser;
-import cz.dynawest.jtexy.JTexy;
-import cz.dynawest.jtexy.Constants;
-import cz.dynawest.jtexy.ContentType;
-import cz.dynawest.jtexy.parsers.TexyBlockParser;
-import cz.dynawest.jtexy.parsers.TexyLineParser;
-import cz.dynawest.jtexy.parsers.TexyEventListener;
-import cz.dynawest.jtexy.util.JTexyStringUtils;
-import cz.dynawest.jtexy.util.MatchWithOffset;
-import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter;
-import java.util.List;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.Node;
-import org.dom4j.dom.DOMElement;
-import org.dom4j.dom.DOMText;
+import cz.dynawest.jtexy.*
+import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter
+import cz.dynawest.jtexy.modules.BlockEvent
+import cz.dynawest.jtexy.parsers.TexyBlockParser
+import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.parsers.TexyLineParser
+import cz.dynawest.jtexy.parsers.TexyParser
+import cz.dynawest.jtexy.util.JTexyStringUtils
+import cz.dynawest.jtexy.util.MatchWithOffset
+import org.apache.commons.lang.StringUtils
+import org.dom4j.Node
+import org.dom4j.dom.DOMElement
+import org.dom4j.dom.DOMText
 
 /**
  *
  * @author Ondrej Zizka
  */
-public class BlockModule extends TexyModule {
+class BlockModule : TexyModule() {
+    // --- Module meta-info --- //
+    override fun getPatternHandlerByName(name: String): PatternHandler? {
+        return if ("blocks" == name) blocksPatternHandler else null
+    }
 
+    override val eventListeners: Array<TexyEventListener<*>>
+        get() = arrayOf(beforeBlockListener, blockListener)
 
-	// --- Module meta-info --- //
+    /**
+     * blocksPatternHandler
+     */
+    private val blocksPatternHandler: PatternHandler = object : PatternHandler {
+        override val name: String
+            get() = "blocks"
 
-	@Override protected PatternHandler getPatternHandlerByName(String name) {
-		if( "blocks".equals(name) )
-			return blocksPatternHandler;
-		return null;
-	}
+        @Throws(TexyException::class)
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+            //    [1] => code | text | ...
+            //    [2] => ... additional parameters
+            //    [3] => .(title)[class]{style}<>
+            //    [4] => ... content
+            var param = groups!![1]!!.match
+            val mod = TexyModifier(groups[2]!!.match)
+            val content = groups[3]!!.match
+            val parts = param!!.split("(?u)\\s+".toRegex(), limit = 2).toTypedArray()
+            val blockType = if (parts.size == 0) "block/default" else "block/" + parts[0]
+            param = if (parts.size >= 2) parts[1] else null
+            val event = BlockEvent(parser, content, mod, blockType, param)
+            return getTexy().invokeAroundHandlers(event)
+        }
+    }
 
-	@Override public TexyEventListener[] getEventListeners() {
-		return new TexyEventListener[]{ beforeBlockListener, blockListener };
-	}
+    /**
+     * Finish invocation.
+     * @return TexyHtml|string|FALSE
+     */
+    val blockListener: BlockEventListener = object : BlockEventListener {
+        override val eventClass: Class<*>
+            get() = BlockEvent::class.java
 
-
-
-	/**
-	 *  blocksPatternHandler
-	 */
-	private PatternHandler blocksPatternHandler = new PatternHandler() {
-		@Override public String getName() { return "blocks"; }
-
-		@Override public Node handle(TexyParser parser, List<MatchWithOffset> groups, RegexpInfo pattern) throws TexyException {
-			//    [1] => code | text | ...
-			//    [2] => ... additional parameters
-			//    [3] => .(title)[class]{style}<>
-			//    [4] => ... content
-			String param = groups.get(1).match;
-			TexyModifier mod = new TexyModifier( groups.get(2).match );
-			String content = groups.get(3).match;
-
-			String[] parts = param.split("(?u)\\s+", 2);
-			String blockType = parts.length == 0 ? "block/default" : "block/"+parts[0];
-			param = parts.length >= 2 ? parts[1] : null;
-
-			BlockEvent event = new BlockEvent(parser, content, mod, blockType, param);
-			return getTexy().invokeAroundHandlers(event);
-		}
-	};
-
-
-
-
-
-
-
-
-
-	/**
-	 * Finish invocation.
-	 * @return TexyHtml|string|FALSE
-	 */
-	public final BlockEventListener blockListener = new BlockEventListener(){
-		
-        @Override public Class getEventClass() { return BlockEvent.class; }
-
-
-		
-		@Override	public Node onEvent(BlockEvent event) throws TexyException
-		{
-			String str = event.getText();
-
-			String blockType = event.getBlockType();
-
-			JTexy texy = event.getParser().getTexy();
-
-			
-			if( "block/texy".equals( blockType ) ) {
-				/*$el = TexyHtml::el();
+        @Throws(TexyException::class)
+        override fun onEvent(event: BlockEvent): Node? {
+            var event = event
+            var str = event.text
+            var blockType = event.blockType
+            val texy = event.parser.texy
+            if ("block/texy" == blockType) {
+                /*$el = TexyHtml::el();
 				$el->parseBlock(texy, str, $parser->isIndented());
 				return $el;
 				 */
-				DOMElement elm = new DOMElement( Constants.HOLDER_ELEMENT_NAME );
-				new TexyBlockParser( texy, elm, event.getParser().isIndented() ).parse(str);
-				return elm;
-			}
-
-			if( !texy.isAllowed(blockType) ) return null;
-
-			if( "block/texysource".equals( blockType ) ) {
-				str = JTexyStringUtils.outdent(str);
-				if( "".equals(str) )  return new DOMText("\n");
-
-				DOMElement elm = new DOMElement( Constants.HOLDER_ELEMENT_NAME );
-				if( "line".equals( event.getParam() ))
-					new TexyLineParser(texy, elm).parse(str);
-				else
-					new TexyBlockParser(texy, elm, false).parse(str);
-
-				str =  JTexyStringUtils.elementToHTML(elm, texy); // $s = $el->toHtml($tx);
-				blockType = "block/code";
-				event = new BlockEvent(event, blockType, "html"); // To be continued (as block/code).
-			}
-
-			if( "block/code".equals( blockType ) ) {
-				str = JTexyStringUtils.outdent(str);
-				if( "".equals(str) )  return new DOMText("\n");
-				str = JTexyStringUtils.escapeHtml(str);
-				str = texy.protect( str, ContentType.BLOCK );
-				DOMElement elm = new DOMElement("pre");
-                event.getModifier().classes.add( event.getParam() ); // Code language.
-				event.getModifier().decorate( texy, elm );
-				elm.addElement("code").addText(str);
-				return elm;
-			}
-
-			if( "block/default".equals( blockType ) ) {
-				str = JTexyStringUtils.outdent(str);
-				if( "".equals(str) )  return new DOMText("\n");
-				DOMElement elm = new DOMElement("pre");
-                event.getModifier().classes.add( event.getParam() ); // Code language.
-				event.getModifier().decorate( texy, elm );
-				str = JTexyStringUtils.escapeHtml(str);
-				str = texy.protect( str, ContentType.BLOCK );
-				elm.setText(str);
-				return elm;
-			}
-
-			if( "block/pre".equals( blockType ) ) {
-				str = JTexyStringUtils.outdent(str);
-				if( "".equals(str) )  return new DOMText("\n");
-				DOMElement elm = new DOMElement("pre");
-				event.getModifier().decorate( texy, elm );
-
-				TexyLineParser lp = new TexyLineParser(texy, elm);
-				// Special mode - parse only HTML tags and comments.
-				/* TODO
+                val elm = DOMElement(Constants.HOLDER_ELEMENT_NAME)
+                TexyBlockParser(texy, elm, event.parser.isIndented).parse(str)
+                return elm
+            }
+            if (!texy!!.isAllowed(blockType)) return null
+            if ("block/texysource" == blockType) {
+                str = JTexyStringUtils.outdent(str)
+                if ("" == str) return DOMText("\n")
+                val elm = DOMElement(Constants.HOLDER_ELEMENT_NAME)
+                if ("line" == event.param) TexyLineParser(texy, elm).parse(str) else TexyBlockParser(texy, elm, false).parse(str)
+                str = JTexyStringUtils.elementToHTML(elm, texy) // $s = $el->toHtml($tx);
+                blockType = "block/code"
+                event = BlockEvent(event, blockType, "html") // To be continued (as block/code).
+            }
+            if ("block/code" == blockType) {
+                str = JTexyStringUtils.outdent(str)
+                if ("" == str) return DOMText("\n")
+                str = JTexyStringUtils.escapeHtml(str)
+                str = texy.protect(str, ContentType.BLOCK)
+                val elm = DOMElement("pre")
+                event.modifier.classes.add(event.param) // Code language.
+                event.modifier.decorate(texy, elm)
+                elm.addElement("code").addText(str)
+                return elm
+            }
+            if ("block/default" == blockType) {
+                str = JTexyStringUtils.outdent(str)
+                if ("" == str) return DOMText("\n")
+                val elm = DOMElement("pre")
+                event.modifier.classes.add(event.param) // Code language.
+                event.modifier.decorate(texy, elm)
+                str = JTexyStringUtils.escapeHtml(str)
+                str = texy.protect(str, ContentType.BLOCK)
+                elm.text = str
+                return elm
+            }
+            if ("block/pre" == blockType) {
+                str = JTexyStringUtils.outdent(str)
+                if ("" == str) return DOMText("\n")
+                val elm = DOMElement("pre")
+                event.modifier.decorate(texy, elm)
+                val lp = TexyLineParser(texy, elm)
+                // Special mode - parse only HTML tags and comments.
+                /* TODO
 				 $tmp = $lineParser->patterns;
 				$lineParser->patterns = array();
 				if (isset($tmp['html/tag'])) $lineParser->patterns['html/tag'] = $tmp['html/tag'];
 				if (isset($tmp['html/comment'])) $lineParser->patterns['html/comment'] = $tmp['html/comment'];
 				unset($tmp);
-				 */
-
-				lp.parse(str);
-				//str = elm.asXML(); //$el->getText();
-				//str = Dom4jUtils.getInnerCode( elm );
-				str = ProtectedHTMLWriter.fromElement( elm, BlockModule.this.getTexy().getProtector() );
-				str = JTexyStringUtils.unescapeHtml(str);     // Get rid of HTML entities.
-				str = JTexyStringUtils.escapeHtml(str);       // Escape HTML spec chars.
-				str = texy.unprotect(str);                    // Expand protected sub-strings.
-				str = texy.protect(str, ContentType.BLOCK);   // Protect the whole string.
-				elm.setText(str);
-				return elm;
-			}
-
-			if( "block/html".equals( blockType ) ) {
-				str = StringUtils.strip(str, "\n");
-				if( "".equals(str) )  return new DOMText("\n");
-				DOMElement elm = new DOMElement( Constants.HOLDER_ELEMENT_NAME );
-				TexyLineParser lp = new TexyLineParser(texy, elm);
-				// special mode - parse only html tags
-				/* TODO
+				 */lp.parse(str)
+                //str = elm.asXML(); //$el->getText();
+                //str = Dom4jUtils.getInnerCode( elm );
+                str = ProtectedHTMLWriter.Companion.fromElement(elm, getTexy().protector)
+                str = JTexyStringUtils.unescapeHtml(str) // Get rid of HTML entities.
+                str = JTexyStringUtils.escapeHtml(str) // Escape HTML spec chars.
+                str = texy.unprotect(str) // Expand protected sub-strings.
+                str = texy.protect(str, ContentType.BLOCK) // Protect the whole string.
+                elm.text = str
+                return elm
+            }
+            if ("block/html" == blockType) {
+                str = StringUtils.strip(str, "\n")
+                if ("" == str) return DOMText("\n")
+                val elm = DOMElement(Constants.HOLDER_ELEMENT_NAME)
+                val lp = TexyLineParser(texy, elm)
+                // special mode - parse only html tags
+                /* TODO
 				$tmp = $lineParser->patterns;
 				$lineParser->patterns = array();
 				if (isset($tmp['html/tag'])) $lineParser->patterns['html/tag'] = $tmp['html/tag'];
 				if (isset($tmp['html/comment'])) $lineParser->patterns['html/comment'] = $tmp['html/comment'];
 				unset($tmp);
-				 */
+				 */lp.parse(str)
+                //str = Dom4jUtils.getInnerCode( elm ); //$el.getText();
+                str = ProtectedHTMLWriter.Companion.fromElement(elm, getTexy().protector)
+                str = JTexyStringUtils.unescapeHtml(str) // Get rid of HTML entities.
+                str = JTexyStringUtils.escapeHtml(str)
+                str = texy.unprotect(str)
+                return DOMText(
+                    """
+    ${texy.protect(str, ContentType.BLOCK)}
+    
+    """.trimIndent()
+                )
+            }
+            if ("block/text" == blockType) {
+                str = StringUtils.strip(str, "\n")
+                if ("" == str) return DOMText("\n")
+                str = JTexyStringUtils.escapeHtml(str)
+                //str = str_replace("\n", TexyHtml::el('br')->startTag() , str); // nl2br
+                str = str.replace("\n", "<br />")
+                return DOMText(
+                    """
+    ${texy.protect(str, ContentType.BLOCK)}
+    
+    """.trimIndent()
+                )
+            }
+            if ("block/comment" == blockType) {
+                return DOMText("\n")
+            }
+            if ("block/div" == blockType) {
+                str = JTexyStringUtils.outdent(str)
+                if ("" == str) return DOMText("\n")
+                val elm = DOMElement("div")
+                event.modifier.decorate(texy, elm)
+                //$el->parseBlock(texy, str, $parser->isIndented()); // TODO: INDENT or NORMAL ?
+                TexyBlockParser(texy, elm, event.parser.isIndented).parse(str)
+                return elm
+            }
+            return null
+        }
+    }
 
-				lp.parse(str);
-				//str = Dom4jUtils.getInnerCode( elm ); //$el.getText();
-				str = ProtectedHTMLWriter.fromElement( elm, BlockModule.this.getTexy().getProtector() );
-				str = JTexyStringUtils.unescapeHtml(str);     // Get rid of HTML entities.
-				str = JTexyStringUtils.escapeHtml(str);
-				str = texy.unprotect(str);
-				return new DOMText( texy.protect(str, ContentType.BLOCK) + "\n");
-			}
+    /**
+     * Single block pre-processing.
+     */
+    val beforeBlockListener: BeforeBlockEventListener<BeforeBlockEvent> = object : BeforeBlockEventListener<BeforeBlockEvent?> {
+        override val eventClass: Class<*>
+            get() = BeforeBlockEvent::class.java
 
-			if( "block/text".equals( blockType ) ) {
-				str = StringUtils.strip(str, "\n");
-				if( "".equals(str) )  return new DOMText("\n");
-				str = JTexyStringUtils.escapeHtml(str);
-				//str = str_replace("\n", TexyHtml::el('br')->startTag() , str); // nl2br
-				str = str.replace("\n", "<br />");
-				return new DOMText( texy.protect(str, ContentType.BLOCK) + "\n");
-			}
-
-			if( "block/comment".equals( blockType ) ) {
-				return new DOMText("\n");
-			}
-
-			if( "block/div".equals( blockType ) ) {
-				str = JTexyStringUtils.outdent(str);
-				if( "".equals(str) )  return new DOMText("\n");
-				DOMElement elm = new DOMElement("div");
-				event.getModifier().decorate(texy, elm);
-				//$el->parseBlock(texy, str, $parser->isIndented()); // TODO: INDENT or NORMAL ?
-				new TexyBlockParser(texy, elm, event.getParser().isIndented() ).parse(str);
-				return elm;
-			}
-
-			return null;
-
-		}
-
-	};
-
-
-
-	/**
-	 * Single block pre-processing.
-	 */
-	public final BeforeBlockEventListener<BeforeBlockEvent> beforeBlockListener = new BeforeBlockEventListener<BeforeBlockEvent>(){
-		@Override public Class getEventClass() { return BeforeBlockEvent.class; }
-
-		@Override	public Node onEvent(BeforeBlockEvent event ){
-			// Autoclose exclusive blocks.
-			/*$text = preg_replace(
+        override fun onEvent(event: BeforeBlockEvent): Node? {
+            // Autoclose exclusive blocks.
+            /*$text = preg_replace(
 				'#^(/--++ *+(?!div|texysource).*)$((?:\n.*+)*?)(?:\n\\\\--.*$|(?=(\n/--.*$)))#mi',
 				"\$1\$2\n\\--", 	$text 	); */
-			String text = event.getText().replaceAll(
-                /*  /--<something> - not div or texysource
+            val text = event.text.replace( /*  /--<something> - not div or texysource
                  *  followed by 0+ lines reluctantly
                  *  and then (takes first) either 
                  *  \--... or /--...
                  */
-                "(?:mi)^(/--++ *+(?!div|texysource).*)$" +
-                "((?:\\n.*+)*?)" +
-                "(?:\\n\\\\--.*$|(?=(\\n/--.*$)))",
-                // Normalize to /--... <content> \--
-                "$1$2\n\\--" );
-			event.setText( text );
-			return new DOMText(text);
-		}
-	};
-
-
-
-
+                ("(?:mi)^(/--++ *+(?!div|texysource).*)$" +
+                        "((?:\\n.*+)*?)" +
+                        "(?:\\n\\\\--.*$|(?=(\\n/--.*$)))").toRegex(),  // Normalize to /--... <content> \--
+                "$1$2\n\\--"
+            )
+            event.text = text
+            return DOMText(text)
+        }
+    }
 }
-
-

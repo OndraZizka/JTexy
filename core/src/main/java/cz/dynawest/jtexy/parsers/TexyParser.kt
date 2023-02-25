@@ -1,43 +1,21 @@
+package cz.dynawest.jtexy.parsers
 
-package cz.dynawest.jtexy.parsers;
-
-import cz.dynawest.jtexy.JTexy;
-import cz.dynawest.jtexy.RegexpInfo;
-import cz.dynawest.jtexy.TexyException;
-import java.util.List;
-import org.dom4j.dom.DOMElement;
+import cz.dynawest.jtexy.JTexy
+import cz.dynawest.jtexy.RegexpInfo
+import cz.dynawest.jtexy.TexyException
+import org.dom4j.dom.DOMElement
 
 /**
  *
  * @author Ondrej Zizka
  */
-public abstract class TexyParser
-{
+abstract class TexyParser(// Uplink to parent.
+    val texy: JTexy?, protected var element: DOMElement
+) {
+    // TODO: Perhaps should be moved to TexyBlockParser? It would need to override e.g. BlockModule.getParser().
+    var isIndented = false
+    protected abstract val patterns: List<RegexpInfo?>?
 
-	// Uplink to parent.
-	private JTexy texy;
-	public JTexy getTexy() {		return texy;	}
-
-	protected DOMElement element;
-
-	// TODO: Perhaps should be moved to TexyBlockParser? It would need to override e.g. BlockModule.getParser().
-	boolean indented;
-	public boolean isIndented() {		return indented;	}
-	public void setIndented(boolean indented) {		this.indented = indented;	}
-
-	
-	protected abstract List<RegexpInfo> getPatterns();
-
-	
-
-	public TexyParser(JTexy texy, DOMElement element) {
-		this.texy = texy;
-		this.element = element;
-	}
-
-
-	public abstract void parse( String text ) throws TexyException;
-
-	
-
+    @Throws(TexyException::class)
+    abstract fun parse(text: String?)
 }

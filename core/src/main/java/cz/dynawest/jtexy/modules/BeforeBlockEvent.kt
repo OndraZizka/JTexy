@@ -1,17 +1,10 @@
+package cz.dynawest.jtexy.modules
 
-package cz.dynawest.jtexy.modules;
-
-import cz.dynawest.jtexy.parsers.BeforeAfterEvent;
-import cz.dynawest.jtexy.parsers.TexyParser;
+import cz.dynawest.jtexy.parsers.BeforeAfterEvent
+import cz.dynawest.jtexy.parsers.TexyParser
 
 /**
  *
  * @author Ondrej Zizka
  */
-public class BeforeBlockEvent extends BeforeAfterEvent {
-
-	public BeforeBlockEvent(TexyParser parser, String text) {
-		super(parser, text);
-	}
-
-}
+class BeforeBlockEvent(parser: TexyParser?, text: String?) : BeforeAfterEvent(parser, text)

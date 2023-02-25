@@ -1,72 +1,62 @@
-package cz.dynawest.jtexy.util;
+package cz.dynawest.jtexy.util
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.logging.Logger;
+import java.io.*
+import java.util.*
+import java.util.logging.*
 
 /**
  * Helper functions to load Properties.
- * 
+ *
  * @author Ondrej Zizka
  */
-public class PropertiesLoader {
-
-    private static final Logger log = Logger.getLogger(PropertiesLoader.class.getName());
-    
-
-    /** Loads properties. */
-    public static Properties loadProperties(String propsPath) throws IOException {
-        return loadProperties(propsPath, PropertiesLoader.class);
+object PropertiesLoader {
+    private val log = Logger.getLogger(PropertiesLoader::class.java.name)
+    /** Loads properties from given class'es classloader.  */
+    /** Loads properties.  */
+    @JvmOverloads
+    @Throws(IOException::class)
+    fun loadProperties(propsPath: String?, clazz: Class<*> = PropertiesLoader::class.java): Properties {
+        return loadPropertiesOrdered(propsPath, clazz)
     }
 
-    /** Loads properties from given class'es classloader. */
-    public static Properties loadProperties(String propsPath, Class clazz) throws IOException {
-        return loadPropertiesOrdered(propsPath, clazz);
-    }
-
-    /** Loads properties. Counts the propsPath from the class'es path. */
-    public static Properties loadPropertiesUnordered(String propsPath, Class clazz) throws IOException {
-
-        InputStream is = getInputStream(propsPath, clazz);
-
-        Properties props = new Properties();
-        props.load(is);
-        return props;
+    /** Loads properties. Counts the propsPath from the class'es path.  */
+    @Throws(IOException::class)
+    fun loadPropertiesUnordered(propsPath: String?, clazz: Class<*>): Properties {
+        val `is` = getInputStream(propsPath, clazz)
+        val props = Properties()
+        props.load(`is`)
+        return props
     }
 
     /**
-     *  Get the input stream from the props file on the given path.
-     *  If the propsPath begins with #, then it's loaded via clazz's classloader.
-     *  Otherwise it's read from the filesystem from the current path.
+     * Get the input stream from the props file on the given path.
+     * If the propsPath begins with #, then it's loaded via clazz's classloader.
+     * Otherwise it's read from the filesystem from the current path.
      */
-    private static InputStream getInputStream(String propsPath, Class clazz) throws IOException {
+    @Throws(IOException::class)
+    private fun getInputStream(propsPath: String?, clazz: Class<*>): InputStream {
         //ClassLoader.getSystemResource( propsPath ).openStream() );
-
-        InputStream is;
-        if (propsPath.startsWith("#")) {
-            is = clazz.getResourceAsStream(propsPath.substring(1));
+        val `is`: InputStream?
+        `is` = if (propsPath!!.startsWith("#")) {
+            clazz.getResourceAsStream(propsPath.substring(1))
         } // "Use getClass().getClassLoader().findResource("path") instead."
         else {
-            is = new FileInputStream(propsPath);
+            FileInputStream(propsPath)
         }
-
-        if (is == null) {
-            throw new IOException("Properties file not found: " + propsPath + "  For class: " + clazz.getName());
+        if (`is` == null) {
+            throw IOException("Properties file not found: " + propsPath + "  For class: " + clazz.name)
         }
-        return is;
+        return `is`
     }
 
     /**
-     *  Loads properties file into an ordered map.
+     * Loads properties file into an ordered map.
      */
-    private static Properties loadPropertiesOrdered(String propsPath, Class clazz) throws IOException {
-        InputStream is = getInputStream(propsPath, clazz);
-
-        OrderedProperties osp = new OrderedProperties();
-        osp.load(is);
-
-        return osp;
+    @Throws(IOException::class)
+    private fun loadPropertiesOrdered(propsPath: String?, clazz: Class<*>): Properties {
+        val `is` = getInputStream(propsPath, clazz)
+        val osp = OrderedProperties()
+        osp.load(`is`)
+        return osp
     }
 }

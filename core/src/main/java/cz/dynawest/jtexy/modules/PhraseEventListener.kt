@@ -1,12 +1,9 @@
+package cz.dynawest.jtexy.modules
 
-package cz.dynawest.jtexy.modules;
-
-import cz.dynawest.jtexy.parsers.AroundEventListener;
+import cz.dynawest.jtexy.parsers.AroundEventListener
 
 /**
  *
  * @author Ondrej Zizka
  */
-public interface PhraseEventListener extends AroundEventListener<PhraseEvent> {
-
-}
+interface PhraseEventListener : AroundEventListener<PhraseEvent?>

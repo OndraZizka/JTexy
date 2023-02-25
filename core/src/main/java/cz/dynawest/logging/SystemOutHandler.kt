@@ -1,17 +1,15 @@
-package cz.dynawest.logging;
+package cz.dynawest.logging
 
-import java.util.logging.ConsoleHandler;
+import java.util.logging.ConsoleHandler
 
 /**
  *
  * @author j
  */
-public class SystemOutHandler extends ConsoleHandler {
-
-  public SystemOutHandler() {
-    //sealed = false;
-    super();
-    setOutputStream(System.out);
-    //sealed = true;
-  }
+class SystemOutHandler : ConsoleHandler() {
+    init {
+        //sealed = false;
+        setOutputStream(System.out)
+        //sealed = true;
+    }
 }

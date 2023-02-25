@@ -1,10 +1,9 @@
-
-package cz.dynawest.jtexy.util;
+package cz.dynawest.jtexy.util
 
 /**
  *
  * @author Ondrej Zizka
  */
-public interface StringsReplaceCallback {
-	public String replace( String[] groups );
+interface StringsReplaceCallback {
+    fun replace(groups: Array<String?>): String
 }

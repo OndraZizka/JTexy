@@ -1,39 +1,37 @@
+package cz.dynawest.jtexy.util
 
-package cz.dynawest.jtexy.util;
-
-import cz.dynawest.jtexy.JTexy;
-import cz.dynawest.jtexy.Protector;
-import cz.dynawest.jtexy.RegexpPatterns;
-import cz.dynawest.jtexy.TexyException;
-import cz.dynawest.openjdkregex.Matcher;
-import cz.dynawest.openjdkregex.Pattern;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.Normalizer;
-import java.util.logging.Logger;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.dom4j.dom.DOMElement;
-import org.dom4j.io.HTMLWriter;
-import org.jsoup.Jsoup;
+import cz.dynawest.jtexy.JTexy
+import cz.dynawest.jtexy.Protector
+import cz.dynawest.jtexy.RegexpPatterns
+import cz.dynawest.jtexy.TexyException
+import cz.dynawest.openjdkregex.Pattern
+import org.apache.commons.lang.ArrayUtils
+import org.apache.commons.lang.StringUtils
+import org.dom4j.dom.DOMElement
+import org.dom4j.io.HTMLWriter
+import org.jsoup.Jsoup
+import java.io.*
+import java.net.URLEncoder
+import java.text.Normalizer
+import java.util.*
+import java.util.logging.*
 
 /**
  *
  * @author Ondrej Zizka
  */
-public final class JTexyStringUtils {
-    private static final Logger log = Logger.getLogger( JTexyStringUtils.class.getName() );
-
+object JTexyStringUtils {
+    private val log = Logger.getLogger(JTexyStringUtils::class.java.name)
     // IndexOfAny chars
     //-----------------------------------------------------------------------
     /**
-     * <p>Search a String to find the first index of any
-     * character in the given set of characters.</p>
      *
-     * <p>A <code>null</code> String will return <code>-1</code>.
-     * A <code>null</code> or zero length search array will return <code>-1</code>.</p>
+     * Search a String to find the first index of any
+     * character in the given set of characters.
+     *
+     *
+     * A `null` String will return `-1`.
+     * A `null` or zero length search array will return `-1`.
      *
      * <pre>
      * StringUtils.indexOfAny(null, *)                = -1
@@ -43,194 +41,164 @@ public final class JTexyStringUtils {
      * StringUtils.indexOfAny("zzabyycdxx",['z','a']) = 0
      * StringUtils.indexOfAny("zzabyycdxx",['b','y']) = 3
      * StringUtils.indexOfAny("aba", ['z'])           = -1
-     * </pre>
+    </pre> *
      *
      * @param str  the String to check, may be null
      * @param searchChars  the chars to search for, may be null
      * @return the index of any of the chars, -1 if no match or null input
      * @since 2.0
      */
-    public static int indexOfAny(String str, char[] searchChars, int offset) {
-        if (StringUtils.isEmpty(str) || ArrayUtils.isEmpty(searchChars))
-            return -1;
-        if( offset >= str.length() )
-            return -1;
-
-        for( int i = offset; i < str.length(); i++ ) {
-            char ch = str.charAt(i);
-            for( int j = 0; j < searchChars.length; j++ ) {
-                if( searchChars[j] == ch )
-                    return i;
+    fun indexOfAny(str: String?, searchChars: CharArray, offset: Int): Int {
+        if (StringUtils.isEmpty(str) || ArrayUtils.isEmpty(searchChars)) return -1
+        if (offset >= str!!.length) return -1
+        for (i in offset until str.length) {
+            val ch = str[i]
+            for (j in searchChars.indices) {
+                if (searchChars[j] == ch) return i
             }
         }
-        return -1;
+        return -1
     }
 
-
-
-
-    /** Prepends the given prefix to the given url. */
-    public static final String prependUrlPrefix( String prefix, String url ){
-        if( prefix == null || "".equals(prefix) || !isRelativeUrl(url))
-            return url;
-        return StringUtils.stripEnd(prefix, "/\\") + "/" + url;
+    /** Prepends the given prefix to the given url.  */
+    fun prependUrlPrefix(prefix: String?, url: String?): String? {
+        return if (prefix == null || "" == prefix || !isRelativeUrl(url)) url else StringUtils.stripEnd(prefix, "/\\") + "/" + url
     }
 
-    /** Checks whether an URL is relative ( == is not absolute or a doc anchor). */
-    private static boolean isRelativeUrl(String url) {
+    /** Checks whether an URL is relative ( == is not absolute or a doc anchor).  */
+    private fun isRelativeUrl(url: String?): Boolean {
         // check for scheme, or absolute path, or absolute URL
-        return !url.matches(/*(?A)*/"^"+RegexpPatterns.TEXY_URLSCHEME+"|[\\#/?]"); // (?A) in Texy
+        return !url!!.matches(( /*(?A)*/"^" + RegexpPatterns.Companion.TEXY_URLSCHEME + "|[\\#/?]").toRegex()) // (?A) in Texy
     }
-
-
-
 
     /**
      * Substitute for PHP's preg_replace_callback().
-     * 
-     * @deprecated  Use Matcher#appendReplacement() instead.
+     *
      */
-    public static final String replaceWithCallback(
-                    String str, String regexp, StringsReplaceCallback cb)
-    {
-        Pattern pat = Pattern.compile(regexp);
-        return replaceWithCallback(str, pat, cb);
+    @JvmStatic
+    @Deprecated("Use Matcher#appendReplacement() instead.")
+    fun replaceWithCallback(
+        str: String?, regexp: String, cb: StringsReplaceCallback
+    ): String {
+        val pat: Pattern = Pattern.Companion.compile(regexp)
+        return replaceWithCallback(str, pat, cb)
     }
-
 
     /**
      * Substitute for PHP's preg_replace_callback().
-     * 
-     * @deprecated  Use Matcher#appendReplacement() instead.
+     *
      */
-    public static final String replaceWithCallback(
-                    String str, Pattern pat, StringsReplaceCallback cb
-    ){
-        Matcher mat = pat.matcher(str);
-
-        StringBuilder sb = new StringBuilder(str.length() * 11 / 10);
-
-        int prevStart = 0;
-        int prevEnd = 0;
-        int offset = 0;
-
-        while( mat.find() ){
+    @Deprecated("Use Matcher#appendReplacement() instead.")
+    fun replaceWithCallback(
+        str: String?, pat: Pattern, cb: StringsReplaceCallback
+    ): String {
+        val mat = pat.matcher(str)
+        val sb = StringBuilder(str!!.length * 11 / 10)
+        var prevStart = 0
+        var prevEnd = 0
+        val offset = 0
+        while (mat!!.find()) {
 
             // Create the groups array.
-            String[] groups = new String[mat.groupCount()+1];
-            for (int i = 0; i < groups.length; i++) {
-                groups[i] = mat.group(i);
+            val groups = arrayOfNulls<String>(mat.groupCount() + 1)
+            for (i in groups.indices) {
+                groups[i] = mat.group(i)
             }
 
             // Append string before match.
-            sb.append( str.substring(prevEnd+offset, mat.start()+offset) );
+            sb.append(str.substring(prevEnd + offset, mat.start() + offset))
 
             // Call the callback and append what it returns.
-            String newStr = cb.replace( groups );
-            sb.append( newStr );
+            val newStr = cb.replace(groups)
+            sb.append(newStr)
 
             // Set the offset according to the lengths difference.
             //offset -= mat.group().length();
-            prevStart = mat.start() + offset;
-            prevEnd = mat.end() + offset;
+            prevStart = mat.start() + offset
+            prevEnd = mat.end() + offset
         }
-        sb.append( str.substring(prevEnd) );
-
-        return sb.toString();
+        sb.append(str.substring(prevEnd))
+        return sb.toString()
     }
-
-
 
     /**
      * Expands tabs to spaces, according to the tab position (as with typewriter tabs).
      */
-    public static final String expandTabs(String text, int tabWidth) {
-
-
-        StringBuilder sb = new StringBuilder( text.length() * 108 / 100 );
-        int lastLineBreak = -1; // "Previous line"
-        int nextLineBreak = 0;
-        int lastTab = 0;
-        int nextTab = text.indexOf('\t');
-        int charsAddedForThisLine = 0;
-
-        while( nextTab != -1 ){
+    fun expandTabs(text: String, tabWidth: Int): String {
+        val sb = StringBuilder(text.length * 108 / 100)
+        var lastLineBreak = -1 // "Previous line"
+        var nextLineBreak = 0
+        var lastTab = 0
+        var nextTab = text.indexOf('\t')
+        var charsAddedForThisLine = 0
+        while (nextTab != -1) {
 
             // Append everything from the last tab to this one.
-            sb.append( text.substring( lastTab, nextTab ) );
+            sb.append(text.substring(lastTab, nextTab))
 
             // After this, lastLB will have the beginning of the line with the next tab,
             // and nextLB the end of it.
-            while ( nextTab > nextLineBreak ){
-                charsAddedForThisLine = 0; // We're going to some other line - reset.
-                lastLineBreak = nextLineBreak;
-                nextLineBreak = text.indexOf('\n');
-                if( nextLineBreak == -1 )
-                    nextLineBreak = text.length();
+            while (nextTab > nextLineBreak) {
+                charsAddedForThisLine = 0 // We're going to some other line - reset.
+                lastLineBreak = nextLineBreak
+                nextLineBreak = text.indexOf('\n')
+                if (nextLineBreak == -1) nextLineBreak = text.length
             }
 
             // Append number of spaces according to the tab's position in the line.
-            int tabPos = nextTab - lastLineBreak - 1;
+            val tabPos = nextTab - lastLineBreak - 1
             //return $m[1] . str_repeat(' ', $this->tabWidth - strlen($m[1]) % $this->tabWidth);
-            int repeats = tabWidth - (tabPos % tabWidth);
-            sb.append( repeatSpaces( repeats ) );
-            charsAddedForThisLine += tabWidth - 1;
+            val repeats = tabWidth - tabPos % tabWidth
+            sb.append(repeatSpaces(repeats))
+            charsAddedForThisLine += tabWidth - 1
 
             //nextLineBreak = text.indexOf('\n', nextTab);
-            lastTab = nextTab;
-            nextTab = text.indexOf('\t', nextTab);
+            lastTab = nextTab
+            nextTab = text.indexOf('\t', nextTab)
         }
-
-        sb.append( text.substring( lastTab, text.length() ) );
-
-        return sb.toString();
-
+        sb.append(text.substring(lastTab, text.length))
+        return sb.toString()
     }
 
+    /**  Optimization  */
+    fun repeatSpaces(repeats: Int): String {
+        val spaces: String
+        spaces = when (repeats) {
+            0 -> ""
+            1 -> " "
+            2 -> "  "
+            3 -> "   "
+            4 -> "    "
+            5 -> "     "
+            6 -> "      "
+            7 -> "       "
+            else -> StringUtils.repeat(" ", repeats)
+        }
+        return spaces
+    }
 
-    /**  Optimization */
-    public static final String repeatSpaces( int repeats ){
-            String spaces;
-            switch( repeats ){
-                case 0: spaces = ""; break;
-                case 1: spaces = " "; break;
-                case 2: spaces = "  "; break;
-                case 3: spaces = "   "; break;
-                case 4: spaces = "    "; break;
-                case 5: spaces = "     "; break;
-                case 6: spaces = "      "; break;
-                case 7: spaces = "       "; break;
-                default: spaces = StringUtils.repeat(" ", repeats);
+    fun repeatTabs(repeats: Int): String? {
+        var spaces: String? = null
+        if (repeats <= 10) {
+            when (repeats) {
+                0 -> spaces = ""
+                1 -> spaces = "\t"
+                2 -> spaces = "\t\t"
+                3 -> spaces = "\t\t\t"
+                4 -> spaces = "\t\t\t\t"
+                5 -> spaces = "\t\t\t\t\t"
+                6 -> spaces = "\t\t\t\t\t\t"
+                7 -> spaces = "\t\t\t\t\t\t\t"
+                8 -> spaces = "\t\t\t\t\t\t\t\t"
+                9 -> spaces = "\t\t\t\t\t\t\t\t\t"
+                10 -> spaces = "\t\t\t\t\t\t\t\t\t\t"
             }
-            return spaces;
+            return spaces
+        }
+        return if (repeats <= TABS.length) TABS.substring(repeats) else StringUtils.repeat(" ", repeats).also { spaces = it }
     }
 
-    public static final String repeatTabs( int repeats ){
-            String spaces = null;
-            if( repeats <= 10 ){
-                switch( repeats ){
-                    case 0: spaces = ""; break;
-                    case 1: spaces = "\t"; break;
-                    case 2: spaces = "\t\t"; break;
-                    case 3: spaces = "\t\t\t"; break;
-                    case 4: spaces = "\t\t\t\t"; break;
-                    case 5: spaces = "\t\t\t\t\t"; break;
-                    case 6: spaces = "\t\t\t\t\t\t"; break;
-                    case 7: spaces = "\t\t\t\t\t\t\t"; break;
-                    case 8: spaces = "\t\t\t\t\t\t\t\t"; break;
-                    case 9: spaces = "\t\t\t\t\t\t\t\t\t"; break;
-                    case 10: spaces = "\t\t\t\t\t\t\t\t\t\t"; break;
-                }
-                return spaces;
-            }
-            if( repeats <= TABS.length() )   // 50.
-                return TABS.substring(repeats);
-            
-            return spaces = StringUtils.repeat(" ", repeats);
-    }
-
-    public static final String TABS = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t";
-
+    const val TABS = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
 
     /**
      * Translate all white spaces (\t \n \r space) to meta-spaces \x01-\x04.
@@ -238,187 +206,161 @@ public final class JTexyStringUtils {
      * @param  string
      * @return string
      */
-    public static final String freezeSpaces( String str )
-    {
-        return StringUtils.replaceChars( str, " \t\r\n", "\u0001\u0002\u0003\u0004" );
+    fun freezeSpaces(str: String?): String {
+        return StringUtils.replaceChars(str, " \t\r\n", "\u0001\u0002\u0003\u0004")
     }
-
-
 
     /**
      * Reverts meta-spaces back to normal spaces.
      * @param  string
      * @return string
      */
-    public static final String  unfreezeSpaces( String str )
-    {
-        return StringUtils.replaceChars( str, "\u0001\u0002\u0003\u0004", " \t\r\n" );
+    fun unfreezeSpaces(str: String?): String {
+        return StringUtils.replaceChars(str, "\u0001\u0002\u0003\u0004", " \t\r\n")
     }
 
-
-
-    /**  Removes indentation, up to the numer of spaces on the first line. (Tabs are converted before.)  */
-    public static String outdent(String str) {
-        str = StringUtils.strip(str, "\n");
-        int numSpaces = StringUtils.indexOfAnyBut(str, " ");
-        if( 0 < numSpaces )  return str.replaceAll("(?m)^ {1,"+numSpaces+"}", "");
-        return str;
+    /**  Removes indentation, up to the numer of spaces on the first line. (Tabs are converted before.)   */
+    fun outdent(str: String?): String? {
+        var str = str
+        str = StringUtils.strip(str, "\n")
+        val numSpaces = StringUtils.indexOfAnyBut(str, " ")
+        return if (0 < numSpaces) str.replace("(?m)^ {1,$numSpaces}".toRegex(), "") else str
     }
 
-
-    /** @deprecated to see where it is used. Try Dom4jUtils. */
-    public static String elementToHTML( DOMElement elm, JTexy texy ) throws TexyException {
-        StringWriter sw = new StringWriter();
-        HTMLWriter hw = new HTMLWriter( sw );
+    @Deprecated("to see where it is used. Try Dom4jUtils. ")
+    @Throws(TexyException::class)
+    fun elementToHTML(elm: DOMElement?, texy: JTexy?): String {
+        val sw = StringWriter()
+        val hw = HTMLWriter(sw)
         try {
-            hw.write(elm);
-        } catch (IOException ex) {
-            throw new TexyException(ex);
+            hw.write(elm)
+        } catch (ex: IOException) {
+            throw TexyException(ex)
         }
-        return sw.toString();
+        return sw.toString()
     }
 
-
-    /** Converts < > & to the HTML entities. Not quotes (as in TexyHTML, assuming there is a reason). */
-    public static String escapeHtml(String str) {
-        return StringUtils.replaceEach(str, new String[]{"<",">","&"}, new String[]{"&lt;","&gt;","&amp;"});
+    /** Converts < > & to the HTML entities. Not quotes (as in TexyHTML, assuming there is a reason).  */
+    fun escapeHtml(str: String?): String {
+        return StringUtils.replaceEach(str, arrayOf("<", ">", "&"), arrayOf("&lt;", "&gt;", "&amp;"))
     }
 
-    /** Converts HTML entities to < > & . */
-    public static String unescapeHtml(String str) {
-        return StringUtils.replaceEach(str, new String[]{"&lt;","&gt;","&amp;"}, new String[]{"<",">","&"});
+    /** Converts HTML entities to < > & .  */
+    fun unescapeHtml(str: String?): String {
+        return StringUtils.replaceEach(str, arrayOf("&lt;", "&gt;", "&amp;"), arrayOf("<", ">", "&"))
     }
-
-
 
     /**
      * Converts given internal Texy string into plain text - unprotects & strips HTML.
-     * 
+     *
      * TODO:  @ Texy::stringToText(){}. Perhaps already coded somewhere.
      */
-    public static String stringToText(String str, Protector protector) throws TexyException {
-        if( null != protector )
-            str = protector.unprotectAll(str);
-        return stripHtmlTags(str);
-    }
-    
-    public static String stripHtmlTags( String str ){
-        return Jsoup.parse(str).text();
+    @Throws(TexyException::class)
+    fun stringToText(str: String?, protector: Protector?): String {
+        var str = str
+        if (null != protector) str = protector.unprotectAll(str)
+        return stripHtmlTags(str)
     }
 
+    fun stripHtmlTags(str: String?): String {
+        return Jsoup.parse(str).text()
+    }
 
     /**
      * Encodes the URL, using UTF-8.
      * @throws UnsupportedOperationException  Wraps UnsupportedEncodingException.
      */
-    public static String encodeUrl( String res ) {
-        try {
-            return URLEncoder.encode(res, "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            throw new UnsupportedOperationException(ex);
+    fun encodeUrl(res: String?): String {
+        return try {
+            URLEncoder.encode(res, "UTF-8")
+        } catch (ex: UnsupportedEncodingException) {
+            throw UnsupportedOperationException(ex)
         }
     }
-
 
     /**
      * Removes special controls characters and normalizes line endings and spaces.
      */
-    public static String normalize(String s) {
+    fun normalize(s: String?): String? {
         // Standardize line endings to unix-like.
-        s = s.replace("\r\n", "\n"); // DOS
-        s = s.replace('\r', '\n');   // Mac
+        var s = s
+        s = s!!.replace("\r\n", "\n") // DOS
+        s = s.replace('\r', '\n') // Mac
 
         // Remove special chars; leave \t + \n.
-        s = StringUtils.replaceChars( s, 
+        s = StringUtils.replaceChars(
+            s,
             "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\u0008" +
-            "\u000B\u000C\u000E\u000F", "");
+                    "\u000B\u000C\u000E\u000F", ""
+        )
 
         // The following allows to leave intentional trailing whitespace
         // with:  "end of text.  \n"
 
         // Right trim.
-        s = StringUtils.stripEnd(s, "\t ");
+        s = StringUtils.stripEnd(s, "\t ")
 
         // Trailing spaces.
-        s = StringUtils.strip(s, "\n");
-
-        return s;
+        s = StringUtils.strip(s, "\n")
+        return s
     }
 
-
-
     /**
-     *  Converts given string to something usable in URL, ID, etc.
-     *  1) Shortens to 50 chars.
-     *  2) Removes diacritics
-     *  3) Strips HTML tags.
+     * Converts given string to something usable in URL, ID, etc.
+     * 1) Shortens to 50 chars.
+     * 2) Removes diacritics
+     * 3) Strips HTML tags.
      */
-    public static String webalize( String str ) {
+    @JvmStatic
+    fun webalize(str: String?): String {
+        var str = str ?: return ""
+        str = StringUtils.substring(str, 0, 50).lowercase(Locale.getDefault())
+        str = removeDiacritics(str)
+        str = stripHtmlTags(str)
 
-        if( null == str )
-            return "";
-
-        str = StringUtils.substring(str, 0, 50).toLowerCase();
-        str = removeDiacritics(str);
-        str = stripHtmlTags(str);
-        
         //log.finest("Webalizing: " + Debug.showCodes(str));
-
-        int len = str.length();
-        if( len == 0 )
-            return "";
-
-        char[] chars = new char[len];
-        char[] chars2 = new char[len];
-        str.getChars(0, len, chars, 0);
-
-        int pos = 0;
-        int lastDash = -1;
+        val len = str.length
+        if (len == 0) return ""
+        val chars = CharArray(len)
+        val chars2 = CharArray(len)
+        str.toCharArray(chars, 0, 0, len)
+        var pos = 0
+        var lastDash = -1
         //int firstDash = 0;
 
         // Replace non-alnum with dash, no dash sequences.
-        for( int i = 0; i < chars.length; i++ ) {
-
-            char ch = chars[i];
-            if( Character.isLetterOrDigit(ch) ){
-                chars2[pos++] = ch;
-                lastDash = -1; // Last char is not a dash.
+        for (i in chars.indices) {
+            val ch = chars[i]
+            if (Character.isLetterOrDigit(ch)) {
+                chars2[pos++] = ch
+                lastDash = -1 // Last char is not a dash.
                 //if( firstDash == 0 )
                 //	firstDash = -1;
-            }
-            else if( -1 == lastDash ) {
-                chars2[pos] = '-';
-                lastDash = pos++; // Last char is a dash.
+            } else if (-1 == lastDash) {
+                chars2[pos] = '-'
+                lastDash = pos++ // Last char is a dash.
                 //if( firstDash != -1 )
                 //	firstDash++;
             }
-
-        }// for each char.
-
-        if( -1 != lastDash )
-            pos = lastDash;
+        } // for each char.
+        if (-1 != lastDash) pos = lastDash
 
         //if( firstDash == pos )
         //	return "";
+        var res = kotlin.String(chars2,  /*firstDash*/0, pos)
+        res = StringUtils.stripStart(res, "-")
+        return res
+    } // webalize()
 
-        String res = new String( chars2, /*firstDash*/ 0, pos );
-        res = StringUtils.stripStart(res, "-");
-        return res;
-
-    }// webalize()
-
-    
-    
     /**
-     *   Removes diacritics.
+     * Removes diacritics.
      */
-    private static String removeDiacritics(String str) {
-        str = Normalizer.normalize(str, Normalizer.Form.NFD);
-        str = DIA.matcher(str).replaceAll("");
-        return str;
+    private fun removeDiacritics(str: String): String {
+        var str: String? = str
+        str = Normalizer.normalize(str, Normalizer.Form.NFD)
+        str = DIA.matcher(str).replaceAll("")
+        return str
     }
 
-    private static final Pattern DIA = Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
-
-
+    private val DIA: Pattern = Pattern.Companion.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+")
 }

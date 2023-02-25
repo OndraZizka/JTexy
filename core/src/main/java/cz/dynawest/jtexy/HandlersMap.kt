@@ -1,48 +1,42 @@
+package cz.dynawest.jtexy
 
-package cz.dynawest.jtexy;
-
-import cz.dynawest.jtexy.events.TexyEvent;
-import cz.dynawest.jtexy.parsers.TexyParserEvent;
-import cz.dynawest.jtexy.parsers.TexyEventListener;
-import java.util.*;
-
+import cz.dynawest.jtexy.events.TexyEvent
+import cz.dynawest.jtexy.parsers.TexyEventListener
+import java.util.*
 
 /**
  * Set/Map of parse event listeners: Event class => list of listeners.
  *
  * @author Ondrej Zizka
  */
-public class HandlersMap<T extends TexyEventListener> {
-
+class HandlersMap<T : TexyEventListener<*>?> {
     // Consider using Google Collections' LinkedListMultimap ?
     // Or JDK's LinkedHashSet?
-    Map<Class, List<T>> handlersMap = new HashMap();
+    var handlersMap: MutableMap<Class<*>?, MutableList<T?>?> = HashMap<Any?, Any?>()
 
-    /** @returns getHandlersForEvent(event.getClass()); */
-    public <U extends TexyEvent> List<T> getHandlersForEvent( U event ) { return getHandlersForEvent(event.getClass()); }
-    
-    /** @returns List of handlers for given class, or Collections.EMPTY_LIST. Never null */
-    public <U extends TexyEvent> List<T> getHandlersForEvent( Class<U> clazz ) {
-        List<T> handlers = handlersMap.get(clazz);
-        if( handlers == null )  return Collections.EMPTY_LIST;
-        return handlers;
+    /** @returns getHandlersForEvent(event.getClass());
+     */
+    fun <U : TexyEvent?> getHandlersForEvent(event: U): List<T?> {
+        return getHandlersForEvent(event.javaClass)
     }
 
-    /** Add a handler (listener) for an event type (class). */
-    public void addHandler( T handler ) {
-        Class eventClass = handler.getEventClass();
-        List<T> list = this.handlersMap.get( eventClass );
+    /** @returns List of handlers for given class, or Collections.EMPTY_LIST. Never null
+     */
+    fun <U : TexyEvent?> getHandlersForEvent(clazz: Class<U>?): List<T?> {
+        return handlersMap[clazz] ?: return Collections.EMPTY_LIST
+    }
+
+    /** Add a handler (listener) for an event type (class).  */
+    fun addHandler(handler: T) {
+        val eventClass = handler.getEventClass()
+        var list = handlersMap[eventClass]
         // Create the map entry if not there yet.
-        if( null == list ){
-            list = new ArrayList();
-            this.handlersMap.put( eventClass, list );
+        if (null == list) {
+            list = ArrayList<Any?>()
+            handlersMap[eventClass] = list
+        } else {
+            if (list.contains(handler)) return
         }
-        // Skip if we already have this one registered.
-        else{
-            if( list.contains( handler ) )  return;
-        }
-        list.add( handler );
+        list.add(handler)
     }
-	
-
 }

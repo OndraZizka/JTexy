@@ -1,16 +1,7 @@
-
-package cz.dynawest.jtexy.parsers;
-
-import cz.dynawest.jtexy.modules.TexyModifier;
+package cz.dynawest.jtexy.parsers
 
 /**
  *
  * @author Ondrej Zizka
  */
-public abstract class BeforeAfterEvent extends TexyParserEvent {
-
-	public BeforeAfterEvent(TexyParser parser, String text) {
-		super(parser, text);
-	}
-	
-}
+abstract class BeforeAfterEvent(parser: TexyParser?, text: String?) : TexyParserEvent(parser, text)

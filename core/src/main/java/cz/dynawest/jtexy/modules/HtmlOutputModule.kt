@@ -1,146 +1,117 @@
-package cz.dynawest.jtexy.modules;
+package cz.dynawest.jtexy.modules
 
-import cz.dynawest.jtexy.TexyException;
-import cz.dynawest.jtexy.dtd.Dtd;
-import cz.dynawest.jtexy.dtd.DtdElement;
-import cz.dynawest.jtexy.dtd.HtmlDtdTemplate;
-import cz.dynawest.jtexy.events.PostProcessEvent;
-import cz.dynawest.jtexy.parsers.TexyEventListener;
-import cz.dynawest.jtexy.util.JTexyStringUtils;
-import cz.dynawest.openjdkregex.Matcher;
-import cz.dynawest.openjdkregex.Pattern;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-import java.util.logging.*;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
-import org.dom4j.Node;
-import org.dom4j.dom.DOMText;
-
+import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.dtd.Dtd
+import cz.dynawest.jtexy.dtd.DtdElement
+import cz.dynawest.jtexy.dtd.HtmlDtdTemplate
+import cz.dynawest.jtexy.events.PostProcessEvent
+import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.util.JTexyStringUtils
+import cz.dynawest.openjdkregex.Matcher
+import cz.dynawest.openjdkregex.Pattern
+import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang.WordUtils
+import org.dom4j.Node
+import org.dom4j.dom.DOMText
+import java.util.*
+import java.util.logging.*
 
 /**
  * Fix HTML structure, force conformance to DTD.
- * 
+ *
  * @author Ondrej Zizka
  */
-public class HtmlOutputModule extends TexyModule
-{
-    private static final Logger log = Logger.getLogger( HtmlOutputModule.class.getName() );
+class HtmlOutputModule : TexyModule() {
+    override val eventListeners: Array<TexyEventListener<*>>
+        // -- Module meta-info -- //
+        get() = arrayOf(postProcessListener)
 
-	// -- Module meta-info -- //
-
-	@Override public TexyEventListener<PostProcessEvent>[] getEventListeners() {
-		return new TexyEventListener[]{postProcessListener};
-	}
-
-	@Override	protected PatternHandler getPatternHandlerByName(String name) {
-        return null;
-	}
-
-    @Override protected String getPropsFilePath() {
-        return null; // No props file.
+    override fun getPatternHandlerByName(name: String): PatternHandler? {
+        return null
     }
-    
-    
 
-    
-    
+    protected override val propsFilePath: String?
+        protected get() = null // No props file.
     // -- Config --
-    
-	/** Indent HTML code? */
-	public boolean indent = true;
+    /** Indent HTML code?  */
+    var indent = true
 
-	/** Base indent level. */
-	public int baseIndent = 0;
+    /** Base indent level.  */
+    var baseIndent = 0
 
-	/** Wrap width, doesn't include indent space. */
-	public int lineWrapWidth = 80;
+    /** Wrap width, doesn't include indent space.  */
+    var lineWrapWidth = 80
 
-	/** Remove optional HTML end tags? */
-	public boolean removeOptional = false;
+    /** Remove optional HTML end tags?  */
+    var removeOptional = false
 
-	/** Output XML? */
-	private boolean isXml;
-    
-
+    /** Output XML?  */
+    private var isXml = false
     // -- Context --
-	/** Indent space counter. */
-	private int space;
+    /** Indent space counter.  */
+    private var space = 0
 
-	/**  */
-	private CounterMap tagUsedCount;
+    /**   */
+    private var tagUsedCount: CounterMap? = null
 
-	/**  */
-	private Stack<StackItem> tagStack;
+    /**   */
+    private var tagStack: Stack<StackItem?>? = null
 
-	/** Content DTD used, when context is not defined. */
-	private DtdElement baseDTD;
+    /** Content DTD used, when context is not defined.  */
+    private var baseDTD: DtdElement? = null
+    private val htmlDTD = HtmlDtdTemplate()
 
-    private HtmlDtdTemplate htmlDTD = new HtmlDtdTemplate();
-    
-    
-    
-    
     /**
-     *   TODO.
-     * 
-     *  Converts <strong><em> ... </strong> ... </em>.
-     *  into     <strong><em> ... </em></strong><em> ... </em>.
-     *  And other neat tricks.
+     * TODO.
+     *
+     * Converts *** ... *** ... .
+     * into     *** ... **** ... *.
+     * And other neat tricks.
      */
-    private final TexyEventListener<PostProcessEvent> postProcessListener =
-            new  TexyEventListener<PostProcessEvent>() 
-    {
-        @Override public Class getEventClass() { return PostProcessEvent.class; }
+    private val postProcessListener: TexyEventListener<PostProcessEvent> = object : TexyEventListener<PostProcessEvent> {
+        override val eventClass: Class<*>
+            get() = PostProcessEvent::class.java
 
-        @Override public Node onEvent(PostProcessEvent event) throws TexyException {
-            return new DOMText(HtmlOutputModule.this.reset().postProcess(event.getText()));
+        @Throws(TexyException::class)
+        override fun onEvent(event: PostProcessEvent): Node? {
+            return DOMText(reset().postProcess(event.text))
         }
-    };
-    
-    
-    /**
-     *  Reset for the new invocation.
-     */
-    private HtmlOutputModule reset() {
-		this.space = this.baseIndent;
-		this.tagStack = new Stack<StackItem>(){
-            @Override
-            public synchronized StackItem peek() {
-                if( this.isEmpty() ) return null;
-                return super.peek();
-            }
-        };
-		this.tagUsedCount  = new CounterMap();
-		this.isXml = false; //texy.getOutputMode() & Constants.XML;
-        
-        // Special "base content" - Whatever can be in <div>, <html>, <body>. Plus <html> itself.
-
-		this.baseDTD = new DtdElement("root");
-        this.baseDTD.addAll( htmlDTD.getRootDtdElement().getElement("div").getElements() );
-        this.baseDTD.addAll( htmlDTD.getRootDtdElement().getElement("html").getElements() );
-        //this.baseDTD.addAll( htmlDTD.getDtd().getElement("head").getElements() );
-        this.baseDTD.addAll( htmlDTD.getRootDtdElement().getElement("body").getElements() );
-        this.baseDTD.add( htmlDTD.getRootDtdElement().getElement("html") );
-        
-        return this;
     }
-    
-    
-    
+
     /**
-     *   TODO.
-     * 
-     *  Converts <strong><em> ... </strong> ... </em>.
-     *  into     <strong><em> ... </em></strong><em> ... </em>.
-     *  And other neat tricks.
+     * Reset for the new invocation.
      */
-    private String postProcess( String str ){
-        
-        this.reset();
+    private fun reset(): HtmlOutputModule {
+        space = baseIndent
+        tagStack = object : Stack<StackItem?>() {
+            @Synchronized
+            override fun peek(): StackItem? {
+                return if (this.isEmpty()) null else super.peek()
+            }
+        }
+        tagUsedCount = CounterMap()
+        isXml = false //texy.getOutputMode() & Constants.XML;
+
+        // Special "base content" - Whatever can be in <div>, <html>, <body>. Plus <html> itself.
+        baseDTD = DtdElement("root")
+        baseDTD.addAll(htmlDTD.rootDtdElement.getElement("div").elements)
+        baseDTD.addAll(htmlDTD.rootDtdElement.getElement("html").elements)
+        //this.baseDTD.addAll( htmlDTD.getDtd().getElement("head").getElements() );
+        baseDTD.addAll(htmlDTD.rootDtdElement.getElement("body").elements)
+        baseDTD.add(htmlDTD.rootDtdElement.getElement("html"))
+        return this
+    }
+
+    /**
+     * TODO.
+     *
+     * Converts *** ... *** ... .
+     * into     *** ... **** ... *.
+     * And other neat tricks.
+     */
+    private fun postProcess(str: String?): String {
+        var str = str
+        reset()
 
         // Wellform and reformat each element.
         /* @
@@ -148,341 +119,307 @@ public class HtmlOutputModule extends TexyModule
 			'#(.*)<(?:(!--.*--)|(/?)([a-z][a-z0-9._:-]*)(|[ \n].*)\s*(/?))>()#Uis',
 			array($this, 'cb'),
 			str . '</end/>'
-		);*/
-        {
-            StringBuffer sb = new StringBuffer( str.length() * 12 / 10 );
-            Pattern pat = Pattern.compile("(?Uis)(.*)<(?:(!--.*--)|(/?)([a-z][a-z0-9._:-]*)(|[ \\n].*)\\s*(/?))>()");
-            Matcher mat = pat.matcher(str);
-            while( mat.find() ){
-                String replacement = callback( mat, this.htmlDTD.getDtd() );
-                mat.appendReplacement(sb, replacement);
+		);*/run {
+            val sb = StringBuffer(str!!.length * 12 / 10)
+            val pat: Pattern = Pattern.Companion.compile("(?Uis)(.*)<(?:(!--.*--)|(/?)([a-z][a-z0-9._:-]*)(|[ \\n].*)\\s*(/?))>()")
+            val mat = pat.matcher(str)
+            while (mat!!.find()) {
+                val replacement = callback(mat, this.htmlDTD.dtd)
+                mat.appendReplacement(sb, replacement)
             }
-            // TODO: Does the loop do the last part?
         }
-        
-        
 
-		// Empty the stack.
-		for( StackItem elm : this.tagStack)
-            str += "</" + elm.tag + ">"; //["close"];
 
-		// Right trim.
-		str = str.replaceAll("[\t ]+(\n|\r|$)", "$1");
+        // Empty the stack.
+        for (elm in tagStack!!) str += "</" + elm!!.tag + ">" //["close"];
 
-		// Join double \r to single \n.
-		str = str.replace("\r\r", "\n");
-		str = str.replace('\r', '\n');
+        // Right trim.
+        str = str!!.replace("[\t ]+(\n|\r|$)".toRegex(), "$1")
 
-		// Greedy chars.
-		str = str.replaceAll("\u0007 *", "");
-		// Back-tabs.
-		str = str.replaceAll("\\t? *\u0008", "");
+        // Join double \r to single \n.
+        str = str.replace("\r\r", "\n")
+        str = str.replace('\r', '\n')
 
-		// Line wrap.
-		if( this.lineWrapWidth > 0) {
-			// @ str = preg_replace_callback( "#^(\t*)(.*)$#m",  array($this, "wrap"), str );
-            Pattern pat = Pattern.compile("(?m)^(\\t*)(.*)$");
-            Matcher mat = pat.matcher(str);
-            while( mat.find() ){
-                
+        // Greedy chars.
+        str = str.replace("\u0007 *".toRegex(), "")
+        // Back-tabs.
+        str = str.replace("\\t? *\u0008".toRegex(), "")
+
+        // Line wrap.
+        if (lineWrapWidth > 0) {
+            // @ str = preg_replace_callback( "#^(\t*)(.*)$#m",  array($this, "wrap"), str );
+            val pat: Pattern = Pattern.Companion.compile("(?m)^(\\t*)(.*)$")
+            val mat = pat.matcher(str)
+            while (mat!!.find()) {
             }
             // TODO
-		}
-
-		// Remove HTML 4.01 optional end tags.
-		if( !this.isXml && this.removeOptional) {
-			str = str.replaceAll("(?u)\\s*</(colgroup|dd|dt|li|option|p|td|tfoot|th|thead|tr)>", "");
-		}
-        
-        return str;
-    }
-    
-    
-    
-    static class StackItem {
-        String tag;
-        String open;
-        String close;
-        int indent;
-        Set<DtdElement> dtdContent;
-
-        public StackItem(String tag, String open, String close, Set<DtdElement> dtdContent, int indent) {
-            this.tag = tag;
-            this.open = open;
-            this.close = close;
-            this.indent = indent;
-            this.dtdContent = dtdContent;
         }
 
-        @Override public String toString() {
-            return "StackItem{ tag=" + tag + ", indent=" + indent + ", open=" + open + ", close=" + close + ", dtdContent{" + dtdContent.size() + "}}";
+        // Remove HTML 4.01 optional end tags.
+        if (!isXml && removeOptional) {
+            str = str.replace("(?u)\\s*</(colgroup|dd|dt|li|option|p|td|tfoot|th|thead|tr)>".toRegex(), "")
+        }
+        return str
+    }
+
+    internal class StackItem(var tag: String?, var open: String?, var close: String?, var dtdContent: Set<DtdElement?>?, var indent: Int) {
+        override fun toString(): String {
+            return "StackItem{ tag=" + tag + ", indent=" + indent + ", open=" + open + ", close=" + close + ", dtdContent{" + dtdContent!!.size + "}}"
         }
     }
-    
-    static class CounterMap {
-        Map<String, Integer> map = new HashMap();
-        
-        public Integer get(String key){ return this.map.get(key); }
-        public boolean used(String key){ return this.get(key, 0) != 0; }
-        public boolean notUsed(String key){ return this.get(key, 0) == 0; }
-        public int get(String key, int def){ 
-            Integer val = this.map.get(key);
-            return null == val ? def : val;
+
+    internal class CounterMap {
+        var map: MutableMap<String?, Int?> = HashMap<Any?, Any?>()
+        operator fun get(key: String?): Int? {
+            return map[key]
         }
-        public int increment(String key){ return adjust(key,  1); }
-        public int decrement(String key){ return adjust(key, -1); }
-        public int adjust(String key, int delta){
-            Integer val = this.map.get(key);
-            if( val == null ) val = delta;
-            else val += delta;
-            this.map.put(key, val);
-            return val;
+
+        fun used(key: String?): Boolean {
+            return this[key, 0] != 0
+        }
+
+        fun notUsed(key: String?): Boolean {
+            return this[key, 0] == 0
+        }
+
+        operator fun get(key: String?, def: Int): Int {
+            val `val` = map[key]
+            return `val` ?: def
+        }
+
+        fun increment(key: String?): Int {
+            return adjust(key, 1)
+        }
+
+        fun decrement(key: String?): Int {
+            return adjust(key, -1)
+        }
+
+        fun adjust(key: String?, delta: Int): Int {
+            var `val` = map[key]
+            if (`val` == null) `val` = delta else `val` += delta
+            map[key] = `val`
+            return `val`
         }
     }
-    
 
-	/**
-	 * Callback function: <tag> | </tag> | ....
-	 * 
+    /**
+     * Callback function: <tag> | </tag> | ....
+     *
      * TODO: Change string to StringBuilder.
-	 */
-	private String callback( Matcher matcher, Dtd dtd )
-	{
-		// html tag
-		// list(, mText, $mComment, $mEnd, $mTag, $mAttr, $mEmpty) = $matches;
-		//    [1] => text
-		//    [1] => !-- comment --
-		//    [2] => /
-		//    [3] => TAG
-		//    [4] => ... (attributes)
-		//    [5] => /   (empty)
-        
-        String mText = matcher.group(1);
-        String mComment = matcher.group(2);
-        String mEnd = matcher.group(3);
-        String mTag = matcher.group(4);
-        String mAttr = matcher.group(5);
-        String mEmpty = matcher.group(6);
-        
-        boolean bEndTag = "/".equals(mEnd);
+     */
+    private fun callback(matcher: Matcher?, dtd: Dtd?): String? {
+        // html tag
+        // list(, mText, $mComment, $mEnd, $mTag, $mAttr, $mEmpty) = $matches;
+        //    [1] => text
+        //    [1] => !-- comment --
+        //    [2] => /
+        //    [3] => TAG
+        //    [4] => ... (attributes)
+        //    [5] => /   (empty)
+        val mText = matcher!!.group(1)
+        val mComment = matcher.group(2)
+        val mEnd = matcher.group(3)
+        val mTag = matcher.group(4)
+        var mAttr = matcher.group(5)
+        val mEmpty = matcher.group(6)
+        val bEndTag = "/" == mEnd
+        var str: String? = ""
 
-		String str = "";
-
-		// Phase #1 - stuff between tags.
-		if( ! mText.isEmpty() ) {
-            StackItem item = this.tagStack.peek(); // @ reset()
-            DtdElement elm;
-			// Text not allowed?
-			if( item != null  &&  (elm = dtd.get(item.tag)) != null  &&  elm.getElement("%DATA") != null) { }
-
-			// inside pre & textarea preserve spaces
-            else if( this.tagUsedCount.get("pre", 0) != 0 
-                  || this.tagUsedCount.get("textarea",0) != 0
-                  || this.tagUsedCount.get("script", 0) != 0 )
-				str = JTexyStringUtils.freezeSpaces(mText);
-
-			// otherwise shrink multiple spaces
-			else str = mText.replaceAll("[ \n]+", " ");
-		}
+        // Phase #1 - stuff between tags.
+        if (!mText!!.isEmpty()) {
+            val item = tagStack!!.peek() // @ reset()
+            var elm: DtdElement
+            // Text not allowed?
+            if (item != null && dtd!![item.tag].also { elm = it!! } != null && elm.getElement("%DATA") != null) {
+            } else if (tagUsedCount!!["pre", 0] != 0 || tagUsedCount!!["textarea", 0] != 0 || tagUsedCount!!["script", 0] != 0) str =
+                JTexyStringUtils.freezeSpaces(mText) else str = mText.replace("[ \n]+".toRegex(), " ")
+        }
 
 
-		// Phase #2 - HTML comment.
-		if( StringUtils.isNotEmpty(mComment) ) 
-            return str + "<" + JTexyStringUtils.freezeSpaces(mComment) + ">";
+        // Phase #2 - HTML comment.
+        if (StringUtils.isNotEmpty(mComment)) return str + "<" + JTexyStringUtils.freezeSpaces(mComment) + ">"
 
 
-		// Phase #3 - HTML tag.    // (empty means contains "/")
-        boolean bEmpty = !mEmpty.isEmpty() || (dtd.contains(mTag) && dtd.get(mTag).hasNoChildren());
-		if( bEmpty && bEndTag ) 
-            return str; // Wrong tag: </tag/>
+        // Phase #3 - HTML tag.    // (empty means contains "/")
+        val bEmpty = !mEmpty!!.isEmpty() || dtd!!.contains(mTag) && dtd[mTag]!!.hasNoChildren()
+        if (bEmpty && bEndTag) return str // Wrong tag: </tag/>
+        if (bEndTag) {  // End tag.
 
+            // Has a start tag?
+            if (0 == tagUsedCount!![mTag, 0]) // @ empty(this.tagUsed[$mTag])
+                return str
 
-		if( bEndTag ) {  // End tag.
-
-			// Has a start tag?
-			if( 0 == this.tagUsedCount.get(mTag, 0))   // @ empty(this.tagUsed[$mTag])
-                return str;
-
-			// Autoclose the tags.
-			Stack<StackItem> tmpStack = new Stack();
-			boolean back = true;
-            for( Iterator<StackItem> it = this.tagStack.iterator(); it.hasNext(); ) {
-                StackItem item = it.next();
-				String stackTag = item.tag;
-				str += item.close;
-				this.space -= item.indent;
-                this.tagUsedCount.decrement( stackTag );
-				back = back && htmlDTD.getInlineElements().contains( new DtdElement(stackTag) );  // isset(TexyHtml::$inlineElements[$tag]);
-				it.remove(); // Otherwise ConcurrentModificationException. //this.tagStack.remove(item); // unset(this.tagStack[$i]);
-				if( mTag.equals( stackTag ))  break;
-				tmpStack.push(item); // array_unshift($tmp, $item);
-			}
-
-            //@ if (!$back || !$tmp) return $s;
-			if(  (!back) || tmpStack.isEmpty() )  return str;
-
-			// Allowed-check (nejspis neni ani potreba)
-            {
-                StackItem item = this.tagStack.peek();
-                Set<DtdElement> dtdContent = ( item != null ) ? item.dtdContent : this.baseDTD.getElements();
-                if( ! dtdContent.contains( new DtdElement(tmpStack.firstElement().tag) ) ) return str;  // TODO:  Change dtdContent to DtdElement.
+            // Autoclose the tags.
+            val tmpStack: Stack<StackItem?> = Stack<Any?>()
+            var back = true
+            val it = tagStack!!.iterator()
+            while (it.hasNext()) {
+                val item = it.next()
+                val stackTag = item!!.tag
+                str += item.close
+                space -= item.indent
+                tagUsedCount!!.decrement(stackTag)
+                back = back && htmlDTD.inlineElements.contains(DtdElement(stackTag)) // isset(TexyHtml::$inlineElements[$tag]);
+                it.remove() // Otherwise ConcurrentModificationException. //this.tagStack.remove(item); // unset(this.tagStack[$i]);
+                if (mTag == stackTag) break
+                tmpStack.push(item) // array_unshift($tmp, $item);
             }
 
-			// Autoopen tags.
-			for( StackItem item : tmpStack )
-			{
-				str += item.open;
-				this.space += item.indent;
-				this.tagUsedCount.increment(item.tag);
-				this.tagStack.push(item); // array_unshift(this.tagStack, $item);
-			}
+            //@ if (!$back || !$tmp) return $s;
+            if (!back || tmpStack.isEmpty()) return str
 
+            // Allowed-check (nejspis neni ani potreba)
+            run {
+                val item = this.tagStack!!.peek()
+                val dtdContent = if (item != null) item.dtdContent else this.baseDTD!!.elements
+                if (!dtdContent!!.contains(DtdElement(tmpStack.firstElement()!!.tag))) return str // TODO:  Change dtdContent to DtdElement.
+            }
 
-		} else { // start tag
-
-			Set<DtdElement> dtdContent = this.baseDTD.getElements();
-            
-            boolean allowed;
+            // Autoopen tags.
+            for (item in tmpStack) {
+                str += item!!.open
+                space += item.indent
+                tagUsedCount!!.increment(item.tag)
+                tagStack!!.push(item) // array_unshift(this.tagStack, $item);
+            }
+        } else { // start tag
+            var dtdContent = baseDTD!!.elements
+            var allowed: Boolean
 
             // Unknown (non-html) tag.
-			if( ! this.htmlDTD.getDtd().contains( mTag )) {
-				allowed = true;
-				StackItem item = this.tagStack.peek(); // @ reset()
-				if( item != null ) dtdContent = item.dtdContent;
-			} 
+            if (!htmlDTD.dtd.contains(mTag)) {
+                allowed = true
+                val item = tagStack!!.peek() // @ reset()
+                if (item != null) dtdContent = item.dtdContent
+            } else {
+                // Optional end tag closing.
+                //for( StackItem item : this.tagStack )  // $i => $item
+                val it = tagStack!!.iterator()
+                while (it.hasNext()) {
+                    val item = it.next()
 
-            // HTML tag.
-            else {
-				// Optional end tag closing.
-				//for( StackItem item : this.tagStack )  // $i => $item
-                for( Iterator<StackItem> it = this.tagStack.iterator(); it.hasNext(); ) {
-                    StackItem item = it.next();
-                    
-					// Is tag allowed here?
-					dtdContent = item.dtdContent;
-					if( dtdContent.contains( new DtdElement(mTag) ) )  break;
-
-					String tag = item.tag;
+                    // Is tag allowed here?
+                    dtdContent = item!!.dtdContent
+                    if (dtdContent!!.contains(DtdElement(mTag))) break
+                    val tag = item.tag
                     // Auto-close hidden, optional and inline tags.
-                    DtdElement tagDtd = new DtdElement(tag);
-					if( (null != item.close)
-                        && ! this.htmlDTD.getOptionalEndElements().contains(tagDtd)
-                        && ! this.htmlDTD.getInlineElements().contains(tagDtd)
-                    )  break;
+                    val tagDtd = DtdElement(tag)
+                    if (null != item.close
+                        && !htmlDTD.getOptionalEndElements().contains(tagDtd)
+                        && !htmlDTD.inlineElements.contains(tagDtd)
+                    ) break
 
-					// Close it.
-					str += item.close;
-					this.space -= item.indent;
-					this.tagUsedCount.decrement(tag);
-					//this.tagStack.remove(item); // unset(this.tagStack[$i]);
-                    it.remove();
-					dtdContent = this.baseDTD.getElements();
-				}
+                    // Close it.
+                    str += item.close
+                    space -= item.indent
+                    tagUsedCount!!.decrement(tag)
+                    //this.tagStack.remove(item); // unset(this.tagStack[$i]);
+                    it.remove()
+                    dtdContent = baseDTD!!.elements
+                }
 
-				// Is tag allowed in this content?
-				allowed = dtdContent.contains( new DtdElement(mTag) );
+                // Is tag allowed in this content?
+                allowed = dtdContent!!.contains(DtdElement(mTag))
 
-				// Check deep element prohibitions.
-				if( allowed ) {
-                    Set<DtdElement> prohibs = this.htmlDTD.getDtd().getProbibitionsOf(new DtdElement(mTag) );
-                    if( prohibs != null )
-                    for( DtdElement dtdElement : prohibs ) {
-                        if( 0 == this.tagUsedCount.get(dtdElement.getName(), 0) ){
-                            allowed = false;
-                            break;
+                // Check deep element prohibitions.
+                if (allowed) {
+                    val prohibs = htmlDTD.dtd.getProbibitionsOf(DtdElement(mTag))
+                    if (prohibs != null) for (dtdElement in prohibs) {
+                        if (0 == tagUsedCount!![dtdElement.name, 0]) {
+                            allowed = false
+                            break
                         }
                     }
-				}
-			}// else (is an HTML element)
-            
-
-			// Empty elements se neukladaji do zasobniku.
-			if( !mEmpty.isEmpty() ) {
-				if( ! allowed ) return str;
-
-				if( this.isXml ) mAttr += " /";
-
-				boolean indent_ = this.indent &&  this.tagUsedCount.notUsed("pre") && this.tagUsedCount.notUsed("textarea");
-
-                int len = str.length() + mTag.length() + mAttr.length() + 5 + Math.max(0, this.space); // max() is a quick fix, indentation still broken.
-				if( indent && "br".equals(mTag) ){
-					// Formatting exception
-					StringBuilder sb = new StringBuilder(len);
-                    sb.append( str.replaceFirst("\\s+$", "") );
-                    sb.append('<') .append(mTag).append(mAttr).append(">\n");
-                    for( int i = 0; i < this.space; i++)  sb.append("\t");
-                    return sb.append("\u0007").toString();
                 }
-                
-				if( indent && ! this.htmlDTD.getInlineElements().contains(new DtdElement(mTag)) ) {
-                    StringBuilder sb = new StringBuilder(len).append("\r");
-                    sb.append(str);
-                    for( int i = 0; i <= this.space; i++)  sb.append("\t"); 
-					sb.append('<').append(mTag).append(mAttr).append('>');
-                    for( int i = 0; i <= this.space; i++)  sb.append("\t"); 
-                    return sb.toString();
-				}
+            } // else (is an HTML element)
 
-				return new StringBuilder(len).append(str).append('<').append(mTag).append(mAttr).append('>').toString();
-			}
 
-			String open = null;
-			String close = null;
-			int indent_ = 0;
+            // Empty elements se neukladaji do zasobniku.
+            if (!mEmpty.isEmpty()) {
+                if (!allowed) return str
+                if (isXml) mAttr += " /"
+                val indent_ = indent && tagUsedCount!!.notUsed("pre") && tagUsedCount!!.notUsed("textarea")
+                val len = str!!.length + mTag!!.length + mAttr!!.length + 5 + Math.max(
+                    0,
+                    space
+                ) // max() is a quick fix, indentation still broken.
+                if (indent && "br" == mTag) {
+                    // Formatting exception
+                    val sb = StringBuilder(len)
+                    sb.append(str.replaceFirst("\\s+$".toRegex(), ""))
+                    sb.append('<').append(mTag).append(mAttr).append(">\n")
+                    for (i in 0 until space) sb.append("\t")
+                    return sb.append("\u0007").toString()
+                }
+                if (indent && !htmlDTD.inlineElements.contains(DtdElement(mTag))) {
+                    val sb = StringBuilder(len).append("\r")
+                    sb.append(str)
+                    for (i in 0..space) sb.append("\t")
+                    sb.append('<').append(mTag).append(mAttr).append('>')
+                    for (i in 0..space) sb.append("\t")
+                    return sb.toString()
+                }
+                return StringBuilder(len).append(str).append('<').append(mTag).append(mAttr).append('>').toString()
+            }
+            var open: String? = null
+            var close: String? = null
+            var indent_ = 0
 
-			/* // @ Commented out in Texy
+            /* // @ Commented out in Texy
 			if( !isset(TexyHtml::$inlineElements[$mTag])) {
 				// block tags always decorate with \n
 				str += "\n";
 				$close = "\n";
 			}
-			*/
+			*/if (allowed) {
+                open = StringBuilder(2 + mTag!!.length + mAttr!!.length).append('<').append(mTag).append(mAttr).append('>').toString()
 
-			if( allowed ) {
-				open = new StringBuilder(2+mTag.length()+mAttr.length()).append('<').append(mTag).append(mAttr).append('>').toString();
+                // Receive new content (ins & del are special cases). TBD: Move the exception to DTD?
+                val elDtd = htmlDTD.dtd[mTag]
+                if (elDtd!!.hasChildren() && "ins" != mTag && "del" != mTag) dtdContent = elDtd.elements
 
-				// Receive new content (ins & del are special cases). TBD: Move the exception to DTD?
-                DtdElement elDtd = this.htmlDTD.getDtd().get(mTag);
-                if( elDtd.hasChildren() && !"ins".equals(mTag) && !"del".equals(mTag))
-                    dtdContent = elDtd.getElements();
-
-				// Format output (if indent is enabled and it's not inline element).
-				if( this.indent && ! this.htmlDTD.getInlineElements().contains( new DtdElement(mTag) ) )
-                {
+                // Format output (if indent is enabled and it's not inline element).
+                if (indent && !htmlDTD.inlineElements.contains(DtdElement(mTag))) {
                     // Create indented close tag for this element.
-                    close = new StringBuilder(6+mTag.length()+this.space)
-                            .append("\u0008</").append(mTag).append(">\n").append( StringUtils.repeat("\t", this.space)).toString();
+                    close = StringBuilder(6 + mTag.length + space)
+                        .append("\u0008</").append(mTag).append(">\n").append(StringUtils.repeat("\t", space)).toString()
                     // Print indented open tag.
-					str +=  new StringBuilder(3+open.length()+this.space)
-                            .append('\n').append( StringUtils.repeat("\t", this.space++)).append(open).append("\u0007").toString();
-					indent_ = 1;
-				} else {
+                    str += StringBuilder(3 + open.length + space)
+                        .append('\n').append(StringUtils.repeat("\t", space++)).append(open).append("\u0007").toString()
+                    indent_ = 1
+                } else {
                     // Create plain close tag.
-					close = new StringBuilder(3+mTag.length()).append("</").append(mTag).append('>').toString(); //"</mTag>";
+                    close = StringBuilder(3 + mTag.length).append("</").append(mTag).append('>').toString() //"</mTag>";
                     // Print plain open tag.
-					str += open;
-				}
+                    str += open
+                }
 
-				// TODO: problematic formatting of select / options, object / params
-			}
-
-
-			// Open tag, put to stack, increase counter
-			StackItem item = new StackItem( mTag, open, close, dtdContent, indent_ );
-			this.tagStack.push(item); // array_unshift()
-            this.tagUsedCount.increment(mTag);
-		}
-
-		return str;
-	}// callback()
+                // TODO: problematic formatting of select / options, object / params
+            }
 
 
+            // Open tag, put to stack, increase counter
+            val item = StackItem(mTag, open, close, dtdContent, indent_)
+            tagStack!!.push(item) // array_unshift()
+            tagUsedCount!!.increment(mTag)
+        }
+        return str
+    } // callback()
 
-	/**
-	 * Callback function: wrap lines.
-	 */
-	private String wrap( String space, String str ){
-		return space + WordUtils.wrap(str, this.lineWrapWidth, "\n" + space, false);
-	}
+    /**
+     * Callback function: wrap lines.
+     */
+    private fun wrap(space: String, str: String): String {
+        return space + WordUtils.wrap(
+            str, lineWrapWidth, """
+     
+     $space
+     """.trimIndent(), false
+        )
+    }
 
+    companion object {
+        private val log = Logger.getLogger(HtmlOutputModule::class.java.name)
+    }
 }
