@@ -6,8 +6,8 @@ package cz.dynawest.jtexy;
  * This was a try to rewrite the PHP classes blindly. No way.
  *
  * <code>
- *     $texy = new Texy();
- *     $html = $texy.process($text);
+ *     _SS_texy = new Texy();
+ *     _SS_html = _SS_texy.process(_SS_text);
  * </code>
  *
  ** @author Ondrej Zizka
@@ -163,7 +163,7 @@ public class JTexy1 /*extends Nette::Object*/ {
      *                "pattern" => regular expression)
      */
     private Map<String, PatternHandler> linePatterns = new HashMap();
-    private $_linePatterns;
+    private _SS__linePatterns;
 
     /**
      * Registered regexps and associated handlers for block parsing.
@@ -171,42 +171,42 @@ public class JTexy1 /*extends Nette::Object*/ {
      *                "pattern" => regular expression)
      */
     private Map<String, PatternHandler> blockPatterns = new HashMap();
-    private $_blockPatterns;
+    private _SS__blockPatterns;
 
     /** @var array */
     private Map<String, PatternHandler> postHandlers = new HashMap();
 
     /** @var TexyHtml DOM structure for parsed text */
-    private $DOM;
+    private _SS_DOM;
 
     /** @var array  Texy protect markup table */
-    private $marks = array();
+    private _SS_marks = ArrayList();
 
     /** @var array  for internal usage */
-    public $_classes, $_styles;
+    public _SS__classes, _SS__styles;
 
     /** @var bool */
     private boolean processing;
 
     /** @var array of events and registered handlers */
-    private $handlers = array();
+    private _SS_handlers = array();
 
     /**
      * DTD descriptor.
-     *   $dtd[element][0] - allowed attributes (as array keys)
-     *   $dtd[element][1] - allowed content for an element (content model) (as array keys)
+     *   _SS_dtd[element][0] - allowed attributes (as array keys)
+     *   _SS_dtd[element][1] - allowed content for an element (content model) (as array keys)
      *                    - array of allowed elements (as keys)
      *                    - FALSE - empty element
      *                    - 0 - special case for ins & del
      * @var array
      */
-    public $dtd;
+    public _SS_dtd;
 
     /** @var array */
-    private static $dtdCache;
+    private static _SS_dtdCache;
 
     /** @var int  HTML mode */
-    private $mode;
+    private _SS_mode;
 
 
     /** DEPRECATED */
@@ -235,13 +235,13 @@ public class JTexy1 /*extends Nette::Object*/ {
         TexyLink link = new TexyLink("http://texy.info/");
         link.modifier.title = "The best text to HTML converter and formatter";
         link.label = "Texy!";
-        this.linkModule.addReference("texy", $link);
+        this.linkModule.addReference("texy", _SS_link);
 
         link = new TexyLink("http://www.google.com/search?q=%s");
-        this.linkModule.addReference("google", $link);
+        this.linkModule.addReference("google", _SS_link);
 
         link = new TexyLink("http://en.wikipedia.org/wiki/Special:Search?search=%s");
-        this.linkModule.addReference("wikipedia", $link);
+        this.linkModule.addReference("wikipedia", _SS_link);
     }
 
 
@@ -255,19 +255,19 @@ public class JTexy1 /*extends Nette::Object*/ {
     {
 
 
-		/*if (!isset(JTexy.dtdCache[$mode])) {
+		/*if (!isset(JTexy.dtdCache[_SS_mode])) {
 			require dirname(__FILE__) . "/libs/DTD.php";
-			JTexy.dtdCache[$mode] = $dtd;
+			JTexy.dtdCache[_SS_mode] = _SS_dtd;
 		}*/
 
-        this.mode = $mode;
-        this.dtd = JTexy1.dtdCache[$mode];
-        TexyHtml::$xhtml = (boolean) ($mode & JTexy1.XML); // TODO: remove?
+        this.mode = _SS_mode;
+        this.dtd = JTexy1.dtdCache[_SS_mode];
+        TexyHtml::_SS_xhtml = (boolean) (_SS_mode & JTexy1.XML); // TODO: remove?
 
         // accept all valid HTML tags and attributes by default
         this.allowedTags = array();
-        foreach (this.dtd as $tag => $dtd) {
-        this.allowedTags[$tag] = JTexy1.ALL;
+        foreach (this.dtd as _SS_tag => _SS_dtd) {
+        this.allowedTags[_SS_tag] = JTexy1.ALL;
     }
     }
 
@@ -316,7 +316,6 @@ public class JTexy1 /*extends Nette::Object*/ {
 
 
 
-
     class PatternHandler{
         String name;
         Handler handler;
@@ -342,7 +341,7 @@ public class JTexy1 /*extends Nette::Object*/ {
 
     public final void registerBlockPattern(Handler handler, Pattern pattern, String name )
     {
-        // if (!preg_match("#(.)\^.*\$\\1[a-z]*#is", $pattern)) die("Texy: Not a block pattern $name");
+        // if (!preg_match("#(.)\^.*\_SS_\\1[a-z]*#is", _SS_pattern)) die("Texy: Not a block pattern _SS_name");
 
         if( !this.allowed.containsKey(name)) this.allowed.put(name, true);
 
@@ -355,7 +354,7 @@ public class JTexy1 /*extends Nette::Object*/ {
     {
         if( !this.allowed.containsKey(name)) this.allowed.put(name, true);
 
-        this.postHandlers[$name] = $handler;
+        this.postHandlers[_SS_name] = _SS_handler;
     }
 
 
@@ -385,7 +384,7 @@ public class JTexy1 /*extends Nette::Object*/ {
         else this._styles = this.allowedStyles;
 
         // convert to UTF-8 (and check source encoding)
-        text = TexyUtf::toUtf($text, this.encoding);
+        text = TexyUtf::toUtf(_SS_text, this.encoding);
 
         if (this.removeSoftHyphens) {
             text = text.replace( "\u00C2", "" ).replace("\u00AD", "");
@@ -397,7 +396,7 @@ public class JTexy1 /*extends Nette::Object*/ {
         // replace tabs with spaces
         this.tabWidth = Math.max(1, this.tabWidth);
         while( text.indexOf("\t") != -1 ){
-            text = preg_replace_callback("#^(.*)\t#mU", array(this, "tabCb"), $text);
+            text = preg_replace_callback("#^(.*)\t#mU", array(this, "tabCb"), _SS_text);
         }
 
         // user before handler
@@ -406,30 +405,30 @@ public class JTexy1 /*extends Nette::Object*/ {
         // select patterns
         this._linePatterns = this.linePatterns;
         this._blockPatterns = this.blockPatterns;
-        foreach (this._linePatterns as $name => $foo) {
-            if (empty(this.allowed[$name])) unset(this._linePatterns[$name]);
+        foreach (this._linePatterns as _SS_name => _SS_foo) {
+            if (empty(this.allowed[_SS_name])) unset(this._linePatterns[_SS_name]);
         }
-        foreach (this._blockPatterns as $name => $foo) {
-            if (empty(this.allowed[$name])) unset(this._blockPatterns[$name]);
+        foreach (this._blockPatterns as _SS_name => _SS_foo) {
+            if (empty(this.allowed[_SS_name])) unset(this._blockPatterns[_SS_name]);
         }
 
         // parse Texy! document into internal DOM structure
         this.DOM = TexyHtml::el();
-        if ($singleLine) {
-            this.DOM.parseLine(this, $text);
+        if (_SS_singleLine) {
+            this.DOM.parseLine(this, _SS_text);
         } else {
-            this.DOM.parseBlock(this, $text);
+            this.DOM.parseBlock(this, _SS_text);
         }
 
         // user after handler
-        this.invokeHandlers("afterParse", array(this, this.DOM, $singleLine));
+        this.invokeHandlers("afterParse", array(this, this.DOM, _SS_singleLine));
 
         // converts internal DOM structure to final HTML code
-        $html = this.DOM.toHtml(this);
+        _SS_html = this.DOM.toHtml(this);
 
         // this notice should remain
         if (JTexy1.advertisingNotice) {
-            $html .= "\n<!-- by Texy2! -.";
+            _SS_html .= "\n<!-- by Texy2! -.";
             if (JTexy1.advertisingNotice === "once") {
                 JTexy1.advertisingNotice = FALSE;
             }
@@ -437,7 +436,7 @@ public class JTexy1 /*extends Nette::Object*/ {
 
         this.processing = FALSE;
 
-        return TexyUtf::utf2html($html, this.encoding);
+        return TexyUtf::utf2html(_SS_html, this.encoding);
     }
 
 
@@ -470,7 +469,7 @@ public class JTexy1 /*extends Nette::Object*/ {
     public String toText()
     {
         if (!this.DOM) {
-            throw new InvalidStateException("Call $texy.process() first.");
+            throw new InvalidStateException("Call _SS_texy.process() first.");
         }
 
         return TexyUtf::utfTo(this.DOM.toText(this), this.encoding);
@@ -489,11 +488,11 @@ public class JTexy1 /*extends Nette::Object*/ {
 
         // line-postprocessing
         String[] blocks = s.split(JTexy1.CONTENT_BLOCK);
-        foreach (this.postHandlers as $name => $handler) {
-        if (empty(this.allowed[$name])) continue;
-        foreach ($blocks as $n => $s) {
-            if ($n % 2 === 0 && $s !== "") {
-                $blocks[$n] = call_user_func($handler, $s);
+        foreach (this.postHandlers as _SS_name => _SS_handler) {
+        if (empty(this.allowed[_SS_name])) continue;
+        foreach (_SS_blocks as _SS_n => _SS_s) {
+            if (_SS_n % 2 === 0 && _SS_s !== "") {
+                _SS_blocks[_SS_n] = call_user_func(_SS_handler, _SS_s);
             }
         }
     }
@@ -511,7 +510,7 @@ public class JTexy1 /*extends Nette::Object*/ {
         // unfreeze spaces
         s = JTexy1.unfreezeSpaces(s);
 
-        return $s;
+        return _SS_s;
     }
 
 
@@ -520,28 +519,28 @@ public class JTexy1 /*extends Nette::Object*/ {
      * Converts internal string representation to final HTML code in UTF-8.
      * @return string
      */
-    final public function stringToText($s)
+    final public function stringToText(_SS_s)
     {
-        $save = this.htmlOutputModule.lineWrap;
+        _SS_save = this.htmlOutputModule.lineWrap;
         this.htmlOutputModule.lineWrap = FALSE;
-        $s = this.stringToHtml( $s );
-        this.htmlOutputModule.lineWrap = $save;
+        _SS_s = this.stringToHtml( _SS_s );
+        this.htmlOutputModule.lineWrap = _SS_save;
 
         // remove tags
-        $s = preg_replace("#<(script|style)(.*)</\\1>#Uis", "", $s);
-        $s = strip_tags($s);
-        $s = preg_replace("#\n\s*\n\s*\n[\n\s]*\n#", "\n\n", $s);
+        _SS_s = preg_replace("#<(script|style)(.*)</\\1>#Uis", "", _SS_s);
+        _SS_s = strip_tags(_SS_s);
+        _SS_s = preg_replace("#\n\s*\n\s*\n[\n\s]*\n#", "\n\n", _SS_s);
 
         // entities . chars
-        $s = JTexy1.unescapeHtml($s);
+        _SS_s = JTexy1.unescapeHtml(_SS_s);
 
         // convert nbsp to normal space and remove shy
-        $s = strtr($s, array(
+        _SS_s = strtr(_SS_s, array(
                         "\xC2\xAD" => "",  // shy
                 "\xC2\xA0" => " ", // nbsp
 		));
 
-        return $s;
+        return _SS_s;
     }
 
 
@@ -553,13 +552,13 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  callback
      * @return void
      */
-    final public function addHandler($event, $callback)
+    final public function addHandler(_SS_event, _SS_callback)
     {
-        if (!is_callable($callback)) {
+        if (!is_callable(_SS_callback)) {
             throw new InvalidArgumentException("Invalid callback.");
         }
 
-        this.handlers[$event][] = $callback;
+        this.handlers[_SS_event][] = _SS_callback;
     }
 
 
@@ -572,14 +571,14 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  array    arguments passed into handler
      * @return mixed
      */
-    final public function invokeAroundHandlers($event, $parser, $args)
+    final public function invokeAroundHandlers(_SS_event, _SS_parser, _SS_args)
     {
-        if (!isset(this.handlers[$event])) return FALSE;
+        if (!isset(this.handlers[_SS_event])) return FALSE;
 
-        $invocation = new TexyHandlerInvocation(this.handlers[$event], $parser, $args);
-        $res = $invocation.proceed();
-        $invocation.free();
-        return $res;
+        _SS_invocation = new TexyHandlerInvocation(this.handlers[_SS_event], _SS_parser, _SS_args);
+        _SS_res = _SS_invocation.proceed();
+        _SS_invocation.free();
+        return _SS_res;
     }
 
 
@@ -591,12 +590,12 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  array    arguments passed into handler
      * @return void
      */
-    final public function invokeHandlers($event, $args)
+    final public function invokeHandlers(_SS_event, _SS_args)
     {
-        if (!isset(this.handlers[$event])) return;
+        if (!isset(this.handlers[_SS_event])) return;
 
-        foreach (this.handlers[$event] as $handler) {
-        call_user_func_array($handler, $args);
+        foreach (this.handlers[_SS_event] as _SS_handler) {
+        call_user_func_array(_SS_handler, _SS_args);
     }
     }
 
@@ -608,9 +607,9 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string
      * @return string
      */
-    final public static function freezeSpaces($s)
+    final public static function freezeSpaces(_SS_s)
     {
-        return strtr($s, " \t\r\n", "\x01\x02\x03\x04");
+        return strtr(_SS_s, " \t\r\n", "\x01\x02\x03\x04");
     }
 
 
@@ -620,9 +619,9 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string
      * @return string
      */
-    final public static function unfreezeSpaces($s)
+    final public static function unfreezeSpaces(_SS_s)
     {
-        return strtr($s, "\x01\x02\x03\x04", " \t\r\n");
+        return strtr(_SS_s, "\x01\x02\x03\x04", " \t\r\n");
     }
 
 
@@ -632,22 +631,22 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string
      * @return string
      */
-    final public static function normalize($s)
+    final public static function normalize(_SS_s)
     {
         // standardize line endings to unix-like
-        $s = str_replace("\r\n", "\n", $s); // DOS
-        $s = strtr($s, "\r", "\n"); // Mac
+        _SS_s = str_replace("\r\n", "\n", _SS_s); // DOS
+        _SS_s = strtr(_SS_s, "\r", "\n"); // Mac
 
         // remove special chars; leave \t + \n
-        $s = preg_replace("#[\x00-\x08\x0B-\x1F]+#", "", $s);
+        _SS_s = preg_replace("#[\x00-\x08\x0B-\x1F]+#", "", _SS_s);
 
         // right trim
-        $s = preg_replace("#[\t ]+$#m", "", $s);
+        _SS_s = preg_replace("#[\t ]+_SS_#m", "", _SS_s);
 
         // trailing spaces
-        $s = trim($s, "\n");
+        _SS_s = trim(_SS_s, "\n");
 
-        return $s;
+        return _SS_s;
     }
 
 
@@ -658,14 +657,14 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string
      * @return string
      */
-    final public static function webalize($s, $charlist = NULL)
+    final public static function webalize(_SS_s, _SS_charlist = NULL)
     {
-        $s = TexyUtf::utf2ascii($s);
-        $s = strtolower($s);
-        if ($charlist) $charlist = preg_quote($charlist, "#");
-        $s = preg_replace("#[^a-z0-9".$charlist."]+#", "-", $s);
-        $s = trim($s, "-");
-        return $s;
+        _SS_s = TexyUtf::utf2ascii(_SS_s);
+        _SS_s = strtolower(_SS_s);
+        if (_SS_charlist) _SS_charlist = preg_quote(_SS_charlist, "#");
+        _SS_s = preg_replace("#[^a-z0-9"._SS_charlist."]+#", "-", _SS_s);
+        _SS_s = trim(_SS_s, "-");
+        return _SS_s;
     }
 
 
@@ -676,9 +675,9 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string
      * @return string
      */
-    final public static function escapeHtml($s)
+    final public static function escapeHtml(_SS_s)
     {
-        return str_replace(array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), $s);
+        return str_replace(array("&", "<", ">"), array("&amp;", "&lt;", "&gt;"), _SS_s);
     }
 
 
@@ -688,10 +687,10 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string
      * @return string
      */
-    final public static function unescapeHtml($s)
+    final public static function unescapeHtml(_SS_s)
     {
-        if (strpos($s, "&") === FALSE) return $s;
-        return html_entity_decode($s, ENT_QUOTES, "UTF-8");
+        if (strpos(_SS_s, "&") === FALSE) return _SS_s;
+        return html_entity_decode(_SS_s, ENT_QUOTES, "UTF-8");
     }
 
 
@@ -701,12 +700,12 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string
      * @return string
      */
-    final public static function outdent($s)
+    final public static function outdent(_SS_s)
     {
-        $s = trim($s, "\n");
-        $spaces = strspn($s, " ");
-        if ($spaces) return preg_replace("#^ {1,$spaces}#m", "", $s);
-        return $s;
+        _SS_s = trim(_SS_s, "\n");
+        _SS_spaces = strspn(_SS_s, " ");
+        if (_SS_spaces) return preg_replace("#^ {1,_SS_spaces}#m", "", _SS_s);
+        return _SS_s;
     }
 
 
@@ -717,24 +716,24 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  int      JTexy.CONTENT_* constant
      * @return string  internal mark
      */
-    final public function protect($child, $contentType)
+    final public function protect(_SS_child, _SS_contentType)
     {
-        if ($child==="") return "";
+        if (_SS_child==="") return "";
 
-        $key = $contentType
+        _SS_key = _SS_contentType
                 . strtr(base_convert(count(this.marks), 10, 8), "01234567", "\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F")
-                . $contentType;
+                . _SS_contentType;
 
-        this.marks[$key] = $child;
+        this.marks[_SS_key] = _SS_child;
 
-        return $key;
+        return _SS_key;
     }
 
 
 
-    final public function unProtect($html)
+    final public function unProtect(_SS_html)
     {
-        return strtr($html, this.marks);
+        return strtr(_SS_html, this.marks);
     }
 
 
@@ -745,12 +744,12 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string   type: a-anchor, i-image, c-cite
      * @return bool
      */
-    final public function checkURL($URL, $type)
+    final public function checkURL(_SS_URL, _SS_type)
     {
         // absolute URL with scheme? check scheme!
-        if (!empty(this.urlSchemeFilters[$type])
-                && preg_match("#".TEXY_URLSCHEME."#A", $URL)
-                && !preg_match(this.urlSchemeFilters[$type], $URL))
+        if (!empty(this.urlSchemeFilters[_SS_type])
+                && preg_match("#".TEXY_URLSCHEME."#A", _SS_URL)
+                && !preg_match(this.urlSchemeFilters[_SS_type], _SS_URL))
             return FALSE;
 
         return TRUE;
@@ -763,10 +762,10 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string  URL
      * @return bool
      */
-    final public static function isRelative($URL)
+    final public static function isRelative(_SS_URL)
     {
         // check for scheme, or absolute path, or absolute URL
-        return !preg_match("#".TEXY_URLSCHEME."|[\#/?]#A", $URL);
+        return !preg_match("#".TEXY_URLSCHEME."|[\#/?]#A", _SS_URL);
     }
 
 
@@ -777,10 +776,10 @@ public class JTexy1 /*extends Nette::Object*/ {
      * @param  string  root
      * @return string
      */
-    final public static function prependRoot($URL, $root)
+    final public static function prependRoot(_SS_URL, _SS_root)
     {
-        if ($root == NULL || !JTexy1.isRelative($URL)) return $URL;
-        return rtrim($root, "/\\") . "/" . $URL;
+        if (_SS_root == NULL || !JTexy1.isRelative(_SS_URL)) return _SS_URL;
+        return rtrim(_SS_root, "/\\") . "/" . _SS_URL;
     }
 
     final public function getLinePatterns()
@@ -796,26 +795,15 @@ public class JTexy1 /*extends Nette::Object*/ {
         return this.DOM;
     }
 
-    private String tabCb($m)
+    private String tabCb(_SS_m)
     {
         StringBuilder sb = new StringBuilder();
 
-        return $m[1] + str_repeat(" ", this.tabWidth - strlen($m[1]) % this.tabWidth);
+        return _SS_m[1] + str_repeat(" ", this.tabWidth - strlen(_SS_m[1]) % this.tabWidth);
     }
 
 
-    /**
-     * PHP garbage collector helper.
-     */
-    final public function free()
-    {
-        foreach (array_keys(get_object_vars(this)) as $key)
-        this.$key = NULL;
-    }
-
-
-
-    final public function __clone()
+    final public __clone()
     {
         throw new NotSupportedException("Clone is not supported.");
     }
