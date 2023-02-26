@@ -10,12 +10,12 @@ import java.util.*
  */
 class ProtectorArray : Protector() {
     // HashMap of stored (protected) strings.
-    private val safe: MutableList<String?> = LinkedList<Any?>()
+    private val safe: MutableList<String> = LinkedList()
 
     /**
      * Stores the given string and returns a key under which it's stored.
      */
-    override fun protect(str: String?, type: ContentType): String {
+    override fun protect(str: String, type: ContentType): String {
         val curSize = safe.size
         val key = Utils.intToKey(curSize)
         safe.add( /*curSize,*/str)
@@ -23,7 +23,7 @@ class ProtectorArray : Protector() {
         return typeStr + key + typeStr
     }
 
-    fun protect(str: String?): String {
+    fun protect(str: String): String {
         return protect(str, ContentType.MARKUP)
     }
     /**

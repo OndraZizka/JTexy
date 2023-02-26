@@ -2,6 +2,7 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.*
 import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.modules.TexyLink
 import cz.dynawest.jtexy.parsers.*
 import cz.dynawest.jtexy.util.JTexyStringUtils
@@ -13,6 +14,7 @@ import org.apache.commons.lang.StringUtils
 import org.dom4j.Node
 import org.dom4j.dom.DOMElement
 import org.dom4j.dom.DOMText
+import java.lang.Exception
 import java.util.*
 import java.util.logging.*
 
@@ -21,7 +23,7 @@ import java.util.logging.*
  * @author Ondrej Zizka
  */
 class LinkModule : TexyModule() {
-    override val eventListeners: Array<TexyEventListener<*>>
+    override val eventListeners: Array<TexyEventListener<TexyEvent>>
         // --- Module metainfo --- //
         get() = arrayOf(
             linkListener,
@@ -39,13 +41,13 @@ class LinkModule : TexyModule() {
     }
 
     // References map - predefined links.
-    private val refs: MutableMap<String?, TexyLink?> = HashMap<Any?, Any?>()
-    protected fun addRef(key: String?, link: TexyLink?) {
-        refs[key!!.lowercase(Locale.getDefault())] = link
+    private val refs: MutableMap<String, TexyLink> = HashMap()
+    protected fun addRef(key: String, link: TexyLink) {
+        refs[key.lowercase(Locale.getDefault())] = link
     }
 
-    protected fun getRef(key: String?): TexyLink? {
-        val link = refs[key!!.lowercase(Locale.getDefault())] ?: return null
+    protected fun getRef(key: String): TexyLink? {
+        val link = refs[key.lowercase(Locale.getDefault())] ?: return null
         return link.clone() // Cloning because we will change it.
     }
     // --- PatternHandler's --- //
@@ -61,7 +63,7 @@ class LinkModule : TexyModule() {
         override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
             //    [1] => [ref]
             val refName = StringUtils.substring(groups!![0]!!.match, 1, -1)
-            val link = getRef(refName) ?: return getTexy().invokeAroundHandlers(NewReferenceEvent(parser, refName))
+            val link = getRef(refName) ?: return texy.invokeAroundHandlers(NewReferenceEvent(parser, refName))
             // New reference encountered?
             link.type = TexyLink.Type.BRACKET
             var content: String? = null
@@ -72,26 +74,26 @@ class LinkModule : TexyModule() {
                 if (liveLock.contains(link.name)) content = link.label else {
                     liveLock.add(link.name)
                     val elm = DOMElement(Constants.HOLDER_ELEMENT_NAME)
-                    TexyLineParser(getTexy(), elm).parse(link.label)
-                    content = ProtectedHTMLWriter.Companion.fromElement(elm, getTexy().protector)
+                    TexyLineParser(texy, elm).parse(link.label)
+                    content = ProtectedHTMLWriter.Companion.fromElement(elm, texy.protector)
                     liveLock.remove(link.name)
                 }
             } else {
                 content = link.asText(true, true)
-                content = getTexy().protect(content, ContentType.TEXTUAL)
+                content = texy.protect(content, ContentType.TEXTUAL)
             }
-            return getTexy().invokeAroundHandlers(LinkReferenceEvent(parser, content, link))
+            return texy.invokeAroundHandlers(LinkReferenceEvent(parser, content, link))
         }
     }
 
     /** Used by the referencePH. TBD: Analyze.  */
-    private val liveLock: MutableSet<String?> = HashSet<Any?>()
+    private val liveLock: MutableSet<String> = HashSet()
     // --- EventListener's --- //
     /**
      * Before parse event listener, which resets module's internals
      * and parses and removes the link definitions.
      */
-    private val beforeParseListener: BeforeAfterEventListener<BeforeParseEvent> = object : BeforeAfterEventListener<BeforeParseEvent?> {
+    private val beforeParseListener: BeforeAfterEventListener<BeforeParseEvent> = object : BeforeAfterEventListener<BeforeParseEvent> {
         override val eventClass: Class<*>
             get() = BeforeParseEvent::class.java
 
@@ -113,29 +115,32 @@ class LinkModule : TexyModule() {
     }
 
     /** Reference definition callback for BeforeAfterEventListener.  */
-    private val REF_DEF_CALLBACK = StringsReplaceCallback { groups -> //    [1] => [ (reference) ]
-        //    [2] => link
-        //    [3] => ...
-        //    [4] => .(title)[class]{style}
-        val link = TexyLink(groups[2])
-        link.label = groups[3]
-        link.modifier = TexyModifier(groups[4])
-        fixLink(link)
-        addRef(groups[1], link)
-        ""
+    private val REF_DEF_CALLBACK = object: StringsReplaceCallback {
+        override fun replace(groups: Array<String>): String {
+            //    [1] => [ (reference) ]
+            //    [2] => link
+            //    [3] => ...
+            //    [4] => .(title)[class]{style}
+            val link = TexyLink(groups[2])
+            link.label = groups[3]
+            link.modifier = TexyModifier(groups[4])
+            fixLink(link)
+            addRef(groups[1], link)
+            return ""
+        }
     }
 
     /** New reference event.  */
     class NewReferenceEvent(parser: TexyParser?, refName: String?) : AroundEvent(parser, refName, null) {
         val refName: String?
-            get() = getText() // Alias.
+            get() = text // Alias.
     }
 
     /** Link reference event.  */
     class LinkReferenceEvent(parser: TexyParser?, content: String?, var link: TexyLink) : AroundEvent(parser, content, null)
 
     /** Link reference event listener.   Texy: solve()  */
-    private val linkRefListener: TexyEventListener<LinkReferenceEvent> = object : AroundEventListener<LinkReferenceEvent?> {
+    private val linkRefListener: TexyEventListener<LinkReferenceEvent> = object : AroundEventListener<LinkReferenceEvent> {
         override val eventClass: Class<*>
             get() = LinkReferenceEvent::class.java
 
@@ -151,17 +156,17 @@ class LinkModule : TexyModule() {
     class LinkEvent(parser: TexyParser?, var link: TexyLink?, var isEmail: Boolean) : AroundEvent(parser, null, null)
 
     /** LinkEvent listener.  */
-    private val linkListener: TexyEventListener<LinkEvent> = object : AroundEventListener<LinkEvent?> {
+    private val linkListener: TexyEventListener<LinkEvent> = object : AroundEventListener<LinkEvent> {
         override val eventClass: Class<*>
             get() = LinkEvent::class.java
 
         @Throws(TexyException::class)
         override fun onEvent(event: LinkEvent): Node? {
             var content = event.link!!.asText(
-                getTexy().options.makeAutoLinksShorter,
-                getTexy().options.obfuscateEmails
+                texy.options.makeAutoLinksShorter,
+                texy.options.obfuscateEmails
             )
-            content = getTexy().protect(content, ContentType.TEXTUAL)
+            content = texy.protect(content, ContentType.TEXTUAL)
             return solveLinkReference(event.link, content)
         }
     }
@@ -171,7 +176,7 @@ class LinkModule : TexyModule() {
      * TBD: Refactorize to get rid of inter-module calls.
      * We will possibly need to modify the processing.
      */
-    private val linkProcessListener: AroundEventListener<LinkProcessEvent> = object : AroundEventListener<LinkProcessEvent?> {
+    private val linkProcessListener: AroundEventListener<LinkProcessEvent> = object : AroundEventListener<LinkProcessEvent> {
         override val eventClass: Class<*>
             get() = LinkProcessEvent::class.java
 
@@ -229,13 +234,13 @@ class LinkModule : TexyModule() {
             // @ Calling wildly across the modules :-/
             val ref = getRef(linkStr)
             if (null != ref) return JTexyStringUtils.prependUrlPrefix(
-                getTexy().options.linkRootUrl, ref.url
+                texy.options.linkRootUrl, ref.url
             )
         }
 
         // Special supported case. TBD: Checked several times? See fixLink().
         return if (linkStr.startsWith("www.")) "http://$linkStr" else JTexyStringUtils.prependUrlPrefix(
-            getTexy().options.linkRootUrl, linkStr
+            texy.options.linkRootUrl, linkStr
         )
 
         // Else just return the URL.
@@ -251,7 +256,7 @@ class LinkModule : TexyModule() {
 
     /**
      * Creates a [  element for the given link.
- * 
+ *
  * Needs to be public as it's called from PhraseModule (hack from Texy).
 ](...) */
     fun solveLinkReference(link: TexyLink?, content: Node?): Node? {
@@ -272,22 +277,20 @@ class LinkModule : TexyModule() {
         run {
             val href: String?
             if (link.type == TexyLink.Type.IMAGE) {
-                href = JTexyStringUtils.prependUrlPrefix(getTexy().options.imageRootUrl, link.url)
+                href = JTexyStringUtils.prependUrlPrefix(texy.options.imageRootUrl, link.url)
                 //elm.setAttribute("onclick", this.imageOnClick);
             } else {
-                href = JTexyStringUtils.prependUrlPrefix(getTexy().options.linkRootUrl, link.url)
+                href = JTexyStringUtils.prependUrlPrefix(texy.options.linkRootUrl, link.url)
                 // Nofollow.
-                if (nofollow || getTexy().options.forceNofollow && elm.getAttribute("href").contains("//")) elm.setAttribute(
-                    "rel",
-                    "nofollow"
-                )
+                if (nofollow || texy.options.forceNofollow && elm.getAttribute("href").contains("//"))
+                    elm.setAttribute("rel", "nofollow")
             }
             log.finest("Resulting href = $href")
             elm.setAttribute("href", href)
         }
 
         // onclick popup
-        if (popup) elm.setAttribute("onclick", getTexy().options.popupOnclick)
+        if (popup) elm.setAttribute("onclick", texy.options.popupOnclick)
         if (content != null) elm.add(content)
 
         // TBD: Move to JTexy or DocumentContext?
@@ -297,10 +300,10 @@ class LinkModule : TexyModule() {
     }
 
     /** Used in [.solveLinkReference].  */
-    val allDocumentLinks: MutableList<String?> = ArrayList<Any?>()
+    val allDocumentLinks: MutableList<String> = ArrayList()
 
     /**  Returns reference using this module's link reference map.  */
-    val LINK_PROVIDER = LinkProvider { key -> getRef(key) }
+    val LINK_PROVIDER = LinkProvider { key: String -> getRef(key) }
 
     companion object {
         private val log = Logger.getLogger(LinkModule::class.java.name)
@@ -317,22 +320,23 @@ class LinkModule : TexyModule() {
             override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, ri: RegexpInfo?): Node? {
                 //    [0] => URL
                 if (log.isLoggable(Level.FINEST)) for (match in groups!!) log.finest("  " + match.toString())
-                val link: TexyLink = TexyLink.Companion.fromString(groups!![0]!!.match)
-                fixLink(link)
+                val link: TexyLink? = TexyLink.fromString(groups!![0]!!.match)
+                link ?.let { fixLink(it) }
                 log.finest(link.toString())
                 val isEmail = "link/email" == ri!!.name
+                parser.texy ?: throw Exception("No parent parser (parser.texy) in the current parser. Should not happen I guess?")
                 return parser.texy.invokeAroundHandlers(LinkEvent(parser, link, isEmail))
             }
         }
 
         /** Link definition pattern  */
-        private val PAT_LINK_DEFINITION: Pattern = Pattern.Companion.compile(
-            "^\\[([^\\[\\]#\\?\\*\\n]+)\\]: +(\\S+)(\\ .+)?" + RegexpPatterns.Companion.TEXY_MODIFIER + "?\\s*()$",
-            Pattern.Companion.MULTILINE or Pattern.Companion.UNGREEDY or Pattern.Companion.UNICODE_CASE
+        private val PAT_LINK_DEFINITION: Pattern = Pattern.compile(
+            "^\\[([^\\[\\]#\\?\\*\\n]+)\\]: +(\\S+)(\\ .+)?" + RegexpPatterns.TEXY_MODIFIER + "?\\s*()$",
+            Pattern.MULTILINE or Pattern.UNGREEDY or Pattern.UNICODE_CASE
         )
 
         /** New reference event listener - no-op.  */
-        private val NEW_REF_LISTENER: TexyEventListener<NewReferenceEvent> = object : AroundEventListener<NewReferenceEvent?> {
+        private val NEW_REF_LISTENER: TexyEventListener<NewReferenceEvent> = object : AroundEventListener<NewReferenceEvent> {
             override val eventClass: Class<*>
                 get() = NewReferenceEvent::class.java
 
@@ -354,7 +358,7 @@ class LinkModule : TexyModule() {
             // www.
             if (StringUtils.startsWithIgnoreCase(link.url, "www.")) {
                 link.url = "http://" + link.url
-            } else if (link.url!!.matches(("(?u)^" + RegexpPatterns.Companion.TEXY_EMAIL + "$").toRegex())) {
+            } else if (link.url!!.matches(("(?u)^" + RegexpPatterns.TEXY_EMAIL + "$").toRegex())) {
                 link.url = "mailto:" + link.url
             } else if (!UrlChecker.checkURL(link.url, UrlChecker.Type.ANCHOR)) {
                 link.url = null

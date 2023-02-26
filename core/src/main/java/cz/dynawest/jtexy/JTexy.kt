@@ -42,11 +42,11 @@ class JTexy {
     private var htmlOutputModule: HtmlOutputModule? = null
 
     /** Normal Handlers (incl. BeforeAfterHandler's).  */
-    var normalHandlers: HandlersMap<TexyEventListener<*>?> = HandlersMap<Any?>()
+    var normalHandlers: HandlersMap<TexyEventListener<TexyEvent>> = HandlersMap()
         protected set
 
     /** Around handlers.  */
-    var aroundHandlers: HandlersMap<AroundEventListener<*>?> = HandlersMap<Any?>()
+    var aroundHandlers: HandlersMap<AroundEventListener<AroundEvent>> = HandlersMap()
         protected set
 
     /**
@@ -103,19 +103,13 @@ class JTexy {
     }
 
     // -- Registered patterns. -- //
-    var linePatterns: MutableList<RegexpInfo?> = ArrayList<Any?>(50)
-    var blockPatterns: MutableList<RegexpInfo?> = ArrayList<Any?>(50)
-    fun getLinePatterns(): List<RegexpInfo?> {
-        return linePatterns
-    }
+    var linePatterns: MutableList<RegexpInfo> = ArrayList(50)
+    var blockPatterns: MutableList<RegexpInfo> = ArrayList(50)
 
-    fun getBlockPatterns(): List<RegexpInfo?> {
-        return blockPatterns
-    }
 
     // PostLine patterns not needed here.
-    fun addPattern(ri: RegexpInfo?) {
-        when (ri!!.type) {
+    fun addPattern(ri: RegexpInfo) {
+        when (ri.type) {
             RegexpInfo.Type.LINE -> linePatterns.add(ri)
             RegexpInfo.Type.BLOCK -> blockPatterns.add(ri)
             RegexpInfo.Type.POST_LINE -> {}
@@ -125,13 +119,13 @@ class JTexy {
     /** What is allowed.
      * Will it always be a module? If not, perhaps that option should be in respective module.
      */
-    private val allowedMap: MutableMap<String?, Boolean?> = HashMap<Any?, Any?>()
-    fun isAllowed(what: String?): Boolean {
+    private val allowedMap: MutableMap<String, Boolean> = HashMap()
+    fun isAllowed(what: String): Boolean {
         val isAllowed = allowedMap[what]
         return null == isAllowed || isAllowed // Allowed by default.
     }
 
-    fun setAllowed(what: String?, isAllowed: Boolean) {
+    fun setAllowed(what: String, isAllowed: Boolean) {
         allowedMap[what] = isAllowed
     }
 
@@ -183,11 +177,11 @@ class JTexy {
      */
     @JvmOverloads
     @Throws(TexyException::class)
-    fun process(text: String?, isSingleLine: Boolean = false): String {
+    fun process(text: String, isSingleLine: Boolean = false): String {
 
         // Remove soft hyphens
         var text = text
-        if (options.removeSoftHyphens) text = text!!.replace("\uC2AD", "")
+        if (options.removeSoftHyphens) text = text.replace("\uC2AD", "")
 
         // Standardize line endings and spaces.
         text = JTexyStringUtils.normalize(text)
@@ -224,16 +218,16 @@ class JTexy {
      * Converts internal string representation (protected) to a HTML code.
      */
     @Throws(TexyException::class)
-    private fun stringToHtml(texyString: String): String? {
+    private fun stringToHtml(texyString: String): String {
 
         // Decode HTML entities (just the basic set of < > &).
-        var texyString: String? = texyString
+        var texyString: String = texyString
         texyString = JTexyStringUtils.unescapeHtml(texyString)
         log.finer("Before AfterLineEvent: " + Debug.showCodes(texyString))
         val blocks = StringUtils.splitPreserveAllTokens(texyString, ContentType.BLOCK.delimAsString)
-        val handlers: List<TexyEventListener<*>> = normalHandlers.getHandlersForEvent(
-            AfterLineEvent::class.java
-        )
+
+        val handlers: List<TexyEventListener<AfterLineEvent>> = normalHandlers.getHandlersForEvent(AfterLineEvent::class.java)
+
         for (handler in handlers) {
             if (this.isAllowed(handler.eventClass)) continue
             for (i in blocks.indices) {
@@ -242,7 +236,8 @@ class JTexy {
                 // WTF?  Probably 0 == outside of a block, 1 = inside (they can't be nested?)
                 if (i % 2 == 0 && block.length != 0) {
                     // "Fire" the event.
-                    blocks[i] = handler.onEvent(AfterLineEvent(null, block))!!.text
+                    val event = AfterLineEvent(null, block)
+                    blocks[i] = handler.onEvent(event)!!.text
                 }
             }
         }
@@ -277,12 +272,12 @@ class JTexy {
     // String protection //
     var protector = ProtectorArray()
     @Throws(TexyException::class)
-    fun unprotect(key: String?): String? {
+    fun unprotect(key: String): String {
         return protector.unprotectAll(key)
     }
 
     //public String protect(String str) {		return protector.protect(str);	}
-    fun protect(str: String?, contentType: ContentType): String? {
+    fun protect(str: String, contentType: ContentType): String {
         return protector.protect(str, contentType)
     }
 
@@ -302,7 +297,7 @@ class JTexy {
             log.warning("No handlers for event: $event")
             return
         }
-        val exceptions: MutableList<TexyException?> = ArrayList<Any?>()
+        val exceptions: MutableList<TexyException?> = ArrayList()
 
         // For each handler...
         for (handler in handlers) {
@@ -312,7 +307,7 @@ class JTexy {
                 exceptions.add(ex)
             }
         }
-        TexyException.Companion.throwIfErrors(
+        TexyException.throwIfErrors(
             "Errors while invoking normal handlers for event {$event}:", exceptions
         )
     }
@@ -343,21 +338,21 @@ class JTexy {
     @Throws(TexyException::class)
     protected fun loadModules(packageName: String) {
         log.fine("Loading modules from package: $packageName")
-        val classesForPackage: Array<Class<*>?>?
+        val classesForPackage: Array<Class<*>>
         classesForPackage = try {
             JavaUtils.getClassesForPackage(packageName)
         } catch (ex: ClassNotFoundException) {
             throw TexyException("Package not found: $packageName")
         }
-        val exceptions: MutableList<Exception?> = ArrayList<Any?>()
+        val exceptions: MutableList<Exception> = ArrayList()
+
         for (clazz in classesForPackage) {
-            log.finer("  Processing class: " + clazz!!.name)
+            log.finer("  Processing class: " + clazz.name)
 
             // Only care about instances of TexyModule.
             if (!TexyModule::class.java.isAssignableFrom(clazz)) continue
-            var module: TexyModule? = null
-            module = try {
-                clazz!!.newInstance()
+            var module: TexyModule = try {
+                clazz.newInstance() as TexyModule
             } catch (ex: InstantiationException) {
                 exceptions.add(ex)
                 continue
@@ -365,7 +360,7 @@ class JTexy {
                 exceptions.add(ex)
                 continue
             }
-            module.setTexy(this)
+            module.texy = this
             registerModule(module)
         }
 
@@ -373,11 +368,11 @@ class JTexy {
         if (exceptions.size > 0) {
             val sb = StringBuilder("Errors while loading '$packageName':")
             for (ex in exceptions) {
-                sb.append("\n  ").append(ex!!.message)
+                sb.append("\n  ").append(ex.message)
             }
             throw TexyException(sb.toString())
         }
-    } // loadModules();
+    }
 
     /** Settings convenience.  */
     fun setImagesUrlPrefix(str: String?): JTexy {

@@ -6,4 +6,4 @@ import cz.dynawest.jtexy.parsers.AroundEventListener
  *
  * @author Ondrej Zizka
  */
-interface PhraseEventListener : AroundEventListener<PhraseEvent?>
+interface PhraseEventListener : AroundEventListener<PhraseEvent>

@@ -17,6 +17,7 @@ import org.dom4j.Node
 import org.dom4j.dom.DOMElement
 import java.awt.Dimension
 import java.io.*
+import java.lang.Exception
 import java.util.*
 import java.util.logging.*
 import javax.imageio.ImageIO
@@ -54,7 +55,7 @@ class ImageModule : TexyModule() {
             get() = "imagePattern"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
             //    [1] => URLs
             //    [2] => .(title)[class]{style}<>
             //    [3] => * < >
@@ -80,7 +81,7 @@ class ImageModule : TexyModule() {
                         parser, mod, modStr, urls, null, LINK_PROVIDER
                     )
                     parser.texy.invokeAroundHandlers(linkEvent)
-                    link = linkEvent.getLink()
+                    link = linkEvent.link
                 }
             }
             val ev = ImageEvent(parser, img, link, mod)
@@ -96,7 +97,7 @@ class ImageModule : TexyModule() {
             get() = BeforeParseEvent::class.java
 
         @Throws(TexyException::class)
-        override fun onEvent(event_: TexyEvent): Node? {
+        override fun onEvent(event_: BeforeAfterEvent): Node? {
             val event = event_ as BeforeParseEvent
 
             // [*image*]: urls .(title)[class]{style}
@@ -108,7 +109,7 @@ class ImageModule : TexyModule() {
 
             // Since patternReferenceDef() returns "", callback is not necessary,
             // but once written this way...
-            val REGEX = "(?mUu)^\\[\\*([^\\n]+)\\*\\]:\\ +(.+)\\ *" + RegexpPatterns.Companion.TEXY_MODIFIER + "?\\s*()$"
+            val REGEX = "(?mUu)^\\[\\*([^\\n]+)\\*\\]:\\ +(.+)\\ *" + RegexpPatterns.TEXY_MODIFIER + "?\\s*()$"
             val cbProcessReference = StringsReplaceCallback { groups ->
                 patternReferenceDef(groups) // Needs $this.
             }
@@ -171,7 +172,7 @@ class ImageModule : TexyModule() {
             if (null != img.width) elm.setAttribute("width", "" + img.width)
             if (null != img.height) elm.setAttribute("height", "" + img.height)
 
-            // onmouseover 
+            // onmouseover
             if (img.overUrl != null) {
                 // TBD: onmoouseover
                 val overSrc = JTexyStringUtils.prependUrlPrefix(urlPrefix, img.overUrl)
@@ -195,16 +196,16 @@ class ImageModule : TexyModule() {
 
     // TODO: Reset in BeforeParseEventListener.
     // TBD:  Refactor to have this in some ParsingContext or DocumentContext.
-    private val allDocumentImages: MutableList<ImageInfo?> = ArrayList<Any?>()
+    private val allDocumentImages: MutableList<ImageInfo> = ArrayList()
 
     // References - predefined images. //
-    // References map 
-    private val refs: MutableMap<String?, ImageInfo?> = HashMap<Any?, Any?>()
-    protected fun setRef(key: String?, img: ImageInfo?) {
+    // References map
+    private val refs: MutableMap<String, ImageInfo> = HashMap()
+    protected fun setRef(key: String, img: ImageInfo) {
         refs[key!!.lowercase(Locale.getDefault())] = img
     }
 
-    protected fun getRef(key: String?): ImageInfo? {
+    protected fun getRef(key: String): ImageInfo? {
         val img = refs[key!!.lowercase(Locale.getDefault())] ?: return null
         return img.clone() // Cloning because we will change it.
     }
@@ -222,14 +223,15 @@ class ImageModule : TexyModule() {
      * Used as a callback in beforeParse.
      * Callback for: [*image*]: urls .(title)[class]{style}.
      */
-    private fun patternReferenceDef(groups: Array<String?>): String {
+    private fun patternReferenceDef(groups: Array<String>): String {
         //    [1] => [* (reference) *]
         //    [2] => urls
         //    [3] => .(title)[class]{style}<>
-        val ref = if (groups.size > 1) groups[1] else null
+        val ref = if (groups.size > 1) groups[1] else throw Exception("match without ref passed to patternReferenceDef()? $groups")
+
         val urls = if (groups.size > 2) groups[2] else null
         val modStr = if (groups.size > 3) groups[3] else null
-        val mod = TexyModifier(modStr)
+        val mod = modStr ?.let { TexyModifier(it) } ?: TexyModifier()
         var img = getRef(ref)
         if (null == img) img = createImage(ref)
         img!!.modifier = mod
@@ -304,7 +306,7 @@ class ImageModule : TexyModule() {
         /**
          * Image information.  Texy: part of factoryImage().
          */
-        fun createImage(def: String?): ImageInfo? {
+        fun createImage(def: String): ImageInfo? {
             /* Moved elsewhere to allow this method to be static.
         ImageInfo img = getRef(def);
         if( null != img )
@@ -315,7 +317,7 @@ class ImageModule : TexyModule() {
             val img = ImageInfo()
 
             // Dimensions?     "bla/bla.png 50x50"
-            val pat: Pattern = Pattern.Companion.compile("(?U)^(.*) (\\d+|\\?) *(X|x) *(\\d+|\\?) *()$")
+            val pat: Pattern = Pattern.compile("(?U)^(.*) (\\d+|\\?) *(X|x) *(\\d+|\\?) *()$")
             val mat = pat.matcher(parts[0])
             if (mat!!.matches()) {
                 img.url = mat.group(1)

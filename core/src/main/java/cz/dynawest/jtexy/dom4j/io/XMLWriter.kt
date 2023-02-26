@@ -66,6 +66,7 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
 
     /** The Stack of namespaceStack written so far  */
     protected var namespaceStack = NamespaceStack()
+
     /**
      * Lets subclasses get at the current format object, so they can call
      * setTrimText, setNewLines, etc. Put in to support the HTMLWriter, in the
@@ -75,7 +76,8 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
      * @return DOCUMENT ME!
      */
     /** The format used by this writer  */
-    protected var outputFormat: OutputFormat?
+    protected var outputFormat: OutputFormat
+
     /**
      * DOCUMENT ME!
      *
@@ -125,7 +127,8 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
     private var inDTD = false
 
     /** The namespaces used for the current element when consuming SAX events  */
-    private var namespacesMap: MutableMap<*, *>? = null
+    private var namespacesMap: MutableMap<String, String>? = null
+
     /**
      * Sets the maximum allowed character code that should be allowed unescaped
      * such as 127 in US-ASCII (7 bit) or 255 in ISO- (8 bit) or -1 to not
@@ -157,7 +160,7 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
         }
 
     @JvmOverloads
-    constructor(writer: Writer, format: OutputFormat? = DEFAULT_FORMAT) {
+    constructor(writer: Writer, format: OutputFormat = DEFAULT_FORMAT) {
         this.writer = writer
         outputFormat = format
         namespaceStack.push(Namespace.NO_NAMESPACE)
@@ -170,23 +173,23 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
         namespaceStack.push(Namespace.NO_NAMESPACE)
     }
 
-    constructor(out: OutputStream?) {
+    constructor(out: OutputStream) {
         outputFormat = DEFAULT_FORMAT
-        writer = createWriter(out, outputFormat!!.encoding)
+        writer = createWriter(out, outputFormat.encoding)
         autoFlush = true
         namespaceStack.push(Namespace.NO_NAMESPACE)
     }
 
-    constructor(out: OutputStream?, format: OutputFormat?) {
+    constructor(out: OutputStream, format: OutputFormat) {
         outputFormat = format
-        writer = createWriter(out, format!!.encoding)
+        writer = createWriter(out, format.encoding)
         autoFlush = true
         namespaceStack.push(Namespace.NO_NAMESPACE)
     }
 
-    constructor(format: OutputFormat?) {
+    constructor(format: OutputFormat) {
         outputFormat = format
-        writer = createWriter(System.out, format!!.encoding)
+        writer = createWriter(System.out, format.encoding)
         autoFlush = true
         namespaceStack.push(Namespace.NO_NAMESPACE)
     }
@@ -197,8 +200,8 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
     }
 
     @Throws(UnsupportedEncodingException::class)
-    fun setOutputStream(out: OutputStream?) {
-        writer = createWriter(out, outputFormat!!.encoding)
+    fun setOutputStream(out: OutputStream) {
+        writer = createWriter(out, outputFormat.encoding)
         autoFlush = true
     }
 
@@ -244,7 +247,7 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
      */
     @Throws(IOException::class)
     fun println() {
-        writer.write(outputFormat!!.lineSeparator)
+        writer.write(outputFormat.lineSeparator)
     }
 
     /**
@@ -259,29 +262,18 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
     @Throws(IOException::class)
     fun write(attribute: Attribute) {
         writeAttribute(attribute)
-        if (autoFlush) {
-            flush()
-        }
+        if (autoFlush) flush()
     }
 
     /**
-     *
-     *
      * This will print the `Document` to the current Writer.
-     *
-     *
-     *
      *
      * Warning: using your own Writer may cause the writer's preferred character
      * encoding to be ignored. If you use encodings other than UTF8, we
      * recommend using the method that takes an OutputStream instead.
      *
-     *
-     *
-     *
      * Note: as with all Writers, you may need to flush() yours after this
      * method returns.
-     *
      *
      * @param doc
      * `Document` to format.
@@ -310,12 +302,9 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
     }
 
     /**
-     *
-     *
      * Writes the `[Element]`, including its `[ ]`
      * s, and its value, and all its content (child nodes) to the current
      * Writer.
-     *
      *
      * @param element
      * `Element` to output.
@@ -625,7 +614,7 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
     @Throws(SAXException::class)
     override fun startPrefixMapping(prefix: String, uri: String) {
         if (namespacesMap == null) {
-            namespacesMap = HashMap<Any?, Any?>()
+            namespacesMap = mutableMapOf<String, String>()
         }
         namespacesMap!![prefix] = uri
         super.startPrefixMapping(prefix, uri)
@@ -838,7 +827,7 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
         if (showCommentsInDTDs || !inDTD) {
             try {
                 charsAdded = false
-                writeComment(kotlin.String(ch, start, length))
+                writeComment(ch.copyOfRange(start, start+length).concatToString())
             } catch (e: IOException) {
                 handleException(e)
             }
@@ -1214,7 +1203,7 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
 
     @Throws(IOException::class)
     protected fun writeNode(node: Node) {
-        val nodeType = node.nodeType.toInt()
+        val nodeType = node.nodeType
         when (nodeType) {
             Node.ELEMENT_NODE -> writeElement(node as Element)
             Node.ATTRIBUTE_NODE -> writeAttribute(node as Attribute)

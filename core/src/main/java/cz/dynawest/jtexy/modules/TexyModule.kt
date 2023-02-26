@@ -3,11 +3,14 @@ package cz.dynawest.jtexy.modules
 import cz.dynawest.jtexy.JTexy
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.events.TexyEvent
+import cz.dynawest.jtexy.parsers.AroundEvent
 import cz.dynawest.jtexy.parsers.AroundEventListener
 import cz.dynawest.jtexy.parsers.TexyEventListener
 import cz.dynawest.jtexy.util.PropertiesLoader
 import org.apache.commons.lang.StringUtils
 import java.io.IOException
+import java.lang.Exception
 import java.util.*
 import java.util.logging.*
 
@@ -20,30 +23,31 @@ import java.util.logging.*
 abstract class TexyModule {
     protected open val propsFilePath: String?
         protected get() = String.format(DEFAULT_PROPS_PATH, this.javaClass.simpleName)
+
     /** JTexy backreference.  */
-    /** JTexy backreference.  */
-    var texy: JTexy? = null
+    lateinit var texy: JTexy
+
     /* --- Event listeners. --- */
     /** Override: return all module's parser event listeners.  */
-    abstract val eventListeners: Array<TexyEventListener<*>>
+    abstract val eventListeners: Array<out TexyEventListener<in TexyEvent>>
 
     // TBD: Make unmodifiable after initialization.
     /* --- Regexp infos. --- */
-    var regexpInfos = LinkedHashMap<String?, RegexpInfo?>()
+    var regexpInfos = LinkedHashMap<String, RegexpInfo>()
         private set
 
     /** @returns  RegexpInfo by name. Ex.: "phrase/span"
      */
-    fun getRegexpInfo(name: String?): RegexpInfo? {
-        return regexpInfos[name]
+    fun getRegexpInfo(name: String): RegexpInfo {
+        return regexpInfos[name] ?: throw Exception("RegexpInfo not found by name: $name")
     }
 
-    fun addRegexpInfo(ri: RegexpInfo?) {
-        regexpInfos[ri!!.name] = ri
+    fun addRegexpInfo(ri: RegexpInfo) {
+        regexpInfos[ri.name!!] = ri
     }
 
     protected fun clearRegexpInfos() {
-        regexpInfos = LinkedHashMap<Any?, Any?>() as LinkedHashMap<String?, RegexpInfo?>
+        regexpInfos = LinkedHashMap<String, RegexpInfo>()
     }
 
     /**
@@ -67,7 +71,7 @@ abstract class TexyModule {
 
         //for( RegexpInfo ri : module.getRegexpInfos(). ){
         for ((_, value) in regexpInfos) {
-            texy!!.addPattern(value)
+            texy.addPattern(value)
         }
 
 
@@ -76,7 +80,8 @@ abstract class TexyModule {
         log.finer("Registering " + listeners.size + " listeners for " + this.javaClass.simpleName + ".")
         for (lis in listeners) {
             log.finer("  " + lis.eventClass.name)
-            if (lis is AroundEventListener<*>) texy.getAroundHandlers().addHandler(lis) else texy.getNormalHandlers().addHandler(lis)
+            if (lis is AroundEventListener<AroundEvent>) texy.aroundHandlers.addHandler(lis)
+            else texy.normalHandlers.addHandler(lis)
         }
         // PatternHandlers / RegexpInfos are registered in JTexy#registerModule().
     } // onRegister()
@@ -110,7 +115,7 @@ abstract class TexyModule {
             clearRegexpInfos()
 
             // Map for lookups, List to keep the order.
-            val reMap: MutableMap<String?, RegexpInfo?> = LinkedHashMap<Any?, Any?>()
+            val reMap: MutableMap<String, RegexpInfo> = LinkedHashMap()
 
 
             // Load properties file (and get default values etc).
@@ -118,17 +123,18 @@ abstract class TexyModule {
             var defaultReType = RegexpInfo.Type.LINE
 
             // First check for "global" settings.
-            val typeVal = props!!.getProperty("default.type")
+            val typeVal = props.getProperty("default.type")
             if (typeVal != null) {
                 defaultReType = getReTypeByName(typeVal, "default.type")
             }
-            val initErrors: MutableList<TexyException?> = ArrayList<Any?>()
+            val initErrors: MutableList<TexyException> = ArrayList()
 
             // For each key in properties file...
             for (key in props.keys) {
                 processProperty(key, props, defaultReType, reMap, initErrors)
-            } // for each property.
-            TexyException.Companion.throwIfErrors(
+            }
+
+            TexyException.throwIfErrors(
                 "Errors when initializing module: " + this.javaClass.name, initErrors
             )
 
@@ -139,7 +145,7 @@ abstract class TexyModule {
             for (ri in reMap.values) {
                 // Default .htmlelement is the part of pattern name after '/' .
                 // I.e.  phrase/sub =>  default element is "sub".
-                if (StringUtils.isEmpty(ri!!.htmlElement)) ri.htmlElement = StringUtils.substringAfterLast(
+                if (StringUtils.isEmpty(ri.htmlElement)) ri.htmlElement = StringUtils.substringAfterLast(
                     ri.name, "/"
                 )
 
@@ -151,14 +157,9 @@ abstract class TexyModule {
         } catch (ex: IOException) {
             throw TexyException(ex)
         } catch (ex: TexyException) {
-            throw TexyException(
-                """
-    Error when processing $propsFilePath:
-    ${ex.message}
-    """.trimIndent()
-            )
+            throw TexyException("Error when processing $propsFilePath:\n${ex.message}")
         }
-    } // init(){}
+    }
 
     /**
      *
@@ -166,7 +167,7 @@ abstract class TexyModule {
     @Throws(TexyException::class)
     private fun processProperty(
         key: Any, props: Properties?, defaultReType: RegexpInfo.Type,
-        reMap: MutableMap<String?, RegexpInfo?>, initErrors: MutableList<TexyException?>
+        reMap: MutableMap<String, RegexpInfo>, initErrors: MutableList<TexyException>
     ) {
         val propName = key as String
         var name = propName

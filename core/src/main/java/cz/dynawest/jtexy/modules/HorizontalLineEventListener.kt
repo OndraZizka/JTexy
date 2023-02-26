@@ -6,4 +6,4 @@ import cz.dynawest.jtexy.parsers.AroundEventListener
  *
  * @author Ondrej Zizka
  */
-interface HorizontalLineEventListener : AroundEventListener<HorizontalLineEvent?> // interface
+interface HorizontalLineEventListener : AroundEventListener<HorizontalLineEvent> // interface

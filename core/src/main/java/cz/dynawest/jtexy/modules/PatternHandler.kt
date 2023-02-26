@@ -28,7 +28,7 @@ interface PatternHandler {
     @Throws(TexyException::class)
     fun handle(
         parser: TexyParser,
-        groups: List<MatchWithOffset?>?,
-        pattern: RegexpInfo?
+        groups: List<MatchWithOffset>,
+        pattern: RegexpInfo
     ): Node?
 }

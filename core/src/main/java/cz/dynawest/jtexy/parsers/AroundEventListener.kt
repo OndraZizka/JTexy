@@ -5,4 +5,4 @@ package cz.dynawest.jtexy.parsers
  *
  * @author Ondrej Zizka
  */
-interface AroundEventListener<T : AroundEvent?> : TexyEventListener<T> // interface
+interface AroundEventListener<in T : AroundEvent> : TexyEventListener<T>

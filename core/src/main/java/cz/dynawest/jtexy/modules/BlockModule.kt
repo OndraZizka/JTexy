@@ -2,7 +2,7 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.*
 import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter
-import cz.dynawest.jtexy.modules.BlockEvent
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.parsers.TexyBlockParser
 import cz.dynawest.jtexy.parsers.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyLineParser
@@ -24,7 +24,7 @@ class BlockModule : TexyModule() {
         return if ("blocks" == name) blocksPatternHandler else null
     }
 
-    override val eventListeners: Array<TexyEventListener<*>>
+    override val eventListeners: Array<out TexyEventListener<in TexyEvent>>
         get() = arrayOf(beforeBlockListener, blockListener)
 
     /**
@@ -35,19 +35,19 @@ class BlockModule : TexyModule() {
             get() = "blocks"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
             //    [1] => code | text | ...
             //    [2] => ... additional parameters
             //    [3] => .(title)[class]{style}<>
             //    [4] => ... content
-            var param = groups!![1]!!.match
-            val mod = TexyModifier(groups[2]!!.match)
-            val content = groups[3]!!.match
+            var param = groups[1].match
+            val mod = TexyModifier(groups[2].match!!)
+            val content = groups[3].match
             val parts = param!!.split("(?u)\\s+".toRegex(), limit = 2).toTypedArray()
             val blockType = if (parts.size == 0) "block/default" else "block/" + parts[0]
             param = if (parts.size >= 2) parts[1] else null
             val event = BlockEvent(parser, content, mod, blockType, param)
-            return getTexy().invokeAroundHandlers(event)
+            return texy.invokeAroundHandlers(event)
         }
     }
 
@@ -74,7 +74,7 @@ class BlockModule : TexyModule() {
                 TexyBlockParser(texy, elm, event.parser.isIndented).parse(str)
                 return elm
             }
-            if (!texy!!.isAllowed(blockType)) return null
+            if (!texy.isAllowed(blockType)) return null
             if ("block/texysource" == blockType) {
                 str = JTexyStringUtils.outdent(str)
                 if ("" == str) return DOMText("\n")
@@ -122,7 +122,7 @@ class BlockModule : TexyModule() {
 				 */lp.parse(str)
                 //str = elm.asXML(); //$el->getText();
                 //str = Dom4jUtils.getInnerCode( elm );
-                str = ProtectedHTMLWriter.Companion.fromElement(elm, getTexy().protector)
+                str = ProtectedHTMLWriter.Companion.fromElement(elm, texy.protector)
                 str = JTexyStringUtils.unescapeHtml(str) // Get rid of HTML entities.
                 str = JTexyStringUtils.escapeHtml(str) // Escape HTML spec chars.
                 str = texy.unprotect(str) // Expand protected sub-strings.
@@ -144,7 +144,7 @@ class BlockModule : TexyModule() {
 				unset($tmp);
 				 */lp.parse(str)
                 //str = Dom4jUtils.getInnerCode( elm ); //$el.getText();
-                str = ProtectedHTMLWriter.Companion.fromElement(elm, getTexy().protector)
+                str = ProtectedHTMLWriter.Companion.fromElement(elm, texy.protector)
                 str = JTexyStringUtils.unescapeHtml(str) // Get rid of HTML entities.
                 str = JTexyStringUtils.escapeHtml(str)
                 str = texy.unprotect(str)
@@ -187,7 +187,7 @@ class BlockModule : TexyModule() {
     /**
      * Single block pre-processing.
      */
-    val beforeBlockListener: BeforeBlockEventListener<BeforeBlockEvent> = object : BeforeBlockEventListener<BeforeBlockEvent?> {
+    val beforeBlockListener: BeforeBlockEventListener<BeforeBlockEvent> = object : BeforeBlockEventListener<BeforeBlockEvent> {
         override val eventClass: Class<*>
             get() = BeforeBlockEvent::class.java
 
@@ -198,7 +198,7 @@ class BlockModule : TexyModule() {
 				"\$1\$2\n\\--", 	$text 	); */
             val text = event.text.replace( /*  /--<something> - not div or texysource
                  *  followed by 0+ lines reluctantly
-                 *  and then (takes first) either 
+                 *  and then (takes first) either
                  *  \--... or /--...
                  */
                 ("(?:mi)^(/--++ *+(?!div|texysource).*)$" +

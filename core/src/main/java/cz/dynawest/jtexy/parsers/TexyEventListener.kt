@@ -8,7 +8,7 @@ import org.dom4j.Node
  *
  * @author Ondrej Zizka
  */
-interface TexyEventListener<T : TexyEvent?> {
+interface TexyEventListener<in T : TexyEvent> {
     val eventClass: Class<*>
 
     @Throws(TexyException::class)

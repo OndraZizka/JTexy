@@ -6,4 +6,4 @@ package cz.dynawest.jtexy.parsers
  *
  * @author Ondrej Zizka
  */
-interface BeforeAfterEventListener<T : BeforeAfterEvent?> : TexyEventListener<T> // interface
+interface BeforeAfterEventListener<in T : BeforeAfterEvent> : TexyEventListener<T>

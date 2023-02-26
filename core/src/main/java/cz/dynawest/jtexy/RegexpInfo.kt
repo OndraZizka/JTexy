@@ -8,14 +8,14 @@ import cz.dynawest.openjdkregex.Pattern
  *
  * @author Ondrej Zizka
  */
-class RegexpInfo(var name: String?, type: Type) {
+class RegexpInfo(var name: String, type: Type) {
     var perlRegexp: String? = null
         private set
     var regexp: String? = null
         private set
     var flags: String? = null
     var htmlElement: String? = null
-    var pattern: Pattern? = null
+    lateinit var pattern: Pattern
         private set
     /** Optional, e.g. in TypographyModule.  */
     var replacement: String? = null
@@ -35,9 +35,7 @@ class RegexpInfo(var name: String?, type: Type) {
     var type = Type.LINE
 
     enum class Flags(var flagChar: Char) {
-        CANON_EQ('-'), CASE_INSENSITIVE('i'), COMMENTS('x'), DOTALL('s'), LITERAL('-'), MULTILINE('m'), UNICODE_CASE('u'), UNIX_LINES('d'), UNGREEDY(
-            'U'
-        );
+        CANON_EQ('-'), CASE_INSENSITIVE('i'), COMMENTS('x'), DOTALL('s'), LITERAL('-'), MULTILINE('m'), UNICODE_CASE('u'), UNIX_LINES('d'), UNGREEDY('U');
 
         companion object {
             fun byChar(ch: Char): Flags? {
@@ -86,27 +84,27 @@ class RegexpInfo(var name: String?, type: Type) {
 
 
             // Be sure to replace the longer strings first!
-            str = str.replace("\$TEXY_CHAR", RegexpPatterns.Companion.TEXY_CHAR)
-            str = str.replace("\$TEXY_MARK", RegexpPatterns.Companion.TEXY_MARK)
-            str = str.replace("\$TEXY_MODIFIER_HV", RegexpPatterns.Companion.TEXY_MODIFIER_HV)
-            str = str.replace("\$TEXY_MODIFIER_H", RegexpPatterns.Companion.TEXY_MODIFIER_H)
-            str = str.replace("\$TEXY_MODIFIER", RegexpPatterns.Companion.TEXY_MODIFIER)
-            str = str.replace("\$TEXY_IMAGE", RegexpPatterns.Companion.TEXY_IMAGE)
-            str = str.replace("\$TEXY_LINK_URL", RegexpPatterns.Companion.TEXY_LINK_URL)
-            str = str.replace("\$TEXY_LINK_N", RegexpPatterns.Companion.TEXY_LINK_N)
-            str = str.replace("\$TEXY_LINK", RegexpPatterns.Companion.TEXY_LINK)
-            str = str.replace("\$TEXY_EMAIL", RegexpPatterns.Companion.TEXY_EMAIL)
-            str = str.replace("\$TEXY_URLSCHEME", RegexpPatterns.Companion.TEXY_URLSCHEME)
+            str = str.replace("\$TEXY_CHAR", RegexpPatterns.TEXY_CHAR)
+            str = str.replace("\$TEXY_MARK", RegexpPatterns.TEXY_MARK)
+            str = str.replace("\$TEXY_MODIFIER_HV", RegexpPatterns.TEXY_MODIFIER_HV)
+            str = str.replace("\$TEXY_MODIFIER_H", RegexpPatterns.TEXY_MODIFIER_H)
+            str = str.replace("\$TEXY_MODIFIER", RegexpPatterns.TEXY_MODIFIER)
+            str = str.replace("\$TEXY_IMAGE", RegexpPatterns.TEXY_IMAGE)
+            str = str.replace("\$TEXY_LINK_URL", RegexpPatterns.TEXY_LINK_URL)
+            str = str.replace("\$TEXY_LINK_N", RegexpPatterns.TEXY_LINK_N)
+            str = str.replace("\$TEXY_LINK", RegexpPatterns.TEXY_LINK)
+            str = str.replace("\$TEXY_EMAIL", RegexpPatterns.TEXY_EMAIL)
+            str = str.replace("\$TEXY_URLSCHEME", RegexpPatterns.TEXY_URLSCHEME)
 
 
             // Test-compile without flags.
-            Pattern.Companion.compile(str)
+            Pattern.compile(str)
 
             // Prepend the flags to the regex (Java style).
             str = "(?$regexpFlags)$str"
 
             // Test-compile with flags.
-            pattern = Pattern.Companion.compile(str)
+            pattern = Pattern.compile(str)
             regexp = str
         } catch (ex: Throwable) {
             throw TexyException("Error while parsing: $origStr", ex)
@@ -117,7 +115,7 @@ class RegexpInfo(var name: String?, type: Type) {
         /**
          */
         @Throws(TexyException::class)
-        fun fromRegexp(pcreString: String, replacement: String?, name: String?): RegexpInfo {
+        fun fromRegexp(pcreString: String, replacement: String?, name: String): RegexpInfo {
             val ri = fromRegexp(pcreString, Type.LINE, name)
             ri.replacement = replacement
             return ri
@@ -134,7 +132,7 @@ class RegexpInfo(var name: String?, type: Type) {
          */
         @JvmOverloads
         @Throws(TexyException::class)
-        fun fromRegexp(pcreString: String, type: Type = Type.LINE, name: String? = null): RegexpInfo {
+        fun fromRegexp(pcreString: String, type: Type = Type.LINE, name: String): RegexpInfo {
             val ri = RegexpInfo(name, type)
             ri.parseRegexp(pcreString)
             return ri

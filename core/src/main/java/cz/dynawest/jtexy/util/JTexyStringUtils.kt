@@ -68,7 +68,7 @@ object JTexyStringUtils {
     /** Checks whether an URL is relative ( == is not absolute or a doc anchor).  */
     private fun isRelativeUrl(url: String?): Boolean {
         // check for scheme, or absolute path, or absolute URL
-        return !url!!.matches(( /*(?A)*/"^" + RegexpPatterns.Companion.TEXY_URLSCHEME + "|[\\#/?]").toRegex()) // (?A) in Texy
+        return !url!!.matches(( /*(?A)*/"^" + RegexpPatterns.TEXY_URLSCHEME + "|[\\#/?]").toRegex()) // (?A) in Texy
     }
 
     /**
@@ -80,13 +80,12 @@ object JTexyStringUtils {
     fun replaceWithCallback(
         str: String?, regexp: String, cb: StringsReplaceCallback
     ): String {
-        val pat: Pattern = Pattern.Companion.compile(regexp)
+        val pat: Pattern = Pattern.compile(regexp)
         return replaceWithCallback(str, pat, cb)
     }
 
     /**
      * Substitute for PHP's preg_replace_callback().
-     *
      */
     @Deprecated("Use Matcher#appendReplacement() instead.")
     fun replaceWithCallback(
@@ -109,7 +108,7 @@ object JTexyStringUtils {
             sb.append(str.substring(prevEnd + offset, mat.start() + offset))
 
             // Call the callback and append what it returns.
-            val newStr = cb.replace(groups)
+            val newStr = cb.replace(groups.filterNotNull().toTypedArray())
             sb.append(newStr)
 
             // Set the offset according to the lengths difference.
@@ -177,8 +176,8 @@ object JTexyStringUtils {
         return spaces
     }
 
-    fun repeatTabs(repeats: Int): String? {
-        var spaces: String? = null
+    fun repeatTabs(repeats: Int): String {
+        var spaces: String = ""
         if (repeats <= 10) {
             when (repeats) {
                 0 -> spaces = ""
@@ -195,10 +194,11 @@ object JTexyStringUtils {
             }
             return spaces
         }
-        return if (repeats <= TABS.length) TABS.substring(repeats) else StringUtils.repeat(" ", repeats).also { spaces = it }
+        return if (repeats <= TABS.length) TABS.substring(repeats)
+            else StringUtils.repeat("\t", repeats)
     }
 
-    const val TABS = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
+    private const val TABS = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
 
     /**
      * Translate all white spaces (\t \n \r space) to meta-spaces \x01-\x04.
@@ -206,7 +206,7 @@ object JTexyStringUtils {
      * @param  string
      * @return string
      */
-    fun freezeSpaces(str: String?): String {
+    fun freezeSpaces(str: String): String {
         return StringUtils.replaceChars(str, " \t\r\n", "\u0001\u0002\u0003\u0004")
     }
 
@@ -215,12 +215,12 @@ object JTexyStringUtils {
      * @param  string
      * @return string
      */
-    fun unfreezeSpaces(str: String?): String {
+    fun unfreezeSpaces(str: String): String {
         return StringUtils.replaceChars(str, "\u0001\u0002\u0003\u0004", " \t\r\n")
     }
 
     /**  Removes indentation, up to the numer of spaces on the first line. (Tabs are converted before.)   */
-    fun outdent(str: String?): String? {
+    fun outdent(str: String): String {
         var str = str
         str = StringUtils.strip(str, "\n")
         val numSpaces = StringUtils.indexOfAnyBut(str, " ")
@@ -229,7 +229,7 @@ object JTexyStringUtils {
 
     @Deprecated("to see where it is used. Try Dom4jUtils. ")
     @Throws(TexyException::class)
-    fun elementToHTML(elm: DOMElement?, texy: JTexy?): String {
+    fun elementToHTML(elm: DOMElement, texy: JTexy): String {
         val sw = StringWriter()
         val hw = HTMLWriter(sw)
         try {
@@ -241,12 +241,12 @@ object JTexyStringUtils {
     }
 
     /** Converts < > & to the HTML entities. Not quotes (as in TexyHTML, assuming there is a reason).  */
-    fun escapeHtml(str: String?): String {
+    fun escapeHtml(str: String): String {
         return StringUtils.replaceEach(str, arrayOf("<", ">", "&"), arrayOf("&lt;", "&gt;", "&amp;"))
     }
 
     /** Converts HTML entities to < > & .  */
-    fun unescapeHtml(str: String?): String {
+    fun unescapeHtml(str: String): String {
         return StringUtils.replaceEach(str, arrayOf("&lt;", "&gt;", "&amp;"), arrayOf("<", ">", "&"))
     }
 
@@ -256,13 +256,13 @@ object JTexyStringUtils {
      * TODO:  @ Texy::stringToText(){}. Perhaps already coded somewhere.
      */
     @Throws(TexyException::class)
-    fun stringToText(str: String?, protector: Protector?): String {
+    fun stringToText(str: String, protector: Protector?): String {
         var str = str
         if (null != protector) str = protector.unprotectAll(str)
         return stripHtmlTags(str)
     }
 
-    fun stripHtmlTags(str: String?): String {
+    fun stripHtmlTags(str: String): String {
         return Jsoup.parse(str).text()
     }
 
@@ -270,7 +270,7 @@ object JTexyStringUtils {
      * Encodes the URL, using UTF-8.
      * @throws UnsupportedOperationException  Wraps UnsupportedEncodingException.
      */
-    fun encodeUrl(res: String?): String {
+    fun encodeUrl(res: String): String {
         return try {
             URLEncoder.encode(res, "UTF-8")
         } catch (ex: UnsupportedEncodingException) {
@@ -281,10 +281,10 @@ object JTexyStringUtils {
     /**
      * Removes special controls characters and normalizes line endings and spaces.
      */
-    fun normalize(s: String?): String? {
+    fun normalize(s: String): String {
         // Standardize line endings to unix-like.
         var s = s
-        s = s!!.replace("\r\n", "\n") // DOS
+        s = s.replace("\r\n", "\n") // DOS
         s = s.replace('\r', '\n') // Mac
 
         // Remove special chars; leave \t + \n.
@@ -342,15 +342,15 @@ object JTexyStringUtils {
                 //if( firstDash != -1 )
                 //	firstDash++;
             }
-        } // for each char.
+        }
         if (-1 != lastDash) pos = lastDash
 
-        //if( firstDash == pos )
-        //	return "";
-        var res = kotlin.String(chars2,  /*firstDash*/0, pos)
+        //if( firstDash == pos ) return "";
+        var res = chars2.concatToString().substring(/*firstDash*/0, pos)
         res = StringUtils.stripStart(res, "-")
         return res
-    } // webalize()
+    }
+
 
     /**
      * Removes diacritics.
@@ -362,5 +362,5 @@ object JTexyStringUtils {
         return str
     }
 
-    private val DIA: Pattern = Pattern.Companion.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+")
+    private val DIA: Pattern = Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+")
 }

@@ -31,7 +31,7 @@ object UrlChecker {
         val scheme = getSchemeByType(type)
 
         // Absolute URL with scheme? Check against the scheme!
-        return if (null != scheme && url!!.matches(( /*"(?A)"*/"^" + RegexpPatterns.Companion.TEXY_URLSCHEME).toRegex())
+        return if (null != scheme && url!!.matches(( /*"(?A)"*/"^" + RegexpPatterns.TEXY_URLSCHEME).toRegex())
             && !url.matches(scheme.toRegex())
         ) false else true
     }

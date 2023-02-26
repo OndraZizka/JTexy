@@ -19,10 +19,10 @@ import java.util.logging.*
  *
  * @author Ondrej Zizka
  */
-class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : TexyParser(texy, element) {
+class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) : TexyParser(texy, element) {
     private var text: String? = null
     private var offset = 0
-    protected override val patterns: List<RegexpInfo?>?
+    override val patterns: List<RegexpInfo>
         protected get() = texy.blockPatterns
 
     /**
@@ -32,7 +32,7 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
      */
     fun next(pattern: String): List<MatchWithOffset?>? {
         //pattern = "^"+pattern; // Instead of $pattern . 'A' - anchored
-        return this.next(Pattern.Companion.compile(pattern, Pattern.Companion.MULTILINE))
+        return this.next(Pattern.compile(pattern, Pattern.MULTILINE))
     }
 
     /**
@@ -55,7 +55,7 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
         // Instead of (?A) - anchored. Otherwise, "^Ahoj" also matched "\n\n|Ahoj".
         val substr = text!!.substring(offset)
         val mat = pattern.matcher(substr)
-        if (!mat!!.find()) return null
+        if (!mat.find()) return null
         /**/
 
 
@@ -68,7 +68,7 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
         offset = offset + mat.end() + 1 // 1 = "\n"
 
         // Get the groups of the match.
-        val matches: MutableList<MatchWithOffset?> = ArrayList<Any?>(mat.groupCount() + 1)
+        val matches: MutableList<MatchWithOffset?> = ArrayList(mat.groupCount() + 1)
         for (i in 0 until mat.groupCount() + 1) {
             matches.add(MatchWithOffset(mat.group(i), offset + mat.start(i)))
         }
@@ -119,10 +119,10 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
      * 3) Calls [.processLoop] .
      */
     @Throws(TexyException::class)
-    override fun parse(text: String?) {
+    override fun parse(text: String) {
         var text = text
         log.fine("===================================================================")
-        log.fine("Parsing: " + StringUtils.abbreviate(text, 45).replace("\n", "\\n") + " (" + text!!.length + ")")
+        log.fine("Parsing: " + StringUtils.abbreviate(text, 45).replace("\n", "\\n") + " (" + text.length + ")")
 
 
         // BeforeBlockEventListener's can modify the text before parsing.
@@ -137,7 +137,7 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
 
         // --- Process Loop. ---
         processLoop(text, allMatches)
-    } // parse( String text )
+    }
 
     /**
      * Processes the text using all given matches -
@@ -146,12 +146,12 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
      * Also processes text between matches.
      */
     @Throws(TexyException::class)
-    private fun processLoop(text: String?, allMatches: MutableList<ParserMatchInfo?>) {
+    private fun processLoop(text: String, allMatches: MutableList<ParserMatchInfo>) {
 
         // Terminal cap.
-        var pmi = ParserMatchInfo(null, null, text!!.length)
+        var pmi = ParserMatchInfo(null, null, text.length)
         allMatches.add(pmi)
-        val it: ListIterator<ParserMatchInfo?> = allMatches.listIterator()
+        val it: ListIterator<ParserMatchInfo> = allMatches.listIterator()
         offset = 0
         this.text = text
         do {
@@ -185,9 +185,9 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
                 offset = pmi.offset // Set the offset back.
                 continue
             } else if (result is DOMElement) {
-                element!!.add(result)
+                element.add(result)
             } else if (result is DOMText) {
-                element!!.add(result)
+                element.add(result)
             }
         } while (true)
     }
@@ -241,18 +241,11 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
                 //if( null != res ) this.element.addCDATA(res);
                 if (null != parNode) element.add(parNode)
             } catch (ex: TexyException) {
-                throw TexyException(
-                    """Error when parsing paragraph starting with '${StringUtils.abbreviate(parText, 20)}':
-    $ex""", ex
-                )
+                throw TexyException("""Error when parsing paragraph starting with '${StringUtils.abbreviate(parText, 20)}': $ex""", ex)
             }
         }
     } // processTextBetweenMatches()
 
-    /** Const  */
-    init {
-        this.indented = indented
-    }
 
     val posAsString: String
         /** Debug function - displays position info in the form of:  "...|..."  */
@@ -289,19 +282,19 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
          * @returns a list of matches, ordered by the offset of the start of the match.
          * // TBD: Rename MatchWithOffset to MatchData or similar?
          */
-        private fun parseLoop(text: String?, patterns: List<RegexpInfo?>?): MutableList<ParserMatchInfo?> {
+        private fun parseLoop(text: String, patterns: List<RegexpInfo>): MutableList<ParserMatchInfo> {
             val finer = JTexy.Companion.debug && log.isLoggable(Level.FINER)
             val finest = JTexy.Companion.debug && log.isLoggable(Level.FINEST)
 
             // $matches[] = array($offset, $name, $m, $priority);
-            val allMatches: MutableList<ParserMatchInfo?> = ArrayList<Any?>()
+            val allMatches: MutableList<ParserMatchInfo> = ArrayList()
             var priority = 0
 
 
-            /*  For each pattern... */for (pattern in patterns!!) {
-                if (finest) log.finest("Applying pattern: " + pattern!!.name)
-                val pat = pattern.getPattern()
-                val mat = pat!!.matcher(text)
+            /*  For each pattern... */for (pattern in patterns) {
+                if (finest) log.finest("Applying pattern: " + pattern.name)
+                val pat = pattern.pattern
+                val mat = pat.matcher(text)
 
                 // All matches of this pattern throughout the text.
                 val matches: List<List<MatchWithOffset?>?> = MatchWithOffset.Companion.fromMatcherAll(mat)
@@ -316,12 +309,12 @@ class TexyBlockParser(texy: JTexy?, element: DOMElement, indented: Boolean) : Te
             // Sort the matches by offset, then priority.
             Collections.sort(allMatches)
             log.fine("Matches: " + allMatches.size)
-            if (finer) for (pmi in allMatches) log.finer("    Match: " + pmi!!.offset + ": " + pmi.groups)
+            if (finer) for (pmi in allMatches) log.finer("    Match: " + pmi.offset + ": " + pmi.groups)
             return allMatches
         }
 
         //preg_match('#\A(.*)(?<=\A|\S)'.TEXY_MODIFIER_H.'(\n.*)?()\z#sUm', $s, $mx);
-        private val PAR_MOD_REGEX = "(?sUm)\\A(.*)(?<=\\A|\\S)" + RegexpPatterns.Companion.TEXY_MODIFIER_H + "(\\n.*)?()\\z"
-        private val PAR_MODIFIER_PATTERN: Pattern = Pattern.Companion.compile(PAR_MOD_REGEX)
+        private val PAR_MOD_REGEX = "(?sUm)\\A(.*)(?<=\\A|\\S)" + RegexpPatterns.TEXY_MODIFIER_H + "(\\n.*)?()\\z"
+        private val PAR_MODIFIER_PATTERN: Pattern = Pattern.compile(PAR_MOD_REGEX)
     }
 }

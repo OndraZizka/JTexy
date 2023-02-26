@@ -59,14 +59,15 @@ class HeadingModule : TexyModule() {
          * TOC.  Re-set in BeforeParseListener.
          * TODO: Make thread-safe.
          */
-        var toc: MutableList<HeadingInfo?> = LinkedList<Any?>()
+        var toc: MutableList<HeadingInfo> = LinkedList()
 
         /** Used auto-generated TOC IDs.  */
         var usedIDs: Set<String> = HashSet()
     }
 
     val opt = Options()
-    val ctx = Context()
+    private val ctx = Context()
+
     override val eventListeners: Array<TexyEventListener<*>>
         // --- Module meta-info --- //
         get() = arrayOf(
@@ -91,12 +92,12 @@ class HeadingModule : TexyModule() {
             get() = "underlined"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
 
             //    [1] => Heading content.
             //    [2] => .(title)[class]{style}<>
             //    [3] => Underline chars.
-            val underChar = groups!![3]!!.match!![0]
+            val underChar = groups[3].match!![0]
             var level = 1
             when (underChar) {
                 '#' -> level = 0
@@ -104,9 +105,9 @@ class HeadingModule : TexyModule() {
                 '=' -> level = 2
                 '-' -> level = 3
             }
-            val mod = TexyModifier(groups[2]!!.match)
-            val event = HeadingEvent(parser, groups[1]!!.match, mod, level, false)
-            return getTexy().invokeAroundHandlers(event)
+            val mod = TexyModifier(groups[2].match!!)
+            val event = HeadingEvent(parser, groups[1].match, mod, level, false)
+            return texy.invokeAroundHandlers(event)
         }
     }
 
@@ -125,18 +126,18 @@ class HeadingModule : TexyModule() {
             get() = "surrounded"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
             //    [1] => ###
             //    [2] => Content.
             //    [3] => .(title)[class]{style}<>
             val lineChars = groups!![1]!!.match
             var content = groups[2]!!.match
-            val mod = TexyModifier(groups[3]!!.match)
+            val mod = TexyModifier(groups[3]!!.match!!)
             var level = Math.min(7, Math.max(2, lineChars!!.length))
             level = if (opt.moreMeansHigher) 7 - level else level - 2
             content = StringUtils.stripEnd(content, lineChars[0].toString() + " ")
             val event = HeadingEvent(parser, content, mod, level, true)
-            return getTexy().invokeAroundHandlers(event)
+            return texy.invokeAroundHandlers(event)
         }
     }
 
@@ -156,7 +157,7 @@ class HeadingModule : TexyModule() {
             event.modifier.decorate(elm) // TODO: Doesn't work?
 
             // Parse the heading content (e.g "New **Java** //library// - `JTexy`").
-            TexyLineParser(getTexy(), elm).parse(event.text)
+            TexyLineParser(texy, elm).parse(event.text)
             ctx.toc.add(HeadingInfo(elm, level, event.isSurrounded))
             return elm
         }
@@ -170,7 +171,7 @@ class HeadingModule : TexyModule() {
             get() = BeforeParseEvent::class.java
 
         @Throws(TexyException::class)
-        override fun onEvent(event_: TexyEvent): Node? {
+        override fun onEvent(event_: BeforeAfterEvent): Node? {
             val event = event_ as BeforeParseEvent
             ctx.documentTitle = null
             ctx.toc = ArrayList()
@@ -187,7 +188,7 @@ class HeadingModule : TexyModule() {
             get() = AfterParseEvent::class.java
 
         @Throws(TexyException::class)
-        override fun onEvent(event_: TexyEvent): Node? {
+        override fun onEvent(event_: AfterParseEvent): Node? {
             val event = event_ as AfterParseEvent
             if (event.isSingleLine) return null
 
@@ -202,7 +203,7 @@ class HeadingModule : TexyModule() {
             if (opt.generateIDs) {
                 var tocUID = 0
                 for (item in ctx.toc) {
-                    if (item!!.elm.getAttribute("id").length != 0) continue
+                    if (item.elm.getAttribute("id").length != 0) continue
 
                     // TBD: Texy! has toText() here, which would mean to call
                     // ProtectedHTMLWriter.fromElement(item.elm, getTexy().getProtector());
@@ -267,7 +268,7 @@ class HeadingModule : TexyModule() {
             var top = topLevel_
             var min = 100
             var max = 0
-            val set: SortedSet<Int?> = TreeSet<Any?>()
+            val set: SortedSet<Int> = TreeSet()
             var map: IntArray? = null
 
             // Get the min, max bounds.

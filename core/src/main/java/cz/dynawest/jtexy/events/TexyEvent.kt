@@ -5,4 +5,4 @@ package cz.dynawest.jtexy.events
  *
  * @author Ondrej Zizka
  */
-open class TexyEvent(var text: String?)
+open class TexyEvent(var text: String)

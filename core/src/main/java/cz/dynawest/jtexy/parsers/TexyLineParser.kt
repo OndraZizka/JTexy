@@ -15,9 +15,9 @@ import java.util.logging.*
  *
  * @author Ondrej Zizka
  */
-class TexyLineParser(texy: JTexy?, element: DOMElement) : TexyParser(texy, element) {
+class TexyLineParser(texy: JTexy, element: DOMElement) : TexyParser(texy, element) {
     var again = false
-    protected override val patterns: List<RegexpInfo?>?
+    protected override val patterns: List<RegexpInfo>
         protected get() = texy.linePatterns
 
     /**
@@ -27,20 +27,20 @@ class TexyLineParser(texy: JTexy?, element: DOMElement) : TexyParser(texy, eleme
      * the response of the handler (either DOMText, DOMElement or null).
      */
     @Throws(TexyException::class)
-    override fun parse(text: String?) {
+    override fun parse(text: String) {
         var text = text
         val finest = log.isLoggable(Level.FINEST)
-        if (patterns!!.isEmpty()) {
+        if (patterns.isEmpty()) {
             // Nothing to do.
-            element!!.add(DOMText(text))
+            element.add(DOMText(text))
             return
         }
         var offset = 0
-        val allMatches: MutableMap<RegexpInfo?, ParserMatchInfo?> = HashMap<Any?, Any?>(patterns!!.size)
+        val allMatches: MutableMap<RegexpInfo, ParserMatchInfo> = HashMap(patterns.size)
 
         // Store current offset for each line pattern.
-        val patternOffsets: MutableMap<RegexpInfo?, Int?> = HashMap<Any?, Any?>(patterns!!.size)
-        for (ri in patterns!!) {
+        val patternOffsets: MutableMap<RegexpInfo, Int> = HashMap(patterns.size)
+        for (ri in patterns) {
             patternOffsets[ri] = -1
         }
 
@@ -52,9 +52,9 @@ class TexyLineParser(texy: JTexy?, element: DOMElement) : TexyParser(texy, eleme
 
 
             // For each line pattern...
-            for (ri in patterns!!) {
+            for (ri in patterns) {
                 if (finest) log.log(
-                    Level.FINEST, "  Parsing with pattern {0} - {1}...", arrayOf<Any?>(
+                    Level.FINEST, "  Parsing with pattern {0} - {1}...", arrayOf(
                         ri!!.name, ri.regexp
                     )
                 )
@@ -63,27 +63,28 @@ class TexyLineParser(texy: JTexy?, element: DOMElement) : TexyParser(texy, eleme
 
                     // Regexp match
                     //Pattern pat = Pattern.compile( ri.getRegexp() );
-                    val pat = ri.getPattern()
-                    val mat = pat!!.matcher(text)
-                    if (mat!!.find(offset + delta)) {
+                    val pat = ri.pattern
+                    val mat = pat.matcher(text)
+                    if (mat.find(offset + delta)) {
                         // Store match info.
                         val groups: List<MatchWithOffset?> = MatchWithOffset.Companion.fromMatcherState(mat)
-                        val curMatchInfo = ParserMatchInfo(ri, groups, mat!!.start())
+                        val curMatchInfo = ParserMatchInfo(ri, groups, mat.start())
                         allMatches[ri] = curMatchInfo
                         if (groups[0]!!.match!!.length == 0) continue
                         // Store offset for this pattern.
-                        patternOffsets[ri] = mat!!.start()
+                        patternOffsets[ri] = mat.start()
                     } else {
                         // Try next time.
                         continue
                     }
-                } // if( patternOffsets.get(ri) < offset )
+                }
+
                 val curOffset = patternOffsets[ri]!!
                 if (curOffset < minOffset) {
                     minOffset = curOffset
                     minPattern = ri
                 }
-            } // for each line pattern ( RegexpInfo ri : this.getPatterns() )
+            }
 
 
             // Nothing matched?
@@ -96,7 +97,8 @@ class TexyLineParser(texy: JTexy?, element: DOMElement) : TexyParser(texy, eleme
 
             // Call the handler of the minimal match.
             again = false
-            log.log(Level.FINER, "Using handler: {0}", minPattern.handler.name)
+            log.log(Level.FINER, "Using handler: {0}", minPattern.handler?.name)
+
             val resNode = minPattern.handler!!.handle(this, allMatches[minPattern]!!.groups, minPattern)
             var resString = "Invalid response from handler of " + minPattern.name + ": " + resNode
             if (resNode is DOMElement) {

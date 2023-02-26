@@ -13,7 +13,7 @@ enum class ContentType(val delim: Char) {
     val delimAsString: String
 
     init {
-        delimAsString = kotlin.String(charArrayOf(delim))
+        delimAsString = charArrayOf(delim).concatToString()
     }
 
     companion object {
@@ -62,7 +62,7 @@ enum class ContentType(val delim: Char) {
         /**
          * %inline; elements; Replaced elements + br have value '1'/
          */
-        private val INLINE_ELEMENTS: MutableMap<String?, Boolean?> = HashMap<Any?, Any?>()
+        private val INLINE_ELEMENTS: MutableMap<String, Boolean> = HashMap()
 
         init {
             INLINE_ELEMENTS["ins"] = java.lang.Boolean.FALSE

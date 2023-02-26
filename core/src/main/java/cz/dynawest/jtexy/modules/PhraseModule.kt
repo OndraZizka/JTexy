@@ -1,6 +1,7 @@
 package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.*
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.parsers.LinkProcessEvent
 import cz.dynawest.jtexy.parsers.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyParser
@@ -76,31 +77,31 @@ class PhraseModule : TexyModule() {
         @Throws(TexyException::class)
         override fun handle(
             parser: TexyParser,
-            groups: List<MatchWithOffset?>?,
-            pattern: RegexpInfo?
+            groups: List<MatchWithOffset>,
+            pattern: RegexpInfo
         ): Node? {
 
             //    [1] => ** - probably means "enclosing string"; ignored in Texy.
             //    [2] => ...
             //    [3] => .(title)[class]{style}
             //    [4] => LINK
-            for (match in groups!!) {
+            for (match in groups) {
                 log.finest("  " + match.toString()) ///
             }
             if (getRegexpInfo("phrase/span") != null) {
-                log.finer(pattern.getPerlRegexp())
-                log.finer(pattern.getRegexp())
+                log.finer(pattern.perlRegexp)
+                log.finer(pattern.regexp)
             }
-            val content = groups[1]!!.match
-            val modStr = groups[2]!!.match
+            val content = groups[1].match
+            val modStr = groups[2].match!!
             val mod = TexyModifier(modStr)
-            val linkStr = if (groups.size <= 3) null else groups[3]!!.match
-            var link: TexyLink = TexyLink.Companion.fromString(linkStr)
+            val linkStr = if (groups.size <= 3) null else groups[3].match
+            var link: TexyLink? = TexyLink.fromString(linkStr)
 
 
             // TBD: What is this good for?
             //parser.again = "phrase/code".equals(pattern.name) || "phrase/quicklink".equals(pattern.name);
-            if (pattern!!.name!!.startsWith("phrase/span")) {
+            if (pattern.name.startsWith("phrase/span")) {
                 if (linkStr == null) {
                     if (null == modStr) return null // Leave intact.
                 } else {
@@ -109,21 +110,21 @@ class PhraseModule : TexyModule() {
                     val linkProcessEvent = LinkProcessEvent(
                         parser, mod, modStr, linkStr, content, null
                     )
-                    getTexy().invokeAroundHandlers(linkProcessEvent)
-                    link = linkProcessEvent.getLink()
+                    texy.invokeAroundHandlers(linkProcessEvent)
+                    link = linkProcessEvent.link!!
                 }
-            } else if (pattern.name!!.startsWith("phrase/acronym")) {
+            } else if (pattern.name.startsWith("phrase/acronym")) {
                 mod.title = JTexyStringUtils.unescapeHtml(linkStr!!.trim { it <= ' ' })
-            } else if (pattern.name!!.startsWith("phrase/quote")) {
-                mod.cite = getTexy().linkModule.citeLink(linkStr)
+            } else if (pattern.name.startsWith("phrase/quote")) {
+                mod.cite = texy.linkModule.citeLink(linkStr)
             } else if (linkStr != null) {
-                //link = getTexy().linkModule.factoryLink( linkStr );
+                //link = texy.linkModule.factoryLink( linkStr );
                 // @ Fire a processLinkEvent instead of calling LinkModule directly.
                 val linkEvent = LinkProcessEvent(
                     parser, mod, modStr, linkStr, null, null
                 )
                 parser.texy.invokeAroundHandlers(linkEvent)
-                link = linkEvent.getLink()
+                link = linkEvent.link!!
             }
 
 
@@ -131,14 +132,14 @@ class PhraseModule : TexyModule() {
             //elm.addText( content );
             //Node node = solve( pattern.name, content, mod, link );
             val event = PhraseEvent(parser, content, mod, link, pattern.name)
-            return getTexy().invokeAroundHandlers(event)
+            return texy.invokeAroundHandlers(event)
         }
     }
 
     /**
      * Phrase Listener.
      */
-    var phraseListener: PhraseEventListener = object : PhraseEventListener {
+    var phraseListener = object : PhraseEventListener {
         override val eventClass: Class<*>
             get() = PhraseEvent::class.java
 
@@ -156,12 +157,12 @@ class PhraseModule : TexyModule() {
      * @param link       ???  Link is probably always null - see the patterns.
      * @return
      */
-    private fun solve(phrase: String?, content: String?, modifier: TexyModifier?, link: TexyLink?): Node? {
+    private fun solve(phrase: String, content: String, modifier: TexyModifier, link: TexyLink?): Node? {
         var content = content
         val ri = getRegexpInfo(phrase)
         var elmName = ri?.htmlElement
         if ("a" == elmName) elmName = if (link != null && isLinksAllowed) null else "span"
-        if ("phrase/code" == phrase) content = getTexy().protect(StringEscapeUtils.escapeHtml(content), ContentType.TEXTUAL)
+        if ("phrase/code" == phrase) content = texy.protect(StringEscapeUtils.escapeHtml(content), ContentType.TEXTUAL)
         var nodeRet: Node? = null
         if ("phrase/strong+em" == phrase) {
             val elmRet = DOMElement(getRegexpInfo("phrase/strong")!!.htmlElement)
@@ -177,13 +178,12 @@ class PhraseModule : TexyModule() {
             if ("q" == elmName) elmRet.setAttribute("cite", modifier.cite)
             nodeRet = elmRet
         } else {
-            // Trick - put's whole content 
+            // Trick - put's whole content
             nodeRet = DOMText(content)
         }
 
         //* TODO: Without this, links don't work!
-        return if (link != null && isLinksAllowed) getTexy().linkModule.solveLinkReference(link, nodeRet) else nodeRet
-        /**/
+        return if (link != null && isLinksAllowed) texy.linkModule!!.solveLinkReference(link, nodeRet) else nodeRet
     }
 
     companion object {
@@ -197,7 +197,7 @@ class PhraseModule : TexyModule() {
             override val name: String
                 get() = "patternSubSup"
 
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
                 for (match in groups!!) {
                     log.finer("  " + match.toString()) ///
                 }
@@ -213,7 +213,7 @@ class PhraseModule : TexyModule() {
             override val name: String
                 get() = "patternNoTexy"
 
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
                 for (match in groups!!) {
                     log.finer("  " + match.toString()) ///
                 }

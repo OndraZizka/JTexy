@@ -10,22 +10,22 @@ class HtmlDtdTemplate {
     val rootDtdElement = dtd.rootElement
 
     internal class AttributeGroups {
-        var coreAttrs: MutableSet<DtdAttr?> = HashSet<Any?>()
-        var i18n: MutableSet<DtdAttr?> = HashSet<Any?>()
-        var attrs: MutableSet<DtdAttr?> = HashSet<Any?>()
-        var cellalign: MutableSet<DtdAttr?> = HashSet<Any?>()
+        var coreAttrs: MutableSet<DtdAttr> = HashSet()
+        var i18n: MutableSet<DtdAttr> = HashSet()
+        var attrs: MutableSet<DtdAttr> = HashSet()
+        var cellalign: MutableSet<DtdAttr> = HashSet()
     }
 
     private val attrGroups = AttributeGroups()
-    private val blockElms: MutableSet<DtdElement?> = HashSet<Any?>()
-    private val inlineElms: MutableSet<DtdElement?> = HashSet<Any?>()
-    private val blockInlineElms: MutableSet<DtdElement?> = HashSet<Any?>()
+    private val blockElms: MutableSet<DtdElement> = HashSet()
+    private val inlineElms: MutableSet<DtdElement> = HashSet()
+    private val blockInlineElms: MutableSet<DtdElement> = HashSet()
     // Moved from TexyHtml.php
     /** Empty elements.  */
-    var emptyElements: MutableSet<DtdElement?> = HashSet<Any?>()
+    var emptyElements: MutableSet<DtdElement> = HashSet()
     /** %inline; elements; replaced elements + br have value '1'.  */ //public static Set<DtdElement> inlineElements = new HashSet();
     /** Elements with optional end tag in HTML.  */
-    var optionalEndElements: MutableSet<DtdElement?> = HashSet<Any?>()
+    var optionalEndElements: MutableSet<DtdElement> = HashSet()
 
     init {
         init()
@@ -38,13 +38,13 @@ class HtmlDtdTemplate {
         val strict = false
 
         // Attributes
-        attrGroups.coreAttrs.addAll(Dtd.Companion.createAttributes("id class style title xml:id"))
-        attrGroups.i18n.addAll(Dtd.Companion.createAttributes("lang dir xml:lang"))
+        attrGroups.coreAttrs.addAll(Dtd.createAttributes("id class style title xml:id"))
+        attrGroups.i18n.addAll(Dtd.createAttributes("lang dir xml:lang"))
         attrGroups.attrs.addAll(attrGroups.coreAttrs)
         attrGroups.attrs.addAll(attrGroups.i18n)
-        attrGroups.attrs.addAll(Dtd.Companion.createAttributes("onclick ondblclick onmousedown onmouseup onmouseover onmousemove onmouseout onkeypress onkeydown onkeyup"))
+        attrGroups.attrs.addAll(Dtd.createAttributes("onclick ondblclick onmousedown onmouseup onmouseover onmousemove onmouseout onkeypress onkeydown onkeyup"))
         attrGroups.cellalign.addAll(attrGroups.attrs)
-        attrGroups.cellalign.addAll(Dtd.Companion.createAttributes("align char charoff valign"))
+        attrGroups.cellalign.addAll(Dtd.createAttributes("align char charoff valign"))
 
 
         // Content elements.

@@ -24,7 +24,7 @@ class Invocation(var event: TexyParserEvent, handlers_: List<AroundEventListener
         } else {
             //this.handlers = new ArrayList(handlers_.size());
             //Collections.copy(handlers_, this.handlers);
-            handlers = ArrayList<Any?>(handlers_)
+            handlers = ArrayList(handlers_)
             Collections.reverse(handlers)
         }
         iterator = handlers!!.iterator()

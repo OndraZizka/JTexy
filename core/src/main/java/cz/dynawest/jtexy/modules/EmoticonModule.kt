@@ -27,19 +27,19 @@ class EmoticonModule : TexyModule() {
 
     /** Physical location of images on server (default value is texy.imageModule.fileRoot)  */
     private val fileRoot: String? = null
-    private var regexpInfo: RegexpInfo? = null
+    lateinit var regexpInfo: RegexpInfo
     override val eventListeners: Array<TexyEventListener<*>>
         // "Register" listeners.
         get() = arrayOf( // BeforeParseEvent. TODO: Move to some void init(JTexy texy) callback.
-            object : TexyEventListener<BeforeParseEvent?> {
+            object : TexyEventListener<BeforeParseEvent> {
                 override val eventClass: Class<*>
                     get() = BeforeParseEvent::class.java
 
                 @Throws(TexyException::class)
-                override fun onEvent(event: BeforeParseEvent?): Node? {
+                override fun onEvent(event: BeforeParseEvent): Node? {
                     if (!enabled) return null
                     regexpInfo = createRegexpInfo()
-                    getTexy().addPattern(regexpInfo)
+                    texy.addPattern(regexpInfo!!)
                     return null
                 }
             })
@@ -53,7 +53,7 @@ class EmoticonModule : TexyModule() {
                 get() = "emoticon"
 
             @Throws(TexyException::class)
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
                 val raw = groups!![1]!!.match
                 return createEmotionElement(findEmoticon(raw), raw)
             }
@@ -112,7 +112,7 @@ class EmoticonModule : TexyModule() {
 
     companion object {
         /** Supported emoticons and image files  */
-        val ICONS: MutableMap<String?, String?> = HashMap<Any?, Any?>()
+        val ICONS: MutableMap<String, String> = HashMap()
 
         init {
             ICONS[":-)"] = "smile.gif"

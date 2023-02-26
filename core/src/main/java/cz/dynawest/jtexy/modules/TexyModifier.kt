@@ -32,14 +32,14 @@ class TexyModifier : Cloneable {
     var classes: MutableSet<String?> = LinkedHashSet()
 
     /** CSS styles  */
-    var styles: MutableMap<String?, String?> = LinkedHashMap<Any?, Any?>()
+    var styles: MutableMap<String, String> = LinkedHashMap()
 
     /** HTML element attributes  */
-    var attrs: MutableMap<String?, String?> = LinkedHashMap<Any?, Any?>()
+    var attrs: MutableMap<String, String> = LinkedHashMap()
 
     /** Const  */
     constructor()
-    constructor(modifierString: String?) {
+    constructor(modifierString: String) {
         parse(modifierString)
     }
 
@@ -51,9 +51,9 @@ class TexyModifier : Cloneable {
         ret.vAlign = vAlign
         ret.title = title
         ret.cite = cite
-        ret.classes = LinkedHashSet<Any?>(classes)
-        ret.styles = LinkedHashMap<Any?, Any?>(styles)
-        ret.attrs = LinkedHashMap<Any?, Any?>(attrs)
+        ret.classes = LinkedHashSet(classes)
+        ret.styles = LinkedHashMap(styles)
+        ret.attrs = LinkedHashMap(attrs)
         return ret
     }
 
@@ -62,10 +62,10 @@ class TexyModifier : Cloneable {
      *
      * @param modifierString  .(title)[class]{style/attribs}<>
      */
-    fun parse(modifierString: String?) {
+    fun parse(modifierString: String) {
         if (StringUtils.isEmpty(modifierString)) return
         var pos = 0
-        val len = modifierString!!.length
+        val len = modifierString.length
         while (pos < len) {
             val ch = modifierString[pos]
             when (ch) {
@@ -103,31 +103,11 @@ class TexyModifier : Cloneable {
                 }
 
                 '*' -> pos++
-                '^' -> {
-                    vAlign = "top"
-                    pos++
-                }
-
-                '-' -> {
-                    vAlign = "middle"
-                    pos++
-                }
-
-                '_' -> {
-                    vAlign = "bottom"
-                    pos++
-                }
-
-                '=' -> {
-                    hAlign = "justify"
-                    pos++
-                }
-
-                '>' -> {
-                    hAlign = "right"
-                    pos++
-                }
-
+                '^' -> { vAlign = "top"; pos++ }
+                '-' -> { vAlign = "middle"; pos++ }
+                '_' -> { vAlign = "bottom"; pos++ }
+                '=' -> { hAlign = "justify"; pos++ }
+                '>' -> { hAlign = "right"; pos++ }
                 '<' -> {
                     if (modifierString.length > pos + 1 && modifierString[pos + 1] == '>') {
                         hAlign = "center"
@@ -154,6 +134,7 @@ class TexyModifier : Cloneable {
             }
         } // while()
     } // parse()
+
 
     /**
      * Decorates HTML element according to this modifier.
@@ -209,14 +190,14 @@ class TexyModifier : Cloneable {
                     "start,summary,tabindex,target,title,type,usemap,valign" +
                     "value,vspace"
             val attrs = StringUtils.split(strAttrs, ',')
-            elAttrs = HashSet<Any?>(Arrays.asList(*attrs))
+            elAttrs = HashSet(Arrays.asList(*attrs))
         }
 
         /**
          * @param   String -> String map of CSS rules.
          * @return  "key1:val1; key2:val2"
          */
-        private fun mapToCSS(styles: Map<String?, String?>): String {
+        private fun mapToCSS(styles: Map<String, String>): String {
             if (styles.size == 0) return ""
             val sb = StringBuilder(styles.size * 20)
             for ((key, value) in styles) {

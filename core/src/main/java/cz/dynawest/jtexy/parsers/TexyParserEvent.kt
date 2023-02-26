@@ -8,6 +8,6 @@ import cz.dynawest.jtexy.events.TexyEvent
  * @author Ondrej Zizka
  */
 open class TexyParserEvent
-/** Const  */(/* -- Fields -- */
-              val parser: TexyParser?, text: String?
+(
+              val parser: TexyParser, text: String
 ) : TexyEvent(text)

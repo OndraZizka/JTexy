@@ -6,4 +6,4 @@ import cz.dynawest.jtexy.parsers.AroundEventListener
  *
  * @author Ondrej Zizka
  */
-interface ImageEventListener : AroundEventListener<ImageEvent?>
+interface ImageEventListener : AroundEventListener<ImageEvent>

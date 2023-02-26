@@ -46,7 +46,7 @@ class ParagraphModule : TexyModule() {
 
         // Find hard linebreaks.
         var content = content
-        content = if (getTexy().options.mergeLines) {
+        content = if (texy.options.mergeLines) {
             // ....
             //  ...  => \r means break line
             content!!.replace("\\n +(?=\\S)".toRegex(), "\r")
@@ -57,7 +57,7 @@ class ParagraphModule : TexyModule() {
         //$el->parseLine($tx, $content);
         //$content = $el->getText(); // string
         // TODO: Debug. Hapruje to.
-        TexyLineParser(getTexy(), elm).parse(content)
+        TexyLineParser(texy, elm).parse(content)
 
         // Get the code out of the element,
         // process it textually, and put it back.
@@ -80,7 +80,7 @@ class ParagraphModule : TexyModule() {
                 ContentType.REPLACED.delim
             )
         ) {
-            elm.name = getTexy().options.nontextParagraph
+            elm.name = texy.options.nontextParagraph
         } else {
             // if{ ignoreEmptyStuff } return FALSE;
             if (null == modifier) elm.name = Constants.HOLDER_ELEMENT_NAME
@@ -94,7 +94,7 @@ class ParagraphModule : TexyModule() {
 
             // Add <br />.
             if (-1 != content.indexOf("\r")) {
-                val key = getTexy().protect("<br />", ContentType.REPLACED)
+                val key = texy.protect("<br />", ContentType.REPLACED)
                 content = content.replace("\r", key!!)
             }
         }
@@ -105,6 +105,6 @@ class ParagraphModule : TexyModule() {
 
     companion object {
         private val log = Logger.getLogger(ParagraphModule::class.java.name)
-        private val TM_PAT: Pattern = Pattern.Companion.compile("(?u)[^\\s" + RegexpPatterns.Companion.TEXY_MARK + "]")
+        private val TM_PAT: Pattern = Pattern.compile("(?u)[^\\s" + RegexpPatterns.TEXY_MARK + "]")
     }
 }

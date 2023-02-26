@@ -171,7 +171,7 @@ import java.util.*
  * @version $Revision: 1.21 $
  */
 class HTMLWriter : XMLWriter {
-    private val formatStack: Stack<*> = Stack<Any?>()
+    private val formatStack: Stack<FormatState> = Stack()
     private var lastText = ""
     private var tagsOuput = 0
 
@@ -180,10 +180,9 @@ class HTMLWriter : XMLWriter {
     private var preformattedTags = DEFAULT_PREFORMATTED_TAGS
 
     /**
-     * Used to store the qualified element names which should have no close
-     * element tag
+     * The qualified element names which should have no close element tag.
      */
-    private var omitElementCloseSet: HashSet<*>? = null
+    private var omitElementCloseSet: MutableSet<String> = mutableSetOf()
 
     constructor(writer: Writer) : super(writer, DEFAULT_HTML_FORMAT)
     constructor(writer: Writer, format: OutputFormat?) : super(writer, format)
@@ -302,16 +301,16 @@ class HTMLWriter : XMLWriter {
         )
     }
 
-    private fun internalGetOmitElementCloseSet(): HashSet<*> {
+    private fun internalGetOmitElementCloseSet(): Set<String> {
         if (omitElementCloseSet == null) {
-            omitElementCloseSet = HashSet<Any?>()
+            omitElementCloseSet = HashSet()
             loadOmitElementCloseSet(omitElementCloseSet)
         }
-        return omitElementCloseSet!!
+        return omitElementCloseSet
     }
 
     // If you change this, change the javadoc for getOmitElementCloseSet.
-    protected fun loadOmitElementCloseSet(set: MutableSet<*>) {
+    protected fun loadOmitElementCloseSet(set: MutableSet<String>) {
         set.add("AREA")
         set.add("BASE")
         set.add("BR")
@@ -325,45 +324,36 @@ class HTMLWriter : XMLWriter {
         set.add("PARAM")
     }
     // let the people see the set, but not modify it.
+
     /**
-     * A clone of the Set of elements that can have their close-tags omitted. By
-     * default it should be "AREA", "BASE", "BR", "COL", "HR", "IMG", "INPUT",
-     * "LINK", "META", "P", "PARAM"
-     *
-     * @return A clone of the Set.
+     * A clone of the Set of elements that can have their close-tags omitted.
+     * By default, it should be "AREA", "BASE", "BR", "COL", "HR", "IMG", "INPUT", "LINK", "META", "P", "PARAM"
      */
-    fun getOmitElementCloseSet(): Set<*> {
-        return internalGetOmitElementCloseSet().clone() as Set<*>
+    fun getOmitElementCloseSet(): Set<String> {
+        return internalGetOmitElementCloseSet()
     }
 
     /**
      * To use the empty set, pass an empty Set, or null:
      *
      * <pre>
-     *
-     *
-     * setOmitElementCloseSet(new HashSet());
-     * or
-     * setOmitElementCloseSet(null);
-     *
-     *
-    </pre> *
-     *
-     * @param newSet
-     * DOCUMENT ME!
+     *   setOmitElementCloseSet(new HashSet());
+     *     or
+     *   setOmitElementCloseSet(null);
+     * </pre>
      */
-    fun setOmitElementCloseSet(newSet: Set<*>?) {
+    fun setOmitElementCloseSet(newSet: Set<String>?) {
         // resets, and safely empties it out if newSet is null.
-        omitElementCloseSet = HashSet<Any?>()
-        if (newSet != null) {
-            omitElementCloseSet = HashSet<Any?>()
-            var aTag: Any
-            val iter = newSet.iterator()
-            while (iter.hasNext()) {
-                aTag = iter.next()
-                if (aTag != null) {
-                    omitElementCloseSet.add(aTag.toString().uppercase(Locale.getDefault()))
-                }
+        omitElementCloseSet = HashSet()
+        if (newSet == null) return
+
+        omitElementCloseSet = HashSet()
+        var aTag: Any
+        val iter = newSet.iterator()
+        while (iter.hasNext()) {
+            aTag = iter.next()
+            if (aTag != null) {
+                omitElementCloseSet.add(aTag.toString().uppercase(Locale.getDefault()))
             }
         }
     }
@@ -371,23 +361,15 @@ class HTMLWriter : XMLWriter {
     /**
      * @see .setPreformattedTags
      */
-    fun getPreformattedTags(): Set<*> {
-        return preformattedTags!!.clone() as Set<*>
+    fun getPreformattedTags(): Set<String> {
+        return preformattedTags
     }
 
     /**
-     *
-     *
      * Override the default set, which includes PRE, SCRIPT, STYLE, and
      * TEXTAREA, case insensitively.
      *
-     *
-     *
-     *
      * **Setting Preformatted Tags **
-     *
-     *
-     *
      *
      * Pass in a Set of Strings, one for each tag name that should be treated
      * like a PRE tag. You may pass in null or an empty Set to assign the empty
@@ -398,9 +380,6 @@ class HTMLWriter : XMLWriter {
      * This will generally make the close tag not line up with the start tag,
      * but it preserves the intention of the whitespace within the tag.
      *
-     *
-     *
-     *
      * The browser considers leading whitespace before the close tag to be
      * significant, but leading whitespace before the open tag to be
      * insignificant. For example, if the HTML author doesn't put the close
@@ -409,8 +388,6 @@ class HTMLWriter : XMLWriter {
      * the HTML author's intent. Similarly, in a PRE, the browser treats a
      * flushed left close PRE tag as different from a close tag with leading
      * whitespace. Again, this must be left up to the HTML author.
-     *
-     *
      *
      *
      * **Examples **
@@ -428,7 +405,6 @@ class HTMLWriter : XMLWriter {
      * myHTMLWriter.setPreformattedTags(current);
      *
      * //The set is now &lt;b&gt;PRE, SCRIPT, STYLE, TEXTAREA, IFRAME&lt;/b&gt;
-     *
      *
     </pre> *
      *
@@ -452,18 +428,15 @@ class HTMLWriter : XMLWriter {
      *
      * <pre>
      *
-     *
      * myHTMLWriter.setPreformattedTags(new HashSet());
      *
      * //The set is now &lt;b&gt;{}&lt;/b&gt;
-     *
      *
     </pre> *
      *
      * or with null, like this:
      *
      * <pre>
-     *
      *
      * myHTMLWriter.setPreformattedTags(null);
      *
@@ -472,18 +445,17 @@ class HTMLWriter : XMLWriter {
      *
     </pre> *
      *
-     *
     </blockquote> *
      *
      * @param newSet
      * DOCUMENT ME!
      */
-    fun setPreformattedTags(newSet: Set<*>?) {
+    fun setPreformattedTags(newSet: Set<String>?) {
         // no fancy merging, just set it, assuming they did a
         // getExcludeTrimTags() first if they wanted to preserve the default
         // set.
         // resets, and safely empties it out if newSet is null.
-        preformattedTags = HashSet<Any?>()
+        preformattedTags = HashSet()
         if (newSet != null) {
             var aTag: Any
             val iter = newSet.iterator()
@@ -580,9 +552,9 @@ class HTMLWriter : XMLWriter {
                 super.writeElement(element)
             } finally {
                 val state = formatStack.pop() as FormatState
-                currentFormat.isNewlines = state.isNewlines()
-                currentFormat.isTrimText = state.isTrimText()
-                currentFormat.setIndent(state.getIndent())
+                currentFormat.isNewlines = state.isNewlines
+                currentFormat.isTrimText = state.isTrimText
+                currentFormat.setIndent(state.indent)
             }
         } else {
             super.writeElement(element)
@@ -615,38 +587,25 @@ class HTMLWriter : XMLWriter {
     // Allows us to the current state of the format in this struct on the
     // formatStack.
     private inner class FormatState(newLines: Boolean, trimText: Boolean, indent: String) {
-        val isNewlines = false
-        val isTrimText = false
-        val indent = ""
-
-        init {
-            this.newlines = newLines
-            trimText = trimText
-            this.indent = indent
-        }
+        val isNewlines = newLines
+        val isTrimText = trimText
+        val indent = indent
     }
 
     companion object {
         private val lineSeparator = System.getProperty("line.separator")
-        protected val DEFAULT_PREFORMATTED_TAGS: HashSet<*>? = null
+        protected val DEFAULT_PREFORMATTED_TAGS = mutableSetOf<String>()
 
         init {
             // If you change this list, update the javadoc examples, above in the
             // class javadoc, in writeElement, and in setPreformattedTags().
-            DEFAULT_PREFORMATTED_TAGS = HashSet<Any?>()
             DEFAULT_PREFORMATTED_TAGS.add("PRE")
             DEFAULT_PREFORMATTED_TAGS.add("SCRIPT")
             DEFAULT_PREFORMATTED_TAGS.add("STYLE")
             DEFAULT_PREFORMATTED_TAGS.add("TEXTAREA")
         }
 
-        protected val DEFAULT_HTML_FORMAT: OutputFormat? = null
-
-        init {
-            DEFAULT_HTML_FORMAT = OutputFormat("  ", true)
-            DEFAULT_HTML_FORMAT.setTrimText(true)
-            DEFAULT_HTML_FORMAT.setSuppressDeclaration(true)
-        }
+        protected val DEFAULT_HTML_FORMAT = OutputFormat("  ", true).apply { isTrimText = true; isSuppressDeclaration = true }
 
         /**
          * Convenience method to just get a String result, but **As XHTML **.

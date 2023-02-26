@@ -22,16 +22,16 @@ class Options {
     var popupOnclick = ""
 
     // -- Set-event listeners -- //
-    private val setListeners: MutableSet<SetPropertyListener?> = LinkedHashSet<Any?>()
-    fun addSetPropertyListener(lis: SetPropertyListener?) {
+    private val setListeners: MutableSet<SetPropertyListener> = LinkedHashSet()
+    fun addSetPropertyListener(lis: SetPropertyListener) {
         setListeners.add(lis)
     }
 
-    fun setProperty(name: String, value: Any?): Int {
+    fun setProperty(name: String, value: Any): Int {
         var accepted = 0
         propsHistory.add(SetPropertyEvent(name, value))
         for (lis in setListeners) {
-            if (lis!!.onSetProperty(name, value)) accepted++
+            if (lis.onSetProperty(name, value)) accepted++
         }
         return accepted
     }
@@ -39,24 +39,25 @@ class Options {
     // Set-event listener interface.
     interface SetPropertyListener {
         /** Returns true if this listener accepted the property (processed it somehow).  */
-        fun onSetProperty(name: String?, value: Any?): Boolean
+        fun onSetProperty(name: String?, value: Any): Boolean
     }
 
-    // Set-event.
-    class SetPropertyEvent(var name: String, var value: Any?)
+    class SetPropertyEvent(var name: String, var value: Any)
+
 
     // -- Keep history of set properties for debug purposes. -- //
-    private val propsHistory: MutableList<SetPropertyEvent?> = LinkedList<Any?>()
+    private val propsHistory: MutableList<SetPropertyEvent> = LinkedList()
     val propertiesHistory: Any
         get() = Collections.unmodifiableList(propsHistory)
 
     fun getPropertyLastValue(name: String?): Any? {
         if (name == null) throw NullPointerException("Property name can't be null.")
+
         // Not likely to be used much, no need for hashmap.
-        val it: ListIterator<SetPropertyEvent?> = propsHistory.listIterator(propsHistory.size)
+        val it: ListIterator<SetPropertyEvent> = propsHistory.listIterator(propsHistory.size)
         while (it.hasPrevious()) {
             val ev = it.previous()
-            if (name == ev!!.name) return ev.value
+            if (name == ev.name) return ev.value
         }
         return null
     }

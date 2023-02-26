@@ -46,7 +46,7 @@ class ListModule : TexyModule() {
 
         // List.
         val sb1 = StringBuilder()
-        sb1.append("#^(?:").append(RegexpPatterns.Companion.TEXY_MODIFIER_H).append("\\n)?")
+        sb1.append("#^(?:").append(RegexpPatterns.TEXY_MODIFIER_H).append("\\n)?")
         sb1.append("(")
         for (bullet in ListType.values()) {
             sb1.append(bullet.firstRegExp).append("|")
@@ -56,8 +56,8 @@ class ListModule : TexyModule() {
 
         // List definition.
         val sb2 = StringBuilder()
-        sb2.append("#^(?:").append(RegexpPatterns.Companion.TEXY_MODIFIER_H).append("\\n)?")
-        sb2.append("(\\S.*)\\:\\ *").append(RegexpPatterns.Companion.TEXY_MODIFIER_H).append("?\\n") // Term
+        sb2.append("#^(?:").append(RegexpPatterns.TEXY_MODIFIER_H).append("\\n)?")
+        sb2.append("(\\S.*)\\:\\ *").append(RegexpPatterns.TEXY_MODIFIER_H).append("?\\n") // Term
         sb2.append("(\\ ++)(")
         for (bullet in ListType.values()) {
             if (!bullet.isOrdered) {
@@ -247,9 +247,9 @@ class ListModule : TexyModule() {
         private val log = Logger.getLogger(ListModule::class.java.name)
 
         /** Used in PatternDefList.  */
-        private val TERM_PATTERN: Pattern = Pattern.Companion.compile(
-            "^\\n?(\\S.*)\\:\\ *" + RegexpPatterns.Companion.TEXY_MODIFIER_H + "?()$",
-            Pattern.Companion.MULTILINE or Pattern.Companion.UNGREEDY
+        private val TERM_PATTERN: Pattern = Pattern.compile(
+            "^\\n?(\\S.*)\\:\\ *" + RegexpPatterns.TEXY_MODIFIER_H + "?()$",
+            Pattern.MULTILINE or Pattern.UNGREEDY
         ) // (?mU)
 
         /**
@@ -268,7 +268,7 @@ class ListModule : TexyModule() {
             val spaceBase = if (indented) "\\ +" else ""
             //   \\A == The beginning of the input, instead of ^ - we don't have the (?A) flag.
             val itemPattern = ("(?mUu)\\A\\n?(" + spaceBase + ")" + itemBulletRegex + "\\ *(\\S.*)?"
-                    + RegexpPatterns.Companion.TEXY_MODIFIER_H + "?()$")
+                    + RegexpPatterns.TEXY_MODIFIER_H + "?()$")
             if (JTexy.Companion.debug) log.finest("Parser at: " + parser.posAsString) ///
 
 

@@ -11,7 +11,7 @@ abstract class Protector {
     /**
      * Stores the given string and returns a key (with delimiters) under which it's stored.
      */
-    abstract fun protect(str: String?, type: ContentType): String
+    abstract fun protect(str: String, type: ContentType): String
 
     /**
      * Retrieves a string stored under given key (with delimiters).
@@ -22,7 +22,7 @@ abstract class Protector {
      * Unprotects all protected sub-strings in given string.
      */
     @Throws(TexyException::class)
-    fun unprotectAll(str: String?): String {
+    fun unprotectAll(str: String): String {
         val sb = StringBuilder()
         var nextPos = 0
         var keyStart: Int
@@ -31,10 +31,10 @@ abstract class Protector {
         while (-1 != JTexyStringUtils.indexOfAny(str, CONTENT_TYPE_CHARS.toCharArray(), nextPos).also { keyStart = it }) {
 
             // Append text between this and the prev key (if any).
-            if (nextPos != keyStart) sb.append(str!!.substring(nextPos, keyStart))
+            if (nextPos != keyStart) sb.append(str.substring(nextPos, keyStart))
 
             // The key.
-            val delimChar = str!![keyStart]
+            val delimChar = str[keyStart]
             val keyEnd = str.indexOf(delimChar, keyStart + 1)
             if (keyEnd == -1) throw TexyException("Protector key end missing: " + StringUtils.abbreviate(str, keyStart, 20))
 
@@ -43,19 +43,13 @@ abstract class Protector {
             //String ret = getStringByEncodedID(key); // this.safe.get(Utils.texyMarkupToInt(key));
             val wholeKey = str.substring(keyStart, keyEnd + 1)
             val ret = unprotect(wholeKey)
-                ?: throw TexyException(
-                    "Protector key [" + Utils.texyMarkupToInt(wholeKey) + "] not found: " + StringUtils.abbreviate(
-                        str,
-                        keyStart,
-                        20
-                    )
-                )
+                ?: throw TexyException("Protector key [" + Utils.texyMarkupToInt(wholeKey) + "] not found: " + StringUtils.abbreviate(str, keyStart, 20))
             sb.append(ret)
 
             // Advance to the next position.
             nextPos = keyEnd + 1
         }
-        sb.append(str!!.substring(nextPos, str.length))
+        sb.append(str.substring(nextPos, str.length))
         return sb.toString()
     } // unprotectAll( String str )
 

@@ -89,7 +89,7 @@ class TexyLink(
             return if (null == url || "" == url) null else TexyLink(url)
         }
 
-        private val PAT_EMAIL = Pattern.compile("^" + RegexpPatterns.Companion.TEXY_EMAIL + "$", Pattern.UNICODE_CASE)
+        private val PAT_EMAIL = Pattern.compile("^" + RegexpPatterns.TEXY_EMAIL + "$", Pattern.UNICODE_CASE)
         private val PAT_URL = Pattern.compile("^(https?://|ftp://|www\\.|/)", Pattern.CASE_INSENSITIVE)
 
         /**

@@ -21,12 +21,12 @@ class TypographyModule  // Const
     override val eventListeners: Array<TexyEventListener<*>>
         // "Register" listeners.
         get() = arrayOf( // BeforeParseEvent. (Currently, it re-configures quotes based on locale setting.)
-            object : TexyEventListener<BeforeParseEvent?> {
+            object : TexyEventListener<BeforeParseEvent> {
                 override val eventClass: Class<*>
                     get() = BeforeParseEvent::class.java
 
                 @Throws(TexyException::class)
-                override fun onEvent(event: BeforeParseEvent?): Node? {
+                override fun onEvent(event: BeforeParseEvent): Node? {
                     // TODO: Reconfigure quotes.
                     return null
                 }
@@ -50,7 +50,7 @@ class TypographyModule  // Const
     /**
      * Conversions - regexps and replacements for them.
      */
-    private val conversions: MutableList<RegexpInfo?> = ArrayList<Any?>(40)
+    private val conversions: MutableList<RegexpInfo?> = ArrayList(40)
 
     // Options
     var localeKey = "cs"
@@ -112,15 +112,15 @@ class TypographyModule  // Const
         conversions.add(
             tryCreateRegexpInfo(
                 "#(?<=^| |\\.|,|-|\\+|\u0016|\\()([\u0017-\u001F]*\\d+\\.?[\u0017-\u001F]*)\\s+(?=[\u0017-\u001F]*[%"
-                        + RegexpPatterns.Companion.TEXY_CHAR + "\u00b0-\u00be\u2020-\u214f])#mu", "$1\u00A0", "&nbsp; between numbers"
+                        + RegexpPatterns.TEXY_CHAR + "\u00b0-\u00be\u2020-\u214f])#mu", "$1\u00A0", "&nbsp; between numbers"
             )
         )
 
         // Space between preposition and word.
         conversions.add(
             tryCreateRegexpInfo(
-                "#(?<=^|[^0-9" + RegexpPatterns.Companion.TEXY_CHAR + "])([\u0017-\u001F]*[ksvzouiKSVZOUIA][\u0017-\u001F]*)\\s+(?=[\u0017-\u001F]*[0-9"
-                        + RegexpPatterns.Companion.TEXY_CHAR + "])#mus", "$1\u00A0", "space after preposition"
+                "#(?<=^|[^0-9" + RegexpPatterns.TEXY_CHAR + "])([\u0017-\u001F]*[ksvzouiKSVZOUIA][\u0017-\u001F]*)\\s+(?=[\u0017-\u001F]*[0-9"
+                        + RegexpPatterns.TEXY_CHAR + "])#mus", "$1\u00A0", "space after preposition"
             )
         )
 
@@ -159,29 +159,29 @@ class TypographyModule  // Const
         /**
          * @see [Unicode](http://www.unicode.org/cldr/data/charts/by_type/misc.delimiters.html)
          */
-        val LOCALES: MutableMap<String?, LocaleInfo?> = HashMap<Any?, Any?>()
+        internal val LOCALES: MutableMap<String, LocaleInfo> = HashMap()
 
         // Locales static init
         init {
             LOCALES["cs"] = LocaleInfo(
-                Pair<Any?, Any?>("\u201A", "\u2018"),  // "\xe2\x80\x9a", "\xe2\x80\x98"
-                Pair<Any?, Any?>("\u201E", "\u201C") // "\xe2\x80\x9e", "\xe2\x80\x9c"
+                Pair("\u201A", "\u2018"),  // "\xe2\x80\x9a", "\xe2\x80\x98"
+                Pair("\u201E", "\u201C") // "\xe2\x80\x9e", "\xe2\x80\x9c"
             )
             LOCALES["en"] = LocaleInfo(
-                Pair<Any?, Any?>("\u2018", "\u2019"),  // "\xe2\x80\x98", "\xe2\x80\x99"
-                Pair<Any?, Any?>("\u201C", "\u201D") // "\xe2\x80\x9c", "\xe2\x80\x9d"
+                Pair("\u2018", "\u2019"),  // "\xe2\x80\x98", "\xe2\x80\x99"
+                Pair("\u201C", "\u201D") // "\xe2\x80\x9c", "\xe2\x80\x9d"
             )
             LOCALES["fr"] = LocaleInfo(
-                Pair<Any?, Any?>("\u2039", "\u203A"),  // "\xe2\x80\xb9", "\xe2\x80\xba"
-                Pair<Any?, Any?>("\u00AB", "\u00BB") // "\xc2\xab",     "\xc2\xbb"
+                Pair("\u2039", "\u203A"),  // "\xe2\x80\xb9", "\xe2\x80\xba"
+                Pair("\u00AB", "\u00BB") // "\xc2\xab",     "\xc2\xbb"
             )
             LOCALES["de"] = LocaleInfo(
-                Pair<Any?, Any?>("\u201A", "\u2018"),  // "\xe2\x80\x9a", "\xe2\x80\x98"
-                Pair<Any?, Any?>("\u201E", "\u201C") // "\xe2\x80\x9e", "\xe2\x80\x9c"
+                Pair("\u201A", "\u2018"),  // "\xe2\x80\x9a", "\xe2\x80\x98"
+                Pair("\u201E", "\u201C") // "\xe2\x80\x9e", "\xe2\x80\x9c"
             )
             LOCALES["pl"] = LocaleInfo(
-                Pair<Any?, Any?>("\u201A", "\u2019"),  // "\xe2\x80\x9a", "\xe2\x80\x99"
-                Pair<Any?, Any?>("\u201E", "\u201D") // "\xe2\x80\x9e", "\xe2\x80\x9d"
+                Pair("\u201A", "\u2019"),  // "\xe2\x80\x9a", "\xe2\x80\x99"
+                Pair("\u201E", "\u201D") // "\xe2\x80\x9e", "\xe2\x80\x9d"
             )
         }
 
@@ -199,9 +199,9 @@ class TypographyModule  // Const
     }
 }
 
-class LocaleInfo(
-    val singleQuotes: Pair<String?, String?>,
-    val doubleQuotes: Pair<String?, String?>
-) // TODO: Once switched to commons-lang 3.0, use it's Pair.
+internal class LocaleInfo(
+    val singleQuotes: Pair<String, String>,
+    val doubleQuotes: Pair<String, String>
+)
 
 internal class Pair<A, B>(var a: A, var b: B)

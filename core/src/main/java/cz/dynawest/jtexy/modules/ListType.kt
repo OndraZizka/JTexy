@@ -35,7 +35,7 @@ internal enum class ListType(
     val pattern: Pattern
 
     init {
-        pattern = Pattern.Companion.compile("^$firstRegExp", Pattern.Companion.UNICODE_CASE)
+        pattern = Pattern.compile("^$firstRegExp", Pattern.UNICODE_CASE)
     }
 
     val nextOrFirstRegExp: String?
