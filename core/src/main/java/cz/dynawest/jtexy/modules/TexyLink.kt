@@ -11,14 +11,14 @@ import java.util.regex.Pattern
  */
 class TexyLink(
     /** URL in resolved form.  */
-    var url: String?
+    var url: String
 ) : Cloneable {
     enum class Type {
         COMMON, BRACKET, IMAGE
     }
 
     /** string  URL as written in text  */
-    var raw: String?
+    var raw: String
     var modifier: TexyModifier? = TexyModifier("")
 
     /** How was link created?  */
@@ -56,7 +56,7 @@ class TexyLink(
      * Returns textual representation of URL.
      * @param makeShorter  Replace parts of the url with "...".
      */
-    fun asText(makeShorter: Boolean, obfuscateEmails: Boolean): String? {
+    fun asText(makeShorter: Boolean, obfuscateEmails: Boolean): String {
 
         // E-mail.
         if (obfuscateEmails && PAT_EMAIL.matcher(raw).matches()) {

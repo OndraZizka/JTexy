@@ -1,9 +1,9 @@
 package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.*
-import cz.dynawest.jtexy.events.TexyEvent
+import cz.dynawest.jtexy.events.PhraseEvent
+import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.LinkProcessEvent
-import cz.dynawest.jtexy.parsers.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyParser
 import cz.dynawest.jtexy.util.JTexyStringUtils
 import cz.dynawest.jtexy.util.MatchWithOffset
@@ -92,8 +92,8 @@ class PhraseModule : TexyModule() {
                 log.finer(pattern.perlRegexp)
                 log.finer(pattern.regexp)
             }
-            val content = groups[1].match
-            val modStr = groups[2].match!!
+            val content = groups[1].match!!
+            val modStr = groups[2].match
             val mod = TexyModifier(modStr)
             val linkStr = if (groups.size <= 3) null else groups[3].match
             var link: TexyLink? = TexyLink.fromString(linkStr)
@@ -145,7 +145,7 @@ class PhraseModule : TexyModule() {
 
         @Throws(TexyException::class)
         override fun onEvent(event: PhraseEvent): Node? {
-            return solve(event.phraseName, event.text, event.modifier, event.link)
+            return solve(event.phraseName, event.text!!, event.modifier!!, event.link)
         }
     }
 

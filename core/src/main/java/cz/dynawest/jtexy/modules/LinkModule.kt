@@ -2,7 +2,7 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.*
 import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter
-import cz.dynawest.jtexy.events.TexyEvent
+import cz.dynawest.jtexy.events.*
 import cz.dynawest.jtexy.modules.TexyLink
 import cz.dynawest.jtexy.parsers.*
 import cz.dynawest.jtexy.util.JTexyStringUtils
@@ -60,7 +60,7 @@ class LinkModule : TexyModule() {
             get() = "reference"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
             //    [1] => [ref]
             val refName = StringUtils.substring(groups!![0]!!.match, 1, -1)
             val link = getRef(refName) ?: return texy.invokeAroundHandlers(NewReferenceEvent(parser, refName))
@@ -71,7 +71,8 @@ class LinkModule : TexyModule() {
             // Label is not empty?
             if (!StringUtils.isEmpty(link.label)) {
                 // Prevent circular references. TBD: Analyze.
-                if (liveLock.contains(link.name)) content = link.label else {
+                if (liveLock.contains(link.name)) content = link.label
+                else {
                     liveLock.add(link.name)
                     val elm = DOMElement(Constants.HOLDER_ELEMENT_NAME)
                     TexyLineParser(texy, elm).parse(link.label)
@@ -88,6 +89,8 @@ class LinkModule : TexyModule() {
 
     /** Used by the referencePH. TBD: Analyze.  */
     private val liveLock: MutableSet<String> = HashSet()
+
+
     // --- EventListener's --- //
     /**
      * Before parse event listener, which resets module's internals
@@ -104,7 +107,7 @@ class LinkModule : TexyModule() {
             liveLock.clear()
 
             // [la trine]: http://www.latrine.cz/ text odkazu .(title)[class]{style}
-            if (getTexy().options.useLinkDefinitions) {
+            if (texy.options.useLinkDefinitions) {
                 // Parses the reference defs, add them to this, and removes them from the text.
                 var text = event.text
                 text = JTexyStringUtils.replaceWithCallback(text, PAT_LINK_DEFINITION, REF_DEF_CALLBACK)
@@ -131,13 +134,13 @@ class LinkModule : TexyModule() {
     }
 
     /** New reference event.  */
-    class NewReferenceEvent(parser: TexyParser?, refName: String?) : AroundEvent(parser, refName, null) {
+    class NewReferenceEvent(parser: TexyParser, refName: String) : AroundEvent(parser, refName, null) {
         val refName: String?
             get() = text // Alias.
     }
 
     /** Link reference event.  */
-    class LinkReferenceEvent(parser: TexyParser?, content: String?, var link: TexyLink) : AroundEvent(parser, content, null)
+    class LinkReferenceEvent(parser: TexyParser, content: String, var link: TexyLink) : AroundEvent(parser, content, null)
 
     /** Link reference event listener.   Texy: solve()  */
     private val linkRefListener: TexyEventListener<LinkReferenceEvent> = object : AroundEventListener<LinkReferenceEvent> {
@@ -153,7 +156,7 @@ class LinkModule : TexyModule() {
     /**
      * LinkEvent - for both URL and e-mail.
      */
-    class LinkEvent(parser: TexyParser?, var link: TexyLink?, var isEmail: Boolean) : AroundEvent(parser, null, null)
+    class LinkEvent(parser: TexyParser, var link: TexyLink, var isEmail: Boolean) : AroundEvent(parser, null, null)
 
     /** LinkEvent listener.  */
     private val linkListener: TexyEventListener<LinkEvent> = object : AroundEventListener<LinkEvent> {
@@ -162,7 +165,7 @@ class LinkModule : TexyModule() {
 
         @Throws(TexyException::class)
         override fun onEvent(event: LinkEvent): Node? {
-            var content = event.link!!.asText(
+            var content = event.link.asText(
                 texy.options.makeAutoLinksShorter,
                 texy.options.obfuscateEmails
             )
@@ -317,13 +320,13 @@ class LinkModule : TexyModule() {
                 get() = "urlOrEmail"
 
             @Throws(TexyException::class)
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, ri: RegexpInfo?): Node? {
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, ri: RegexpInfo): Node? {
                 //    [0] => URL
-                if (log.isLoggable(Level.FINEST)) for (match in groups!!) log.finest("  " + match.toString())
-                val link: TexyLink? = TexyLink.fromString(groups!![0]!!.match)
+                if (log.isLoggable(Level.FINEST)) for (match in groups) log.finest("  " + match.toString())
+                val link: TexyLink? = TexyLink.fromString(groups[0].match)
                 link ?.let { fixLink(it) }
                 log.finest(link.toString())
-                val isEmail = "link/email" == ri!!.name
+                val isEmail = "link/email" == ri.name
                 parser.texy ?: throw Exception("No parent parser (parser.texy) in the current parser. Should not happen I guess?")
                 return parser.texy.invokeAroundHandlers(LinkEvent(parser, link, isEmail))
             }

@@ -1,6 +1,7 @@
 package cz.dynawest.jtexy
 
 import cz.dynawest.jtexy.events.TexyEvent
+import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyEventListener
 import java.util.*
 

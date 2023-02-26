@@ -2,9 +2,11 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.*
 import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter
+import cz.dynawest.jtexy.events.BeforeBlockEvent
+import cz.dynawest.jtexy.events.BeforeBlockEventListener
 import cz.dynawest.jtexy.events.TexyEvent
+import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyBlockParser
-import cz.dynawest.jtexy.parsers.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyLineParser
 import cz.dynawest.jtexy.parsers.TexyParser
 import cz.dynawest.jtexy.util.JTexyStringUtils
@@ -13,6 +15,7 @@ import org.apache.commons.lang.StringUtils
 import org.dom4j.Node
 import org.dom4j.dom.DOMElement
 import org.dom4j.dom.DOMText
+import java.lang.Exception
 
 /**
  *
@@ -42,7 +45,7 @@ class BlockModule : TexyModule() {
             //    [4] => ... content
             var param = groups[1].match
             val mod = TexyModifier(groups[2].match!!)
-            val content = groups[3].match
+            val content = groups[3].match!!
             val parts = param!!.split("(?u)\\s+".toRegex(), limit = 2).toTypedArray()
             val blockType = if (parts.size == 0) "block/default" else "block/" + parts[0]
             param = if (parts.size >= 2) parts[1] else null
@@ -62,7 +65,7 @@ class BlockModule : TexyModule() {
         @Throws(TexyException::class)
         override fun onEvent(event: BlockEvent): Node? {
             var event = event
-            var str = event.text
+            var str = event.text ?: throw Exception("Expected BlockEvent to have a text.")
             var blockType = event.blockType
             val texy = event.parser.texy
             if ("block/texy" == blockType) {
@@ -90,8 +93,8 @@ class BlockModule : TexyModule() {
                 str = JTexyStringUtils.escapeHtml(str)
                 str = texy.protect(str, ContentType.BLOCK)
                 val elm = DOMElement("pre")
-                event.modifier.classes.add(event.param) // Code language.
-                event.modifier.decorate(texy, elm)
+                event.modifier!!.classes.add(event.param) // Code language.
+                event.modifier!!.decorate(texy, elm)
                 elm.addElement("code").addText(str)
                 return elm
             }
@@ -99,8 +102,8 @@ class BlockModule : TexyModule() {
                 str = JTexyStringUtils.outdent(str)
                 if ("" == str) return DOMText("\n")
                 val elm = DOMElement("pre")
-                event.modifier.classes.add(event.param) // Code language.
-                event.modifier.decorate(texy, elm)
+                event.modifier!!.classes.add(event.param) // Code language.
+                event.modifier!!.decorate(texy, elm)
                 str = JTexyStringUtils.escapeHtml(str)
                 str = texy.protect(str, ContentType.BLOCK)
                 elm.text = str
@@ -110,7 +113,7 @@ class BlockModule : TexyModule() {
                 str = JTexyStringUtils.outdent(str)
                 if ("" == str) return DOMText("\n")
                 val elm = DOMElement("pre")
-                event.modifier.decorate(texy, elm)
+                event.modifier!!.decorate(texy, elm)
                 val lp = TexyLineParser(texy, elm)
                 // Special mode - parse only HTML tags and comments.
                 /* TODO
@@ -175,7 +178,7 @@ class BlockModule : TexyModule() {
                 str = JTexyStringUtils.outdent(str)
                 if ("" == str) return DOMText("\n")
                 val elm = DOMElement("div")
-                event.modifier.decorate(texy, elm)
+                event.modifier!!.decorate(texy, elm)
                 //$el->parseBlock(texy, str, $parser->isIndented()); // TODO: INDENT or NORMAL ?
                 TexyBlockParser(texy, elm, event.parser.isIndented).parse(str)
                 return elm
@@ -192,11 +195,14 @@ class BlockModule : TexyModule() {
             get() = BeforeBlockEvent::class.java
 
         override fun onEvent(event: BeforeBlockEvent): Node? {
+            event.text ?: throw Exception("Expected BeforeBlockEvent to have a text.")
+
             // Autoclose exclusive blocks.
             /*$text = preg_replace(
 				'#^(/--++ *+(?!div|texysource).*)$((?:\n.*+)*?)(?:\n\\\\--.*$|(?=(\n/--.*$)))#mi',
 				"\$1\$2\n\\--", 	$text 	); */
-            val text = event.text.replace( /*  /--<something> - not div or texysource
+            val text = event.text!!.replace(
+                /*  /--<something> - not div or texysource
                  *  followed by 0+ lines reluctantly
                  *  and then (takes first) either
                  *  \--... or /--...

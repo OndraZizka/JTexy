@@ -3,7 +3,7 @@ package cz.dynawest.jtexy.modules
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.RegexpPatterns
 import cz.dynawest.jtexy.TexyException
-import cz.dynawest.jtexy.events.TexyEvent
+import cz.dynawest.jtexy.events.*
 import cz.dynawest.jtexy.parsers.*
 import cz.dynawest.jtexy.util.JTexyStringUtils
 import cz.dynawest.jtexy.util.MatchWithOffset

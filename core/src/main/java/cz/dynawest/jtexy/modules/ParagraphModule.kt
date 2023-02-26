@@ -2,7 +2,7 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.*
 import cz.dynawest.jtexy.dom4j.Dom4jUtils
-import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyLineParser
 import cz.dynawest.openjdkregex.Pattern
 import org.apache.commons.lang.StringUtils

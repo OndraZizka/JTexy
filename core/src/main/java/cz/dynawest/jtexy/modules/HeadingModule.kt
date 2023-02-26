@@ -2,7 +2,7 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.TexyException
-import cz.dynawest.jtexy.events.TexyEvent
+import cz.dynawest.jtexy.events.*
 import cz.dynawest.jtexy.modules.HeadingModule.Options.Balancing
 import cz.dynawest.jtexy.parsers.*
 import cz.dynawest.jtexy.parsers.TexyBlockParser
@@ -106,7 +106,7 @@ class HeadingModule : TexyModule() {
                 '-' -> level = 3
             }
             val mod = TexyModifier(groups[2].match!!)
-            val event = HeadingEvent(parser, groups[1].match, mod, level, false)
+            val event = HeadingEvent(parser, groups[1].match!!, mod, level, false)
             return texy.invokeAroundHandlers(event)
         }
     }
@@ -157,7 +157,7 @@ class HeadingModule : TexyModule() {
             event.modifier.decorate(elm) // TODO: Doesn't work?
 
             // Parse the heading content (e.g "New **Java** //library// - `JTexy`").
-            TexyLineParser(texy, elm).parse(event.text)
+            TexyLineParser(texy, elm).parse(event.text!!)
             ctx.toc.add(HeadingInfo(elm, level, event.isSurrounded))
             return elm
         }

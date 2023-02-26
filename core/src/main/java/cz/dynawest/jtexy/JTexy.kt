@@ -1,8 +1,7 @@
 package cz.dynawest.jtexy
 
 import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter
-import cz.dynawest.jtexy.events.PostProcessEvent
-import cz.dynawest.jtexy.events.TexyEvent
+import cz.dynawest.jtexy.events.*
 import cz.dynawest.jtexy.modules.*
 import cz.dynawest.jtexy.parsers.*
 import cz.dynawest.jtexy.util.*

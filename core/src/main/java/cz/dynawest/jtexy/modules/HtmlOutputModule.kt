@@ -5,7 +5,7 @@ import cz.dynawest.jtexy.dtd.Dtd
 import cz.dynawest.jtexy.dtd.DtdElement
 import cz.dynawest.jtexy.dtd.HtmlDtdTemplate
 import cz.dynawest.jtexy.events.PostProcessEvent
-import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.util.JTexyStringUtils
 import cz.dynawest.openjdkregex.Matcher
 import cz.dynawest.openjdkregex.Pattern

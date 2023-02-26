@@ -2,8 +2,8 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.TexyException
-import cz.dynawest.jtexy.parsers.BeforeParseEvent
-import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.events.BeforeParseEvent
+import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyParser
 import cz.dynawest.jtexy.util.MatchWithOffset
 import cz.dynawest.jtexy.util.SimpleImageSize

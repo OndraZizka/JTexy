@@ -1,5 +1,6 @@
 package cz.dynawest.jtexy.parsers
 
+import cz.dynawest.jtexy.events.AroundEvent
 import cz.dynawest.jtexy.modules.LinkProvider
 import cz.dynawest.jtexy.modules.TexyLink
 import cz.dynawest.jtexy.modules.TexyModifier
@@ -17,7 +18,9 @@ class LinkProcessEvent(
     val dest: String,
     val label: String?,
     val linkProvider: LinkProvider?
-) : AroundEvent(parser, null, modifier), Serializable {
+)
+    : AroundEvent(parser, null, modifier), Serializable
+{
     // Out.
     var link: TexyLink? = null
 
