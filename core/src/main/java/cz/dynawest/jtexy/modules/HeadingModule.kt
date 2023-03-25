@@ -264,7 +264,7 @@ class HeadingModule : TexyModule() {
         /**
          * Balances the levels of underlined headings to make them ascending sequentially.
          */
-        private fun balance(toc_: List<HeadingInfo?>, topLevel_: Int) {
+        private fun balance(toc_: List<HeadingInfo>, topLevel_: Int) {
             var top = topLevel_
             var min = 100
             var max = 0

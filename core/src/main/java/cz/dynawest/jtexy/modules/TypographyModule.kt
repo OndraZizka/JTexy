@@ -53,7 +53,7 @@ class TypographyModule  // Const
     /**
      * Conversions - regexps and replacements for them.
      */
-    private val conversions: MutableList<RegexpInfo?> = ArrayList(40)
+    private val conversions: MutableList<RegexpInfo> = ArrayList(40)
 
     // Options
     var localeKey = "cs"

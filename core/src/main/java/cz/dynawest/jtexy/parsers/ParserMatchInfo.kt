@@ -7,9 +7,9 @@ import cz.dynawest.jtexy.util.MatchWithOffset
  * Stores information about match while parsing.
  * @author Ondrej Zizka
  */
-internal class ParserMatchInfo(val pattern: RegexpInfo?, val groups: List<MatchWithOffset?>?, val offset: Int, val priority: Int) :
-    Comparable<ParserMatchInfo?> {
-    constructor(ri: RegexpInfo?, groups: List<MatchWithOffset?>?, offset: Int) : this(ri, groups, offset, 0)
+internal class ParserMatchInfo(val pattern: RegexpInfo?, val groups: List<MatchWithOffset>, val offset: Int, val priority: Int) :
+    Comparable<ParserMatchInfo> {
+    constructor(ri: RegexpInfo?, groups: List<MatchWithOffset>, offset: Int) : this(ri, groups, offset, 0)
 
     override fun toString(): String {
         return (if (pattern == null) "(no pattern)" else pattern.name) + " @ " + offset + ", 0th group: " + if (groups == null) "(groups == null)" else groups[0]

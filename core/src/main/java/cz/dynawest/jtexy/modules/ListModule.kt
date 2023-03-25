@@ -90,7 +90,7 @@ class ListModule : TexyModule() {
             get() = "list" // Not used - init() overriden.
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo?): Node? {
             /*
              *  Advances in two steps:
              *   1. Reads the first line of the list, to get its type.
@@ -179,7 +179,7 @@ class ListModule : TexyModule() {
             get() = "defList" // Not used - init() overriden.
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset?>?, pattern: RegexpInfo?): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo?): Node? {
             //   [1] => .(title)[class]{style}<>
             //   [2] => ...
             //   [3] => .(title)[class]{style}<>

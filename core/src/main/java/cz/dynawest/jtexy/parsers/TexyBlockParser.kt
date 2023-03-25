@@ -30,7 +30,7 @@ class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) :
      * If successful, increments current position to the end of the match.
      * @returns the list of matches.
      */
-    fun next(pattern: String): List<MatchWithOffset?>? {
+    fun next(pattern: String): List<MatchWithOffset> {
         //pattern = "^"+pattern; // Instead of $pattern . 'A' - anchored
         return this.next(Pattern.compile(pattern, Pattern.MULTILINE))
     }
@@ -40,7 +40,7 @@ class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) :
      * If successful, increments current position to the end of the match.
      * @returns the list of matches.
      */
-    fun next(pattern: Pattern): List<MatchWithOffset?>? {
+    fun next(pattern: Pattern): List<MatchWithOffset> {
         if (offset >= text!!.length) {
             if (offset != text!!.length) log.warning("Offset overflow! Length: " + text!!.length + " Off: " + offset)
             return null
@@ -68,7 +68,7 @@ class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) :
         offset = offset + mat.end() + 1 // 1 = "\n"
 
         // Get the groups of the match.
-        val matches: MutableList<MatchWithOffset?> = ArrayList(mat.groupCount() + 1)
+        val matches: MutableList<MatchWithOffset> = ArrayList(mat.groupCount() + 1)
         for (i in 0 until mat.groupCount() + 1) {
             matches.add(MatchWithOffset(mat.group(i), offset + mat.start(i)))
         }
@@ -297,7 +297,7 @@ class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) :
                 val mat = pat.matcher(text)
 
                 // All matches of this pattern throughout the text.
-                val matches: List<List<MatchWithOffset?>?> = MatchWithOffset.Companion.fromMatcherAll(mat)
+                val matches: List<List<MatchWithOffset>> = MatchWithOffset.Companion.fromMatcherAll(mat)
 
                 // For each match, store its start offset and all match groups.
                 for (groups in matches) {

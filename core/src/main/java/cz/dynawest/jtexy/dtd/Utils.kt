@@ -7,7 +7,7 @@ package cz.dynawest.jtexy.dtd
  */
 @Deprecated("Moved to Dtd.")
 object Utils {
-    private fun createElements(dtd: Dtd, nameStr: String): List<DtdElement?>? {
+    private fun createElements(dtd: Dtd, nameStr: String): List<DtdElement> {
         return dtd.getOrCreateElements(nameStr)
     }
 }

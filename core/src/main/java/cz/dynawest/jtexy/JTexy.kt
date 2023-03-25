@@ -296,7 +296,7 @@ class JTexy {
             log.warning("No handlers for event: $event")
             return
         }
-        val exceptions: MutableList<TexyException?> = ArrayList()
+        val exceptions: MutableList<TexyException> = ArrayList()
 
         // For each handler...
         for (handler in handlers) {

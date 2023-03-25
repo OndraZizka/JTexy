@@ -67,7 +67,7 @@ class TexyLineParser(texy: JTexy, element: DOMElement) : TexyParser(texy, elemen
                     val mat = pat.matcher(text)
                     if (mat.find(offset + delta)) {
                         // Store match info.
-                        val groups: List<MatchWithOffset?> = MatchWithOffset.Companion.fromMatcherState(mat)
+                        val groups: List<MatchWithOffset> = MatchWithOffset.Companion.fromMatcherState(mat)
                         val curMatchInfo = ParserMatchInfo(ri, groups, mat.start())
                         allMatches[ri] = curMatchInfo
                         if (groups[0]!!.match!!.length == 0) continue

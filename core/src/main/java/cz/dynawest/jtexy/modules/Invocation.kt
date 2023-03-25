@@ -13,9 +13,9 @@ import java.util.logging.*
  *
  * @author Ondrej Zizka
  */
-class Invocation(var event: TexyParserEvent, handlers_: List<AroundEventListener<*>?>) {
-    protected var handlers: List<AroundEventListener<*>?>? = null
-    var iterator: Iterator<AroundEventListener<*>?>
+class Invocation(var event: TexyParserEvent, handlers_: List<AroundEventListener<*>>) {
+    protected var handlers: List<AroundEventListener<*>>? = null
+    var iterator: Iterator<AroundEventListener<*>>
 
     /** Reverses the list of handlers and initializes it's iterator.  */
     init {

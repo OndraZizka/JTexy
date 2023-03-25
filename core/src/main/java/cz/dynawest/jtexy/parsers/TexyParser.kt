@@ -16,7 +16,7 @@ abstract class TexyParser(
 ) {
     // TODO: Perhaps should be moved to TexyBlockParser? It would need to override e.g. BlockModule.getParser().
     var isIndented = false
-    protected abstract val patterns: List<RegexpInfo?>?
+    protected abstract val patterns: List<RegexpInfo>
 
     @Throws(TexyException::class)
     abstract fun parse(text: String)

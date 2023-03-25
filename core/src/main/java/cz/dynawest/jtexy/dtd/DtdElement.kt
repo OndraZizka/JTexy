@@ -85,7 +85,7 @@ class DtdElement
         return HashSet(elements_.values)
     }
 
-    fun getAttrs(): Set<DtdAttr?> {
+    fun getAttrs(): Set<DtdAttr> {
         return attrs
     }
 

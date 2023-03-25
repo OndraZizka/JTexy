@@ -21,10 +21,10 @@ class MatchWithOffset
 
     companion object {
         /** Get list of match groups after successful match.  */
-        fun fromMatcherState(matcher: Matcher?): List<MatchWithOffset?> {
+        fun fromMatcherState(matcher: Matcher?): List<MatchWithOffset> {
             //if( matcher.groupCount() == 0 )
             //	return Collections.EMPTY_LIST;
-            val groups: MutableList<MatchWithOffset?> = ArrayList(matcher!!.groupCount() + 1)
+            val groups: MutableList<MatchWithOffset> = ArrayList(matcher!!.groupCount() + 1)
             for (i in 0..matcher.groupCount()) {
                 groups.add(MatchWithOffset(matcher.group(i), matcher.start(i)))
             }
@@ -33,15 +33,15 @@ class MatchWithOffset
 
         /** Get list of lists of groups of all matches.  */
 		@JvmStatic
-		fun fromMatcherAll(matcher: Matcher?): List<List<MatchWithOffset?>?> {
+		fun fromMatcherAll(matcher: Matcher?): List<List<MatchWithOffset>> {
 
             // If not matched, return empty list.
             if (!matcher!!.find()) return emptyList()
 
             // Else loop trough the matches and groups and build 2-dim array.
-            val matches: MutableList<List<MatchWithOffset?>?> = ArrayList()
+            val matches: MutableList<List<MatchWithOffset>> = ArrayList()
             do {
-                val groups: MutableList<MatchWithOffset?> = ArrayList()
+                val groups: MutableList<MatchWithOffset> = ArrayList()
                 for (i in 0 until matcher.groupCount() + 1) {
                     groups.add(MatchWithOffset(matcher.group(i), matcher.start(i)))
                 }

@@ -30,7 +30,7 @@ class HorizontalLineModule : TexyModule() {
             @Throws(TexyException::class)
             override fun handle(
                 parser: TexyParser,
-                groups: List<MatchWithOffset?>?,
+                groups: List<MatchWithOffset>,
                 pattern: RegexpInfo?
             ): Node? {
                 val mod = TexyModifier(groups!![2]!!.match)

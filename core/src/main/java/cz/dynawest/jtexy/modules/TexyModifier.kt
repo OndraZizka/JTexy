@@ -29,7 +29,7 @@ class TexyModifier : Cloneable {
     var cite: String? = null
 
     /** CSS classes.  */
-    var classes: MutableSet<String?> = LinkedHashSet()
+    var classes: MutableSet<String> = LinkedHashSet()
 
     /** CSS styles  */
     var styles: MutableMap<String, String> = LinkedHashMap()
@@ -175,7 +175,7 @@ class TexyModifier : Cloneable {
         private val log = Logger.getLogger(TexyModifier::class.java.name)
 
         /** Set of properties which are regarded as HTML element attributes.  */
-        var elAttrs: Set<String?>? = null
+        var elAttrs: Set<String> = null
 
         init {
 

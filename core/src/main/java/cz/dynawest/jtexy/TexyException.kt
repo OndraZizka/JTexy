@@ -12,11 +12,11 @@ open class TexyException : Exception {
 
     companion object {
         @Throws(TexyException::class)
-        fun throwIfErrors(string: String?, exceptions: List<TexyException?>) {
+        fun throwIfErrors(string: String?, exceptions: List<TexyException>) {
             if (exceptions.size > 0) throw create(string, exceptions)
         }
 
-        fun create(string: String?, exceptions: List<TexyException?>): TexyException {
+        fun create(string: String?, exceptions: List<TexyException>): TexyException {
             val sb = StringBuilder(string)
             for (ex in exceptions) {
                 sb.append("\n  ").append(ex!!.message)

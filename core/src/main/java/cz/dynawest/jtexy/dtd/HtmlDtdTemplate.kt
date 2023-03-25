@@ -598,10 +598,10 @@ class HtmlDtdTemplate {
         // missing: FRAMESET, FRAME, BGSOUND, XMP, ...
     } // init()
 
-    val inlineElements: Set<DtdElement?>
+    val inlineElements: Set<DtdElement>
         get() = inlineElms
 
-    fun getOptionalEndElements(): Set<DtdElement?> {
+    fun getOptionalEndElements(): Set<DtdElement> {
         return optionalEndElements
     }
 }

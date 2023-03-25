@@ -22,10 +22,9 @@
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
  */
-package cz.dynawest.openjdkregex
 
-import sun.security.action.GetPropertyAction
-import java.security.AccessController
+package cz.dynawest.openjdkregex;
+
 
 /**
  * Unchecked exception thrown to indicate a syntax error in a
@@ -35,28 +34,42 @@ import java.security.AccessController
  * @since 1.4
  * @spec JSR-51
  */
-class PatternSyntaxException
-/**
- * Constructs a new instance of this class.
- *
- * @param  desc
- * A description of the error
- *
- * @param  regex
- * The erroneous pattern
- *
- * @param  index
- * The approximate index in the pattern of the error,
- * or <tt>-1</tt> if the index is not known
- */(private val desc: String, private val pattern: String?, private val index: Int) : IllegalArgumentException() {
+
+public class PatternSyntaxException
+    extends IllegalArgumentException
+{
+
+    private final String desc;
+    private final String pattern;
+    private final int index;
+
+    /**
+     * Constructs a new instance of this class.
+     *
+     * @param  desc
+     *         A description of the error
+     *
+     * @param  regex
+     *         The erroneous pattern
+     *
+     * @param  index
+     *         The approximate index in the pattern of the error,
+     *         or <tt>-1</tt> if the index is not known
+     */
+    public PatternSyntaxException(String desc, String regex, int index) {
+        this.desc = desc;
+        this.pattern = regex;
+        this.index = index;
+    }
+
     /**
      * Retrieves the error index.
      *
      * @return  The approximate index in the pattern of the error,
-     * or <tt>-1</tt> if the index is not known
+     *         or <tt>-1</tt> if the index is not known
      */
-    fun getIndex(): Int {
-        return index
+    public int getIndex() {
+        return index;
     }
 
     /**
@@ -64,8 +77,8 @@ class PatternSyntaxException
      *
      * @return  The description of the error
      */
-    fun getDescription(): String {
-        return desc
+    public String getDescription() {
+        return desc;
     }
 
     /**
@@ -73,9 +86,14 @@ class PatternSyntaxException
      *
      * @return  The erroneous pattern
      */
-    fun getPattern(): String? {
-        return pattern
+    public String getPattern() {
+        return pattern;
     }
+
+		@SuppressWarnings(value = "METHOD")
+    private static final String nl =
+        java.security.AccessController
+            .doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
 
     /**
      * Returns a multi-line string containing the description of the syntax
@@ -84,25 +102,21 @@ class PatternSyntaxException
      *
      * @return  The full detail message
      */
-    override fun getMessage(): String {
-        val sb = StringBuffer()
-        sb.append(desc)
+    public String getMessage() {
+        StringBuffer sb = new StringBuffer();
+        sb.append(desc);
         if (index >= 0) {
-            sb.append(" near index ")
-            sb.append(index)
+            sb.append(" near index ");
+            sb.append(index);
         }
-        sb.append(nl)
-        sb.append(pattern)
+        sb.append(nl);
+        sb.append(pattern);
         if (index >= 0) {
-            sb.append(nl)
-            for (i in 0 until index) sb.append(' ')
-            sb.append('^')
+            sb.append(nl);
+            for (int i = 0; i < index; i++) sb.append(' ');
+            sb.append('^');
         }
-        return sb.toString()
+        return sb.toString();
     }
 
-    companion object {
-        private val nl = AccessController
-            .doPrivileged(GetPropertyAction("line.separator"))
-    }
 }

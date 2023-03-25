@@ -22,175 +22,167 @@
  * CA 95054 USA or visit www.sun.com if you need additional information or
  * have any questions.
  */
-package cz.dynawest.openjdkregex
+
+package cz.dynawest.openjdkregex;
 
 /**
  * The result of a match operation.
  *
- *
- * This interface contains query methods used to determine the
+ * <p>This interface contains query methods used to determine the
  * results of a match against a regular expression. The match boundaries,
  * groups and group boundaries can be seen but not modified through
- * a `MatchResult`.
+ * a <code>MatchResult</code>.
  *
  * @author  Michael McCloskey
  * @see Matcher
- *
  * @since 1.5
  */
-interface MatchResult {
+public interface MatchResult {
+
     /**
      * Returns the start index of the match.
      *
      * @return  The index of the first character matched
      *
      * @throws  IllegalStateException
-     * If no match has yet been attempted,
-     * or if the previous match operation failed
+     *          If no match has yet been attempted,
+     *          or if the previous match operation failed
      */
-    fun start(): Int
+    public int start();
 
     /**
      * Returns the start index of the subsequence captured by the given group
      * during this match.
      *
-     *
-     *  [Capturing groups](Pattern.html#cg) are indexed from left
+     * <p> <a href="Pattern.html#cg">Capturing groups</a> are indexed from left
      * to right, starting at one.  Group zero denotes the entire pattern, so
-     * the expression *m.*<tt>start(0)</tt> is equivalent to
-     * *m.*<tt>start()</tt>.
+     * the expression <i>m.</i><tt>start(0)</tt> is equivalent to
+     * <i>m.</i><tt>start()</tt>.  </p>
      *
      * @param  group
-     * The index of a capturing group in this matcher's pattern
+     *         The index of a capturing group in this matcher's pattern
      *
      * @return  The index of the first character captured by the group,
-     * or <tt>-1</tt> if the match was successful but the group
-     * itself did not match anything
+     *          or <tt>-1</tt> if the match was successful but the group
+     *          itself did not match anything
      *
      * @throws  IllegalStateException
-     * If no match has yet been attempted,
-     * or if the previous match operation failed
+     *          If no match has yet been attempted,
+     *          or if the previous match operation failed
      *
      * @throws  IndexOutOfBoundsException
-     * If there is no capturing group in the pattern
-     * with the given index
+     *          If there is no capturing group in the pattern
+     *          with the given index
      */
-    fun start(group: Int): Int
+    public int start(int group);
 
     /**
-     * Returns the offset after the last character matched.
+     * Returns the offset after the last character matched.  </p>
      *
      * @return  @return  The offset after the last character matched
      *
      * @throws  IllegalStateException
-     * If no match has yet been attempted,
-     * or if the previous match operation failed
+     *          If no match has yet been attempted,
+     *          or if the previous match operation failed
      */
-    fun end(): Int
+    public int end();
 
     /**
      * Returns the offset after the last character of the subsequence
      * captured by the given group during this match.
      *
-     *
-     *  [Capturing groups](Pattern.html#cg) are indexed from left
+     * <p> <a href="Pattern.html#cg">Capturing groups</a> are indexed from left
      * to right, starting at one.  Group zero denotes the entire pattern, so
-     * the expression *m.*<tt>end(0)</tt> is equivalent to
-     * *m.*<tt>end()</tt>.
+     * the expression <i>m.</i><tt>end(0)</tt> is equivalent to
+     * <i>m.</i><tt>end()</tt>.  </p>
      *
      * @param  group
-     * The index of a capturing group in this matcher's pattern
+     *         The index of a capturing group in this matcher's pattern
      *
      * @return  The offset after the last character captured by the group,
-     * or <tt>-1</tt> if the match was successful
-     * but the group itself did not match anything
+     *          or <tt>-1</tt> if the match was successful
+     *          but the group itself did not match anything
      *
      * @throws  IllegalStateException
-     * If no match has yet been attempted,
-     * or if the previous match operation failed
+     *          If no match has yet been attempted,
+     *          or if the previous match operation failed
      *
      * @throws  IndexOutOfBoundsException
-     * If there is no capturing group in the pattern
-     * with the given index
+     *          If there is no capturing group in the pattern
+     *          with the given index
      */
-    fun end(group: Int): Int
+    public int end(int group);
 
     /**
      * Returns the input subsequence matched by the previous match.
      *
+     * <p> For a matcher <i>m</i> with input sequence <i>s</i>,
+     * the expressions <i>m.</i><tt>group()</tt> and
+     * <i>s.</i><tt>substring(</tt><i>m.</i><tt>start(),</tt>&nbsp;<i>m.</i><tt>end())</tt>
+     * are equivalent.  </p>
      *
-     *  For a matcher *m* with input sequence *s*,
-     * the expressions *m.*<tt>group()</tt> and
-     * *s.*<tt>substring(</tt>*m.*<tt>start(),</tt>&nbsp;*m.*<tt>end())</tt>
-     * are equivalent.
-     *
-     *
-     *  Note that some patterns, for example <tt>a*</tt>, match the empty
+     * <p> Note that some patterns, for example <tt>a*</tt>, match the empty
      * string.  This method will return the empty string when the pattern
-     * successfully matches the empty string in the input.
+     * successfully matches the empty string in the input.  </p>
      *
      * @return The (possibly empty) subsequence matched by the previous match,
-     * in string form
+     *         in string form
      *
      * @throws  IllegalStateException
-     * If no match has yet been attempted,
-     * or if the previous match operation failed
+     *          If no match has yet been attempted,
+     *          or if the previous match operation failed
      */
-    fun group(): String?
+    public String group();
 
     /**
      * Returns the input subsequence captured by the given group during the
      * previous match operation.
      *
+     * <p> For a matcher <i>m</i>, input sequence <i>s</i>, and group index
+     * <i>g</i>, the expressions <i>m.</i><tt>group(</tt><i>g</i><tt>)</tt> and
+     * <i>s.</i><tt>substring(</tt><i>m.</i><tt>start(</tt><i>g</i><tt>),</tt>&nbsp;<i>m.</i><tt>end(</tt><i>g</i><tt>))</tt>
+     * are equivalent.  </p>
      *
-     *  For a matcher *m*, input sequence *s*, and group index
-     * *g*, the expressions *m.*<tt>group(</tt>*g*<tt>)</tt> and
-     * *s.*<tt>substring(</tt>*m.*<tt>start(</tt>*g*<tt>),</tt>&nbsp;*m.*<tt>end(</tt>*g*<tt>))</tt>
-     * are equivalent.
-     *
-     *
-     *  [Capturing groups](Pattern.html#cg) are indexed from left
+     * <p> <a href="Pattern.html#cg">Capturing groups</a> are indexed from left
      * to right, starting at one.  Group zero denotes the entire pattern, so
      * the expression <tt>m.group(0)</tt> is equivalent to <tt>m.group()</tt>.
+     * </p>
      *
-     *
-     *
-     *  If the match was successful but the group specified failed to match
+     * <p> If the match was successful but the group specified failed to match
      * any part of the input sequence, then <tt>null</tt> is returned. Note
      * that some groups, for example <tt>(a*)</tt>, match the empty string.
      * This method will return the empty string when such a group successfully
-     * matches the empty string in the input.
+     * matches the empty string in the input.  </p>
      *
      * @param  group
-     * The index of a capturing group in this matcher's pattern
+     *         The index of a capturing group in this matcher's pattern
      *
      * @return  The (possibly empty) subsequence captured by the group
-     * during the previous match, or <tt>null</tt> if the group
-     * failed to match part of the input
+     *          during the previous match, or <tt>null</tt> if the group
+     *          failed to match part of the input
      *
      * @throws  IllegalStateException
-     * If no match has yet been attempted,
-     * or if the previous match operation failed
+     *          If no match has yet been attempted,
+     *          or if the previous match operation failed
      *
      * @throws  IndexOutOfBoundsException
-     * If there is no capturing group in the pattern
-     * with the given index
+     *          If there is no capturing group in the pattern
+     *          with the given index
      */
-    fun group(group: Int): String?
+    public String group(int group);
 
     /**
      * Returns the number of capturing groups in this match result's pattern.
      *
-     *
-     *  Group zero denotes the entire pattern by convention. It is not
+     * <p> Group zero denotes the entire pattern by convention. It is not
      * included in this count.
      *
-     *
-     *  Any non-negative integer smaller than or equal to the value
+     * <p> Any non-negative integer smaller than or equal to the value
      * returned by this method is guaranteed to be a valid group index for
-     * this matcher.
+     * this matcher.  </p>
      *
      * @return The number of capturing groups in this matcher's pattern
      */
-    fun groupCount(): Int
+    public int groupCount();
+
 }
