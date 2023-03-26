@@ -63,6 +63,8 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
 
     /** The Writer used to output to  */
     protected var writer: Writer
+        set(writer) { field = writer; autoFlush = false }
+
 
     /** The Stack of namespaceStack written so far  */
     protected var namespaceStack = NamespaceStack()
@@ -97,8 +99,13 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
     var isEscapeText = true
 
     /**
-     * The initial number of indentations (so you can print a whole document
-     * indented, if you like)
+     * The initial number of indentations (so you can print a whole document indented, if you like)
+     * Set the initial indentation level. This can be used to output a document
+     * (or, more likely, an element) starting at a given indent level, so it's
+     * not always flush against the left margin. Default: 0
+     *
+     * @param indentLevel
+     * the number of indents to start with
      */
     protected var indentLevel = 0
 
@@ -194,10 +201,6 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
         namespaceStack.push(Namespace.NO_NAMESPACE)
     }
 
-    fun setWriter(writer: Writer) {
-        this.writer = writer
-        autoFlush = false
-    }
 
     @Throws(UnsupportedEncodingException::class)
     fun setOutputStream(out: OutputStream) {
@@ -205,17 +208,6 @@ open class XMLWriter : XMLFilterImpl, LexicalHandler {
         autoFlush = true
     }
 
-    /**
-     * Set the initial indentation level. This can be used to output a document
-     * (or, more likely, an element) starting at a given indent level, so it's
-     * not always flush against the left margin. Default: 0
-     *
-     * @param indentLevel
-     * the number of indents to start with
-     */
-    fun setIndentLevel(indentLevel: Int) {
-        this.indentLevel = indentLevel
-    }
 
     /**
      * Flushes the underlying Writer

@@ -1,5 +1,6 @@
 package cz.dynawest.jtexy.modules
 
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.events.TexyEventListener
 import java.util.logging.Logger
 
@@ -9,9 +10,9 @@ import java.util.logging.Logger
  */
 class HtmlModule : TexyModule() {
     private val somePH: PatternHandler? = null
-    override val eventListeners: Array<TexyEventListener<*>>
-        // -- Module meta-info -- //
-        get() = arrayOf()
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
+        get() = emptyList()
+
 
     override fun getPatternHandlerByName(name: String): PatternHandler? {
         return if (somePH?.name == name) {

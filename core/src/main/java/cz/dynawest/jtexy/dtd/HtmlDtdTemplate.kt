@@ -62,7 +62,7 @@ class HtmlDtdTemplate {
 
         // Build DTD.
         var tmp: DtdElement
-        rootDtdElement!!.add(
+        rootDtdElement.add(
             dtd.getOrCreate("html")
                 .addAllAttrs(attrGroups.i18n).addAll("version " + if (strict) "xmlns" else "")
                 .addAll("head body")
@@ -601,7 +601,4 @@ class HtmlDtdTemplate {
     val inlineElements: Set<DtdElement>
         get() = inlineElms
 
-    fun getOptionalEndElements(): Set<DtdElement> {
-        return optionalEndElements
-    }
 }
