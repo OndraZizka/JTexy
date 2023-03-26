@@ -4,8 +4,8 @@ import cz.dynawest.jtexy.JTexy
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.RegexpPatterns
 import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyBlockParser
-import cz.dynawest.jtexy.parsers.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyLineParser
 import cz.dynawest.jtexy.parsers.TexyParser
 import cz.dynawest.jtexy.util.MatchWithOffset
@@ -90,7 +90,7 @@ class ListModule : TexyModule() {
             get() = "list" // Not used - init() overriden.
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo?): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
             /*
              *  Advances in two steps:
              *   1. Reads the first line of the list, to get its type.
@@ -148,23 +148,20 @@ class ListModule : TexyModule() {
                     }
                 } // <ol>
             }
-            val mod = TexyModifier(modStr)
-            mod.decorate(elm)
+            modStr ?.let { TexyModifier().decorate(elm) }
 
 
             // Move backwards to have the first list item yet to be parsed.
-            if (JTexy.Companion.debug) log.finest("Before moveBackward(): " + (parser as TexyBlockParser).posAsString)
+            if (JTexy.debug) log.finest("Before moveBackward(): " + (parser as TexyBlockParser).posAsString)
             (parser as TexyBlockParser).moveBackward(1)
-            if (JTexy.Companion.debug) log.finest("After  moveBackward(): " + parser.posAsString)
+            if (JTexy.debug) log.finest("After  moveBackward(): " + parser.posAsString)
 
             // And now parse all the items.
             var itemElm: DOMElement?
             while (null != parseItem(parser, itemBulletRegex, false, "li").also { itemElm = it }) {
                 elm.add(itemElm)
             }
-            return if (!elm.hasContent()) {
-                null
-            } else elm
+            return if (!elm.hasContent()) null else elm
 
             // TODO.
             //getTexy().invokeNormalHandlers( new AfterListEvent() );
@@ -179,19 +176,19 @@ class ListModule : TexyModule() {
             get() = "defList" // Not used - init() overriden.
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo?): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
             //   [1] => .(title)[class]{style}<>
             //   [2] => ...
             //   [3] => .(title)[class]{style}<>
             //   [4] => space
             //   [5] => - * +
             if (log.isLoggable(Level.FINEST)) {
-                for (match in groups!!) {
+                for (match in groups) {
                     log.finest("  " + match.toString())
                 }
             }
-            val modStr = groups!![1]!!.match
-            val bulletStr = groups[5]!!.match
+            val modStr = groups[1].match
+            val bulletStr = groups[5].match
 
 
             // Determine the list type used.
@@ -210,8 +207,7 @@ class ListModule : TexyModule() {
 
             // DL element.
             val elm = DOMElement("dl")
-            val mod = TexyModifier(modStr)
-            mod.decorate(elm)
+            modStr ?.let { TexyModifier(it).decorate(elm) }
             blockParser.moveBackward(2)
 
             // @ $desc[3] == nextRegex .
@@ -235,8 +231,8 @@ class ListModule : TexyModule() {
                 //    [1] => ...
                 //    [2] => .(title)[class]{style}<>
                 val dtElm = DOMElement("dt")
-                TexyModifier(dtGroups[2]!!.match).decorate(dtElm)
-                TexyLineParser(getTexy(), dtElm)
+                TexyModifier(dtGroups[2].match!!).decorate(dtElm)
+                TexyLineParser(texy, dtElm)
                 elm.add(dtElm)
             } // parse loop while{}.
             throw UnsupportedOperationException("Definition lists supported yet.")
@@ -269,21 +265,20 @@ class ListModule : TexyModule() {
             //   \\A == The beginning of the input, instead of ^ - we don't have the (?A) flag.
             val itemPattern = ("(?mUu)\\A\\n?(" + spaceBase + ")" + itemBulletRegex + "\\ *(\\S.*)?"
                     + RegexpPatterns.TEXY_MODIFIER_H + "?()$")
-            if (JTexy.Companion.debug) log.finest("Parser at: " + parser.posAsString) ///
+            if (JTexy.debug) log.finest("Parser at: " + parser.posAsString) ///
 
 
             // First line with a bullet.
             val firstMatchGroups = parser.next(itemPattern) ?: return null
-            if (JTexy.Companion.debug) log.finest("List item match: $firstMatchGroups") ///
+            if (JTexy.debug) log.finest("List item match: $firstMatchGroups") ///
 
             //    [1] => indent
             //    [2] => ...
             //    [3] => .(title)[class]{style}<>
-            val indentStr = firstMatchGroups[1]!!.match
+            val indentStr = firstMatchGroups[1].match
             val itemElm = DOMElement(tagName)
-            val contentStr = firstMatchGroups[2]!!.match
-            val mod = TexyModifier(firstMatchGroups[3]!!.match)
-            mod.decorate(itemElm)
+            val contentStr = firstMatchGroups[2].match
+            firstMatchGroups[3].match ?.let { TexyModifier(it).decorate(itemElm) }
 
 
             // Successive lines. They are indented to the same depth or more as first line's content.

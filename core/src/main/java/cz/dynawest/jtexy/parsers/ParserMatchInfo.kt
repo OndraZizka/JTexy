@@ -7,9 +7,16 @@ import cz.dynawest.jtexy.util.MatchWithOffset
  * Stores information about match while parsing.
  * @author Ondrej Zizka
  */
-internal class ParserMatchInfo(val pattern: RegexpInfo?, val groups: List<MatchWithOffset>, val offset: Int, val priority: Int) :
-    Comparable<ParserMatchInfo> {
-    constructor(ri: RegexpInfo?, groups: List<MatchWithOffset>, offset: Int) : this(ri, groups, offset, 0)
+internal class ParserMatchInfo (
+    val pattern: RegexpInfo?,
+    /** Null for the terminal top cap. */
+    val groups: List<MatchWithOffset>?,
+    val offset: Int,
+    val priority: Int
+) :
+    Comparable<ParserMatchInfo>
+{
+    constructor(ri: RegexpInfo?, groups: List<MatchWithOffset>?, offset: Int) : this(ri, groups, offset, 0)
 
     override fun toString(): String {
         return (if (pattern == null) "(no pattern)" else pattern.name) + " @ " + offset + ", 0th group: " + if (groups == null) "(groups == null)" else groups[0]
@@ -19,7 +26,7 @@ internal class ParserMatchInfo(val pattern: RegexpInfo?, val groups: List<MatchW
      * Compares two matches by offset; if equal, by priority.
      * Null objects go last.
      */
-    override fun compareTo(o: ParserMatchInfo?): Int {
+    override fun compareTo(o: ParserMatchInfo): Int {
         if (null == o) return 1
         var diff = offset - o.offset
         if (diff != 0) return diff

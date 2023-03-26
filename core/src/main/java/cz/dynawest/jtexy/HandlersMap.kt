@@ -2,15 +2,13 @@ package cz.dynawest.jtexy
 
 import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.events.TexyEventListener
-import cz.dynawest.jtexy.parsers.TexyEventListener
-import java.util.*
 
 /**
  * Set/Map of parse event listeners: Event class => list of listeners.
  *
  * @author Ondrej Zizka
  */
-class HandlersMap<T : TexyEventListener<in TexyEvent>> {
+class HandlersMap<T : TexyEventListener<TexyEvent>> {
     // Consider using Google Collections' LinkedListMultimap ?
     // Or JDK's LinkedHashSet?
     var handlersMap: MutableMap<Class<*>, MutableList<T>> = HashMap()

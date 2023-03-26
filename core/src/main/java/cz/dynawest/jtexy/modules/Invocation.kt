@@ -3,8 +3,6 @@ package cz.dynawest.jtexy.modules
 import cz.dynawest.jtexy.TexyException
 import cz.dynawest.jtexy.events.AroundEventListener
 import cz.dynawest.jtexy.events.TexyParserEvent
-import cz.dynawest.jtexy.parsers.AroundEventListener
-import cz.dynawest.jtexy.parsers.TexyParserEvent
 import org.dom4j.Node
 import java.util.*
 import java.util.logging.*

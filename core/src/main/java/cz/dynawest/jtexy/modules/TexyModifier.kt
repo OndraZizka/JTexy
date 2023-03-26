@@ -175,23 +175,20 @@ class TexyModifier : Cloneable {
         private val log = Logger.getLogger(TexyModifier::class.java.name)
 
         /** Set of properties which are regarded as HTML element attributes.  */
-        var elAttrs: Set<String> = null
-
-        init {
+        var elAttrs: Set<String> =
 
             // Create the set of allowed HTML attributes.
-            val strAttrs = "abbr,accesskey,align,alt,archive,axis,bgcolor,cellpadding" +
-                    "cellspacing,char,charoff,charset,cite,classid,codebase,codetype" +
-                    "colspan,compact,coords,data,datetime,declare,dir,face,frame" +
-                    "headers,href,hreflang,hspace,ismap,lang,longdesc,name" +
-                    "noshade,nowrap,onblur,onclick,ondblclick,onkeydown,onkeypress" +
-                    "onkeyup,onmousedown,onmousemove,onmouseout,onmouseover,onmouseup,rel" +
-                    "rev,rowspan,rules,scope,shape,size,span,src,standby" +
-                    "start,summary,tabindex,target,title,type,usemap,valign" +
-                    "value,vspace"
-            val attrs = StringUtils.split(strAttrs, ',')
-            elAttrs = HashSet(Arrays.asList(*attrs))
-        }
+            ("abbr,accesskey,align,alt,archive,axis,bgcolor,cellpadding" +
+            "cellspacing,char,charoff,charset,cite,classid,codebase,codetype" +
+            "colspan,compact,coords,data,datetime,declare,dir,face,frame" +
+            "headers,href,hreflang,hspace,ismap,lang,longdesc,name" +
+            "noshade,nowrap,onblur,onclick,ondblclick,onkeydown,onkeypress" +
+            "onkeyup,onmousedown,onmousemove,onmouseout,onmouseover,onmouseup,rel" +
+            "rev,rowspan,rules,scope,shape,size,span,src,standby" +
+            "start,summary,tabindex,target,title,type,usemap,valign" +
+            "value,vspace")
+            .split(",").toSet()
+
 
         /**
          * @param   String -> String map of CSS rules.

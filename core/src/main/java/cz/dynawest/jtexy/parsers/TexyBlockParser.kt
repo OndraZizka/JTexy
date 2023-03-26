@@ -4,7 +4,7 @@ import cz.dynawest.jtexy.JTexy
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.RegexpPatterns
 import cz.dynawest.jtexy.TexyException
-import cz.dynawest.jtexy.modules.BeforeBlockEvent
+import cz.dynawest.jtexy.events.BeforeBlockEvent
 import cz.dynawest.jtexy.modules.ParagraphEvent
 import cz.dynawest.jtexy.modules.TexyModifier
 import cz.dynawest.jtexy.util.MatchWithOffset
@@ -30,7 +30,7 @@ class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) :
      * If successful, increments current position to the end of the match.
      * @returns the list of matches.
      */
-    fun next(pattern: String): List<MatchWithOffset> {
+    fun next(pattern: String): List<MatchWithOffset>? {
         //pattern = "^"+pattern; // Instead of $pattern . 'A' - anchored
         return this.next(Pattern.compile(pattern, Pattern.MULTILINE))
     }
@@ -40,9 +40,10 @@ class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) :
      * If successful, increments current position to the end of the match.
      * @returns the list of matches.
      */
-    fun next(pattern: Pattern): List<MatchWithOffset> {
+    fun next(pattern: Pattern): List<MatchWithOffset>? {
         if (offset >= text!!.length) {
-            if (offset != text!!.length) log.warning("Offset overflow! Length: " + text!!.length + " Off: " + offset)
+            if (offset != text!!.length)
+                log.warning("Offset overflow! Length: " + text!!.length + " Off: " + offset)
             return null
         }
 
@@ -128,7 +129,7 @@ class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) :
         // BeforeBlockEventListener's can modify the text before parsing.
         val ev = BeforeBlockEvent(this, text)
         texy.invokeNormalHandlers(ev)
-        text = ev.text
+        text = ev.text!!
 
         // --- Parse loop. --- //
         val allMatches = parseLoop(text, patterns)
@@ -174,10 +175,10 @@ class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) :
             if (null == pmi.groups) break
 
             // Advance to the place after the matched string (block).
-            offset = pmi.offset + pmi.groups!![0]!!.match!!.length + 1 // 1 = \n
+            offset = pmi.offset + pmi.groups!![0].match!!.length + 1 // 1 = \n
 
             // Call the handler.
-            val result = pmi.pattern!!.handler!!.handle(this, pmi.groups, pmi.pattern)
+            val result = pmi.pattern!!.handler!!.handle(this, pmi.groups!!, pmi.pattern!!)
 
             // this.offset <= pmi.offset should never happen, see this.offset = ... above
             if (null == result || offset <= pmi.offset) {
