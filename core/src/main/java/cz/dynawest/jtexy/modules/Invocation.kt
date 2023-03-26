@@ -1,6 +1,7 @@
 package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.events.AroundEventListener
 import cz.dynawest.jtexy.events.TexyParserEvent
 import cz.dynawest.jtexy.parsers.AroundEventListener
 import cz.dynawest.jtexy.parsers.TexyParserEvent
@@ -14,7 +15,7 @@ import java.util.logging.*
  * @author Ondrej Zizka
  */
 class Invocation(var event: TexyParserEvent, handlers_: List<AroundEventListener<*>>) {
-    protected var handlers: List<AroundEventListener<*>>? = null
+    protected var handlers: List<AroundEventListener<*>>
     var iterator: Iterator<AroundEventListener<*>>
 
     /** Reverses the list of handlers and initializes it's iterator.  */
@@ -25,10 +26,9 @@ class Invocation(var event: TexyParserEvent, handlers_: List<AroundEventListener
         } else {
             //this.handlers = new ArrayList(handlers_.size());
             //Collections.copy(handlers_, this.handlers);
-            handlers = ArrayList(handlers_)
-            Collections.reverse(handlers)
+            handlers = handlers_.toTypedArray().asList().asReversed()
         }
-        iterator = handlers!!.iterator()
+        iterator = handlers.iterator()
     }
 
     /** Calls next handler in the queue.  */
@@ -37,7 +37,7 @@ class Invocation(var event: TexyParserEvent, handlers_: List<AroundEventListener
         // TBD: How would this happen?
         check(iterator.hasNext()) { "No more handlers." }
         val handler = iterator.next()
-        val res = handler!!.onEvent(event)
+        val res = handler.onEvent(event)
         if (null == res) //throw new TexyInvocationException
             log.warning(
                 "Event handler '" + handler.javaClass.name

@@ -2,7 +2,7 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.TexyException
-import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyParser
 import cz.dynawest.jtexy.util.MatchWithOffset
 import org.dom4j.Node
@@ -24,16 +24,13 @@ class HorizontalLineModule : TexyModule() {
     companion object {
         /** Horizontal line pattern handler.  */
         protected var hrPH: PatternHandler = object : PatternHandler {
-            override val name: String
-                get() = "horizline"
+            override val name = "horizline"
+
 
             @Throws(TexyException::class)
-            override fun handle(
-                parser: TexyParser,
-                groups: List<MatchWithOffset>,
-                pattern: RegexpInfo?
-            ): Node? {
-                val mod = TexyModifier(groups!![2]!!.match)
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node?
+            {
+                val mod = TexyModifier(groups[2].match!!)
                 val ev = HorizontalLineEvent(parser, null, mod)
                 return parser.texy.invokeAroundHandlers(ev)
             }
@@ -46,9 +43,9 @@ class HorizontalLineModule : TexyModule() {
             override val eventClass: Class<*>
                 get() = HorizontalLineEvent::class.java
 
-            override fun onEvent(event: HorizontalLineEvent): Node? {
+            override fun onEvent(event: HorizontalLineEvent): Node {
                 val elm = DOMElement("hr")
-                event.modifier.decorate(elm)
+                event.modifier?.decorate(elm)
                 // TBD: Optional HR classes, see Texy.
                 return elm
             }

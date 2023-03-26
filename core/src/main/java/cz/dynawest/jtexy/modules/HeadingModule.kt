@@ -154,7 +154,7 @@ class HeadingModule : TexyModule() {
             level = Math.max(1, level)
             level = Math.min(6, level)
             val elm = DOMElement("h$level")
-            event.modifier.decorate(elm) // TODO: Doesn't work?
+            event.modifier?.decorate(elm) // TODO: Doesn't work?
 
             // Parse the heading content (e.g "New **Java** //library// - `JTexy`").
             TexyLineParser(texy, elm).parse(event.text!!)

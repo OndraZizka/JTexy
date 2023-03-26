@@ -235,8 +235,8 @@ class JTexy {
                 // WTF?  Probably 0 == outside of a block, 1 = inside (they can't be nested?)
                 if (i % 2 == 0 && block.length != 0) {
                     // "Fire" the event.
-                    val event = AfterLineEvent(null, block)
-                    blocks[i] = handler.onEvent(event)!!.text
+                    val event = AfterLineEvent(DummyTexyParser, block)
+                    blocks[i] = handler.onEvent(event)?.text
                 }
             }
         }

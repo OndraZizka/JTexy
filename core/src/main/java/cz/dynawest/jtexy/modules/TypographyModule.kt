@@ -6,8 +6,6 @@ import cz.dynawest.jtexy.TexyException
 import cz.dynawest.jtexy.events.AfterLineEvent
 import cz.dynawest.jtexy.events.BeforeParseEvent
 import cz.dynawest.jtexy.events.TexyEventListener
-import cz.dynawest.jtexy.parsers.BeforeParseEvent
-import cz.dynawest.jtexy.parsers.TexyEventListener
 import org.dom4j.Node
 import org.dom4j.dom.DOMText
 import java.util.logging.*
@@ -39,7 +37,7 @@ class TypographyModule  // Const
                     get() = AfterLineEvent::class.java
 
                 @Throws(TexyException::class)
-                override fun onEvent(event: AfterLineEvent): Node? {
+                override fun onEvent(event: AfterLineEvent): Node {
                     return DOMText(performReplaces(event.text))
                 }
             }
@@ -49,7 +47,9 @@ class TypographyModule  // Const
     override fun getPatternHandlerByName(name: String): PatternHandler? {
         return null
     }
+
     // Config
+
     /**
      * Conversions - regexps and replacements for them.
      */
@@ -71,6 +71,8 @@ class TypographyModule  // Const
         var loc = LOCALES[localeKey]
         if (null == loc) loc = LOCALES["en"]
 
+
+        val conversions: MutableList<RegexpInfo?> = ArrayList(40)
 
         // TODO: Convert from UTF-8 to UNICODE-16
         // http://www.utf8-chartable.de/unicode-utf8-table.pl?number=1024
@@ -141,16 +143,18 @@ class TypographyModule  // Const
                 loc.doubleQuotes.a + "$1" + loc.doubleQuotes.b, "Single \""
             )
         )
+
+        this.conversions.addAll(conversions.filterNotNull())
     }
 
     /**
      * Performs the regex replacement for each conversion.
      */
     private fun performReplaces(text: String?): String? {
+        if (text == null) return null
         // For each conversion...
         var text = text
         for (ri in conversions) {
-            if (ri == null) continue
             text = ri.pattern.matcher(text).replaceAll(ri.replacement)
         }
         return text

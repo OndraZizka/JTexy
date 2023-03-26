@@ -30,7 +30,7 @@ interface BeforeBlockEventListener<T : BeforeBlockEvent> : BeforeAfterEventListe
  * Used for TypographyModule, LongWordsModule.
  *
  * TODO: extends TexyEvent, not BeforeAfterEvent. It's not a parsing event.
- * TODO: Rename to PostLineEvent, afterall.
+ * TODO: Rename to PostLineEvent, after all.
  */
 class AfterLineEvent(parser: TexyParser, text: String) : BeforeAfterEvent(parser, text)
 

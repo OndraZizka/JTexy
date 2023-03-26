@@ -21,3 +21,10 @@ abstract class TexyParser(
     @Throws(TexyException::class)
     abstract fun parse(text: String)
 }
+
+/** Only used in AfterLineParser or so, where the handler does not need the parser. */
+object DummyTexyParser : TexyParser(texy = JTexy(), element = DOMElement("dummy")) {
+    override val patterns: List<RegexpInfo> get() = emptyList()
+
+    override fun parse(text: String) {}
+}
