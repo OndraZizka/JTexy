@@ -1,6 +1,6 @@
 package cz.dynawest.jtexy.modules
 
-import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.events.TexyEventListener
 import java.util.logging.Logger
 
 /**
@@ -14,7 +14,7 @@ class HtmlModule : TexyModule() {
         get() = arrayOf()
 
     override fun getPatternHandlerByName(name: String): PatternHandler? {
-        return if (somePH.getName() == name) {
+        return if (somePH?.name == name) {
             somePH
         } else {
             null

@@ -94,7 +94,7 @@ class PhraseModule : TexyModule() {
             }
             val content = groups[1].match!!
             val modStr = groups[2].match
-            val mod = TexyModifier(modStr)
+            val mod = modStr ?. let { TexyModifier(it)  } ?: TexyModifier()
             val linkStr = if (groups.size <= 3) null else groups[3].match
             var link: TexyLink? = TexyLink.fromString(linkStr)
 
@@ -116,7 +116,7 @@ class PhraseModule : TexyModule() {
             } else if (pattern.name.startsWith("phrase/acronym")) {
                 mod.title = JTexyStringUtils.unescapeHtml(linkStr!!.trim { it <= ' ' })
             } else if (pattern.name.startsWith("phrase/quote")) {
-                mod.cite = texy.linkModule.citeLink(linkStr)
+                mod.cite = texy.linkModule ?.citeLink(linkStr)
             } else if (linkStr != null) {
                 //link = texy.linkModule.factoryLink( linkStr );
                 // @ Fire a processLinkEvent instead of calling LinkModule directly.

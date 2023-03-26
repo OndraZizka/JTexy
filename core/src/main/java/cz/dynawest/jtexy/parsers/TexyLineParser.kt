@@ -99,7 +99,7 @@ class TexyLineParser(texy: JTexy, element: DOMElement) : TexyParser(texy, elemen
             again = false
             log.log(Level.FINER, "Using handler: {0}", minPattern.handler?.name)
 
-            val resNode = minPattern.handler!!.handle(this, allMatches[minPattern]!!.groups, minPattern)
+            val resNode = minPattern.handler!!.handle(this, allMatches[minPattern]!!.groups!!, minPattern)
             var resString = "Invalid response from handler of " + minPattern.name + ": " + resNode
             if (resNode is DOMElement) {
                 //resString = resNode.asXML();
@@ -114,7 +114,7 @@ class TexyLineParser(texy: JTexy, element: DOMElement) : TexyParser(texy, elemen
             if (finest) log.log(Level.FINEST, "Result: {0}", resNode)
             if (finest) log.log(Level.FINEST, "Result string: {0}", resString)
             val matchStart = minOffset //patternOffsets.get(minPattern);
-            val matchLen = allMatches[minPattern]!!.groups!![0]!!.match!!.length
+            val matchLen = allMatches[minPattern]!!.groups!![0].match!!.length
             // Replace the matched part of the text with the result.
             text = StringUtils.overlay(text, resString, start, matchStart + matchLen)
             val delta = resString.length - matchLen
@@ -122,10 +122,10 @@ class TexyLineParser(texy: JTexy, element: DOMElement) : TexyParser(texy, elemen
             // Adjust all patterns' offset.
             for (entry in patternOffsets.entries) {
                 // If this pattern's offset is before the left-most match, reset it back to start.
-                if (entry.value!! < matchStart + matchLen) { // TODO: add match end to MatchWithOffset.
+                if (entry.value < matchStart + matchLen) { // TODO: add match end to MatchWithOffset.
                     entry.setValue(-1)
                 } else {
-                    entry.setValue(entry.value!! + delta)
+                    entry.setValue(entry.value + delta)
                 }
             }
             if (again) {

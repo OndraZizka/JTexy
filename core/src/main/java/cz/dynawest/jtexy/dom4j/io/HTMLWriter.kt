@@ -185,11 +185,11 @@ class HTMLWriter : XMLWriter {
     private var omitElementCloseSet: MutableSet<String> = mutableSetOf()
 
     constructor(writer: Writer) : super(writer, DEFAULT_HTML_FORMAT)
-    constructor(writer: Writer, format: OutputFormat?) : super(writer, format)
+    constructor(writer: Writer, format: OutputFormat) : super(writer, format)
     constructor() : super(DEFAULT_HTML_FORMAT)
-    constructor(format: OutputFormat?) : super(format)
-    constructor(out: OutputStream?) : super(out, DEFAULT_HTML_FORMAT)
-    constructor(out: OutputStream?, format: OutputFormat?) : super(out, format)
+    constructor(format: OutputFormat) : super(format)
+    constructor(out: OutputStream) : super(out, DEFAULT_HTML_FORMAT)
+    constructor(out: OutputStream, format: OutputFormat) : super(out, format)
 
     @Throws(SAXException::class)
     override fun startCDATA() {

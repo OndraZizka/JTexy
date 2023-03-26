@@ -106,33 +106,33 @@ class OrderedProperties : Properties() {
     }
 
     override fun stringPropertyNames(): Set<String> {
-        return keys
+        return keys.map { it as String }.toSet()
     }
 
     // Ordered-map backed.
-    override fun values(): Collection<*> {
+    /*override fun values(): Collection<*> {
         return properties.values
     }
 
     override fun size(): Int {
         return properties.size
-    }
+    }*/
 
     override fun remove(key: Any): Any? {
         return properties.remove(key)
     }
 
-    override fun putAll(m: Map<*, *>?) {
+    /*override fun putAll(m: Map<*, *>?) {
         properties.putAll(m)
-    }
+    }*/
 
     override fun put(key: Any, value: Any): Any? {
         return properties.put(key, value)
     }
 
-    override fun keySet(): Set<*> {
+    /**override fun keySet(): Set<*> {
         return properties.keys
-    }
+    }*/
 
     override fun isEmpty(): Boolean {
         return properties.isEmpty()
@@ -142,9 +142,9 @@ class OrderedProperties : Properties() {
         return properties[key]
     }
 
-    override fun entrySet(): Set<*> {
+    /*override fun entrySet(): Set<*> {
         return properties.entries
-    }
+    }*/
 
     override fun containsValue(value: Any): Boolean {
         return properties.containsValue(value)

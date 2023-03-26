@@ -27,7 +27,7 @@ class ProtectedHTMLWriter : XMLWriter {
         holderElementName = Constants.HOLDER_ELEMENT_NAME // I don't like this dep.
     }
 
-    constructor(protector: Protector?, out: OutputStream?) : super(out, OutputFormat.createPrettyPrint()) {
+    constructor(protector: Protector?, out: OutputStream) : super(out, OutputFormat.createPrettyPrint()) {
         this.protector = protector
         init()
     }
@@ -74,7 +74,7 @@ class ProtectedHTMLWriter : XMLWriter {
         val protectedTag = writer.toString()
 
         // Unshade.
-        realWriter!!.write(protector!!.protect(protectedTag, type))
+        realWriter.write(protector!!.protect(protectedTag, type))
         writer = realWriter
     }
 
@@ -98,7 +98,7 @@ class ProtectedHTMLWriter : XMLWriter {
 
         // Get the content type.
         val type: ContentType = ContentType.Companion.fromElement(element)
-        realWriter!!.write(protector!!.protect(protectedTag, type))
+        realWriter.write(protector!!.protect(protectedTag, type))
         writer = realWriter
     }
 
@@ -116,7 +116,7 @@ class ProtectedHTMLWriter : XMLWriter {
         // TBD: Store to the element, but where?
         if (element.name !== Constants.HOLDER_ELEMENT_NAME
             && ContentType.BLOCK == ContentType.Companion.fromElement(element)
-        ) writer.append(format.lineSeparator)
+        ) writer.append(outputFormat.lineSeparator)
         indent()
         val size = element.nodeCount()
 

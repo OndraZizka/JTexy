@@ -10,8 +10,9 @@ import javax.swing.JPanel
  * @author Ondrej Zizka
  */
 class ImageUtilsAwt(file: File) : JPanel() {
+
+    private var image: Image  = Toolkit.getDefaultToolkit().getImage(file.path)
     init {
-        image = Toolkit.getDefaultToolkit().getImage(file.path)
         rightSize()
     }
 
@@ -21,8 +22,8 @@ class ImageUtilsAwt(file: File) : JPanel() {
         if (width == -1 || height == -1) {
             return
         }
-        println("Image width: $width")
-        println("Image height$height")
+        println("Image width:  $width") ///
+        println("Image height: $height")///
     }
 
     override fun imageUpdate(
@@ -49,7 +50,6 @@ class ImageUtilsAwt(file: File) : JPanel() {
     }
 
     companion object {
-        private var image: Image
         @Throws(Exception::class)
         @JvmStatic
         fun main(args: Array<String>) {
