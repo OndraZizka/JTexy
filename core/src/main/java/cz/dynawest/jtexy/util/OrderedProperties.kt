@@ -10,7 +10,7 @@ import java.util.*
  */
 class OrderedProperties : Properties() {
     private var properties = LinkedHashMap<Any, Any>()
-    override fun getProperty(key: String): String {
+    override fun getProperty(key: String): String? {
         return properties[key] as String
     }
 

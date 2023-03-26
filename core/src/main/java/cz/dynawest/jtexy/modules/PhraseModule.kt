@@ -171,16 +171,16 @@ class PhraseModule : TexyModule() {
         if ("phrase/code" == phrase) content = texy.protect(StringEscapeUtils.escapeHtml(content), ContentType.TEXTUAL)
         var nodeRet: Node? = null
         if ("phrase/strong+em" == phrase) {
-            val elmRet = DOMElement(getRegexpInfo("phrase/strong")!!.htmlElement)
-            val eEm = DOMElement(getRegexpInfo("phrase/em")!!.htmlElement)
+            val elmRet = DOMElement(getRegexpInfo("phrase/strong").htmlElement)
+            val eEm = DOMElement(getRegexpInfo("phrase/em").htmlElement)
             eEm.text = content
             elmRet.add(eEm)
-            modifier!!.decorate(elmRet)
+            modifier.decorate(elmRet)
             nodeRet = elmRet
         } else if (null != elmName) {
             val elmRet = DOMElement(elmName)
             elmRet.text = content
-            modifier!!.decorate(elmRet)
+            modifier.decorate(elmRet)
             if ("q" == elmName) elmRet.setAttribute("cite", modifier.cite)
             nodeRet = elmRet
         } else {

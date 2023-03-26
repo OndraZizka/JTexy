@@ -1,3 +1,5 @@
+@file:Suppress("NAME_SHADOWING")
+
 package cz.dynawest.jtexy.util
 
 import cz.dynawest.jtexy.JTexy

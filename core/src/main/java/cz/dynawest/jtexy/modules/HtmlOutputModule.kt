@@ -318,7 +318,7 @@ class HtmlOutputModule : TexyModule() {
                     // Auto-close hidden, optional and inline tags.
                     val tagDtd = DtdElement(tag)
                     if (null != item.close
-                        && !htmlDTD.getOptionalEndElements().contains(tagDtd)
+                        && !htmlDTD.optionalEndElements.contains(tagDtd)
                         && !htmlDTD.inlineElements.contains(tagDtd)
                     ) break
 

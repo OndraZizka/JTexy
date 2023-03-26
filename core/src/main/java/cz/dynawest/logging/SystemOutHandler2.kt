@@ -65,7 +65,7 @@ class SystemOutHandler2 : StreamHandler() {
         }
     }
 
-    fun getFormatterProperty(name: String?, defaultValue: Formatter): Formatter {
+    private fun getFormatterProperty(name: String?, defaultValue: Formatter): Formatter {
         val manager = LogManager.getLogManager()
         val `val` = manager.getProperty(name)
         try {
