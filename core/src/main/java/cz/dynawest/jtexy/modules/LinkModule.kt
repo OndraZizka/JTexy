@@ -324,7 +324,9 @@ class LinkModule : TexyModule() {
                 if (log.isLoggable(Level.FINEST)) for (match in groups) log.finest("  " + match.toString())
                 val link: TexyLink? = TexyLink.fromString(groups[0].match)
                 link ?.let { fixLink(it) }
-                log.finest(link.toString())
+                if (link == null) return null
+
+                log.finest("Link: $link")
                 val isEmail = "link/email" == ri.name
                 parser.texy ?: throw Exception("No parent parser (parser.texy) in the current parser. Should not happen I guess?")
                 return parser.texy.invokeAroundHandlers(LinkEvent(parser, link, isEmail))

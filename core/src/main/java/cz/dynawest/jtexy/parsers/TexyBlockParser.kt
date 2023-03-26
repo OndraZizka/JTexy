@@ -302,7 +302,7 @@ class TexyBlockParser(texy: JTexy, element: DOMElement, val indented: Boolean) :
 
                 // For each match, store its start offset and all match groups.
                 for (groups in matches) {
-                    allMatches.add(ParserMatchInfo(pattern, groups, groups!![0]!!.offset, priority))
+                    allMatches.add(ParserMatchInfo(pattern, groups, groups[0].offset, priority))
                 }
                 priority++
             } // for each patterns;

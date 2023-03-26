@@ -34,7 +34,7 @@ class ParagraphModule : TexyModule() {
 
         @Throws(TexyException::class)
         override fun onEvent(event: ParagraphEvent): Node? {
-            return solve(null, event.text, event.modifier)
+            return solve(null, event.text!!, event.modifier)
         }
     }
 
@@ -42,16 +42,16 @@ class ParagraphModule : TexyModule() {
      * Creates a DOM node for this paragraph.
      */
     @Throws(TexyException::class)
-    fun solve(invocation: Invocation?, content: String?, modifier: TexyModifier?): DOMElement {
+    fun solve(invocation: Invocation?, content: String, modifier: TexyModifier?): DOMElement {
 
         // Find hard linebreaks.
         var content = content
         content = if (texy.options.mergeLines) {
             // ....
             //  ...  => \r means break line
-            content!!.replace("\\n +(?=\\S)".toRegex(), "\r")
+            content.replace("\\n +(?=\\S)".toRegex(), "\r")
         } else {
-            content!!.replace("\n", "\r")
+            content.replace("\n", "\r")
         }
         val elm = DOMElement("p")
         //$el->parseLine($tx, $content);
@@ -95,7 +95,7 @@ class ParagraphModule : TexyModule() {
             // Add <br />.
             if (-1 != content.indexOf("\r")) {
                 val key = texy.protect("<br />", ContentType.REPLACED)
-                content = content.replace("\r", key!!)
+                content = content.replace("\r", key)
             }
         }
         content = StringUtils.replaceChars(content, "\r\n", "  ")

@@ -33,8 +33,9 @@ class ImageModule : TexyModule() {
         return if (imagePH.name == name) imagePH else null
     }
 
-    override val eventListeners: Array<TexyEventListener<*>>
+    override val eventListeners: Array<in TexyEventListener<in TexyEvent>>
         get() = arrayOf(beforeParse, imageListener)
+
     // --- Settings --- //
     /** Prefix to be prepended to all images src="...".  */
     var urlPrefix = ""
@@ -213,7 +214,7 @@ class ImageModule : TexyModule() {
     /**  Returns reference using this module's link reference map.  */
     protected val LINK_PROVIDER = LinkProvider { key ->
         val img = getRef(key) ?: return@LinkProvider null
-        val link = TexyLink(if (img.linkedUrl == null) img.url else img.linkedUrl)
+        val link = TexyLink(img.linkedUrl ?: img.url!!)
         link.modifier = img.modifier
         link
     }

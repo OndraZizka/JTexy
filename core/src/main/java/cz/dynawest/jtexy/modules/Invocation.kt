@@ -1,8 +1,8 @@
 package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.events.AroundEvent
 import cz.dynawest.jtexy.events.AroundEventListener
-import cz.dynawest.jtexy.events.TexyParserEvent
 import org.dom4j.Node
 import java.util.*
 import java.util.logging.*
@@ -12,9 +12,12 @@ import java.util.logging.*
  *
  * @author Ondrej Zizka
  */
-class Invocation(var event: TexyParserEvent, handlers_: List<AroundEventListener<*>>) {
-    protected var handlers: List<AroundEventListener<*>>
-    var iterator: Iterator<AroundEventListener<*>>
+class Invocation(
+    var event: AroundEvent,
+    handlers_: List<AroundEventListener<AroundEvent>>
+) {
+    protected var handlers: List<AroundEventListener<AroundEvent>>
+    var iterator: Iterator<AroundEventListener<AroundEvent>>
 
     /** Reverses the list of handlers and initializes it's iterator.  */
     init {
@@ -29,18 +32,16 @@ class Invocation(var event: TexyParserEvent, handlers_: List<AroundEventListener
         iterator = handlers.iterator()
     }
 
+
     /** Calls next handler in the queue.  */
     @Throws(TexyException::class)
     fun proceed(): Node? {
         // TBD: How would this happen?
         check(iterator.hasNext()) { "No more handlers." }
-        val handler = iterator.next()
-        val res = handler.onEvent(event)
+        val handler: AroundEventListener<AroundEvent> = iterator.next()
+        val res = handler.onEvent(this.event)
         if (null == res) //throw new TexyInvocationException
-            log.warning(
-                "Event handler '" + handler.javaClass.name
-                        + "' for '" + handler.eventClass + "' returned null."
-            )
+            log.warning("Event handler '${handler.javaClass.name}' for '${handler.eventClass}' returned null.")
         return res
     } // TODO: Position in the list of handlers - integer index or an iterator?
 

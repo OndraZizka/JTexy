@@ -1,6 +1,7 @@
 package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.*
+import cz.dynawest.jtexy.events.AroundEventListener
 import cz.dynawest.jtexy.events.PhraseEvent
 import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.LinkProcessEvent
@@ -222,3 +223,5 @@ class PhraseModule : TexyModule() {
         }
     }
 }
+
+interface PhraseEventListener : AroundEventListener<PhraseEvent>

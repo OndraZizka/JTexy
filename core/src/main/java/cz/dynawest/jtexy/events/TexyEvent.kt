@@ -53,7 +53,7 @@ interface AfterParseListener : TexyEventListener<AfterParseEvent> {
 
 
 /** Informational interface to tell listeners apart. */
-interface AroundEventListener<in T : AroundEvent> : TexyEventListener<T>
+interface AroundEventListener : TexyEventListener<AroundEvent>
 
 
 
