@@ -2,6 +2,7 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyParser
 import cz.dynawest.jtexy.util.MatchWithOffset
@@ -18,8 +19,7 @@ class HorizontalLineModule : TexyModule() {
         return if (hrPH.name == name) hrPH else null
     }
 
-    override val eventListeners: Array<TexyEventListener<*>>
-        get() = arrayOf(horizLineListener)
+    override val eventListeners: Array<TexyEventListener<TexyEvent>> = arrayOf(horizLineListener)
 
     companion object {
         /** Horizontal line pattern handler.  */

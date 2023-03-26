@@ -72,7 +72,7 @@ class ImageModule : TexyModule() {
             var link: TexyLink? = null
             if ("" != linkStr) {
                 if (":" == linkStr) {
-                    link = TexyLink(if (img.linkedUrl != null) img.linkedUrl else img.url)
+                    link = TexyLink(img.linkedUrl ?: img.url ?: "")
                     link.raw = ":"
                     link.type = TexyLink.Type.IMAGE
                 } else {
@@ -84,7 +84,7 @@ class ImageModule : TexyModule() {
                     link = linkEvent.link
                 }
             }
-            val ev = ImageEvent(parser, img, link, mod)
+            val ev = ImageEvent(parser, img, link!!, mod) /// FIXME Can actually be null.
             return parser.texy.invokeAroundHandlers(ev)
         }
     }

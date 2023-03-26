@@ -3,14 +3,13 @@ package cz.dynawest.jtexy.modules
 import cz.dynawest.jtexy.JTexy
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.events.AroundEvent
+import cz.dynawest.jtexy.events.AroundEventListener
 import cz.dynawest.jtexy.events.TexyEvent
-import cz.dynawest.jtexy.parsers.AroundEvent
-import cz.dynawest.jtexy.parsers.AroundEventListener
-import cz.dynawest.jtexy.parsers.TexyEventListener
+import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.util.PropertiesLoader
 import org.apache.commons.lang.StringUtils
 import java.io.IOException
-import java.lang.Exception
 import java.util.*
 import java.util.logging.*
 
@@ -29,7 +28,7 @@ abstract class TexyModule {
 
     /* --- Event listeners. --- */
     /** Override: return all module's parser event listeners.  */
-    abstract val eventListeners: Array<out TexyEventListener<in TexyEvent>>
+    abstract val eventListeners: Array<out TexyEventListener<TexyEvent>>
 
     // TBD: Make unmodifiable after initialization.
     /* --- Regexp infos. --- */
@@ -43,7 +42,7 @@ abstract class TexyModule {
     }
 
     fun addRegexpInfo(ri: RegexpInfo) {
-        regexpInfos[ri.name!!] = ri
+        regexpInfos[ri.name] = ri
     }
 
     protected fun clearRegexpInfos() {

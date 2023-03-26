@@ -11,7 +11,7 @@ import java.io.Serializable
  * @author Ondrej Zizka
  */
 class LinkProcessEvent(
-    parser: TexyParser?,
+    parser: TexyParser,
     modifier: TexyModifier?,
     val modStr: String?,
     // In.

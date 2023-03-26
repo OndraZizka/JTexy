@@ -23,9 +23,8 @@ import java.util.logging.*
  * @author Ondrej Zizka
  */
 class LinkModule : TexyModule() {
-    override val eventListeners: Array<TexyEventListener<TexyEvent>>
-        // --- Module metainfo --- //
-        get() = arrayOf(
+    override val eventListeners: Array<TexyEventListener<TexyEvent>> =
+        arrayOf(
             linkListener,
             linkRefListener,
             linkProcessListener,

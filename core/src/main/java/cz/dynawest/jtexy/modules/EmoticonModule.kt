@@ -3,6 +3,7 @@ package cz.dynawest.jtexy.modules
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.TexyException
 import cz.dynawest.jtexy.events.BeforeParseEvent
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyParser
 import cz.dynawest.jtexy.util.MatchWithOffset
@@ -28,33 +29,36 @@ class EmoticonModule : TexyModule() {
     /** Physical location of images on server (default value is texy.imageModule.fileRoot)  */
     private val fileRoot: String? = null
     lateinit var regexpInfo: RegexpInfo
-    override val eventListeners: Array<TexyEventListener<*>>
-        // "Register" listeners.
-        get() = arrayOf( // BeforeParseEvent. TODO: Move to some void init(JTexy texy) callback.
-            object : TexyEventListener<BeforeParseEvent> {
-                override val eventClass: Class<*>
-                    get() = BeforeParseEvent::class.java
 
-                @Throws(TexyException::class)
-                override fun onEvent(event: BeforeParseEvent): Node? {
-                    if (!enabled) return null
-                    regexpInfo = createRegexpInfo()
-                    texy.addPattern(regexpInfo!!)
-                    return null
-                }
-            })
+    val x = object : TexyEventListener<TexyEvent> {
+        override val eventClass: Class<*> = BeforeParseEvent::class.java
+
+        @Throws(TexyException::class)
+        override fun onEvent(event: TexyEvent): Node? {
+            if (!enabled) return null
+            regexpInfo = createRegexpInfo()
+            texy.addPattern(regexpInfo)
+            return null
+        }
+    }
+
+    override val eventListeners =
+        // "Register" listeners.
+        // BeforeParseEvent. TODO: Move to some void init(JTexy texy) callback.
+        arrayOf(x)
+
 
     /**
      * Just one pattern handler - emoticon.
      */
-    override fun getPatternHandlerByName(name: String): PatternHandler? {
+    override fun getPatternHandlerByName(name: String): PatternHandler {
         return object : PatternHandler {
             override val name: String
                 get() = "emoticon"
 
             @Throws(TexyException::class)
             override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
-                val raw = groups!![1]!!.match
+                val raw = groups[1].match
                 return createEmotionElement(findEmoticon(raw), raw)
             }
         }
