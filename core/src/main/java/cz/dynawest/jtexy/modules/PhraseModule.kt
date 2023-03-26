@@ -79,7 +79,7 @@ class PhraseModule : TexyModule() {
         override fun handle(
             parser: TexyParser,
             groups: List<MatchWithOffset>,
-            pattern: RegexpInfo
+            regexpInfo: RegexpInfo
         ): Node? {
 
             //    [1] => ** - probably means "enclosing string"; ignored in Texy.
@@ -90,8 +90,8 @@ class PhraseModule : TexyModule() {
                 log.finest("  " + match.toString()) ///
             }
             if (getRegexpInfo("phrase/span") != null) {
-                log.finer(pattern.perlRegexp)
-                log.finer(pattern.regexp)
+                log.finer(regexpInfo.perlRegexp)
+                log.finer(regexpInfo.regexp)
             }
             val content = groups[1].match!!
             val modStr = groups[2].match
@@ -102,7 +102,7 @@ class PhraseModule : TexyModule() {
 
             // TBD: What is this good for?
             //parser.again = "phrase/code".equals(pattern.name) || "phrase/quicklink".equals(pattern.name);
-            if (pattern.name.startsWith("phrase/span")) {
+            if (regexpInfo.name.startsWith("phrase/span")) {
                 if (linkStr == null) {
                     if (null == modStr) return null // Leave intact.
                 } else {
@@ -114,9 +114,9 @@ class PhraseModule : TexyModule() {
                     texy.invokeAroundHandlers(linkProcessEvent)
                     link = linkProcessEvent.link!!
                 }
-            } else if (pattern.name.startsWith("phrase/acronym")) {
+            } else if (regexpInfo.name.startsWith("phrase/acronym")) {
                 mod.title = JTexyStringUtils.unescapeHtml(linkStr!!.trim { it <= ' ' })
-            } else if (pattern.name.startsWith("phrase/quote")) {
+            } else if (regexpInfo.name.startsWith("phrase/quote")) {
                 mod.cite = texy.linkModule ?.citeLink(linkStr)
             } else if (linkStr != null) {
                 //link = texy.linkModule.factoryLink( linkStr );
@@ -132,7 +132,7 @@ class PhraseModule : TexyModule() {
             //DOMElement elm = new DOMElement( pattern.htmlElement );
             //elm.addText( content );
             //Node node = solve( pattern.name, content, mod, link );
-            val event = PhraseEvent(parser, content, mod, link, pattern.name)
+            val event = PhraseEvent(parser, content, mod, link, regexpInfo.name)
             return texy.invokeAroundHandlers(event)
         }
     }
@@ -198,7 +198,7 @@ class PhraseModule : TexyModule() {
             override val name: String
                 get() = "patternSubSup"
 
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
                 for (match in groups!!) {
                     log.finer("  " + match.toString()) ///
                 }
@@ -214,7 +214,7 @@ class PhraseModule : TexyModule() {
             override val name: String
                 get() = "patternNoTexy"
 
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
                 for (match in groups!!) {
                     log.finer("  " + match.toString()) ///
                 }

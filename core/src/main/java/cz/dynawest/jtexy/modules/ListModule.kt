@@ -4,6 +4,7 @@ import cz.dynawest.jtexy.JTexy
 import cz.dynawest.jtexy.RegexpInfo
 import cz.dynawest.jtexy.RegexpPatterns
 import cz.dynawest.jtexy.TexyException
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyBlockParser
 import cz.dynawest.jtexy.parsers.TexyLineParser
@@ -23,9 +24,8 @@ import java.util.logging.*
 class ListModule : TexyModule() {
     private val listPatternHandler: PatternHandler = ListPatternHandler()
     private val listDefPatternHandler: PatternHandler = DefListPatternHandler()
-    override val eventListeners: Array<TexyEventListener<*>>
-        // -- Module meta-info -- //
-        get() = arrayOf()
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
+        get() = emptyList()
 
     override fun getPatternHandlerByName(name: String): PatternHandler? {
         return if (listPatternHandler.name == name) {
@@ -80,8 +80,11 @@ class ListModule : TexyModule() {
         listDefRI.parseRegexp(sb2.toString())
         listDefRI.handler = listDefPatternHandler
         addRegexpInfo(listDefRI)
-    } // init()
+    }
+
+
     // -- Handlers and listeners -- //
+
     /**
      * List pattern handler.
      */
@@ -90,7 +93,7 @@ class ListModule : TexyModule() {
             get() = "list" // Not used - init() overriden.
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
             /*
              *  Advances in two steps:
              *   1. Reads the first line of the list, to get its type.
@@ -165,18 +168,20 @@ class ListModule : TexyModule() {
 
             // TODO.
             //getTexy().invokeNormalHandlers( new AfterListEvent() );
+
         } // handle()
     } // PatternList
+
 
     /**
      * List definition pattern handler.
      */
     private inner class DefListPatternHandler : PatternHandler {
         override val name: String
-            get() = "defList" // Not used - init() overriden.
+            get() = "defList" // Not used - init() overridden.
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
             //   [1] => .(title)[class]{style}<>
             //   [2] => ...
             //   [3] => .(title)[class]{style}<>

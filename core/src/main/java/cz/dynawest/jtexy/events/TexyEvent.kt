@@ -37,7 +37,7 @@ class AfterLineEvent(parser: TexyParser, text: String) : BeforeAfterEvent(parser
 
 
 interface TexyEventListener<in T : TexyEvent> {
-    val eventClass: Class<*>
+    val eventClass: Class<in T>
 
     @Throws(TexyException::class)
     fun onEvent(event: T): Node?
@@ -45,7 +45,7 @@ interface TexyEventListener<in T : TexyEvent> {
 
 /** Informational interface to tell listeners apart. Aka. "normal" listener / handler. */
 interface BeforeAfterEventListener<in T : BeforeAfterEvent> : TexyEventListener<T>
-interface BeforeParseListener : BeforeAfterEventListener<BeforeAfterEvent>
+interface BeforeParseListener<in T : BeforeAfterEvent> : BeforeAfterEventListener<T>
 interface AfterParseListener : TexyEventListener<AfterParseEvent> {
     //public void afterParse( JTexy texy, Document doc, boolean singleLine );
 }
@@ -53,7 +53,7 @@ interface AfterParseListener : TexyEventListener<AfterParseEvent> {
 
 
 /** Informational interface to tell listeners apart. */
-interface AroundEventListener : TexyEventListener<AroundEvent>
+interface AroundEventListener<in T: AroundEvent> : TexyEventListener<T>
 
 
 

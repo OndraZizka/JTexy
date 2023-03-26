@@ -57,7 +57,7 @@ class EmoticonModule : TexyModule() {
                 get() = "emoticon"
 
             @Throws(TexyException::class)
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
                 val raw = groups[1].match
                 return createEmotionElement(findEmoticon(raw), raw)
             }

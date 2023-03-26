@@ -45,7 +45,7 @@ class JTexy {
         protected set
 
     /** Around handlers.  */
-    var aroundHandlers: HandlersMap<AroundEventListener<AroundEvent>> = HandlersMap()
+    var aroundHandlers: HandlersMap<@UnsafeVariance AroundEventListener<AroundEvent>> = HandlersMap()
         protected set
 
     /**

@@ -10,12 +10,10 @@ import java.util.regex.Pattern
  * @author Ondrej Zizka
  */
 class TexyLink(
-    /** URL in resolved form.  */
-    var url: String
+    /** URL in resolved form. May be null if the link was invalid. */
+    var url: String?
 ) : Cloneable {
-    enum class Type {
-        COMMON, BRACKET, IMAGE
-    }
+    enum class Type { COMMON, BRACKET, IMAGE }
 
     /** string  URL as written in text  */
     var raw: String
@@ -41,7 +39,7 @@ class TexyLink(
     public override fun clone(): TexyLink {
         val link = TexyLink(url)
         link.raw = raw
-        link.modifier = modifier!!.clone()
+        link.modifier = modifier?.clone()
         link.label = label
         link.type = type
         link.name = name
@@ -49,7 +47,7 @@ class TexyLink(
     }
 
     init {
-        raw = url
+        raw = url ?: ""
     }
 
     /**
@@ -60,14 +58,14 @@ class TexyLink(
 
         // E-mail.
         if (obfuscateEmails && PAT_EMAIL.matcher(raw).matches()) {
-            return raw!!.replace("@", "&#64;<!---->")
+            return raw.replace("@", "&#64;<!---->")
         }
         if (!makeShorter) return raw
         if (!PAT_URL.matcher(raw).matches()) return raw
 
         // It's URI and should be shortened.
         var raw_ = raw
-        if (raw_!!.startsWith("www.")) raw_ = "none://$raw_"
+        if (raw_.startsWith("www.")) raw_ = "none://$raw_"
         val uri: URI
         uri = try {
             URI(raw_)
@@ -81,7 +79,7 @@ class TexyLink(
         appendShortened(uri.query, 4, '?', sb)
         if (uri.query.length == 0) appendShortened(uri.fragment, 4, '#', sb)
         return raw_ + sb.toString()
-    } // asText()
+    }
 
     companion object {
         /** Returns a link from the string, or null if it's null or empty.  */

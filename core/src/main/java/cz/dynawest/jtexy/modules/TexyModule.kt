@@ -21,14 +21,14 @@ import java.util.logging.*
  */
 abstract class TexyModule {
     protected open val propsFilePath: String?
-        protected get() = String.format(DEFAULT_PROPS_PATH, this.javaClass.simpleName)
+        get() = String.format(DEFAULT_PROPS_PATH, this.javaClass.simpleName)
 
     /** JTexy backreference.  */
     lateinit var texy: JTexy
 
     /* --- Event listeners. --- */
     /** Override: return all module's parser event listeners.  */
-    abstract val eventListeners: Array<out TexyEventListener<TexyEvent>>
+    protected abstract val eventListeners: List<TexyEventListener<in TexyEvent>>
 
     // TBD: Make unmodifiable after initialization.
     /* --- Regexp infos. --- */

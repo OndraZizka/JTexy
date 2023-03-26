@@ -6,4 +6,4 @@ import cz.dynawest.jtexy.parsers.TexyParser
 
 
 class ParagraphEvent(parser: TexyParser, text: String, modifier: TexyModifier?) : AroundEvent(parser, text, modifier)
-interface ParagraphEventListener : AroundEventListener<ParagraphEvent>
+interface ParagraphEventListener<in T : ParagraphEvent> : AroundEventListener<T>

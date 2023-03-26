@@ -3,7 +3,6 @@ package cz.dynawest.jtexy.modules
 import cz.dynawest.jtexy.*
 import cz.dynawest.jtexy.dom4j.io.ProtectedHTMLWriter
 import cz.dynawest.jtexy.events.*
-import cz.dynawest.jtexy.modules.TexyLink
 import cz.dynawest.jtexy.parsers.*
 import cz.dynawest.jtexy.util.JTexyStringUtils
 import cz.dynawest.jtexy.util.MatchWithOffset
@@ -14,7 +13,6 @@ import org.apache.commons.lang.StringUtils
 import org.dom4j.Node
 import org.dom4j.dom.DOMElement
 import org.dom4j.dom.DOMText
-import java.lang.Exception
 import java.util.*
 import java.util.logging.*
 
@@ -23,14 +21,15 @@ import java.util.logging.*
  * @author Ondrej Zizka
  */
 class LinkModule : TexyModule() {
-    override val eventListeners: Array<TexyEventListener<TexyEvent>> =
-        arrayOf(
-            linkListener,
-            linkRefListener,
-            linkProcessListener,
-            NEW_REF_LISTENER,
-            beforeParseListener
+    override val eventListeners: List<TexyEventListener<TexyEvent>> by lazy {
+        listOf(
+            linkListener as TexyEventListener<TexyEvent>,
+            linkRefListener as TexyEventListener<TexyEvent>,
+            linkProcessListener as TexyEventListener<TexyEvent>,
+            NEW_REF_LISTENER as TexyEventListener<TexyEvent>,
+            beforeParseListener as TexyEventListener<TexyEvent>,
         )
+    }
 
     override fun getPatternHandlerByName(name: String): PatternHandler? {
         // [reference]
@@ -59,7 +58,7 @@ class LinkModule : TexyModule() {
             get() = "reference"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
             //    [1] => [ref]
             val refName = StringUtils.substring(groups[0].match, 1, -1)
             val link = getRef(refName) ?: return texy.invokeAroundHandlers(NewReferenceEvent(parser, refName))
@@ -96,7 +95,7 @@ class LinkModule : TexyModule() {
      * and parses and removes the link definitions.
      */
     private val beforeParseListener: BeforeAfterEventListener<BeforeParseEvent> = object : BeforeAfterEventListener<BeforeParseEvent> {
-        override val eventClass: Class<*>
+        override val eventClass: Class<BeforeParseEvent>
             get() = BeforeParseEvent::class.java
 
         @Throws(TexyException::class)
@@ -143,7 +142,7 @@ class LinkModule : TexyModule() {
 
     /** Link reference event listener.   Texy: solve()  */
     private val linkRefListener: TexyEventListener<LinkReferenceEvent> = object : AroundEventListener<LinkReferenceEvent> {
-        override val eventClass: Class<*>
+        override val eventClass: Class<LinkReferenceEvent>
             get() = LinkReferenceEvent::class.java
 
         @Throws(TexyException::class)
@@ -159,7 +158,7 @@ class LinkModule : TexyModule() {
 
     /** LinkEvent listener.  */
     private val linkListener: TexyEventListener<LinkEvent> = object : AroundEventListener<LinkEvent> {
-        override val eventClass: Class<*>
+        override val eventClass: Class<LinkEvent>
             get() = LinkEvent::class.java
 
         @Throws(TexyException::class)
@@ -179,7 +178,7 @@ class LinkModule : TexyModule() {
      * We will possibly need to modify the processing.
      */
     private val linkProcessListener: AroundEventListener<LinkProcessEvent> = object : AroundEventListener<LinkProcessEvent> {
-        override val eventClass: Class<*>
+        override val eventClass: Class<LinkProcessEvent>
             get() = LinkProcessEvent::class.java
 
         @Throws(TexyException::class)
@@ -189,7 +188,7 @@ class LinkModule : TexyModule() {
             var dest = event.dest
 
             // References.
-            if (dest!!.length > 1 && dest[0] == '[') {
+            if (dest.length > 1 && dest[0] == '[') {
                 // [ref]
                 if (dest[1] != '*') {
                     linkType = TexyLink.Type.BRACKET
@@ -263,7 +262,9 @@ class LinkModule : TexyModule() {
 ](...) */
     fun solveLinkReference(link: TexyLink?, content: Node?): Node? {
         log.finer("Link: $link Content: $content")
-        if (link!!.url == null) return content
+
+        if (link?.url == null) return content
+
         val elm = DOMElement("a")
         var nofollow = false
         var popup = false
@@ -319,7 +320,7 @@ class LinkModule : TexyModule() {
                 get() = "urlOrEmail"
 
             @Throws(TexyException::class)
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, ri: RegexpInfo): Node? {
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
                 //    [0] => URL
                 if (log.isLoggable(Level.FINEST)) for (match in groups) log.finest("  " + match.toString())
                 val link: TexyLink? = TexyLink.fromString(groups[0].match)
@@ -327,7 +328,7 @@ class LinkModule : TexyModule() {
                 if (link == null) return null
 
                 log.finest("Link: $link")
-                val isEmail = "link/email" == ri.name
+                val isEmail = "link/email" == regexpInfo.name
                 parser.texy ?: throw Exception("No parent parser (parser.texy) in the current parser. Should not happen I guess?")
                 return parser.texy.invokeAroundHandlers(LinkEvent(parser, link, isEmail))
             }
@@ -341,7 +342,7 @@ class LinkModule : TexyModule() {
 
         /** New reference event listener - no-op.  */
         private val NEW_REF_LISTENER: TexyEventListener<NewReferenceEvent> = object : AroundEventListener<NewReferenceEvent> {
-            override val eventClass: Class<*>
+            override val eventClass: Class<NewReferenceEvent>
                 get() = NewReferenceEvent::class.java
 
             @Throws(TexyException::class)
@@ -351,13 +352,11 @@ class LinkModule : TexyModule() {
         }
 
         /**
-         * Checks and corrects $URL.
-         * @param  TexyLink
-         * @return void
+         * Checks and corrects the given link's URL.
          */
-        private fun fixLink(link: TexyLink?) {
+        private fun fixLink(link: TexyLink) {
             // Remove soft hyphens; if not removed by Texy::process().
-            link!!.url = link.url!!.replace("\u00C2\u00AD", "")
+            link.url = link.url?.replace("\u00C2\u00AD", "")
 
             // www.
             if (StringUtils.startsWithIgnoreCase(link.url, "www.")) {

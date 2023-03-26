@@ -38,7 +38,7 @@ class BlockModule : TexyModule() {
             get() = "blocks"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
             //    [1] => code | text | ...
             //    [2] => ... additional parameters
             //    [3] => .(title)[class]{style}<>

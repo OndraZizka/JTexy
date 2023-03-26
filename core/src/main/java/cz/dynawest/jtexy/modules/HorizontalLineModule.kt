@@ -19,7 +19,7 @@ class HorizontalLineModule : TexyModule() {
         return if (hrPH.name == name) hrPH else null
     }
 
-    override val eventListeners: Array<TexyEventListener<TexyEvent>> = arrayOf(horizLineListener)
+    override val eventListeners: List<TexyEventListener<TexyEvent>> = listOf(horizLineListener as TexyEventListener<TexyEvent>)
 
     companion object {
         /** Horizontal line pattern handler.  */
@@ -28,7 +28,7 @@ class HorizontalLineModule : TexyModule() {
 
 
             @Throws(TexyException::class)
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node?
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node?
             {
                 val mod = TexyModifier(groups[2].match!!)
                 val ev = HorizontalLineEvent(parser, null, mod)
@@ -40,7 +40,7 @@ class HorizontalLineModule : TexyModule() {
          *
          */
         val horizLineListener: HorizontalLineEventListener = object : HorizontalLineEventListener {
-            override val eventClass: Class<*>
+            override val eventClass: Class<HorizontalLineEvent>
                 get() = HorizontalLineEvent::class.java
 
             override fun onEvent(event: HorizontalLineEvent): Node {

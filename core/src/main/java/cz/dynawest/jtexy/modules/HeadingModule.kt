@@ -68,12 +68,12 @@ class HeadingModule : TexyModule() {
     val opt = Options()
     private val ctx = Context()
 
-    override val eventListeners: Array<TexyEventListener<*>>
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
         // --- Module meta-info --- //
-        get() = arrayOf(
-            beforeParse,
-            headingListener,
-            afterParse
+        get() = listOf(
+            beforeParse as TexyEventListener<TexyEvent>,
+            headingListener as TexyEventListener<TexyEvent>,
+            afterParse as TexyEventListener<TexyEvent>,
         )
 
     override fun getPatternHandlerByName(name: String): PatternHandler? {
@@ -92,7 +92,7 @@ class HeadingModule : TexyModule() {
             get() = "underlined"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
 
             //    [1] => Heading content.
             //    [2] => .(title)[class]{style}<>
@@ -126,7 +126,7 @@ class HeadingModule : TexyModule() {
             get() = "surrounded"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
             //    [1] => ###
             //    [2] => Content.
             //    [3] => .(title)[class]{style}<>
@@ -145,7 +145,7 @@ class HeadingModule : TexyModule() {
      * Heading listener.
      */
     private val headingListener: HeadingEventListener = object : HeadingEventListener {
-        override val eventClass: Class<*>
+        override val eventClass: Class<HeadingEvent>
             get() = HeadingEvent::class.java
 
         @Throws(TexyException::class)
@@ -166,12 +166,12 @@ class HeadingModule : TexyModule() {
     /**
      * BeforeParseEvent - reset internal state. TODO: Move elsewhere (some ParsingContext).
      */
-    private val beforeParse: BeforeParseListener = object : BeforeParseListener {
-        override val eventClass: Class<*>
+    private val beforeParse: BeforeParseListener<BeforeParseEvent> = object : BeforeParseListener<BeforeParseEvent> {
+        override val eventClass: Class<BeforeParseEvent>
             get() = BeforeParseEvent::class.java
 
         @Throws(TexyException::class)
-        override fun onEvent(event_: BeforeAfterEvent): Node? {
+        override fun onEvent(event_: BeforeParseEvent): Node? {
             val event = event_ as BeforeParseEvent
             ctx.documentTitle = null
             ctx.toc = ArrayList()
@@ -184,7 +184,7 @@ class HeadingModule : TexyModule() {
      * AfterParseEvent -
      */
     private val afterParse: AfterParseListener = object : AfterParseListener {
-        override val eventClass: Class<*>
+        override val eventClass: Class<AfterParseEvent>
             get() = AfterParseEvent::class.java
 
         @Throws(TexyException::class)

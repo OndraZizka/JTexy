@@ -17,7 +17,6 @@ import org.dom4j.Node
 import org.dom4j.dom.DOMElement
 import java.awt.Dimension
 import java.io.*
-import java.lang.Exception
 import java.util.*
 import java.util.logging.*
 import javax.imageio.ImageIO
@@ -33,8 +32,11 @@ class ImageModule : TexyModule() {
         return if (imagePH.name == name) imagePH else null
     }
 
-    override val eventListeners: Array<in TexyEventListener<in TexyEvent>>
-        get() = arrayOf(beforeParse, imageListener)
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
+        get() = listOf(
+            beforeParse as TexyEventListener<TexyEvent>,
+            imageListener as TexyEventListener<TexyEvent>
+        )
 
     // --- Settings --- //
     /** Prefix to be prepended to all images src="...".  */
@@ -56,7 +58,7 @@ class ImageModule : TexyModule() {
             get() = "imagePattern"
 
         @Throws(TexyException::class)
-        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
+        override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
             //    [1] => URLs
             //    [2] => .(title)[class]{style}<>
             //    [3] => * < >
@@ -93,12 +95,12 @@ class ImageModule : TexyModule() {
     /**
      * BeforeParseListener
      */
-    val beforeParse: BeforeParseListener = object : BeforeParseListener {
-        override val eventClass: Class<*>
+    val beforeParse: BeforeParseListener<BeforeParseEvent> = object : BeforeParseListener<BeforeParseEvent> {
+        override val eventClass: Class<BeforeParseEvent>
             get() = BeforeParseEvent::class.java
 
         @Throws(TexyException::class)
-        override fun onEvent(event_: BeforeAfterEvent): Node? {
+        override fun onEvent(event_: BeforeParseEvent): Node? {
             val event = event_ as BeforeParseEvent
 
             // [*image*]: urls .(title)[class]{style}
@@ -124,13 +126,13 @@ class ImageModule : TexyModule() {
      * ImageEventListener
      */
     var imageListener: ImageEventListener = object : ImageEventListener {
-        override val eventClass: Class<*>
+        override val eventClass: Class<ImageEvent>
             get() = ImageEvent::class.java
 
         @Throws(TexyException::class)
-        override fun onEvent(event: ImageEvent): Node? {
+        override fun onEvent(event: ImageEvent): Node {
             val img = event.img
-            val mod = img!!.modifier
+            val mod = img.modifier
             val alt = mod.title
             mod.title = null
             val hAlign = mod.hAlign
@@ -138,11 +140,7 @@ class ImageModule : TexyModule() {
             val elm = DOMElement("img")
             mod.decorate(elm)
             elm.setAttribute("src", JTexyStringUtils.prependUrlPrefix(urlPrefix, img.url))
-
-            // alt
-            if (null == elm.getAttributeNode("alt")) {
-                elm.setAttribute("alt", defaultAlt)
-            }
+            elm.setAttribute("alt", elm.getAttributeNode("alt") ?.value ?: alt ?: defaultAlt)
 
             // hAlign
             if (null != hAlign) {

@@ -20,7 +20,7 @@ interface PatternHandler {
      *
      * @param parser   Parser back-reference.
      * @param groups   Groups of the given regexp match.
-     * @param pattern  Pattern which created this match.
+     * @param regexpInfo  Pattern which created this match.
      *
      * @return  null if this handler rejects the text.
      * Otherwise, DOMElement or TextNode created from the groups.
@@ -29,6 +29,6 @@ interface PatternHandler {
     fun handle(
         parser: TexyParser,
         groups: List<MatchWithOffset>,
-        pattern: RegexpInfo
+        regexpInfo: RegexpInfo
     ): Node?
 }

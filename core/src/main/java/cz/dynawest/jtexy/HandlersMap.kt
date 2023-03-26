@@ -8,10 +8,10 @@ import cz.dynawest.jtexy.events.TexyEventListener
  *
  * @author Ondrej Zizka
  */
-class HandlersMap<in T : TexyEventListener<in TexyEvent>> {
+class HandlersMap<T : TexyEventListener<TexyEvent>> {
     // Consider using Google Collections' LinkedListMultimap ?
     // Or JDK's LinkedHashSet?
-    var handlersMap: MutableMap<Class<*>, MutableList<T>> = HashMap()
+    private var handlersMap: MutableMap<Class<*>, List<T>> = HashMap()
 
     /** @returns getHandlersForEvent(event.getClass());
      */
@@ -26,16 +26,17 @@ class HandlersMap<in T : TexyEventListener<in TexyEvent>> {
     }
 
     /** Add a handler (listener) for an event type (class).  */
-    fun addHandler(handler: T) {
+    fun addHandler(handler: @UnsafeVariance T) {
         val eventClass = handler.eventClass
         var list = handlersMap[eventClass]
+
         // Create the map entry if not there yet.
         if (null == list) {
-            list = ArrayList()
+            list = listOf()
             handlersMap[eventClass] = list
         } else {
             if (list.contains(handler)) return
         }
-        list.add(handler)
+        list.toMutableList().add(handler)
     }
 }

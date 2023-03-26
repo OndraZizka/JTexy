@@ -2,6 +2,7 @@ package cz.dynawest.jtexy.modules
 
 import cz.dynawest.jtexy.*
 import cz.dynawest.jtexy.dom4j.Dom4jUtils
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.TexyLineParser
 import cz.dynawest.openjdkregex.Pattern
@@ -15,9 +16,9 @@ import java.util.logging.*
  * @author Ondrej Zizka
  */
 class ParagraphModule : TexyModule() {
-    override val eventListeners: Array<TexyEventListener<*>>
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
         // -- Module metainfo -- //
-        get() = arrayOf(parListener)
+        get() = listOf(parListener as TexyEventListener<TexyEvent>)
 
     /*
 	@Override protected void onRegister() {
@@ -28,12 +29,12 @@ class ParagraphModule : TexyModule() {
     }
 
     // -- EventListener stuff -- //
-    var parListener: ParagraphEventListener = object : ParagraphEventListener {
-        override val eventClass: Class<*>
+    var parListener: ParagraphEventListener<ParagraphEvent> = object : ParagraphEventListener<ParagraphEvent> {
+        override val eventClass: Class<ParagraphEvent>
             get() = ParagraphEvent::class.java
 
         @Throws(TexyException::class)
-        override fun onEvent(event: ParagraphEvent): Node? {
+        override fun onEvent(event: ParagraphEvent): Node {
             return solve(null, event.text!!, event.modifier)
         }
     }
