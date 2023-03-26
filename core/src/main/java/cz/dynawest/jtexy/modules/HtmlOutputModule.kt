@@ -5,6 +5,7 @@ import cz.dynawest.jtexy.dtd.Dtd
 import cz.dynawest.jtexy.dtd.DtdElement
 import cz.dynawest.jtexy.dtd.HtmlDtdTemplate
 import cz.dynawest.jtexy.events.PostProcessEvent
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.util.JTexyStringUtils
 import cz.dynawest.openjdkregex.Matcher
@@ -22,9 +23,8 @@ import java.util.logging.*
  * @author Ondrej Zizka
  */
 class HtmlOutputModule : TexyModule() {
-    override val eventListeners: Array<TexyEventListener<*>>
-        // -- Module meta-info -- //
-        get() = arrayOf(postProcessListener)
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
+        get() = listOf(postProcessListener as TexyEventListener<TexyEvent>)
 
     override fun getPatternHandlerByName(name: String): PatternHandler? {
         return null
@@ -32,7 +32,10 @@ class HtmlOutputModule : TexyModule() {
 
     protected override val propsFilePath: String?
         protected get() = null // No props file.
+
+
     // -- Config --
+
     /** Indent HTML code?  */
     var indent = true
 
@@ -69,7 +72,7 @@ class HtmlOutputModule : TexyModule() {
      * And other neat tricks.
      */
     private val postProcessListener: TexyEventListener<PostProcessEvent> = object : TexyEventListener<PostProcessEvent> {
-        override val eventClass: Class<*>
+        override val eventClass: Class<PostProcessEvent>
             get() = PostProcessEvent::class.java
 
         @Throws(TexyException::class)

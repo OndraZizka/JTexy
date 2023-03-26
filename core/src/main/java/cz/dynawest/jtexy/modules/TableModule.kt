@@ -10,9 +10,8 @@ import java.util.logging.Logger
  */
 class TableModule : TexyModule() {
     private val somePH: PatternHandler? = null
-    override val eventListeners: Array<out TexyEventListener<in TexyEvent>>
-        // -- Module meta-info -- //
-        get() = arrayOf()
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
+        get() = emptyList()
 
     override fun getPatternHandlerByName(name: String): PatternHandler? {
         return if (somePH?.name == name) {

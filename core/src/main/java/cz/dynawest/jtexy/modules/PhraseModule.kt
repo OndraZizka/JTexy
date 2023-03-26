@@ -3,6 +3,7 @@ package cz.dynawest.jtexy.modules
 import cz.dynawest.jtexy.*
 import cz.dynawest.jtexy.events.AroundEventListener
 import cz.dynawest.jtexy.events.PhraseEvent
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.events.TexyEventListener
 import cz.dynawest.jtexy.parsers.LinkProcessEvent
 import cz.dynawest.jtexy.parsers.TexyParser
@@ -47,9 +48,9 @@ import java.util.logging.*
  * @author Ondrej Zizka
  */
 class PhraseModule : TexyModule() {
-    override val eventListeners: Array<TexyEventListener<*>>
-        // --- Module meta-info --- //
-        get() = arrayOf(phraseListener)
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
+        get() = listOf(phraseListener as TexyEventListener<TexyEvent>)
+
 
     /** Return this module's pattern handler by name.  */
     override fun getPatternHandlerByName(name: String): PatternHandler? {
@@ -63,9 +64,13 @@ class PhraseModule : TexyModule() {
             throw UnsupportedOperationException("Unknown pattern handler: $name")
         }
     }
+
+
     // --- Settings --- //
+
     /** Html links allowed?  */
     var isLinksAllowed = true
+
 
     /**
      * patternPhrase handler.
@@ -141,7 +146,7 @@ class PhraseModule : TexyModule() {
      * Phrase Listener.
      */
     var phraseListener = object : PhraseEventListener {
-        override val eventClass: Class<*>
+        override val eventClass: Class<PhraseEvent>
             get() = PhraseEvent::class.java
 
         @Throws(TexyException::class)

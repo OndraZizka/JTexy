@@ -10,7 +10,7 @@ import java.util.logging.Logger
  */
 class BlockQuoteModule : TexyModule() {
     private val somePH: PatternHandler? = null
-    override val eventListeners: Array<TexyEventListener<TexyEvent>> = arrayOf()
+    override val eventListeners: List<TexyEventListener<TexyEvent>> = emptyList()
 
     override fun getPatternHandlerByName(name: String): PatternHandler? {
         return if (somePH?.name == name) {

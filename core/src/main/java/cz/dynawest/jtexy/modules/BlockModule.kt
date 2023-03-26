@@ -15,7 +15,6 @@ import org.apache.commons.lang.StringUtils
 import org.dom4j.Node
 import org.dom4j.dom.DOMElement
 import org.dom4j.dom.DOMText
-import java.lang.Exception
 
 /**
  *
@@ -27,8 +26,11 @@ class BlockModule : TexyModule() {
         return if ("blocks" == name) blocksPatternHandler else null
     }
 
-    override val eventListeners: Array<out TexyEventListener<in TexyEvent>>
-        get() = arrayOf(beforeBlockListener, blockListener)
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
+        get() = listOf(
+            beforeBlockListener as TexyEventListener<TexyEvent>,
+            blockListener as TexyEventListener<TexyEvent>,
+        )
 
     /**
      * blocksPatternHandler
@@ -59,7 +61,7 @@ class BlockModule : TexyModule() {
      * @return TexyHtml|string|FALSE
      */
     val blockListener: BlockEventListener = object : BlockEventListener {
-        override val eventClass: Class<*>
+        override val eventClass: Class<BlockEvent>
             get() = BlockEvent::class.java
 
         @Throws(TexyException::class)
@@ -93,7 +95,7 @@ class BlockModule : TexyModule() {
                 str = JTexyStringUtils.escapeHtml(str)
                 str = texy.protect(str, ContentType.BLOCK)
                 val elm = DOMElement("pre")
-                event.modifier!!.classes.add(event.param) // Code language.
+                event.param ?.let { event.modifier!!.classes.add(it) } // Code language.
                 event.modifier!!.decorate(texy, elm)
                 elm.addElement("code").addText(str)
                 return elm
@@ -102,7 +104,7 @@ class BlockModule : TexyModule() {
                 str = JTexyStringUtils.outdent(str)
                 if ("" == str) return DOMText("\n")
                 val elm = DOMElement("pre")
-                event.modifier!!.classes.add(event.param) // Code language.
+                event.param ?.let { event.modifier!!.classes.add(it) } // Code language.
                 event.modifier!!.decorate(texy, elm)
                 str = JTexyStringUtils.escapeHtml(str)
                 str = texy.protect(str, ContentType.BLOCK)
@@ -191,7 +193,7 @@ class BlockModule : TexyModule() {
      * Single block pre-processing.
      */
     val beforeBlockListener: BeforeBlockEventListener<BeforeBlockEvent> = object : BeforeBlockEventListener<BeforeBlockEvent> {
-        override val eventClass: Class<*>
+        override val eventClass: Class<BeforeBlockEvent>
             get() = BeforeBlockEvent::class.java
 
         override fun onEvent(event: BeforeBlockEvent): Node? {

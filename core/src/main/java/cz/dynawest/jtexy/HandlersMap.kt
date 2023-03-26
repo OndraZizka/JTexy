@@ -8,13 +8,12 @@ import cz.dynawest.jtexy.events.TexyEventListener
  *
  * @author Ondrej Zizka
  */
-class HandlersMap<T : TexyEventListener<TexyEvent>> {
+class HandlersMap<T : TexyEventListener<*>> {
     // Consider using Google Collections' LinkedListMultimap ?
     // Or JDK's LinkedHashSet?
     private var handlersMap: MutableMap<Class<*>, List<T>> = HashMap()
 
-    /** @returns getHandlersForEvent(event.getClass());
-     */
+    /** @returns getHandlersForEvent(event.getClass()); */
     fun <U : TexyEvent> getHandlersForEvent(event: U): List<T> {
         return getHandlersForEvent(event.javaClass)
     }

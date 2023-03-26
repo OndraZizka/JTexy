@@ -30,11 +30,14 @@ class EmoticonModule : TexyModule() {
     private val fileRoot: String? = null
     lateinit var regexpInfo: RegexpInfo
 
-    val x = object : TexyEventListener<TexyEvent> {
-        override val eventClass: Class<*> = BeforeParseEvent::class.java
+
+
+    // BeforeParseEvent. TODO: Move to some void init(JTexy texy) callback.
+    val x = object : TexyEventListener<BeforeParseEvent> {
+        override val eventClass: Class<BeforeParseEvent> = BeforeParseEvent::class.java
 
         @Throws(TexyException::class)
-        override fun onEvent(event: TexyEvent): Node? {
+        override fun onEvent(event: BeforeParseEvent): Node? {
             if (!enabled) return null
             regexpInfo = createRegexpInfo()
             texy.addPattern(regexpInfo)
@@ -42,10 +45,8 @@ class EmoticonModule : TexyModule() {
         }
     }
 
-    override val eventListeners =
-        // "Register" listeners.
-        // BeforeParseEvent. TODO: Move to some void init(JTexy texy) callback.
-        arrayOf(x)
+    // "Register" listeners.
+    override val eventListeners = listOf(x as TexyEventListener<TexyEvent>)
 
 
     /**
@@ -57,7 +58,7 @@ class EmoticonModule : TexyModule() {
                 get() = "emoticon"
 
             @Throws(TexyException::class)
-            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node? {
+            override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, regexpInfo: RegexpInfo): Node {
                 val raw = groups[1].match
                 return createEmotionElement(findEmoticon(raw), raw)
             }

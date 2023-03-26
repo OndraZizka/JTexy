@@ -5,6 +5,7 @@ import cz.dynawest.jtexy.RegexpPatterns
 import cz.dynawest.jtexy.TexyException
 import cz.dynawest.jtexy.events.AfterLineEvent
 import cz.dynawest.jtexy.events.BeforeParseEvent
+import cz.dynawest.jtexy.events.TexyEvent
 import cz.dynawest.jtexy.events.TexyEventListener
 import org.dom4j.Node
 import org.dom4j.dom.DOMText
@@ -19,11 +20,13 @@ import java.util.logging.*
  */
 class TypographyModule  // Const
     : TexyModule() {
-    override val eventListeners: Array<TexyEventListener<*>>
+    override val eventListeners: List<TexyEventListener<TexyEvent>>
         // "Register" listeners.
-        get() = arrayOf( // BeforeParseEvent. (Currently, it re-configures quotes based on locale setting.)
+        get() = listOf(
+
+            // BeforeParseEvent. (Currently, it re-configures quotes based on locale setting.)
             object : TexyEventListener<BeforeParseEvent> {
-                override val eventClass: Class<*>
+                override val eventClass: Class<BeforeParseEvent>
                     get() = BeforeParseEvent::class.java
 
                 @Throws(TexyException::class)
@@ -31,16 +34,19 @@ class TypographyModule  // Const
                     // TODO: Reconfigure quotes.
                     return null
                 }
-            },  // PostLineEvent.
+            } as TexyEventListener<TexyEvent>,
+
+
+            // PostLineEvent.
             object : TexyEventListener<AfterLineEvent> {
-                override val eventClass: Class<*>
+                override val eventClass: Class<AfterLineEvent>
                     get() = AfterLineEvent::class.java
 
                 @Throws(TexyException::class)
                 override fun onEvent(event: AfterLineEvent): Node {
                     return DOMText(performReplaces(event.text))
                 }
-            }
+            } as TexyEventListener<TexyEvent>
         )
 
     // TypographyModule's patterns are not scanned for during parsing.
