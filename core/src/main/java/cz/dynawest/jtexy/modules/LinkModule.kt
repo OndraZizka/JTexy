@@ -61,20 +61,20 @@ class LinkModule : TexyModule() {
         @Throws(TexyException::class)
         override fun handle(parser: TexyParser, groups: List<MatchWithOffset>, pattern: RegexpInfo): Node? {
             //    [1] => [ref]
-            val refName = StringUtils.substring(groups!![0]!!.match, 1, -1)
+            val refName = StringUtils.substring(groups[0].match, 1, -1)
             val link = getRef(refName) ?: return texy.invokeAroundHandlers(NewReferenceEvent(parser, refName))
             // New reference encountered?
             link.type = TexyLink.Type.BRACKET
-            var content: String? = null
+            var content: String
 
             // Label is not empty?
-            if (!StringUtils.isEmpty(link.label)) {
+            if (!link.label.isNullOrEmpty() && !link.name.isNullOrEmpty()) {
                 // Prevent circular references. TBD: Analyze.
-                if (liveLock.contains(link.name)) content = link.label
+                if (liveLock.contains(link.name)) content = link.label!!
                 else {
-                    liveLock.add(link.name)
+                    liveLock.add(link.name!!)
                     val elm = DOMElement(Constants.HOLDER_ELEMENT_NAME)
-                    TexyLineParser(texy, elm).parse(link.label)
+                    TexyLineParser(texy, elm).parse(link.label!!)
                     content = ProtectedHTMLWriter.Companion.fromElement(elm, texy.protector)
                     liveLock.remove(link.name)
                 }
