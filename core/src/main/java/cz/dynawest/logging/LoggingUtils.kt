@@ -12,9 +12,9 @@ import java.util.logging.Logger
  */
 object LoggingUtils {
     private val log = Logger.getLogger(LoggingUtils::class.java.name)
-    /** Sets up logging.  */
+
     /** Sets up logging. Uses "#/logging.properties" as default path.  */
-    @JvmOverloads
+    @JvmStatic @JvmOverloads
     fun initLogging(filePath: String? = "#/logging.properties") {
         val logConfigFile = System.getProperty("java.util.logging.config.file", filePath)
         try {

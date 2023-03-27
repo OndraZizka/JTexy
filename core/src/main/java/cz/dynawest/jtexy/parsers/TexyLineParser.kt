@@ -48,14 +48,14 @@ class TexyLineParser(texy: JTexy, element: DOMElement) : TexyParser(texy, elemen
         // Parse loop.
         do {
             var minPattern: RegexpInfo? = null
-            var minOffset = text!!.length
+            var minOffset = text.length
 
 
             // For each line pattern...
             for (ri in patterns) {
                 if (finest) log.log(
                     Level.FINEST, "  Parsing with pattern {0} - {1}...", arrayOf(
-                        ri!!.name, ri.regexp
+                        ri.name, ri.regexp
                     )
                 )
                 if (patternOffsets[ri]!! < offset) {
@@ -70,7 +70,7 @@ class TexyLineParser(texy: JTexy, element: DOMElement) : TexyParser(texy, elemen
                         val groups: List<MatchWithOffset> = MatchWithOffset.Companion.fromMatcherState(mat)
                         val curMatchInfo = ParserMatchInfo(ri, groups, mat.start())
                         allMatches[ri] = curMatchInfo
-                        if (groups[0]!!.match!!.length == 0) continue
+                        if (groups[0].match!!.length == 0) continue
                         // Store offset for this pattern.
                         patternOffsets[ri] = mat.start()
                     } else {

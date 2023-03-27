@@ -11,16 +11,17 @@ import java.util.logging.*
  */
 object PropertiesLoader {
     private val log = Logger.getLogger(PropertiesLoader::class.java.name)
+
+
     /** Loads properties from given class'es classloader.  */
-    /** Loads properties.  */
-    @JvmOverloads
+    @JvmOverloads @JvmStatic
     @Throws(IOException::class)
     fun loadProperties(propsPath: String?, clazz: Class<*> = PropertiesLoader::class.java): Properties {
         return loadPropertiesOrdered(propsPath, clazz)
     }
 
     /** Loads properties. Counts the propsPath from the class'es path.  */
-    @Throws(IOException::class)
+    @JvmStatic @Throws(IOException::class)
     fun loadPropertiesUnordered(propsPath: String?, clazz: Class<*>): Properties {
         val `is` = getInputStream(propsPath, clazz)
         val props = Properties()
@@ -33,16 +34,18 @@ object PropertiesLoader {
      * If the propsPath begins with #, then it's loaded via clazz's classloader.
      * Otherwise it's read from the filesystem from the current path.
      */
-    @Throws(IOException::class)
+    @JvmStatic @Throws(IOException::class)
     private fun getInputStream(propsPath: String?, clazz: Class<*>): InputStream {
+
         //ClassLoader.getSystemResource( propsPath ).openStream() );
-        val `is`: InputStream?
-        `is` = if (propsPath!!.startsWith("#")) {
+        val `is`: InputStream? = if (propsPath!!.startsWith("#")) {
             clazz.getResourceAsStream(propsPath.substring(1))
-        } // "Use getClass().getClassLoader().findResource("path") instead."
+        }
+        // "Use getClass().getClassLoader().findResource("path") instead."
         else {
             FileInputStream(propsPath)
         }
+
         if (`is` == null) {
             throw IOException("Properties file not found: " + propsPath + "  For class: " + clazz.name)
         }
@@ -52,7 +55,7 @@ object PropertiesLoader {
     /**
      * Loads properties file into an ordered map.
      */
-    @Throws(IOException::class)
+    @JvmStatic @Throws(IOException::class)
     private fun loadPropertiesOrdered(propsPath: String?, clazz: Class<*>): Properties {
         val `is` = getInputStream(propsPath, clazz)
         val osp = OrderedProperties()
